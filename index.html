@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Hablemos — A2 → B1 Spanish Learning</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet" />
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Fraunces', 'serif'],
+      },
+      colors: {
+        terra: { 600: '#c2410c', 500: '#ea580c', 400: '#fb923c' },
+        burg: { 900: '#881337', 800: '#9d174d' },
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+  .no-scroll::-webkit-scrollbar { display: none; }
+  .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  .glass { background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); }
+  .glass-dark { background: rgba(26,21,16,0.78); backdrop-filter: blur(20px); }
+  .card-slide { animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .mesh-light {
+    background: linear-gradient(to right, #faf7f2 0%, #f5f0e6 100%),
+    radial-gradient(circle at 20% 0%, rgba(194,65,12,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(136,19,55,0.04) 0%, transparent 50%);
+  }
+  .mesh-dark {
+    background: linear-gradient(to right, #1a1614 0%, #1f1a15 100%),
+    radial-gradient(circle at 20% 0%, rgba(251,146,60,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(212,160,23,0.06) 0%, transparent 50%);
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+// ═══════════════════════════════════════════════════════════════
+// DATA LAYER
+// ═══════════════════════════════════════════════════════════════
+
+const WORDS_OF_DAY = [
+  { es: 'cotidiano', en: 'daily/everyday', example: 'La vida cotidiana es simple.', exampleEn: 'Daily life is simple.', tip: 'Common word for everyday routines' },
+  { es: 'mañana', en: 'tomorrow / morning (context)', example: 'Mañana será un buen día.', exampleEn: 'Tomorrow will be a good day.', tip: 'Ambiguous — depends on context' },
+  { es: 'apenas', en: 'barely / hardly / as soon as', example: 'Apenas llegó, se fue.', exampleEn: 'He had barely arrived when he left.', tip: 'Very Spanish; often means "just now" or "as soon as"' },
+  { es: 'sino', en: 'but (contradiction)', example: 'No es tímido, sino tímida.', exampleEn: 'She is not shy, but rather shy.', tip: 'Different from "pero" — corrects the previous statement' },
+  { es: 'aún / aun', en: 'still / yet / even (context)', example: 'Aún no ha llegado.', exampleEn: 'She still hasn\'t arrived.', tip: 'Aún (with accent) = "still"; aun = "even"' },
+  { es: 'pues', en: 'well / then / since', example: 'Pues, vamos a empezar.', exampleEn: 'Well, let\'s start.', tip: 'Filler word; also used for logic ("since")' },
+  { es: 'demás', en: 'the rest / others', example: 'Los demás están aquí.', exampleEn: 'The others are here.', tip: 'Also "por demás" = excessively' },
+  { es: 'senda', en: 'path / trail', example: 'Seguimos la senda del bosque.', exampleEn: 'We followed the forest path.', tip: 'More poetic than "camino"' },
+  { es: 'conque', en: 'so / therefore', example: '¿Conque ibas a venir?', exampleEn: 'So you were going to come?', tip: 'Informal connector' },
+  { es: 'vejez', en: 'old age', example: 'La vejez trae sabiduría.', exampleEn: 'Old age brings wisdom.', tip: 'Abstract noun; vejez is the state, viejo is the adjective' },
+];
+
+const PHRASES_OF_DAY = [
+  { es: 'Más vale tarde que nunca', en: 'Better late than never', example: 'Llegué tarde, pero más vale tarde que nunca.', exampleEn: 'I arrived late, but better late than never.', when: 'When you or someone arrives later than planned' },
+  { es: 'No hay mal que cien años dure', en: 'There is no bad that lasts 100 years', example: 'Perdí mi trabajo, pero no hay mal que cien años dure.', exampleEn: 'I lost my job, but this too shall pass.', when: 'To comfort someone during hardship' },
+  { es: 'Meter la pata', en: 'To put your foot in your mouth / To mess up', example: 'Metí la pata en la reunión.', exampleEn: 'I messed up in the meeting.', when: 'When you say something you shouldn\'t or make a mistake' },
+  { es: 'Estar en la luna', en: 'To be on the moon / To be distracted', example: 'Estaba en la luna durante la clase.', exampleEn: 'I was distracted during class.', when: 'When someone is daydreaming or not paying attention' },
+  { es: 'Coger un cabreo', en: 'To get angry (Spain)', example: 'Cogió un cabreo cuando se enteró.', exampleEn: 'He got really angry when he found out.', when: 'To describe someone getting mad' },
+  { es: 'Ir de coña', en: 'To joke around / To be kidding', example: '¿De verdad? ¡Iba de coña!', exampleEn: 'Really? I was just kidding!', when: 'When you\'re joking or being playful' },
+  { es: 'Ser un rollo', en: 'To be boring / To be a drag', example: 'Ese profesor es un rollo.', exampleEn: 'That professor is boring.', when: 'To describe something or someone boring' },
+  { es: 'Tomar el pelo', en: 'To make fun of / To pull your leg', example: 'Solo te tomo el pelo.', exampleEn: 'I\'m just messing with you.', when: 'When playfully teasing someone' },
+];
+
+const TENSES = {
+  pasado: [
+    {
+      id: 'preterito-ind',
+      title: 'Pretérito indefinido',
+      concept: 'Completed past actions. Completed time frame (yesterday, last week, 5 years ago).',
+      table: [['Pronombre', 'Regular -ar', 'Regular -er/-ir', 'ser/ir', 'hacer'],
+        ['yo', 'hablé', 'comí', 'fui', 'hice'],
+        ['tú', 'hablaste', 'comiste', 'fuiste', 'hiciste'],
+        ['él/ella', 'habló', 'comió', 'fue', 'hizo'],
+        ['nosotros', 'hablamos', 'comimos', 'fuimos', 'hicimos'],
+        ['vosotros', 'hablasteis', 'comisteis', 'fuisteis', 'hicisteis'],
+        ['ellos', 'hablaron', 'comieron', 'fueron', 'hicieron']],
+      examples: ['Ayer fui al mercado.', 'El viaje fue increíble.', 'Hablé con mi amigo hace una hora.', 'No comimos hasta las ocho.'],
+      when: 'Specific completed actions with clear time frames'
+    },
+    {
+      id: 'preterito-imp',
+      title: 'Pretérito imperfecto',
+      concept: 'Habitual or continuous past actions. "Used to" or "was doing". No clear end point.',
+      table: [['Pronombre', 'Regular -ar', 'Regular -er/-ir', 'ser/ir', 'ver'],
+        ['yo', 'hablaba', 'comía', 'era', 'veía'],
+        ['tú', 'hablabas', 'comías', 'eras', 'veías'],
+        ['él/ella', 'hablaba', 'comía', 'era', 'veía'],
+        ['nosotros', 'hablábamos', 'comíamos', 'éramos', 'veíamos'],
+        ['vosotros', 'hablabais', 'comíais', 'erais', 'veíais'],
+        ['ellos', 'hablaban', 'comían', 'eran', 'veían']],
+      examples: ['Cuando era niño, jugaba en el parque.', 'Mientras hablaba, llegó mi madre.', 'Nos veíamos cada día.'],
+      when: 'Descriptions, habits, ongoing actions in the past, age/time when something happened'
+    },
+    {
+      id: 'preterito-perf',
+      title: 'Pretérito perfecto',
+      concept: 'Spain\'s "today/this week" tense. Recent past still connected to now. (Latin America prefers preterite)',
+      table: [['Pronombre', 'Haber', 'Participio (hablar)'],
+        ['yo', 'he', 'hablado'],
+        ['tú', 'has', 'hablado'],
+        ['él/ella', 'ha', 'hablado'],
+        ['nosotros', 'hemos', 'hablado'],
+        ['vosotros', 'habéis', 'hablado'],
+        ['ellos', 'han', 'hablado']],
+      examples: ['Esta mañana he comido bien.', 'Hoy he ido al gym.', '¿Has visto eso?', 'Este año hemos viajado mucho.'],
+      when: 'Actions that happened "today", "this week", "this month", or recently (Spain usage)'
+    },
+  ],
+  presente: [
+    {
+      id: 'regular-present',
+      title: 'Presente regular',
+      concept: 'Habitual actions, facts, feelings right now.',
+      table: [['Pronombre', '-ar (hablar)', '-er (comer)', '-ir (vivir)'],
+        ['yo', 'hablo', 'como', 'vivo'],
+        ['tú', 'hablas', 'comes', 'vives'],
+        ['él/ella', 'habla', 'come', 'vive'],
+        ['nosotros', 'hablamos', 'comemos', 'vivimos'],
+        ['vosotros', 'hablais', 'coméis', 'vivís'],
+        ['ellos', 'hablan', 'comen', 'viven']],
+      examples: ['Hablo español bien.', 'Como cada día a las dos.', 'Vivo en Valencia.'],
+      when: 'Daily habits, facts, present emotions'
+    },
+    {
+      id: 'irregular-present',
+      title: 'Presente con irregularidades',
+      concept: 'Common irregular verbs in the present. Mostly yo-go verbs or e→ie/o→ue changes.',
+      table: [['Verbo', 'yo', 'tú', 'él', 'nosotros', 'ellos'],
+        ['decir', 'digo', 'dices', 'dice', 'decimos', 'dicen'],
+        ['hacer', 'hago', 'haces', 'hace', 'hacemos', 'hacen'],
+        ['salir', 'salgo', 'sales', 'sale', 'salimos', 'salen'],
+        ['tener', 'tengo', 'tienes', 'tiene', 'tenemos', 'tienen'],
+        ['venir', 'vengo', 'vienes', 'viene', 'venimos', 'vienen']],
+      examples: ['¿Qué dices?', 'Salgo a las ocho.', 'Tengo hambre.', 'Vienen mañana.'],
+      when: 'These verbs are essential; use constantly in conversation'
+    },
+  ],
+  futuro: [
+    {
+      id: 'ir-a-infinitivo',
+      title: 'Ir a + infinitivo',
+      concept: 'Informal future. "Going to do something." Very common in speech.',
+      table: [['Pronombre', 'ir (present)', 'a', 'Infinitivo (hablar)'],
+        ['yo', 'voy', 'a', 'hablar'],
+        ['tú', 'vas', 'a', 'hablar'],
+        ['él', 'va', 'a', 'hablar'],
+        ['nosotros', 'vamos', 'a', 'hablar'],
+        ['vosotros', 'vais', 'a', 'hablar'],
+        ['ellos', 'van', 'a', 'hablar']],
+      examples: ['Voy a comer en cinco minutos.', 'Va a llover mañana.', 'Vamos a viajar en junio.'],
+      when: 'Near future, plans, predictions'
+    },
+    {
+      id: 'futuro-simple',
+      title: 'Futuro simple',
+      concept: 'Formal future. Predictions, promises, decisions. "I will do..."',
+      table: [['Pronombre', 'hablar', 'comer', 'vivir'],
+        ['yo', 'hablaré', 'comeré', 'viviré'],
+        ['tú', 'hablarás', 'comerás', 'vivirás'],
+        ['él', 'hablará', 'comerá', 'vivirá'],
+        ['nosotros', 'hablaremos', 'comeremos', 'viviremos'],
+        ['vosotros', 'hablaréis', 'comeréis', 'viviréis'],
+        ['ellos', 'hablarán', 'comerán', 'vivirán']],
+      examples: ['Te llamaré mañana.', 'Será difícil.', 'No lo haré otra vez.'],
+      when: 'Formal promises, predictions, decisions, "what will happen"'
+    },
+  ],
+  subjuntivo: [
+    {
+      id: 'subjuntivo-pres',
+      title: 'Subjuntivo presente',
+      concept: 'Non-factual situations, desires, doubts, emotions, commands. The "wish/hope/doubt" form.',
+      table: [['Pronombre', 'hablar', 'comer', 'vivir'],
+        ['yo', 'hable', 'coma', 'viva'],
+        ['tú', 'hables', 'comas', 'vivas'],
+        ['él', 'hable', 'coma', 'viva'],
+        ['nosotros', 'hablemos', 'comamos', 'vivamos'],
+        ['vosotros', 'habléis', 'comáis', 'viváis'],
+        ['ellos', 'hablen', 'coman', 'vivan']],
+      examples: ['Quiero que vengas.', 'Espero que tengas suerte.', 'Cuando llegues, me llamas.', 'No creo que sea verdad.'],
+      when: 'After: quiero que, espero que, cuando (future), en cuanto, ojalá, no creo que, para que'
+    },
+    {
+      id: 'subjuntivo-imp',
+      title: 'Subjuntivo imperfecto',
+      concept: 'Subjunctive in past. Hypotheticals, politeness in past, reported speech.',
+      table: [['Pronombre', 'hablar (-ra)', 'comer (-ra)', 'vivir (-ra)'],
+        ['yo', 'hablara', 'comiera', 'viviera'],
+        ['tú', 'hablaras', 'comieras', 'vivieras'],
+        ['él', 'hablara', 'comiera', 'viviera'],
+        ['nosotros', 'habláramos', 'comiéramos', 'viviéramos'],
+        ['vosotros', 'hablarais', 'comierais', 'vivierais'],
+        ['ellos', 'hablaran', 'comieran', 'vivieran']],
+      examples: ['Si tuviera dinero, viajaría.', 'Le pedí que viniera.', 'Era importante que lo supiera.'],
+      when: 'Past subjunctive contexts, if-clauses, polite requests in past'
+    },
+  ]
+};
+
+const CHEAT_SHEETS = [
+  {
+    id: 'ser-estar',
+    title: 'Ser vs Estar',
+    concept: 'Both mean "to be" but have different uses. SER = permanent/identity. ESTAR = location/condition.',
+    cards: [
+      { es: 'Soy español.', en: 'I am Spanish.', usage: 'Identity' },
+      { es: 'Estoy en Valencia.', en: 'I am in Valencia.', usage: 'Location' },
+      { es: 'Eres inteligente.', en: 'You are intelligent.', usage: 'Characteristic' },
+      { es: 'Estás cansado.', en: 'You are tired.', usage: 'Condition (changeable)' },
+    ]
+  },
+  {
+    id: 'por-para',
+    title: 'Por vs Para',
+    concept: 'POR = reason/cause/duration/through. PARA = purpose/destination/recipient/deadline.',
+    examples: [
+      'Trabajo por dinero. (reason)',
+      'Trabajo para vivir. (purpose)',
+      'Por la mañana. (duration)',
+      'Compré un regalo para ti. (recipient)',
+    ]
+  },
+  {
+    id: 'se-constructions',
+    title: 'Se construcciones',
+    concept: 'Se is used in three main ways: reflexive (myself), impersonal (one does...), and accidental (it happened to me).',
+    examples: [
+      'Me lavo. (I wash myself - reflexive)',
+      'Se dice que es verdad. (It is said that... - impersonal)',
+      'Se me olvidó la llave. (I forgot my key / The key forgot itself from me - accidental)',
+    ]
+  },
+];
+
+const VOCAB_THEMES = [
+  {
+    theme: 'casa',
+    titleEs: 'En Casa',
+    titleEn: 'At Home',
+    words: [
+      { es: 'la cocina', en: 'kitchen', example: 'La cocina es moderna.' },
+      { es: 'el dormitorio', en: 'bedroom', example: 'Mi dormitorio es pequeño.' },
+      { es: 'el sofá', en: 'sofa', example: 'El sofá es cómodo.' },
+      { es: 'la ventana', en: 'window', example: 'Abro la ventana.' },
+      { es: 'la puerta', en: 'door', example: 'Cierra la puerta.' },
+      { es: 'el piso', en: 'apartment/floor', example: 'Vivo en el segundo piso.' },
+      { es: 'la escalera', en: 'staircase', example: 'Las escaleras son empinadas.' },
+    ]
+  },
+  {
+    theme: 'comida',
+    titleEs: 'Comida y Bebida',
+    titleEn: 'Food & Drink',
+    words: [
+      { es: 'la paella', en: 'paella (rice dish)', example: 'La paella es típica de Valencia.' },
+      { es: 'el jamón', en: 'ham', example: 'El jamón ibérico es delicioso.' },
+      { es: 'el queso', en: 'cheese', example: 'Comemos queso en la tarde.' },
+      { es: 'el pan', en: 'bread', example: 'El pan está fresco.' },
+      { es: 'la sopa', en: 'soup', example: 'Preparo una sopa caliente.' },
+      { es: 'el vino', en: 'wine', example: 'Bebes vino tinto.' },
+      { es: 'la cerveza', en: 'beer', example: 'Tomamos una cerveza fría.' },
+    ]
+  },
+  {
+    theme: 'trabajo',
+    titleEs: 'En el Trabajo',
+    titleEn: 'At Work',
+    words: [
+      { es: 'la oficina', en: 'office', example: 'Trabajo en una oficina.' },
+      { es: 'el jefe', en: 'boss', example: 'Mi jefe es amable.' },
+      { es: 'el colega', en: 'colleague', example: 'Trabajo con mis colegas.' },
+      { es: 'la reunión', en: 'meeting', example: 'Tengo una reunión a las dos.' },
+      { es: 'el email', en: 'email', example: 'Envío un email a mi jefe.' },
+      { es: 'el proyecto', en: 'project', example: 'Estamos trabajando en un proyecto nuevo.' },
+      { es: 'el horario', en: 'schedule/hours', example: 'Mi horario es de nueve a cinco.' },
+    ]
+  },
+  {
+    theme: 'viajes',
+    titleEs: 'Viajes y Direcciones',
+    titleEn: 'Travel & Directions',
+    words: [
+      { es: 'la estación', en: 'station', example: 'Nos encontramos en la estación de tren.' },
+      { es: 'el billete', en: 'ticket', example: 'Compro un billete para Barcelona.' },
+      { es: 'el mapa', en: 'map', example: 'Necesito un mapa de la ciudad.' },
+      { es: 'la calle', en: 'street', example: 'Camino por la calle Mayor.' },
+      { es: 'el aeropuerto', en: 'airport', example: 'Volamos desde el aeropuerto de Valencia.' },
+      { es: 'el hotel', en: 'hotel', example: 'Nos alojamos en un hotel bonito.' },
+      { es: 'la plaza', en: 'plaza/square', example: 'Descansamos en la plaza central.' },
+    ]
+  },
+];
+
+const CONNECTORS = [
+  {
+    function: 'Causa',
+    words: [
+      { es: 'porque', en: 'because', example: 'No vino porque estaba enfermo.' },
+      { es: 'ya que', en: 'since', example: 'Ya que estás aquí, quédate.' },
+      { es: 'puesto que', en: 'since/given that', example: 'Puesto que es tarde, nos vamos.' },
+      { es: 'debido a', en: 'due to', example: 'Cancelamos debido al mal tiempo.' },
+    ]
+  },
+  {
+    function: 'Consecuencia',
+    words: [
+      { es: 'por lo tanto', en: 'therefore', example: 'Es tarde; por lo tanto, nos vamos.' },
+      { es: 'así que', en: 'so/thus', example: 'Está lloviendo, así que me quedo en casa.' },
+      { es: 'de modo que', en: 'so that', example: 'Salimos temprano de modo que llegamos a tiempo.' },
+    ]
+  },
+  {
+    function: 'Contraste',
+    words: [
+      { es: 'sin embargo', en: 'however', example: 'Es caro; sin embargo, vale la pena.' },
+      { es: 'pero', en: 'but', example: 'Es bonito pero caro.' },
+      { es: 'aunque', en: 'although/even if', example: 'Aunque llueve, salimos.' },
+      { es: 'en cambio', en: 'instead', example: 'No quiero ir al cine; en cambio, prefiero quedarme en casa.' },
+    ]
+  },
+  {
+    function: 'Adición',
+    words: [
+      { es: 'además', en: 'besides/furthermore', example: 'Además, es muy inteligente.' },
+      { es: 'también', en: 'also', example: 'Yo también quiero ir.' },
+      { es: 'asimismo', en: 'likewise', example: 'Asimismo, debemos considerar los costos.' },
+    ]
+  },
+  {
+    function: 'Tiempo',
+    words: [
+      { es: 'cuando', en: 'when', example: 'Cuando llegues, me llamas.' },
+      { es: 'mientras', en: 'while', example: 'Mientras hablaba, llegó mi madre.' },
+      { es: 'antes de que', en: 'before', example: 'Antes de que se vaya, queremos hablar.' },
+      { es: 'después de que', en: 'after', example: 'Después de que comamos, descansamos.' },
+    ]
+  },
+  {
+    function: 'Condición',
+    words: [
+      { es: 'si', en: 'if', example: 'Si llueve, no salimos.' },
+      { es: 'a menos que', en: 'unless', example: 'Vamos al parque a menos que llueva.' },
+      { es: 'con tal de que', en: 'as long as', example: 'Voy con tal de que termine pronto.' },
+    ]
+  },
+];
+
+const SITUATIONAL_PHRASES = [
+  {
+    situation: 'Ir de compras',
+    phrases: [
+      { es: '¿Cuánto cuesta?', en: 'How much does it cost?', when: 'Asking the price' },
+      { es: 'Me lo quedo', en: 'I\'ll take it', when: 'Buying something' },
+      { es: '¿Tienes esto en otra talla?', en: 'Do you have this in another size?', when: 'Shopping for clothes' },
+      { es: '¿Dónde está la caja?', en: 'Where is the checkout?', when: 'Paying' },
+      { es: '¿Aceptan tarjeta?', en: 'Do you accept cards?', when: 'Payment method' },
+      { es: 'Esto está roto', en: 'This is broken', when: 'Returning items' },
+    ]
+  },
+  {
+    situation: 'Expresar opiniones',
+    phrases: [
+      { es: 'En mi opinión...', en: 'In my opinion...', when: 'Starting an opinion' },
+      { es: 'Creo que...', en: 'I think that...', when: 'Expressing belief' },
+      { es: 'Me parece que...', en: 'It seems to me that...', when: 'Giving impression' },
+      { es: 'Diría que...', en: 'I would say that...', when: 'Cautious opinion' },
+      { es: 'No estoy de acuerdo', en: 'I don\'t agree', when: 'Disagreement' },
+      { es: 'Tienes razón', en: 'You\'re right', when: 'Agreement' },
+    ]
+  },
+];
+
+const IDIOMS = [
+  { es: 'estar en la luna', en: 'to be on the moon', meaning: 'to be distracted/daydreaming', example: 'Estaba en la luna durante la clase.' },
+  { es: 'tomar el pelo', en: 'to pull the hair', meaning: 'to tease/make fun of', example: 'Solo te tomo el pelo.' },
+  { es: 'meter la pata', en: 'to put the paw', meaning: 'to make a mistake/mess up', example: 'Metió la pata en la reunión.' },
+  { es: 'ir de coña', en: 'to go of joke', meaning: 'to joke around/be kidding', example: '¡Iba de coña!' },
+  { es: 'no tener pelos en la lengua', en: 'to not have hairs on the tongue', meaning: 'to speak bluntly', example: 'No tiene pelos en la lengua.' },
+  { es: 'estar hecho un lio', en: 'to be made a mess', meaning: 'to be confused', example: 'Estoy hecho un lío.' },
+];
+
+const EXERCISES = [
+  { type: 'fill-blank', topic: 'preterito-ind', question: 'Ayer ___ (ir) al mercado.', answer: 'fui', level: 'A2' },
+  { type: 'fill-blank', topic: 'preterito-ind', question: '___ (Hablar) con mi amigo hace una hora.', answer: 'Hablé', level: 'A2' },
+  { type: 'multiple-choice', topic: 'ser-estar', question: '¿Dónde ___ tu casa?', options: ['es', 'está', 'soy', 'estoy'], answer: 'está', level: 'A2' },
+  { type: 'multiple-choice', topic: 'por-para', question: 'Trabajo ___ dinero.', options: ['para', 'por', 'al', 'de'], answer: 'por', level: 'A2' },
+  { type: 'translation', topic: 'preterito-imp', question: 'When I was a child, I played in the park.', answer: 'Cuando era niño, jugaba en el parque.', level: 'A2' },
+  { type: 'translation', topic: 'preterito-perf', question: 'I have eaten well this morning.', answer: 'He comido bien esta mañana.', level: 'A2' },
+  { type: 'match', topic: 'vocabulario', pairs: [
+    { es: 'la cocina', en: 'kitchen' },
+    { es: 'el dormitorio', en: 'bedroom' },
+    { es: 'el sofá', en: 'sofa' },
+    { es: 'la ventana', en: 'window' },
+  ], level: 'A2' },
+];
+
+const GLOSSARY_SEED = [
+  { es: 'venga', en: 'come on / ok / let\'s go / bye', category: 'slang', example: 'Venga, nos vamos ya' },
+  { es: 'mola', en: 'it\'s cool / I like it', category: 'slang', example: 'Esa película mola mucho' },
+  { es: 'en plan', en: 'like / kind of', category: 'slang', example: 'Estaba en plan serio' },
+  { es: 'guay', en: 'cool / great', category: 'slang', example: 'Qué guay, me alegra mucho' },
+  { es: 'flipar', en: 'to freak out / be amazed', category: 'slang', example: 'Me flipa lo que ha pasado' },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+function getStorageData(key, fallback) {
+  try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fallback; } catch { return fallback; }
+}
+function setStorageData(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+function getWordOfDay() {
+  const today = new Date().toDateString();
+  const idx = Math.abs(today.split('').reduce((a,c,i) => a + c.charCodeAt(0) * (i+1), 0)) % WORDS_OF_DAY.length;
+  return WORDS_OF_DAY[idx];
+}
+function getPhraseOfDay() {
+  const today = new Date().toDateString();
+  const idx = Math.abs(today.split('').reduce((a,c,i) => a + c.charCodeAt(0) * (i+1), 0) + 7) % PHRASES_OF_DAY.length;
+  return PHRASES_OF_DAY[idx];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ICONS
+// ═══════════════════════════════════════════════════════════════
+
+const Icons = {
+  home: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v8H3zm16-8h-3V2h-2v3h-3v2h3v3h2V7h3V5zm0 12h2v8h-2z"/></svg>,
+  clock: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5zm-7 0c0 .83-.67 1.5-1.5 1.5S5 11.83 5 11s.67-1.5 1.5-1.5 1.5.67 1.5 1.5zm3.5-6H9v5h6z"/></svg>,
+  brain: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="8" r="2"/><circle cx="18" cy="8" r="2"/><path d="M12 22c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9c0 1.88-.6 3.62-1.62 5.04.43.73.62 1.56.62 2.46 0 3.59-2.91 6.5-6.5 6.5z"/></svg>,
+  book: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8v8H3zm10 0h8v8h-8zm0-10h8v8h-8zM3 3h8v8H3z"/></svg>,
+  sparkle: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+  check: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>,
+  back: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>,
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SHARED COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+
+function Card({ children, dark, className = "", onClick }) {
+  return (
+    <div onClick={onClick} className={`rounded-2xl border transition-all ${dark ? 'bg-white/[0.04] border-white/[0.08]' : 'bg-white border-stone-200'} ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+function SectionTile({ icon, title, titleEn, color, onClick }) {
+  const colors = { orange: 'from-orange-500 to-amber-500', blue: 'from-blue-500 to-indigo-500', purple: 'from-purple-500 to-fuchsia-500', emerald: 'from-emerald-500 to-teal-500', rose: 'from-rose-500 to-pink-500' };
+  return (
+    <div onClick={onClick} className="cursor-pointer card-slide">
+      <Card className="p-5 hover:shadow-md transition-shadow">
+        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors[color]} flex items-center justify-center text-white mb-3`}>
+          {icon}
+        </div>
+        <h3 className="font-serif font-bold text-lg">{ title}</h3>
+        <p className="text-[13px] text-stone-500 mt-0.5">{titleEn}</p>
+      </Card>
+    </div>
+  );
+}
+
+function BackHeader({ title, onBack, dark }) {
+  return (
+    <div className={`sticky top-0 z-40 border-b ${dark ? 'bg-black/40 border-white/[0.06]' : 'bg-white/40 border-stone-200'} backdrop-blur-md`}>
+      <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
+        <button onClick={onBack} className={`p-2 rounded-lg hover:bg-white/10 transition-colors`}>
+          {Icons.back}
+        </button>
+        <h1 className="font-serif font-bold text-lg">{title}</h1>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SECTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function Inicio({ onSelectSection, dark }) {
+  const wordOfDay = getWordOfDay();
+  const phraseOfDay = getPhraseOfDay();
+  const streak = getStorageData('hablemos.streak', { count: 0 });
+
+  const sections = [
+    { id: 'hoy', icon: Icons.sparkle, title: 'Hoy', titleEn: 'Today', color: 'rose' },
+    { id: 'tiempos', icon: Icons.clock, title: 'Tiempos', titleEn: 'Tenses', color: 'blue' },
+    { id: 'chuletas', icon: Icons.book, title: 'Chuletas', titleEn: 'Cheat Sheets', color: 'purple' },
+    { id: 'vocabulario', icon: Icons.brain, title: 'Vocabulario', titleEn: 'Vocab', color: 'emerald' },
+    { id: 'conectores', icon: Icons.check, title: 'Conectores', titleEn: 'Connectors', color: 'orange' },
+    { id: 'frases', icon: Icons.sparkle, title: 'Frases', titleEn: 'Phrases', color: 'rose' },
+    { id: 'ejercicios', icon: Icons.brain, title: 'Ejercicios', titleEn: 'Exercises', color: 'blue' },
+    { id: 'glosario', icon: Icons.book, title: 'Glosario', titleEn: 'Glossary', color: 'purple' },
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6 pb-12">
+      <div className="mb-8">
+        <p className="text-[13px] text-stone-500 mb-1">Buenos días, Liam</p>
+        <h1 className="text-4xl font-serif font-bold mb-4">Hablemos</h1>
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-3xl">🔥</span>
+          <div>
+            <p className="text-2xl font-bold">{streak.count}</p>
+            <p className="text-[12px] text-stone-500">días consecutivos</p>
+          </div>
+        </div>
+
+        {/* Word of day */}
+        <Card dark={dark} className="p-6 mb-4 bg-gradient-to-r from-rose-500/10 to-pink-500/10">
+          <p className="text-[11px] uppercase tracking-wide text-stone-500 mb-2">Palabra del día</p>
+          <p className="font-serif text-3xl font-bold">{wordOfDay.es}</p>
+          <p className="text-sm text-stone-500 mt-1">{wordOfDay.en}</p>
+          <p className="text-xs italic text-stone-600 mt-2">"{wordOfDay.example}"</p>
+        </Card>
+
+        {/* Phrase of day */}
+        <Card dark={dark} className="p-6 bg-gradient-to-r from-blue-500/10 to-indigo-500/10">
+          <p className="text-[11px] uppercase tracking-wide text-stone-500 mb-2">Frase del día</p>
+          <p className="font-serif text-2xl font-bold">{phraseOfDay.es}</p>
+          <p className="text-sm text-stone-500 mt-1">{phraseOfDay.en}</p>
+          <p className="text-xs text-stone-600 mt-2">{phraseOfDay.when}</p>
+        </Card>
+      </div>
+
+      <p className="text-[13px] font-semibold uppercase tracking-wide text-stone-500 mb-3">Secciones</p>
+      <div className="grid grid-cols-2 gap-3">
+        {sections.map(s => (
+          <SectionTile key={s.id} icon={s.icon} title={s.title} titleEn={s.titleEn} color={s.color} onClick={() => onSelectSection(s.id)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Hoy({ onBack, dark }) {
+  const wordOfDay = getWordOfDay();
+  const phraseOfDay = getPhraseOfDay();
+
+  return (
+    <div>
+      <BackHeader title="Hoy" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12 space-y-6">
+        <Card dark={dark} className="p-8 bg-gradient-to-r from-rose-500/20 to-pink-500/20">
+          <p className="text-[12px] uppercase tracking-widest text-stone-600 mb-4">Palabra del día</p>
+          <p className="font-serif text-5xl font-bold mb-2">{wordOfDay.es}</p>
+          <p className="text-lg text-stone-600 mb-4">{wordOfDay.en}</p>
+          <div className="border-t border-stone-300 pt-4">
+            <p className="font-semibold text-sm mb-1">Ejemplo:</p>
+            <p className="text-sm italic mb-1">"{wordOfDay.example}"</p>
+            <p className="text-xs text-stone-600">{wordOfDay.exampleEn}</p>
+          </div>
+          <div className="mt-4 p-3 bg-white/30 rounded-lg">
+            <p className="text-sm">💡 {wordOfDay.tip}</p>
+          </div>
+        </Card>
+
+        <Card dark={dark} className="p-8 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
+          <p className="text-[12px] uppercase tracking-widest text-stone-600 mb-4">Frase del día</p>
+          <p className="font-serif text-3xl font-bold mb-2">{phraseOfDay.es}</p>
+          <p className="text-lg text-stone-600 mb-4">{phraseOfDay.en}</p>
+          <div className="border-t border-stone-300 pt-4">
+            <p className="font-semibold text-sm mb-1">Cuándo usarla:</p>
+            <p className="text-sm mb-3">{phraseOfDay.when}</p>
+            <p className="text-xs italic">"{phraseOfDay.example}"</p>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function Tiempos({ onBack, dark }) {
+  const [activeTab, setActiveTab] = useState('pasado');
+  const tabs = { pasado: TENSES.pasado, presente: TENSES.presente, futuro: TENSES.futuro, subjuntivo: TENSES.subjuntivo };
+
+  return (
+    <div>
+      <BackHeader title="Tiempos Verbales" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12">
+        <div className="flex gap-2 mb-6 overflow-x-auto">
+          {Object.keys(tabs).map(t => (
+            <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded-lg font-semibold text-sm whitespace-nowrap transition-all ${activeTab === t ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06]' : 'bg-stone-100'}`}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-4">
+          {tabs[activeTab].map(card => (
+            <Card key={card.id} dark={dark} className="p-5">
+              <h3 className="font-serif font-bold text-lg mb-2">{card.title}</h3>
+              <p className="text-sm text-stone-600 mb-4">{card.concept}</p>
+              {card.table && (
+                <div className="overflow-x-auto mb-4">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className={dark ? 'bg-white/[0.05]' : 'bg-stone-50'}>
+                        {card.table[0].map((h, i) => <th key={i} className="px-2 py-2 text-left font-semibold">{h}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {card.table.slice(1).map((row, i) => (
+                        <tr key={i} className={dark ? 'border-b border-white/[0.05]' : 'border-b border-stone-100'}>
+                          {row.map((cell, j) => <td key={j} className="px-2 py-2">{cell}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {card.examples && (
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold uppercase text-stone-500">Ejemplos</p>
+                  {card.examples.map((ex, i) => <p key={i} className="text-sm text-stone-700">{ex}</p>)}
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Vocabulario({ onBack, dark }) {
+  const [selectedTheme, setSelectedTheme] = useState(null);
+  const theme = selectedTheme ? VOCAB_THEMES.find(t => t.theme === selectedTheme) : null;
+
+  if (selectedTheme && theme) {
+    return (
+      <div>
+        <BackHeader title={theme.titleEs} onBack={() => setSelectedTheme(null)} dark={dark} />
+        <div className="max-w-2xl mx-auto px-4 py-6 pb-12 space-y-2">
+          {theme.words.map((w, i) => (
+            <Card key={i} dark={dark} className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="font-serif font-bold text-lg">{w.es}</p>
+                  <p className="text-sm text-stone-600">{w.en}</p>
+                  <p className="text-xs italic text-stone-500 mt-2">"{w.example}"</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <BackHeader title="Vocabulario" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12 grid grid-cols-1 gap-3">
+        {VOCAB_THEMES.map(theme => (
+          <Card key={theme.theme} dark={dark} onClick={() => setSelectedTheme(theme.theme)} className="p-4 cursor-pointer hover:shadow-md">
+            <p className="font-serif font-bold">{theme.titleEs}</p>
+            <p className="text-sm text-stone-500">{theme.words.length} palabras</p>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Conectores({ onBack, dark }) {
+  const [expanded, setExpanded] = useState(null);
+
+  return (
+    <div>
+      <BackHeader title="Conectores" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12 space-y-2">
+        {CONNECTORS.map((group, i) => (
+          <Card key={i} dark={dark} className="overflow-hidden">
+            <button onClick={() => setExpanded(expanded === i ? null : i)} className="w-full p-4 text-left flex items-center justify-between hover:bg-white/5">
+              <p className="font-serif font-bold">{group.function}</p>
+              <span className={`transition-transform ${expanded === i ? 'rotate-180' : ''}`}>▾</span>
+            </button>
+            {expanded === i && (
+              <div className={`px-4 pb-4 space-y-2 border-t ${dark ? 'border-white/[0.06]' : 'border-stone-100'}`}>
+                {group.words.map((w, j) => (
+                  <div key={j} className={dark ? 'bg-white/[0.02] p-2 rounded' : 'bg-stone-50 p-2 rounded'}>
+                    <p className="font-semibold text-sm">{w.es}</p>
+                    <p className="text-xs text-stone-600">{w.en}</p>
+                    <p className="text-xs italic text-stone-500 mt-1">"{w.example}"</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Frases({ onBack, dark }) {
+  const [activeTab, setActiveTab] = useState('situaciones');
+
+  return (
+    <div>
+      <BackHeader title="Frases y Modismos" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12">
+        <div className="flex gap-2 mb-6">
+          <button onClick={() => setActiveTab('situaciones')} className={`px-4 py-2 rounded-lg font-semibold text-sm ${activeTab === 'situaciones' ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06]' : 'bg-stone-100'}`}>
+            Situaciones
+          </button>
+          <button onClick={() => setActiveTab('modismos')} className={`px-4 py-2 rounded-lg font-semibold text-sm ${activeTab === 'modismos' ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06]' : 'bg-stone-100'}`}>
+            Modismos
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {activeTab === 'situaciones' ? (
+            SITUATIONAL_PHRASES.map((sit, i) => (
+              <Card key={i} dark={dark} className="p-4">
+                <p className="font-serif font-bold mb-3">{sit.situation}</p>
+                <div className="space-y-2">
+                  {sit.phrases.map((ph, j) => (
+                    <div key={j} className={`p-2 rounded ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
+                      <p className="font-semibold text-sm">{ph.es}</p>
+                      <p className="text-xs text-stone-600">{ph.en}</p>
+                      <p className="text-xs text-stone-500 mt-1">→ {ph.when}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))
+          ) : (
+            IDIOMS.map((idiom, i) => (
+              <Card key={i} dark={dark} className="p-4">
+                <p className="font-serif font-bold">{idiom.es}</p>
+                <p className="text-sm text-stone-600">{idiom.meaning}</p>
+                <p className="text-xs text-stone-500 italic mt-2">"{idiom.example}"</p>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Ejercicios({ onBack, dark }) {
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [answer, setAnswer] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const ex = selectedExercise ? EXERCISES[selectedExercise] : null;
+
+  if (selectedExercise !== null && ex) {
+    const isCorrect = answer.toLowerCase().trim() === ex.answer.toLowerCase().trim();
+    return (
+      <div>
+        <BackHeader title="Ejercicio" onBack={() => { setSelectedExercise(null); setAnswer(''); setShowResult(false); }} dark={dark} />
+        <div className="max-w-2xl mx-auto px-4 py-6 pb-12">
+          <Card dark={dark} className="p-6">
+            <p className="text-sm text-stone-600 mb-3">{ex.type === 'fill-blank' ? 'Rellena el hueco' : ex.type === 'multiple-choice' ? 'Elige la respuesta correcta' : ex.type === 'translation' ? 'Traduce' : 'Empareja'}</p>
+            {ex.type === 'fill-blank' && <p className="font-serif text-2xl font-bold mb-4">{ex.question}</p>}
+            {ex.type === 'multiple-choice' && (
+              <div>
+                <p className="font-serif text-xl font-bold mb-4">{ex.question}</p>
+                <div className="space-y-2">
+                  {ex.options.map((opt, i) => (
+                    <button key={i} onClick={() => { setAnswer(opt); setShowResult(true); }} className={`w-full p-3 rounded-lg text-left font-semibold transition-all ${answer === opt ? (isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') : dark ? 'bg-white/[0.06] hover:bg-white/[0.1]' : 'bg-stone-100 hover:bg-stone-200'}`}>
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {ex.type === 'translation' && (
+              <div>
+                <p className="font-serif text-xl font-bold mb-4">{ex.question}</p>
+                <input type="text" value={answer} onChange={e => setAnswer(e.target.value)} placeholder="Tu respuesta..." className={`w-full p-3 rounded-lg border mb-3 ${dark ? 'bg-white/[0.04] border-white/[0.1]' : 'bg-stone-50 border-stone-200'} focus:outline-none`} />
+                <button onClick={() => setShowResult(true)} className="w-full p-3 bg-orange-500 text-white font-semibold rounded-lg">
+                  Comprobar
+                </button>
+              </div>
+            )}
+
+            {showResult && (
+              <div className={`mt-4 p-4 rounded-lg ${isCorrect ? dark ? 'bg-emerald-500/20' : 'bg-emerald-50' : dark ? 'bg-rose-500/20' : 'bg-rose-50'}`}>
+                <p className="font-semibold mb-1">{isCorrect ? '✓ ¡Correcto!' : '✗ Incorrecto'}</p>
+                <p className="text-sm">Respuesta: {ex.answer}</p>
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <BackHeader title="Ejercicios" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12 space-y-2">
+        {EXERCISES.map((ex, i) => (
+          <Card key={i} dark={dark} onClick={() => setSelectedExercise(i)} className="p-4 cursor-pointer hover:shadow-md">
+            <p className="text-sm text-stone-600">{ex.type === 'fill-blank' ? 'Rellena' : ex.type === 'multiple-choice' ? 'Opción múltiple' : ex.type === 'translation' ? 'Traducción' : 'Empareja'}</p>
+            <p className="font-semibold truncate">{ex.question}</p>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Glosario({ onBack, dark }) {
+  const [glossary, setGlossary] = useState(getStorageData('hablemos.glossary', GLOSSARY_SEED));
+  const [newWord, setNewWord] = useState({ es: '', en: '' });
+  const [showForm, setShowForm] = useState(false);
+
+  function addWord() {
+    if (newWord.es && newWord.en) {
+      setGlossary([...glossary, { ...newWord, category: 'custom', example: '' }]);
+      setStorageData('hablemos.glossary', [...glossary, { ...newWord }]);
+      setNewWord({ es: '', en: '' });
+      setShowForm(false);
+    }
+  }
+
+  return (
+    <div>
+      <BackHeader title="Glosario" onBack={onBack} dark={dark} />
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-12 space-y-2">
+        {showForm && (
+          <Card dark={dark} className="p-4 mb-4">
+            <input type="text" value={newWord.es} onChange={e => setNewWord({...newWord, es: e.target.value})} placeholder="Palabra en español..." className={`w-full p-2 rounded mb-2 border ${dark ? 'bg-white/[0.04] border-white/[0.1]' : 'bg-stone-50 border-stone-200'}`} />
+            <input type="text" value={newWord.en} onChange={e => setNewWord({...newWord, en: e.target.value})} placeholder="English translation..." className={`w-full p-2 rounded mb-3 border ${dark ? 'bg-white/[0.04] border-white/[0.1]' : 'bg-stone-50 border-stone-200'}`} />
+            <div className="flex gap-2">
+              <button onClick={addWord} className="flex-1 p-2 bg-orange-500 text-white font-semibold rounded-lg">Guardar</button>
+              <button onClick={() => setShowForm(false)} className={`flex-1 p-2 rounded-lg font-semibold ${dark ? 'bg-white/[0.06]' : 'bg-stone-100'}`}>Cancelar</button>
+            </div>
+          </Card>
+        )}
+
+        {!showForm && <button onClick={() => setShowForm(true)} className="w-full p-3 bg-orange-500 text-white font-semibold rounded-lg mb-4">+ Añadir palabra</button>}
+
+        {glossary.map((word, i) => (
+          <Card key={i} dark={dark} className="p-4">
+            <p className="font-serif font-bold text-lg">{word.es}</p>
+            <p className="text-sm text-stone-600">{word.en}</p>
+            {word.example && <p className="text-xs italic text-stone-500 mt-1">"{word.example}"</p>}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// APP
+// ═══════════════════════════════════════════════════════════════
+
+function App() {
+  const [section, setSection] = useState('inicio');
+  const [dark, setDark] = useState(getStorageData('hablemos.dark', false));
+
+  useEffect(() => {
+    if (dark) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+    setStorageData('hablemos.dark', dark);
+  }, [dark]);
+
+  return (
+    <div className={`min-h-screen transition-colors ${dark ? 'mesh-dark' : 'mesh-light'}`}>
+      {section === 'inicio' ? (
+        <>
+          <div className={`sticky top-0 z-50 ${dark ? 'glass-dark border-white/[0.06]' : 'glass-light border-stone-200'} border-b`}>
+            <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+              <h1 className="font-serif font-bold text-2xl">Hablemos</h1>
+              <button onClick={() => setDark(!dark)} className={`w-10 h-10 rounded-lg flex items-center justify-center ${dark ? 'bg-white/[0.08]' : 'bg-stone-100'}`}>
+                {dark ? '☀️' : '🌙'}
+              </button>
+            </div>
+          </div>
+          <Inicio onSelectSection={setSection} dark={dark} />
+        </>
+      ) : section === 'hoy' ? <Hoy onBack={() => setSection('inicio')} dark={dark} />
+      : section === 'tiempos' ? <Tiempos onBack={() => setSection('inicio')} dark={dark} />
+      : section === 'chuletas' ? (
+        <div>
+          <BackHeader title="Chuletas" onBack={() => setSection('inicio')} dark={dark} />
+          <div className="max-w-2xl mx-auto px-4 py-6 pb-12 space-y-3">
+            {CHEAT_SHEETS.map(cs => (
+              <Card key={cs.id} dark={dark} className="p-4">
+                <p className="font-serif font-bold mb-2">{cs.title}</p>
+                <p className="text-sm text-stone-600">{cs.concept}</p>
+                {cs.examples && <div className="mt-3 space-y-1">{cs.examples.map((ex, i) => <p key={i} className="text-xs text-stone-700">• {ex}</p>)}</div>}
+                {cs.cards && <div className="mt-3 space-y-1">{cs.cards.map((card, i) => <p key={i} className="text-xs"><span className="font-semibold">{card.es}</span> — {card.en} ({card.usage})</p>)}</div>}
+              </Card>
+            ))}
+          </div>
+        </div>
+      )
+      : section === 'vocabulario' ? <Vocabulario onBack={() => setSection('inicio')} dark={dark} />
+      : section === 'conectores' ? <Conectores onBack={() => setSection('inicio')} dark={dark} />
+      : section === 'frases' ? <Frases onBack={() => setSection('inicio')} dark={dark} />
+      : section === 'ejercicios' ? <Ejercicios onBack={() => setSection('inicio')} dark={dark} />
+      : section === 'glosario' ? <Glosario onBack={() => setSection('inicio')} dark={dark} />
+      : null}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
