@@ -75,7 +75,239 @@ const WORDS_OF_DAY = [
   { es:'valer la pena', en:'to be worth it / to be worthwhile', example:'Vale la pena estudiar todos los días.', exampleEn:'It\'s worth studying every day.', tip:'"Valer la pena + infinitivo" or "valer la pena que + subjuntivo". "¿Merece la pena?" is equally common.' },
   { es:'tener ganas', en:'to feel like / to look forward to', example:'Tengo muchas ganas de verte.', exampleEn:'I really look forward to seeing you.', tip:'"Tener ganas de + infinitivo". "¡Qué ganas!" = I can\'t wait! One of the most expressive phrases in colloquial Spanish.' },
   { es:'hacer falta', en:'to need / to be necessary', example:'Hace falta más práctica para mejorar.', exampleEn:'More practice is needed to improve.', tip:'Works like "gustar". "Me hace falta" = I need. "¿Hace falta reservar?" = Is it necessary to book? Very natural alternative to "necesitar".' },
-  { es:'dar igual', en:'to not matter / to be all the same', example:'Me da igual qué película ponemos.', exampleEn:'I don\'t mind which film we put on.', tip:'"Me da igual" = I don\'t mind / it\'s all the same to me. "¡Da igual!" = Never mind! / It doesn\'t matter! Extremely common.' }
+  { es:'dar igual', en:'to not matter / to be all the same', example:'Me da igual qué película ponemos.', exampleEn:'I don\'t mind which film we put on.', tip:'"Me da igual" = I don\'t mind / it\'s all the same to me. "¡Da igual!" = Never mind! / It doesn\'t matter! Extremely common.' },
+  { es:'merendar', en:'to have an afternoon snack', example:'Los niños meriendan a las cinco.', exampleEn:'The children have an afternoon snack at five.', tip:'"La merienda" is a sacred Spanish institution — typically around 5pm, between lunch and dinner.' },
+  { es:'cabrearse', en:'to get pissed off / really angry', example:'Se cabreó cuando vio el precio.', exampleEn:'He got pissed off when he saw the price.', tip:'Strong colloquial Spain. "Estar cabreado" = to be pissed off. Avoid in formal contexts.' },
+  { es:'currar', en:'to work (slang)', example:'Mañana tengo que currar todo el día.', exampleEn:'Tomorrow I have to work all day.', tip:'Spain slang for "trabajar". "El curro" = the job. Universal in casual speech.' },
+  { es:'molar', en:'to be cool / to like (slang)', example:'¡Esa camiseta mola mucho!', exampleEn:'That t-shirt is really cool!', tip:'Works like "gustar". "Me mola tu idea" = I love your idea. Quintessential Spain slang.' },
+  { es:'flipar', en:'to be amazed / freak out', example:'Vas a flipar cuando lo veas.', exampleEn:'You\'re going to freak out when you see it.', tip:'"Estoy flipando" = I can\'t believe it. "Flipar en colores" = to be totally amazed.' },
+  { es:'guay', en:'cool / great', example:'¡Qué guay tu coche nuevo!', exampleEn:'How cool is your new car!', tip:'Classic Spain slang. Slightly dated but still widely used. Universal positive adjective.' },
+  { es:'majo', en:'nice / friendly / good-looking', example:'Tu hermano es muy majo.', exampleEn:'Your brother is really nice.', tip:'Very Spain. Means a warm, easy-going, likeable person. Higher praise than it sounds.' },
+  { es:'chulo', en:'cool / cocky (depending)', example:'Ese bar es muy chulo.', exampleEn:'That bar is really cool.', tip:'For things = cool/nice. For people = cocky/arrogant. Context matters.' },
+  { es:'pasta', en:'money (slang)', example:'No tengo pasta hasta el viernes.', exampleEn:'I have no money until Friday.', tip:'Universal Spain slang for money. "Estar sin pasta" = to be broke.' },
+  { es:'tío/tía', en:'mate / dude (literally uncle/aunt)', example:'Oye tío, ¿qué tal?', exampleEn:'Hey mate, how\'s it going?', tip:'Used like "dude" in English. Among friends. Also literal meaning is uncle/aunt.' },
+  { es:'vale', en:'okay / alright', example:'Vale, nos vemos a las ocho.', exampleEn:'Okay, see you at eight.', tip:'The most Spanish word ever. Means okay/sure/got it. Also "valer" = to be worth.' },
+  { es:'vamos', en:'come on / let\'s go / well', example:'Vamos, no es para tanto.', exampleEn:'Come on, it\'s not that bad.', tip:'More than just "let\'s go" — used as a filler meaning "I mean" or "come on".' },
+  { es:'venga', en:'come on / okay then', example:'¡Venga, vamos!', exampleEn:'Come on, let\'s go!', tip:'Imperative of "venir" but functions as encouragement, agreement, or goodbye.' },
+  { es:'hala', en:'wow / come on', example:'¡Hala, qué grande es!', exampleEn:'Wow, how big it is!', tip:'Expression of surprise or encouragement. Very Spanish, hard to translate exactly.' },
+  { es:'jolín', en:'darn / dang (mild)', example:'¡Jolín, qué frío hace!', exampleEn:'Dang, it\'s so cold!', tip:'Mild softened version of stronger swear words. Family-friendly frustration.' },
+  { es:'menudo', en:'what a... (ironic intensifier)', example:'¡Menudo lío!', exampleEn:'What a mess!', tip:'Counterintuitively, "menudo" (small) is used ironically to mean "what a huge..." in exclamations.' },
+  { es:'menos mal', en:'thank goodness / good thing', example:'Menos mal que llegué a tiempo.', exampleEn:'Thank goodness I arrived on time.', tip:'Expression of relief. "Menos mal que..." = Good thing that... Extremely common.' },
+  { es:'ojalá', en:'I hope / if only / hopefully', example:'Ojalá no llueva mañana.', exampleEn:'I hope it doesn\'t rain tomorrow.', tip:'From Arabic "in sha Allah". Always triggers subjunctive. Pure Spanish optimism.' },
+  { es:'a lo mejor', en:'maybe / perhaps', example:'A lo mejor vamos al cine esta noche.', exampleEn:'Maybe we\'ll go to the cinema tonight.', tip:'Counterintuitively takes indicative, not subjunctive. Equivalent to "quizás" or "tal vez" (which take subjunctive).' },
+  { es:'a ver', en:'let\'s see', example:'A ver qué pasa.', exampleEn:'Let\'s see what happens.', tip:'Universal filler. Used to start sentences, express thinking, or ask for attention.' },
+  { es:'o sea', en:'I mean / that is to say', example:'No vino, o sea, no pudo venir.', exampleEn:'He didn\'t come, I mean, he couldn\'t come.', tip:'Most common clarification filler. Slightly overused by some speakers, but completely standard.' },
+  { es:'es decir', en:'that is to say / i.e.', example:'Trabajo en el centro, es decir, en la Plaza Mayor.', exampleEn:'I work downtown, that is, in Plaza Mayor.', tip:'Slightly more formal than "o sea". Used to elaborate or clarify.' },
+  { es:'por cierto', en:'by the way', example:'Por cierto, ¿has visto a María?', exampleEn:'By the way, have you seen María?', tip:'Used to introduce a tangent or change of subject. Same role as English "by the way".' },
+  { es:'de hecho', en:'in fact / actually', example:'De hecho, lo sabía desde el principio.', exampleEn:'In fact, I knew from the beginning.', tip:'Used to introduce a fact that may surprise or contradict. Common in arguments.' },
+  { es:'en realidad', en:'actually / really', example:'En realidad, no me gusta el café.', exampleEn:'Actually, I don\'t like coffee.', tip:'Use to gently correct or clarify. Note: "realmente" exists but is less natural in speech.' },
+  { es:'en serio', en:'seriously / really?', example:'¿En serio? No me lo creo.', exampleEn:'Seriously? I don\'t believe it.', tip:'Both a question of disbelief and a statement of seriousness. Tone tells you which.' },
+  { es:'a propósito', en:'on purpose / by the way', example:'Lo hizo a propósito.', exampleEn:'He did it on purpose.', tip:'Two meanings: intentionally OR (like "por cierto") by the way.' },
+  { es:'sin embargo', en:'however / nevertheless', example:'Es difícil; sin embargo, vale la pena.', exampleEn:'It\'s difficult; however, it\'s worth it.', tip:'Formal contrast connector. Stronger than "pero". Common in writing.' },
+  { es:'a pesar de', en:'in spite of / despite', example:'A pesar de la lluvia, salimos.', exampleEn:'In spite of the rain, we went out.', tip:'"A pesar de + noun/infinitive". "A pesar de que + verb". Very useful B1 connector.' },
+  { es:'aunque', en:'although / even though', example:'Aunque está cansado, sigue trabajando.', exampleEn:'Although he\'s tired, he keeps working.', tip:'With indicative = factual concession. With subjunctive = hypothetical. Key B1 distinction.' },
+  { es:'mientras', en:'while / as long as', example:'Mientras estudiaba, escuchaba música.', exampleEn:'While he was studying, he was listening to music.', tip:'"Mientras" + indicative = simultaneous time. + subjunctive = "as long as".' },
+  { es:'cuanto antes', en:'as soon as possible', example:'Llámame cuanto antes.', exampleEn:'Call me as soon as possible.', tip:'Equivalent of ASAP. More natural than "lo más pronto posible" in speech.' },
+  { es:'a menudo', en:'often / frequently', example:'Voy al gimnasio a menudo.', exampleEn:'I go to the gym often.', tip:'Common alternative to "frecuentemente". Sounds more natural in speech.' },
+  { es:'de vez en cuando', en:'from time to time', example:'De vez en cuando voy al teatro.', exampleEn:'From time to time I go to the theatre.', tip:'Beautiful set phrase. Means occasionally. Use freely.' },
+  { es:'a veces', en:'sometimes', example:'A veces me siento solo.', exampleEn:'Sometimes I feel alone.', tip:'Most basic frequency expression. Don\'t confuse with "a vez" (doesn\'t exist).' },
+  { es:'siempre que', en:'whenever / as long as', example:'Siempre que vengas, eres bienvenido.', exampleEn:'Whenever you come, you\'re welcome.', tip:'With subjunctive = condition ("provided that"). With indicative = "every time that".' },
+  { es:'en cuanto', en:'as soon as', example:'En cuanto llegue, te aviso.', exampleEn:'As soon as he arrives, I\'ll let you know.', tip:'Triggers subjunctive when referring to future events. B1 favourite.' },
+  { es:'hasta que', en:'until', example:'Espera hasta que termine.', exampleEn:'Wait until I finish.', tip:'Future = subjunctive. Past habitual = indicative. Watch the trigger rule.' },
+  { es:'antes de', en:'before', example:'Antes de salir, cierra la puerta.', exampleEn:'Before leaving, close the door.', tip:'"Antes de + infinitive". "Antes de que + subjunctive" if there\'s a different subject.' },
+  { es:'después de', en:'after', example:'Después de comer, dormimos siesta.', exampleEn:'After eating, we take a nap.', tip:'Same pattern as "antes de". + infinitive (same subject) or + que + subjunctive (different subject).' },
+  { es:'al + infinitivo', en:'upon / when (doing)', example:'Al entrar, vi el regalo.', exampleEn:'Upon entering, I saw the gift.', tip:'Compact way to express simultaneous action. "Al + infinitive" = "when/upon doing".' },
+  { es:'desde hace', en:'for (time period, ongoing)', example:'Vivo aquí desde hace cinco años.', exampleEn:'I\'ve lived here for five years.', tip:'For ongoing actions. Alternative to "llevar + time + gerund".' },
+  { es:'hace', en:'ago', example:'Hace dos años que nos conocimos.', exampleEn:'We met two years ago.', tip:'"Hace + time" = ago. Different from "desde hace" which means "for".' },
+  { es:'recién', en:'recently / just', example:'Está recién hecho.', exampleEn:'It\'s freshly made.', tip:'Common in Latin America for "just". In Spain, more limited usage. "Recién casados" = newlyweds.' },
+  { es:'casi', en:'almost / nearly', example:'Casi me caigo.', exampleEn:'I almost fell.', tip:'Note: Spanish often uses present tense with "casi" where English uses past ("casi me caigo" = I almost fell).' },
+  { es:'cada vez más', en:'more and more', example:'Hace cada vez más calor.', exampleEn:'It\'s getting hotter and hotter.', tip:'Beautiful comparative. "Cada vez menos" = less and less.' },
+  { es:'tan pronto como', en:'as soon as', example:'Tan pronto como pueda, te llamo.', exampleEn:'As soon as I can, I\'ll call you.', tip:'Synonym of "en cuanto". Same subjunctive trigger for future events.' },
+  { es:'al final', en:'in the end / finally', example:'Al final, decidió quedarse.', exampleEn:'In the end, he decided to stay.', tip:'Used to introduce the outcome of a process. Different from "finalmente" (more formal).' },
+  { es:'en fin', en:'anyway / well', example:'En fin, no importa.', exampleEn:'Anyway, it doesn\'t matter.', tip:'Resignation filler. "En fin..." closes a topic with mild dismissal or acceptance.' },
+  { es:'al fin y al cabo', en:'at the end of the day / after all', example:'Al fin y al cabo, somos amigos.', exampleEn:'At the end of the day, we\'re friends.', tip:'Beautiful philosophical connector. Use to make a conclusive point.' },
+  { es:'por fin', en:'finally / at last', example:'¡Por fin llegaste!', exampleEn:'You finally arrived!', tip:'Expresses relief or impatience that something has finally happened. Different from "finalmente".' },
+  { es:'desde luego', en:'of course / certainly', example:'Desde luego que sí.', exampleEn:'Of course yes.', tip:'Strong agreement. More emphatic than "claro". Often used in disbelief: "¡Desde luego!"' },
+  { es:'por supuesto', en:'of course', example:'Por supuesto que vendré.', exampleEn:'Of course I\'ll come.', tip:'Slightly more formal than "claro". Standard polite agreement.' },
+  { es:'claro', en:'of course / sure', example:'Claro, no hay problema.', exampleEn:'Sure, no problem.', tip:'Most common agreement word. Also literally "clear" or "light-coloured".' },
+  { es:'qué va', en:'no way / not at all', example:'¿Estás enfadado? — ¡Qué va!', exampleEn:'Are you angry? — Not at all!', tip:'Strong but friendly denial. Very Spanish. Means "absolutely not".' },
+  { es:'ni de coña', en:'no way / not a chance', example:'¿Ir mañana? Ni de coña.', exampleEn:'Go tomorrow? No way.', tip:'Strong informal denial. Slightly vulgar. "Ni de broma" is the milder version.' },
+  { es:'ni hablar', en:'no way / out of the question', example:'¿Préstamelo? Ni hablar.', exampleEn:'Lend it to me? Out of the question.', tip:'Polite but firm refusal. Family-friendly version of "ni de coña".' },
+  { es:'a lo mejor', en:'maybe', example:'A lo mejor lo hago mañana.', exampleEn:'Maybe I\'ll do it tomorrow.', tip:'Takes indicative (unusual!). Spain prefers this to "quizás" in speech.' },
+  { es:'pegar', en:'to hit / to suit / to stick', example:'Esa camisa pega bien con los pantalones.', exampleEn:'That shirt goes well with the trousers.', tip:'Multiple meanings. "Pegar" = to glue, to hit, to suit (clothes).' },
+  { es:'tocar', en:'to touch / to play (instrument) / to be one\'s turn', example:'Te toca a ti.', exampleEn:'It\'s your turn.', tip:'"Me toca" = it\'s my turn. Also "tocar la guitarra" = to play guitar.' },
+  { es:'caber', en:'to fit', example:'No cabe en la maleta.', exampleEn:'It doesn\'t fit in the suitcase.', tip:'Highly irregular. "Yo quepo" (present), "cupe" (preterite). Means physically fit.' },
+  { es:'hacer caso', en:'to pay attention / heed', example:'No me hace caso.', exampleEn:'He doesn\'t pay attention to me.', tip:'"Hacer caso a alguien" = to listen to/heed someone. Common in parenting and relationships.' },
+  { es:'tener cuidado', en:'to be careful', example:'Ten cuidado al cruzar la calle.', exampleEn:'Be careful crossing the street.', tip:'"¡Cuidado!" alone = "Watch out!" Standard safety expression.' },
+  { es:'tener razón', en:'to be right', example:'Tienes razón, me equivoqué.', exampleEn:'You\'re right, I was wrong.', tip:'Spanish uses "tener" not "ser" for being right. "Estar en lo cierto" is the formal alternative.' },
+  { es:'tener prisa', en:'to be in a hurry', example:'Tengo prisa, hablamos luego.', exampleEn:'I\'m in a hurry, we\'ll talk later.', tip:'"Tener" + noun is common where English uses "to be" + adjective.' },
+  { es:'tener sueño', en:'to be sleepy', example:'Tengo mucho sueño.', exampleEn:'I\'m very sleepy.', tip:'Not "estar cansado". "Tener sueño" specifically means sleepy/tired.' },
+  { es:'tener miedo', en:'to be afraid', example:'Tengo miedo de los perros.', exampleEn:'I\'m afraid of dogs.', tip:'"Tener miedo de + noun/infinitive" or "tener miedo a + noun".' },
+  { es:'tener vergüenza', en:'to be embarrassed', example:'Me da vergüenza hablar en público.', exampleEn:'I\'m embarrassed to speak in public.', tip:'"Dar vergüenza" is more common in Spain. Both work.' },
+  { es:'tener éxito', en:'to be successful', example:'Su negocio ha tenido mucho éxito.', exampleEn:'His business has been very successful.', tip:'Don\'t use "exitoso" — "tener éxito" is the standard.' },
+  { es:'tener lugar', en:'to take place', example:'El concierto tendrá lugar el sábado.', exampleEn:'The concert will take place on Saturday.', tip:'Formal phrase for events. Equivalent to "celebrarse".' },
+  { es:'darse prisa', en:'to hurry up', example:'¡Date prisa o llegamos tarde!', exampleEn:'Hurry up or we\'ll be late!', tip:'Reflexive form. "Apurarse" exists but is more Latin American.' },
+  { es:'ponerse de acuerdo', en:'to agree / come to an agreement', example:'No podemos ponernos de acuerdo.', exampleEn:'We can\'t agree.', tip:'Stronger than just "estar de acuerdo". Implies the process of negotiation.' },
+  { es:'acordarse de', en:'to remember', example:'No me acuerdo de su nombre.', exampleEn:'I don\'t remember his name.', tip:'Reflexive. Different from "recordar" (transitive). Both mean to remember but used differently.' },
+  { es:'olvidarse de', en:'to forget', example:'Me olvidé de las llaves.', exampleEn:'I forgot the keys.', tip:'"Olvidarse de + noun/infinitive". The accidental "se me olvidó" structure is even more Spanish.' },
+  { es:'parecerse a', en:'to look like / resemble', example:'Te pareces mucho a tu padre.', exampleEn:'You look a lot like your father.', tip:'For physical or character resemblance. "Parecer" alone = to seem.' },
+  { es:'fijarse en', en:'to notice / pay attention to', example:'Fíjate en los detalles.', exampleEn:'Pay attention to the details.', tip:'"¡Fíjate!" alone = "Just imagine!" or "Look at that!"' },
+  { es:'atreverse a', en:'to dare to', example:'No me atrevo a decírselo.', exampleEn:'I don\'t dare tell him.', tip:'Reflexive verb. Always with "a" + infinitive.' },
+  { es:'arrepentirse de', en:'to regret', example:'Me arrepiento de no haberlo hecho.', exampleEn:'I regret not having done it.', tip:'"De" + noun or "de + haber + participle" for past regrets.' },
+  { es:'quejarse de', en:'to complain about', example:'Siempre se queja del trabajo.', exampleEn:'He always complains about work.', tip:'Quintessentially Spanish activity. Always with "de".' },
+  { es:'reírse de', en:'to laugh at', example:'Se ríen de mi acento.', exampleEn:'They laugh at my accent.', tip:'Reflexive form. "Reír" alone exists but reflexive is more common.' },
+  { es:'enamorarse de', en:'to fall in love with', example:'Me enamoré de ella al instante.', exampleEn:'I fell in love with her instantly.', tip:'Always "de" + person. "Estar enamorado de" = to be in love with.' },
+  { es:'casarse con', en:'to marry / get married to', example:'Se casó con su novia del instituto.', exampleEn:'He married his high school girlfriend.', tip:'"Con" not "a"! Spanish "marries with" someone.' },
+  { es:'soñar con', en:'to dream of/about', example:'Sueño con viajar a Japón.', exampleEn:'I dream of travelling to Japan.', tip:'"Con" not "de" or "sobre". For both literal sleep dreams and aspirations.' },
+  { es:'contar con', en:'to count on / rely on', example:'Puedes contar conmigo.', exampleEn:'You can count on me.', tip:'"Contar con + person" = to rely on. Also "contar" alone = to count or to tell (a story).' },
+  { es:'pensar en', en:'to think about', example:'Pienso en ti todos los días.', exampleEn:'I think about you every day.', tip:'"Pensar en + thing/person" = to think about. "Pensar de" = to have an opinion of.' },
+  { es:'creer en', en:'to believe in', example:'Creo en ti.', exampleEn:'I believe in you.', tip:'For faith or trust. "Creer + que" = to think that.' },
+  { es:'consistir en', en:'to consist of', example:'Mi trabajo consiste en escribir.', exampleEn:'My job consists of writing.', tip:'"En" not "de". A common preposition trap.' },
+  { es:'tardar en', en:'to take time to / be slow to', example:'Tardé en entenderlo.', exampleEn:'It took me a while to understand it.', tip:'"Tardar en + infinitive". Different from "tomar tiempo".' },
+  { es:'insistir en', en:'to insist on', example:'Insiste en pagar la cuenta.', exampleEn:'He insists on paying the bill.', tip:'"Insistir en + infinitive/noun". Don\'t say "insistir sobre".' },
+  { es:'depender de', en:'to depend on', example:'Depende de ti.', exampleEn:'It depends on you.', tip:'"Depende" alone is one of the most Spanish answers ever — meaning "it depends".' },
+  { es:'acabar con', en:'to put an end to / finish off', example:'Hay que acabar con esta situación.', exampleEn:'We need to put an end to this situation.', tip:'Strong meaning. "Acabar con + thing" = to eliminate or destroy.' },
+  { es:'a partir de', en:'from / starting from', example:'A partir de mañana, no fumo más.', exampleEn:'Starting tomorrow, I\'m not smoking anymore.', tip:'For time or quantity. Marks a starting point.' },
+  { es:'hasta entonces', en:'until then', example:'Hasta entonces, sigue practicando.', exampleEn:'Until then, keep practising.', tip:'"Hasta" appears in many farewells and time expressions.' },
+  { es:'mientras tanto', en:'meanwhile / in the meantime', example:'Yo cocino. Mientras tanto, pon la mesa.', exampleEn:'I\'ll cook. Meanwhile, set the table.', tip:'Natural way to introduce a parallel action.' },
+  { es:'por casualidad', en:'by chance / by accident', example:'Nos encontramos por casualidad.', exampleEn:'We met by chance.', tip:'Beautiful set phrase. "Por casualidad" = by coincidence.' },
+  { es:'por suerte', en:'luckily', example:'Por suerte, no había nadie.', exampleEn:'Luckily, nobody was there.', tip:'Common alternative to "afortunadamente". More natural in speech.' },
+  { es:'por desgracia', en:'unfortunately', example:'Por desgracia, no puedo ir.', exampleEn:'Unfortunately, I can\'t go.', tip:'Common alternative to "desafortunadamente". Note "desgracia" = misfortune.' },
+  { es:'a propósito', en:'on purpose', example:'Lo dijo a propósito para molestarme.', exampleEn:'He said it on purpose to bother me.', tip:'Two meanings: intentionally, OR "by the way" (like "por cierto").' },
+  { es:'al revés', en:'the wrong way / backwards', example:'Tienes el jersey al revés.', exampleEn:'You have your jumper on backwards.', tip:'Also figuratively: "Lo entendiste al revés" = You understood it the wrong way.' },
+  { es:'de repente', en:'suddenly', example:'De repente, empezó a llover.', exampleEn:'Suddenly, it started raining.', tip:'Standard storytelling phrase. "De pronto" is the synonym.' },
+  { es:'poco a poco', en:'little by little', example:'Poco a poco vas mejorando.', exampleEn:'Little by little you\'re improving.', tip:'Encouraging phrase for slow progress. Use freely with learners.' },
+  { es:'paso a paso', en:'step by step', example:'Paso a paso, llegarás lejos.', exampleEn:'Step by step, you\'ll go far.', tip:'Same idea as "poco a poco" but more methodical.' },
+  { es:'en seguida', en:'right away / immediately', example:'Voy en seguida.', exampleEn:'I\'m coming right away.', tip:'Also written "enseguida". Standard "I\'ll be right there".' },
+  { es:'de pronto', en:'suddenly', example:'De pronto, todo cambió.', exampleEn:'Suddenly, everything changed.', tip:'Synonym of "de repente". Use whichever feels natural.' },
+  { es:'a veces', en:'sometimes', example:'A veces dudo de mí mismo.', exampleEn:'Sometimes I doubt myself.', tip:'Most common adverb of frequency. Always plural "veces".' },
+  { es:'a menudo', en:'often', example:'Vamos a la playa a menudo.', exampleEn:'We go to the beach often.', tip:'Synonym of "frecuentemente" but more natural in speech.' },
+  { es:'rara vez', en:'rarely', example:'Rara vez veo la tele.', exampleEn:'I rarely watch TV.', tip:'Singular "vez". Don\'t confuse with "raras veces" (also valid but less common).' },
+  { es:'casi nunca', en:'almost never', example:'Casi nunca como carne.', exampleEn:'I almost never eat meat.', tip:'Stronger version of "raramente". Very common.' },
+  { es:'casi siempre', en:'almost always', example:'Casi siempre desayuno fruta.', exampleEn:'I almost always have fruit for breakfast.', tip:'Useful softener for absolute statements.' },
+  { es:'a diario', en:'daily / every day', example:'Practico español a diario.', exampleEn:'I practise Spanish daily.', tip:'More elegant than "todos los días". Common in writing.' },
+  { es:'todos los días', en:'every day', example:'Voy al gimnasio todos los días.', exampleEn:'I go to the gym every day.', tip:'Most basic frequency expression. Plural "días". Don\'t say "cada día" (though understood).' },
+  { es:'cada dos por tres', en:'all the time / constantly', example:'Cambia de opinión cada dos por tres.', exampleEn:'He changes his mind all the time.', tip:'Idiomatic frequency expression meaning "every other minute".' },
+  { es:'a la vez', en:'at the same time', example:'No puedo hacer dos cosas a la vez.', exampleEn:'I can\'t do two things at the same time.', tip:'"Al mismo tiempo" is the synonym. Both standard.' },
+  { es:'por lo general', en:'generally / usually', example:'Por lo general, ceno tarde.', exampleEn:'Generally, I have dinner late.', tip:'Common alternative to "generalmente". More natural in speech.' },
+  { es:'por lo visto', en:'apparently', example:'Por lo visto, no vendrá.', exampleEn:'Apparently, he\'s not coming.', tip:'For information you\'ve heard but can\'t verify. Less committal than "parece que".' },
+  { es:'al parecer', en:'apparently / seemingly', example:'Al parecer, hubo un problema.', exampleEn:'Apparently, there was a problem.', tip:'Synonym of "por lo visto". Slightly more formal.' },
+  { es:'según parece', en:'as it seems / apparently', example:'Según parece, todo fue un malentendido.', exampleEn:'As it seems, it was all a misunderstanding.', tip:'Even more nuanced version. Use to report indirectly.' },
+  { es:'a lo largo de', en:'throughout / along', example:'A lo largo del año, viajamos mucho.', exampleEn:'Throughout the year, we travel a lot.', tip:'Time or space. "A lo largo de la historia" = throughout history.' },
+  { es:'a lo lejos', en:'in the distance', example:'A lo lejos se veía el mar.', exampleEn:'In the distance you could see the sea.', tip:'Beautiful phrase for descriptions. Sets a vivid scene.' },
+  { es:'a primera vista', en:'at first sight', example:'A primera vista parece sencillo.', exampleEn:'At first sight it seems simple.', tip:'Also "amor a primera vista" = love at first sight.' },
+  { es:'a simple vista', en:'with the naked eye / clearly visible', example:'No se nota a simple vista.', exampleEn:'You can\'t see it with the naked eye.', tip:'Different from "a primera vista". This is about visibility, not first impressions.' },
+  { es:'al aire libre', en:'outdoors / in the open air', example:'Cenamos al aire libre.', exampleEn:'We had dinner outdoors.', tip:'Standard expression for outdoor activities. Don\'t say "afuera" for this.' },
+  { es:'a pie', en:'on foot', example:'Voy al trabajo a pie.', exampleEn:'I walk to work.', tip:'"A + transport" is fixed: a pie, a caballo. But "en coche, en tren, en avión".' },
+  { es:'en serio', en:'seriously', example:'Te lo digo en serio.', exampleEn:'I\'m telling you seriously.', tip:'For both questions ("¿en serio?") and statements.' },
+  { es:'de broma', en:'as a joke / kidding', example:'Lo dije de broma.', exampleEn:'I said it as a joke.', tip:'Opposite of "en serio". Common defence after a misunderstanding.' },
+  { es:'en cualquier caso', en:'in any case / anyway', example:'En cualquier caso, gracias por intentarlo.', exampleEn:'In any case, thanks for trying.', tip:'Useful for wrapping up an argument. Slightly formal.' },
+  { es:'en cualquier momento', en:'at any moment', example:'Puede llegar en cualquier momento.', exampleEn:'He could arrive at any moment.', tip:'Standard time expression. "En cualquier lugar" = anywhere.' },
+  { es:'por todas partes', en:'everywhere', example:'Hay turistas por todas partes.', exampleEn:'There are tourists everywhere.', tip:'"En todas partes" is also valid but "por" emphasises movement/spread.' },
+  { es:'en ninguna parte', en:'nowhere', example:'No lo encuentro en ninguna parte.', exampleEn:'I can\'t find it anywhere.', tip:'Negative double in Spanish: "no" + "ninguna". Always paired.' },
+  { es:'a la derecha', en:'on/to the right', example:'Gira a la derecha en la esquina.', exampleEn:'Turn right at the corner.', tip:'Direction. "Gira a la derecha". Note: not "en la derecha".' },
+  { es:'a la izquierda', en:'on/to the left', example:'La farmacia está a la izquierda.', exampleEn:'The pharmacy is on the left.', tip:'Same structure as "a la derecha". Always feminine because "mano" is implied.' },
+  { es:'al lado de', en:'next to / beside', example:'El banco está al lado del restaurante.', exampleEn:'The bank is next to the restaurant.', tip:'Standard preposition for "next to". Note "del" = de + el.' },
+  { es:'al fondo', en:'at the back / at the end', example:'El baño está al fondo.', exampleEn:'The toilet is at the back.', tip:'For inside locations. "Al fondo del pasillo" = at the end of the corridor.' },
+  { es:'enfrente de', en:'opposite / in front of', example:'Vivo enfrente del parque.', exampleEn:'I live opposite the park.', tip:'"Frente a" is the synonym. "Delante de" = in front of (closer/touching).' },
+  { es:'detrás de', en:'behind', example:'El gato está detrás del sofá.', exampleEn:'The cat is behind the sofa.', tip:'Don\'t confuse with "atrás" (back, adverb).' },
+  { es:'encima de', en:'on top of / above', example:'El libro está encima de la mesa.', exampleEn:'The book is on top of the table.', tip:'"Encima" alone is a connector meaning "on top / what\'s more".' },
+  { es:'debajo de', en:'underneath / below', example:'Las llaves están debajo del cojín.', exampleEn:'The keys are under the cushion.', tip:'Standard preposition. "Bajo" alone is more abstract.' },
+  { es:'dentro de', en:'inside / within (time)', example:'Vuelvo dentro de una hora.', exampleEn:'I\'ll be back in an hour.', tip:'For time or space. "Dentro de" + future time = standard.' },
+  { es:'fuera de', en:'outside (of)', example:'Está fuera del horario laboral.', exampleEn:'It\'s outside working hours.', tip:'Spatial or figurative ("fuera de control").' },
+  { es:'cerca de', en:'near / close to', example:'Vivo cerca del centro.', exampleEn:'I live near the centre.', tip:'Distance preposition. Opposite: "lejos de".' },
+  { es:'lejos de', en:'far from', example:'Está lejos de aquí.', exampleEn:'It\'s far from here.', tip:'Standard distance phrase. "Lejos" alone = far.' },
+  { es:'junto a', en:'next to / together with', example:'Sentémonos junto a la ventana.', exampleEn:'Let\'s sit next to the window.', tip:'Slightly more elegant than "al lado de". "Junto con" = together with.' },
+  { es:'a través de', en:'through / by means of', example:'Lo conocí a través de un amigo.', exampleEn:'I met him through a friend.', tip:'Both literal (through a window) and figurative (via someone).' },
+  { es:'gracias a', en:'thanks to', example:'Gracias a ti, lo conseguí.', exampleEn:'Thanks to you, I made it.', tip:'Standard phrase of gratitude attribution.' },
+  { es:'por culpa de', en:'because of / due to (negative)', example:'Llegué tarde por culpa del tráfico.', exampleEn:'I was late because of the traffic.', tip:'Always negative cause. For positive reasons, use "gracias a".' },
+  { es:'a causa de', en:'because of / due to', example:'Cancelaron el vuelo a causa del mal tiempo.', exampleEn:'They cancelled the flight due to bad weather.', tip:'Neutral. More formal than "por culpa de".' },
+  { es:'a fin de', en:'in order to', example:'Trabaja duro a fin de ahorrar.', exampleEn:'He works hard in order to save.', tip:'Formal alternative to "para". "A fin de que + subjunctive" for different subjects.' },
+  { es:'con el fin de', en:'with the aim of', example:'Estudio con el fin de mejorar.', exampleEn:'I study with the aim of improving.', tip:'Synonym of "a fin de". Both formal.' },
+  { es:'a través de', en:'through / via', example:'Compré el billete a través de internet.', exampleEn:'I bought the ticket via the internet.', tip:'Means of doing something or path through.' },
+  { es:'en lugar de', en:'instead of', example:'Vamos al cine en lugar de quedarnos en casa.', exampleEn:'Let\'s go to the cinema instead of staying home.', tip:'"En vez de" is the synonym. Both common.' },
+  { es:'en vez de', en:'instead of', example:'Bebe agua en vez de refresco.', exampleEn:'Drink water instead of soft drinks.', tip:'Slightly more colloquial than "en lugar de". Both work.' },
+  { es:'además de', en:'in addition to / besides', example:'Además de español, habla francés.', exampleEn:'In addition to Spanish, he speaks French.', tip:'"Además" alone is a connector ("besides/moreover").' },
+  { es:'aparte de', en:'apart from / besides', example:'Aparte de eso, todo bien.', exampleEn:'Apart from that, everything\'s fine.', tip:'Excludes the mentioned item. Don\'t confuse with "además de" (which adds).' },
+  { es:'salvo', en:'except', example:'Vienen todos salvo Juan.', exampleEn:'Everyone\'s coming except Juan.', tip:'Synonyms: "excepto", "menos". All work the same way.' },
+  { es:'con tal de', en:'as long as / provided that', example:'Acepto, con tal de que paguen bien.', exampleEn:'I accept, as long as they pay well.', tip:'"+ que + subjunctive" for different subjects. Conditional connector.' },
+  { es:'a menos que', en:'unless', example:'No iré a menos que tú vengas.', exampleEn:'I won\'t go unless you come.', tip:'Always triggers subjunctive. B1 essential.' },
+  { es:'siempre y cuando', en:'as long as / provided that', example:'Te ayudo, siempre y cuando me lo pidas.', exampleEn:'I\'ll help you, as long as you ask me.', tip:'Same role as "con tal de que". Always with subjunctive.' },
+  { es:'en caso de que', en:'in case', example:'Lleva paraguas en caso de que llueva.', exampleEn:'Take an umbrella in case it rains.', tip:'Always with subjunctive. B1 conditional connector.' },
+  { es:'puesto que', en:'since / given that', example:'Puesto que llueve, nos quedamos.', exampleEn:'Since it\'s raining, we\'re staying.', tip:'Formal causal connector. "Ya que" is more common in speech.' },
+  { es:'ya que', en:'since / given that', example:'Ya que estás aquí, ayúdame.', exampleEn:'Since you\'re here, help me.', tip:'Most common written/spoken alternative to "porque" for known reasons.' },
+  { es:'dado que', en:'given that', example:'Dado que es tarde, mejor mañana.', exampleEn:'Given that it\'s late, better tomorrow.', tip:'Formal. Common in academic or professional writing.' },
+  { es:'debido a', en:'due to / because of', example:'Debido a la lluvia, cancelaron el evento.', exampleEn:'Due to the rain, they cancelled the event.', tip:'Formal cause. "Debido a que + verb" for full clauses.' },
+  { es:'por lo tanto', en:'therefore / so', example:'Trabaja mucho, por lo tanto está cansado.', exampleEn:'He works a lot, therefore he\'s tired.', tip:'Formal consequence connector. Use commas around it.' },
+  { es:'así que', en:'so / therefore', example:'Está cansado, así que se acuesta temprano.', exampleEn:'He\'s tired, so he goes to bed early.', tip:'Most common spoken consequence connector. Less formal than "por lo tanto".' },
+  { es:'de modo que', en:'so that / in such a way that', example:'Habla despacio, de modo que te entendamos.', exampleEn:'Speak slowly, so we can understand you.', tip:'With subjunctive = purpose. With indicative = result.' },
+  { es:'de manera que', en:'so that / so', example:'Lo organizamos de manera que sea fácil.', exampleEn:'We organise it so it\'s easy.', tip:'Synonym of "de modo que". Both formal.' },
+  { es:'para que', en:'so that / in order that', example:'Lo explico para que entiendas.', exampleEn:'I explain it so you understand.', tip:'Always triggers subjunctive. Most common purpose connector.' },
+  { es:'asunto', en:'matter / issue / subject', example:'Es un asunto importante.', exampleEn:'It\'s an important matter.', tip:'Formal word for topic or affair. "Asuntos personales" = personal matters.' },
+  { es:'tema', en:'topic / theme / issue', example:'No es mi tema favorito.', exampleEn:'It\'s not my favourite topic.', tip:'Spanish "tema" can mean topic OR a song. "El tema del verano" = the song of the summer.' },
+  { es:'consejo', en:'advice', example:'¿Me das un consejo?', exampleEn:'Can you give me some advice?', tip:'Countable in Spanish: "un consejo, dos consejos". Don\'t use "consejos" if you mean general advice.' },
+  { es:'noticia', en:'news (singular item)', example:'Tengo una buena noticia.', exampleEn:'I have some good news.', tip:'Singular for one piece of news. "Las noticias" = the news (plural items).' },
+  { es:'recuerdo', en:'memory / souvenir', example:'Tengo buenos recuerdos de Valencia.', exampleEn:'I have good memories of Valencia.', tip:'Both for mental memories and physical souvenirs. From "recordar".' },
+  { es:'sueño', en:'dream / sleep', example:'Tengo sueño.', exampleEn:'I\'m sleepy.', tip:'Two meanings: dream (the kind you have at night or aspire to) AND sleepiness.' },
+  { es:'ganas', en:'desire / urge', example:'Tengo ganas de bailar.', exampleEn:'I feel like dancing.', tip:'Always plural in this idiomatic use. "Tener ganas de" = to feel like.' },
+  { es:'lío', en:'mess / hassle / fling', example:'¡Qué lío!', exampleEn:'What a mess!', tip:'Multi-meaning. "Hacerse un lío" = to get confused. "Tener un lío" = to have a love affair.' },
+  { es:'rollo', en:'bore / drag / vibe', example:'Esa peli es un rollo.', exampleEn:'That film is a drag.', tip:'Spain slang. Negative when describing things, neutral when describing vibe ("buen rollo").' },
+  { es:'marcha', en:'going out / nightlife / pace', example:'Valencia tiene mucha marcha.', exampleEn:'Valencia has great nightlife.', tip:'Multi-meaning. Also "ponerse en marcha" = to set off. "Tener marcha" = to be lively.' },
+  { es:'fiesta', en:'party / festival / public holiday', example:'Mañana es fiesta.', exampleEn:'Tomorrow is a public holiday.', tip:'Three meanings depending on context. Spain has many regional "fiestas" (festivals).' },
+  { es:'puente', en:'bridge / long weekend', example:'Aprovechamos el puente para viajar.', exampleEn:'We took advantage of the long weekend to travel.', tip:'When a public holiday creates a long weekend with the regular weekend, you "bridge" them.' },
+  { es:'caña', en:'small draught beer', example:'Dos cañas, por favor.', exampleEn:'Two beers, please.', tip:'Quintessentially Spanish. About 200ml. Smaller than "pinta", larger than "tercio".' },
+  { es:'tinto de verano', en:'red wine with lemonade', example:'Un tinto de verano, por favor.', exampleEn:'A tinto de verano, please.', tip:'Spain summer drink. Cheaper and lighter alternative to sangría. Locals prefer it.' },
+  { es:'bocadillo', en:'sandwich (baguette style)', example:'Me voy a comer un bocadillo de jamón.', exampleEn:'I\'m going to eat a ham sandwich.', tip:'Always on a baguette in Spain. "Sandwich" exists but means sliced-bread sandwich.' },
+  { es:'tapa', en:'small plate of food', example:'Vamos a tomar unas tapas.', exampleEn:'Let\'s go for some tapas.', tip:'Iconic Spanish food culture. Often free with drinks in some regions.' },
+  { es:'pinchos', en:'small snacks (Northern Spain)', example:'En el País Vasco son famosos los pinchos.', exampleEn:'In the Basque Country, pinchos are famous.', tip:'Northern equivalent of tapas. Usually toothpick-skewered. Pay-per-pincho system.' },
+  { es:'sobremesa', en:'after-meal conversation', example:'Nos quedamos de sobremesa hasta las cinco.', exampleEn:'We stayed chatting after the meal until five.', tip:'Untranslatable. The lingering chat after a meal. A sacred Spanish tradition.' },
+  { es:'siesta', en:'afternoon nap', example:'Voy a echar una siesta.', exampleEn:'I\'m going to take a nap.', tip:'"Echar una siesta" = to take a nap. Less common than the stereotype suggests, but real.' },
+  { es:'madrugada', en:'early morning hours (1am–6am)', example:'Llegamos a casa de madrugada.', exampleEn:'We got home in the early morning.', tip:'Specific time range, not just "early". "De madrugada" = in the early hours.' },
+  { es:'amanecer', en:'dawn / sunrise / to dawn', example:'Vimos amanecer en la playa.', exampleEn:'We watched the sunrise on the beach.', tip:'Both noun and verb. "Amanece a las siete" = the sun rises at seven.' },
+  { es:'atardecer', en:'sunset / dusk / to grow dark', example:'El atardecer en Valencia es precioso.', exampleEn:'The sunset in Valencia is beautiful.', tip:'Both noun and verb. "Anochecer" is the next phase (nightfall).' },
+  { es:'anochecer', en:'nightfall / to grow dark', example:'Volvimos a casa al anochecer.', exampleEn:'We came home at nightfall.', tip:'After "atardecer". The transition to night.' },
+  { es:'rato', en:'while / short period', example:'Espera un rato.', exampleEn:'Wait a bit.', tip:'Vague time period. "Hace un rato" = a while ago. "Un buen rato" = quite a while.' },
+  { es:'instante', en:'instant / moment', example:'En un instante te atiendo.', exampleEn:'I\'ll be with you in an instant.', tip:'Shorter than "momento". Conveys immediacy.' },
+  { es:'temporada', en:'season / period', example:'Es temporada alta para el turismo.', exampleEn:'It\'s high season for tourism.', tip:'Not just for sports. "Temporada" = period/season for anything time-bound.' },
+  { es:'plazo', en:'deadline / time period', example:'El plazo termina el viernes.', exampleEn:'The deadline ends on Friday.', tip:'Common in admin and finance. "A corto/largo plazo" = short/long term.' },
+  { es:'fecha', en:'date (calendar)', example:'¿Cuál es la fecha de hoy?', exampleEn:'What\'s today\'s date?', tip:'Calendar date. "Cita" = date (romantic). Don\'t confuse them.' },
+  { es:'cita', en:'appointment / date', example:'Tengo una cita con el médico.', exampleEn:'I have an appointment with the doctor.', tip:'Both medical/professional appointment AND romantic date. Context decides.' },
+  { es:'reunión', en:'meeting', example:'Tengo una reunión a las diez.', exampleEn:'I have a meeting at ten.', tip:'Standard work meeting. Also social gathering ("reunión familiar").' },
+  { es:'horario', en:'schedule / opening hours', example:'¿Cuál es vuestro horario?', exampleEn:'What are your opening hours?', tip:'Both schedule and operating hours. "Horario laboral" = working hours.' },
+  { es:'jornada', en:'workday / day-long event', example:'Tuvimos una jornada larga.', exampleEn:'We had a long workday.', tip:'Slightly formal. "Jornada laboral" = workday. "Media jornada" = part-time.' },
+  { es:'sueldo', en:'salary / wage', example:'El sueldo no es muy alto.', exampleEn:'The salary isn\'t very high.', tip:'Standard word for salary. "Salario" exists but is more formal/legal.' },
+  { es:'paro', en:'unemployment', example:'Está en el paro desde marzo.', exampleEn:'He\'s been unemployed since March.', tip:'"El paro" = unemployment. "Cobrar el paro" = to receive unemployment benefits.' },
+  { es:'seguro', en:'insurance / sure / safe', example:'¿Tienes seguro médico?', exampleEn:'Do you have health insurance?', tip:'Multi-meaning: insurance, certain, safe. "Seguro que sí" = sure thing.' },
+  { es:'factura', en:'bill / invoice', example:'Aún no he pagado la factura de la luz.', exampleEn:'I still haven\'t paid the electricity bill.', tip:'For utilities and invoices. "Cuenta" is more for restaurant bills.' },
+  { es:'recibo', en:'receipt', example:'¿Me das el recibo?', exampleEn:'Can I have the receipt?', tip:'Standard word. "Tique" or "ticket" also used colloquially.' },
+  { es:'piso', en:'flat / apartment / floor', example:'Vivo en un piso de tres habitaciones.', exampleEn:'I live in a three-bedroom flat.', tip:'In Spain, "piso" = flat. "Apartamento" = smaller, holiday flat. Also = floor of a building.' },
+  { es:'alquiler', en:'rent / rental', example:'El alquiler ha subido.', exampleEn:'The rent has gone up.', tip:'"Alquilar" = to rent. "Vivir de alquiler" = to live in a rented flat.' },
+  { es:'barrio', en:'neighbourhood', example:'Mi barrio es muy tranquilo.', exampleEn:'My neighbourhood is very quiet.', tip:'Strongly associated with local identity. Spaniards are proud of their "barrio".' },
+  { es:'vecino', en:'neighbour', example:'Mis vecinos son muy ruidosos.', exampleEn:'My neighbours are very noisy.', tip:'"Vecino/a". Plural masculine for mixed group. Spanish flat life is intense.' },
+  { es:'colega', en:'mate / colleague', example:'Salí con unos colegas anoche.', exampleEn:'I went out with some mates last night.', tip:'In Spain, "colega" = mate (informal). In Latin America, more literal (colleague).' },
+  { es:'compañero', en:'partner / classmate / colleague', example:'Mi compañero de piso es de Italia.', exampleEn:'My flatmate is from Italy.', tip:'Versatile word for any kind of "partner in something": work, study, life.' },
+  { es:'pareja', en:'partner / couple', example:'Vivo con mi pareja.', exampleEn:'I live with my partner.', tip:'Modern, gender-neutral term for romantic partner. Can also mean "couple" (the unit).' },
+  { es:'novio/a', en:'boyfriend / girlfriend / fiancé(e)', example:'Te presento a mi novio.', exampleEn:'Let me introduce my boyfriend.', tip:'Wider range than English "boyfriend". Also formal engagement: "novios" = engaged couple.' },
+  { es:'amigo íntimo', en:'close friend', example:'Es mi amiga íntima desde hace años.', exampleEn:'She\'s been my close friend for years.', tip:'"Amigo del alma" is a more poetic alternative.' },
+  { es:'conocido', en:'acquaintance', example:'Es solo un conocido.', exampleEn:'He\'s just an acquaintance.', tip:'From "conocer" (to know a person). "Conocido" = someone you know but aren\'t close to.' },
+  { es:'desconocido', en:'stranger / unknown', example:'No hables con desconocidos.', exampleEn:'Don\'t talk to strangers.', tip:'Opposite of "conocido". Also adjective: "una canción desconocida" = an unknown song.' },
+  { es:'extranjero', en:'foreigner / abroad', example:'Vivir en el extranjero cambia tu perspectiva.', exampleEn:'Living abroad changes your perspective.', tip:'Both "foreigner" (person) and "the abroad" (place). "En el extranjero" = abroad.' },
+  { es:'guiri', en:'foreign tourist (slang)', example:'Hay muchos guiris en Benidorm.', exampleEn:'There are lots of tourists in Benidorm.', tip:'Spain slang for Northern European tourists. Mildly affectionate, sometimes derisive.' },
+  { es:'castellano', en:'Castilian Spanish', example:'En Cataluña hablan catalán y castellano.', exampleEn:'In Catalonia they speak Catalan and Castilian.', tip:'In Spain, often preferred to "español" because it\'s more politically neutral.' },
+  { es:'idioma', en:'language', example:'¿Cuántos idiomas hablas?', exampleEn:'How many languages do you speak?', tip:'Standard word. "Lengua" exists but is more formal/academic.' },
+  { es:'acento', en:'accent', example:'Tienes un acento muy bonito.', exampleEn:'You have a lovely accent.', tip:'Both pronunciation accent AND written accent (the mark on letters).' },
+  { es:'palabrota', en:'swearword', example:'No digas palabrotas delante de los niños.', exampleEn:'Don\'t swear in front of the children.', tip:'Spain has rich and creative swearing culture. Use carefully and contextually.' },
+  { es:'broma', en:'joke', example:'Era solo una broma.', exampleEn:'It was just a joke.', tip:'"Hacer una broma" = to play a joke. "De broma" = jokingly. "Broma pesada" = nasty prank.' },
+  { es:'chiste', en:'joke (the kind you tell)', example:'Cuéntanos un chiste.', exampleEn:'Tell us a joke.', tip:'Specifically a told joke with a punchline. Different from "broma" (prank or jest).' },
+  { es:'risa', en:'laughter', example:'Me dio mucha risa.', exampleEn:'It made me laugh a lot.', tip:'"Dar risa a alguien" = to make someone laugh. "Morirse de risa" = to die laughing.' },
+  { es:'sonrisa', en:'smile', example:'Tiene una sonrisa contagiosa.', exampleEn:'She has a contagious smile.', tip:'Distinct word from "risa" (laughter). "Sonreír" = to smile.' },
+  { es:'llanto', en:'crying / weeping', example:'No pudo contener el llanto.', exampleEn:'He couldn\'t hold back the tears.', tip:'Noun for crying. "Llorar" = to cry. More poetic/literary than "lloro".' },
+  { es:'lágrima', en:'tear', example:'Una lágrima rodó por su mejilla.', exampleEn:'A tear rolled down her cheek.', tip:'Singular/plural for one or many tears. "Lágrimas de cocodrilo" = crocodile tears.' },
+  { es:'beso', en:'kiss', example:'Le dio un beso en la mejilla.', exampleEn:'He gave her a kiss on the cheek.', tip:'Standard greeting in Spain (one or two cheek kisses). "Un besito" is the diminutive sign-off.' },
+  { es:'abrazo', en:'hug / embrace', example:'Dame un abrazo.', exampleEn:'Give me a hug.', tip:'"Un abrazo" is a common warm sign-off in messages and letters.' },
+  { es:'saludo', en:'greeting', example:'Saludos a tu familia.', exampleEn:'Greetings to your family.', tip:'"Saludos" is a casual sign-off. "Saludar" = to greet/wave.' },
+  { es:'despedida', en:'farewell / goodbye', example:'La despedida fue muy emotiva.', exampleEn:'The farewell was very emotional.', tip:'From "despedirse" (to say goodbye). Also "despedida de soltero" = stag/hen do.' },
+  { es:'bienvenida', en:'welcome', example:'Le dimos la bienvenida.', exampleEn:'We welcomed him.', tip:'"Dar la bienvenida" = to welcome. "¡Bienvenido!" = Welcome! (matches gender).' }
 ];
 
 const PHRASES_OF_DAY = [
@@ -98,7 +330,98 @@ const PHRASES_OF_DAY = [
   { es:'Camarón que se duerme se lo lleva la corriente', en:'You snooze you lose', example:'Si no reservas hoy, camarón que se duerme se lo lleva la corriente.', exampleEn:'If you don\'t book today, you snooze you lose.', when:'Warning someone not to be passive or miss an opportunity.' },
   { es:'Más sabe el diablo por viejo que por diablo', en:'With age comes wisdom', example:'Escúchale — más sabe el diablo por viejo que por diablo.', exampleEn:'Listen to him — with age comes wisdom.', when:'Encouraging respect for experience and age.' },
   { es:'Quien mucho abarca poco aprieta', en:'Don\'t bite off more than you can chew', example:'Aceptó cinco proyectos a la vez — quien mucho abarca poco aprieta.', exampleEn:'He took on five projects at once — don\'t bite off more than you can chew.', when:'Warning against taking on too much at once.' },
-  { es:'No por mucho madrugar amanece más temprano', en:'You can\'t rush things / Rome wasn\'t built in a day', example:'Lleva dos semanas intentando terminar — no por mucho madrugar amanece más temprano.', exampleEn:'He\'s been trying to finish for two weeks — you can\'t rush things.', when:'Reminding someone that some things take their natural time.' }
+  { es:'No por mucho madrugar amanece más temprano', en:'You can\'t rush things / Rome wasn\'t built in a day', example:'Lleva dos semanas intentando terminar — no por mucho madrugar amanece más temprano.', exampleEn:'He\'s been trying to finish for two weeks — you can\'t rush things.', when:'Reminding someone that some things take their natural time.' },
+  { es:'A caballo regalado no le mires el diente', en:'Don\'t look a gift horse in the mouth', example:'Te regalaron un móvil viejo, pero a caballo regalado no le mires el diente.', exampleEn:'They gave you an old phone, but don\'t look a gift horse in the mouth.', when:'When someone complains about a gift.' },
+  { es:'En casa del herrero, cuchillo de palo', en:'The shoemaker\'s son always goes barefoot', example:'El fontanero tiene el grifo roto — en casa del herrero, cuchillo de palo.', exampleEn:'The plumber has a broken tap — the shoemaker\'s son goes barefoot.', when:'When experts neglect their own field at home.' },
+  { es:'Más vale prevenir que curar', en:'Better safe than sorry', example:'Lleva paraguas, más vale prevenir que curar.', exampleEn:'Take an umbrella, better safe than sorry.', when:'Justifying a precaution.' },
+  { es:'Dime con quién andas y te diré quién eres', en:'You are the company you keep', example:'Sus amigos son problemáticos — dime con quién andas y te diré quién eres.', exampleEn:'His friends are trouble — you are the company you keep.', when:'Judging someone by their social circle.' },
+  { es:'A quien madruga, Dios le ayuda', en:'The early bird catches the worm', example:'Levántate temprano, a quien madruga Dios le ayuda.', exampleEn:'Get up early, the early bird catches the worm.', when:'Encouraging someone to rise early.' },
+  { es:'No es oro todo lo que reluce', en:'All that glitters is not gold', example:'Ese trabajo parece perfecto, pero no es oro todo lo que reluce.', exampleEn:'That job looks perfect, but all that glitters is not gold.', when:'Warning someone not to trust appearances.' },
+  { es:'Más vale solo que mal acompañado', en:'Better alone than in bad company', example:'Dejé esa amistad — más vale solo que mal acompañado.', exampleEn:'I ended that friendship — better alone than in bad company.', when:'Justifying ending a toxic relationship.' },
+  { es:'El que ríe último, ríe mejor', en:'He who laughs last laughs best', example:'Se burlaron, pero el que ríe último, ríe mejor.', exampleEn:'They mocked me, but he who laughs last laughs best.', when:'Promising future vindication.' },
+  { es:'Donde fueres, haz lo que vieres', en:'When in Rome, do as the Romans do', example:'Aquí cenamos a las diez — donde fueres, haz lo que vieres.', exampleEn:'Here we have dinner at ten — when in Rome.', when:'Adapting to local customs.' },
+  { es:'Más vale pájaro en mano que ciento volando', en:'A bird in the hand is worth two in the bush', example:'Acepta esa oferta — más vale pájaro en mano que ciento volando.', exampleEn:'Take that offer — a bird in the hand is worth two in the bush.', when:'Advising someone to take a sure thing over an uncertain one.' },
+  { es:'A mal tiempo, buena cara', en:'Put a brave face on it', example:'Llueve pero seguimos — a mal tiempo, buena cara.', exampleEn:'It\'s raining but we\'ll keep going — put a brave face on it.', when:'Encouraging optimism in tough times.' },
+  { es:'No todo el monte es orégano', en:'Life isn\'t a bed of roses', example:'El nuevo trabajo es duro — no todo el monte es orégano.', exampleEn:'The new job is tough — life isn\'t a bed of roses.', when:'Reminding someone life has its difficulties.' },
+  { es:'Quien no arriesga no gana', en:'Nothing ventured, nothing gained', example:'Pídele salir — quien no arriesga no gana.', exampleEn:'Ask her out — nothing ventured, nothing gained.', when:'Encouraging someone to take a chance.' },
+  { es:'Quien busca, encuentra', en:'Seek and you shall find', example:'Sigue intentándolo — quien busca, encuentra.', exampleEn:'Keep trying — seek and you shall find.', when:'Encouraging persistence.' },
+  { es:'A grandes males, grandes remedios', en:'Desperate times call for desperate measures', example:'Tuvimos que vender el coche — a grandes males, grandes remedios.', exampleEn:'We had to sell the car — desperate times call for desperate measures.', when:'Justifying a drastic action.' },
+  { es:'Cría cuervos y te sacarán los ojos', en:'Bite the hand that feeds you', example:'Le ayudé y me traicionó — cría cuervos y te sacarán los ojos.', exampleEn:'I helped him and he betrayed me — bite the hand that feeds you.', when:'When someone you helped turns against you.' },
+  { es:'No hay rosa sin espinas', en:'Every rose has its thorns', example:'Adoro mi trabajo, pero no hay rosa sin espinas.', exampleEn:'I love my job, but every rose has its thorns.', when:'Acknowledging a downside to something good.' },
+  { es:'Lo prometido es deuda', en:'A promise is a promise', example:'Te dije que vendría — lo prometido es deuda.', exampleEn:'I said I\'d come — a promise is a promise.', when:'Honouring a commitment.' },
+  { es:'Las apariencias engañan', en:'Appearances can be deceiving', example:'Parece serio pero es muy gracioso — las apariencias engañan.', exampleEn:'He seems serious but he\'s very funny — appearances can be deceiving.', when:'Warning against snap judgements.' },
+  { es:'Estar como una cabra', en:'To be crazy / nuts', example:'Saltó al mar con ropa — está como una cabra.', exampleEn:'He jumped in the sea fully dressed — he\'s nuts.', when:'Describing someone behaving wildly or crazily.' },
+  { es:'Estar hasta las narices', en:'To be fed up', example:'Estoy hasta las narices del ruido.', exampleEn:'I\'m fed up with the noise.', when:'Expressing strong frustration with a situation.' },
+  { es:'Estar de mala leche', en:'To be in a bad mood', example:'No le hables — está de mala leche.', exampleEn:'Don\'t talk to him — he\'s in a bad mood.', when:'Warning someone about another\'s mood. Mildly vulgar.' },
+  { es:'Estar de buena leche', en:'To be in a good mood', example:'Hoy está de buena leche — pídele lo que quieras.', exampleEn:'He\'s in a good mood today — ask him for whatever.', when:'Noting that conditions are favourable.' },
+  { es:'Tener mala leche', en:'To have a nasty streak / mean intentions', example:'Lo dijo con mala leche.', exampleEn:'He said it nastily.', when:'Describing someone who acts maliciously.' },
+  { es:'Estar en su salsa', en:'To be in one\'s element', example:'En la cocina está en su salsa.', exampleEn:'In the kitchen, she\'s in her element.', when:'Describing someone doing what they love.' },
+  { es:'Estar como un fideo', en:'To be skinny as a rake', example:'Desde que hace dieta está como un fideo.', exampleEn:'Since he started dieting he\'s skinny as a rake.', when:'Describing someone very thin. Affectionate.' },
+  { es:'Estar como un tomate', en:'To go red (as a tomato)', example:'Cuando le hablé, se puso como un tomate.', exampleEn:'When I spoke to him, he went red as a tomato.', when:'Describing someone blushing intensely.' },
+  { es:'Estar para chuparse los dedos', en:'To be finger-licking good', example:'Esa paella está para chuparse los dedos.', exampleEn:'That paella is finger-licking good.', when:'Praising delicious food.' },
+  { es:'Comerse el coco', en:'To overthink / wrack one\'s brain', example:'No te comas el coco con eso.', exampleEn:'Don\'t overthink it.', when:'Telling someone to stop worrying.' },
+  { es:'Costar un ojo de la cara', en:'To cost an arm and a leg', example:'Esa cámara me costó un ojo de la cara.', exampleEn:'That camera cost me an arm and a leg.', when:'Complaining about something expensive.' },
+  { es:'Costar un riñón', en:'To cost a fortune', example:'Vivir en el centro cuesta un riñón.', exampleEn:'Living in the centre costs a fortune.', when:'Same as above. Slightly more colloquial.' },
+  { es:'No tener pelos en la lengua', en:'To not mince words / be outspoken', example:'Mi abuela no tiene pelos en la lengua.', exampleEn:'My grandmother doesn\'t mince words.', when:'Describing someone refreshingly direct.' },
+  { es:'Hablar por los codos', en:'To talk a lot / be a chatterbox', example:'Habla por los codos cuando se pone nerviosa.', exampleEn:'She talks non-stop when she gets nervous.', when:'Describing someone who can\'t stop talking.' },
+  { es:'Ser pan comido', en:'To be a piece of cake', example:'El examen fue pan comido.', exampleEn:'The exam was a piece of cake.', when:'Describing something easy.' },
+  { es:'Ser un trozo de pan', en:'To be a sweetheart / very kind', example:'Mi profesora es un trozo de pan.', exampleEn:'My teacher is a sweetheart.', when:'Praising someone\'s gentle character.' },
+  { es:'Ser uña y carne', en:'To be inseparable / thick as thieves', example:'Esos dos son uña y carne.', exampleEn:'Those two are inseparable.', when:'Describing two people very close.' },
+  { es:'Estar hecho polvo', en:'To be exhausted / wiped out', example:'Después del partido estoy hecho polvo.', exampleEn:'After the match I\'m wiped out.', when:'Expressing extreme tiredness.' },
+  { es:'Echar leña al fuego', en:'To add fuel to the fire', example:'No le digas eso, no eches leña al fuego.', exampleEn:'Don\'t say that, don\'t add fuel to the fire.', when:'Warning against making a tense situation worse.' },
+  { es:'Llover sobre mojado', en:'When it rains it pours', example:'Perdí el móvil y luego las llaves — llover sobre mojado.', exampleEn:'I lost my phone and then my keys — when it rains it pours.', when:'Describing repeated misfortunes.' },
+  { es:'Tirar la toalla', en:'To throw in the towel / give up', example:'No tires la toalla todavía.', exampleEn:'Don\'t throw in the towel yet.', when:'Encouraging someone not to quit.' },
+  { es:'Salir el tiro por la culata', en:'To backfire', example:'Le quiso engañar y le salió el tiro por la culata.', exampleEn:'He tried to trick him and it backfired.', when:'When a plan has the opposite of the intended effect.' },
+  { es:'Dar en el clavo', en:'To hit the nail on the head', example:'Diste en el clavo con tu comentario.', exampleEn:'You hit the nail on the head with your comment.', when:'Praising someone\'s precise insight.' },
+  { es:'Llevarse como el perro y el gato', en:'To fight like cats and dogs', example:'Mis hermanos se llevan como el perro y el gato.', exampleEn:'My siblings fight like cats and dogs.', when:'Describing two people who constantly argue.' },
+  { es:'Estar entre la espada y la pared', en:'To be between a rock and a hard place', example:'Estoy entre la espada y la pared con esta decisión.', exampleEn:'I\'m between a rock and a hard place with this decision.', when:'Facing a difficult choice.' },
+  { es:'Buscar tres pies al gato', en:'To overcomplicate / split hairs', example:'No le busques tres pies al gato — di sí o no.', exampleEn:'Don\'t overcomplicate it — say yes or no.', when:'Telling someone to stop overthinking.' },
+  { es:'A otra cosa, mariposa', en:'Moving on / next!', example:'No funcionó. A otra cosa, mariposa.', exampleEn:'It didn\'t work. Moving on.', when:'Cheerfully changing topic or moving past a setback.' },
+  { es:'Estar al loro', en:'To be on the ball / pay attention', example:'Está al loro — no se le escapa nada.', exampleEn:'He\'s on the ball — nothing gets past him.', when:'Praising someone\'s alertness.' },
+  { es:'Ser pan para hoy y hambre para mañana', en:'A short-term fix', example:'Pedir prestado es pan para hoy y hambre para mañana.', exampleEn:'Borrowing is a short-term fix.', when:'Warning against quick fixes.' },
+  { es:'Quedarse de piedra', en:'To be stunned / speechless', example:'Cuando me lo contó, me quedé de piedra.', exampleEn:'When she told me, I was speechless.', when:'Describing intense surprise.' },
+  { es:'Ponerse las botas', en:'To go to town / eat a lot', example:'Nos pusimos las botas con la paella.', exampleEn:'We went to town on the paella.', when:'Describing a feast or great enjoyment.' },
+  { es:'Pasarlo bomba', en:'To have a blast', example:'Lo pasamos bomba en la fiesta.', exampleEn:'We had a blast at the party.', when:'Describing a great time.' },
+  { es:'Pasarlo pipa', en:'To have a great time', example:'Los niños lo pasaron pipa en la playa.', exampleEn:'The kids had a great time at the beach.', when:'Synonym of pasarlo bomba. Family-friendly.' },
+  { es:'Hacer la pelota', en:'To suck up / brown-nose', example:'No le hagas la pelota al jefe.', exampleEn:'Don\'t suck up to the boss.', when:'Describing flattering behaviour.' },
+  { es:'Ir al grano', en:'To get to the point', example:'Vamos al grano — no tengo tiempo.', exampleEn:'Let\'s get to the point — I don\'t have time.', when:'Asking someone to be direct.' },
+  { es:'Andarse por las ramas', en:'To beat around the bush', example:'No te andes por las ramas — dime la verdad.', exampleEn:'Don\'t beat around the bush — tell me the truth.', when:'Asking someone to stop avoiding the topic.' },
+  { es:'Tener la mosca detrás de la oreja', en:'To smell a rat', example:'Tengo la mosca detrás de la oreja con esa oferta.', exampleEn:'I smell a rat with that offer.', when:'Sensing something is off.' },
+  { es:'Ser la oveja negra', en:'To be the black sheep', example:'Siempre fui la oveja negra de la familia.', exampleEn:'I was always the black sheep of the family.', when:'Describing the family outsider.' },
+  { es:'No saber ni jota', en:'To not know a thing', example:'De política no sabe ni jota.', exampleEn:'He doesn\'t know a thing about politics.', when:'Describing complete ignorance of a topic.' },
+  { es:'Estar como pez en el agua', en:'To be like a duck to water', example:'En el escenario está como pez en el agua.', exampleEn:'On stage she\'s like a duck to water.', when:'Describing someone perfectly comfortable in a setting.' },
+  { es:'Llevar la voz cantante', en:'To call the shots / be in charge', example:'En esta empresa, ella lleva la voz cantante.', exampleEn:'In this company, she calls the shots.', when:'Identifying who\'s in charge.' },
+  { es:'A buenas horas, mangas verdes', en:'Too little, too late', example:'¿Ahora me lo dices? A buenas horas, mangas verdes.', exampleEn:'Now you tell me? Too little, too late.', when:'Sarcastically noting something arrived too late.' },
+  { es:'Estar en las nubes', en:'To have one\'s head in the clouds', example:'Hoy está en las nubes — no se entera.', exampleEn:'He\'s in the clouds today — he\'s not paying attention.', when:'Describing daydreaming or distraction.' },
+  { es:'Tener la cabeza en otra parte', en:'To have one\'s mind elsewhere', example:'Perdona, tenía la cabeza en otra parte.', exampleEn:'Sorry, my mind was elsewhere.', when:'Apologising for inattention.' },
+  { es:'No pegar ojo', en:'To not sleep a wink', example:'Anoche no pegué ojo.', exampleEn:'I didn\'t sleep a wink last night.', when:'Complaining about insomnia.' },
+  { es:'Dormir como un tronco', en:'To sleep like a log', example:'Después de correr, dormí como un tronco.', exampleEn:'After running, I slept like a log.', when:'Describing very deep sleep.' },
+  { es:'Ahogarse en un vaso de agua', en:'To make a mountain out of a molehill', example:'No te ahogues en un vaso de agua — tiene solución.', exampleEn:'Don\'t make a mountain out of a molehill — there\'s a solution.', when:'Telling someone they\'re overreacting.' },
+  { es:'Ser harina de otro costal', en:'To be a different kettle of fish', example:'Eso ya es harina de otro costal.', exampleEn:'That\'s a different kettle of fish.', when:'Distinguishing one thing from another.' },
+  { es:'Sin pelos en la lengua', en:'Bluntly / without holding back', example:'Habla sin pelos en la lengua.', exampleEn:'She speaks without holding back.', when:'Praising someone\'s candour.' },
+  { es:'Más vale maña que fuerza', en:'Brains beat brawn', example:'Lo movió con una palanca — más vale maña que fuerza.', exampleEn:'He moved it with a lever — brains beat brawn.', when:'When cleverness solves what strength couldn\'t.' },
+  { es:'Donde hay confianza da asco', en:'Familiarity breeds contempt', example:'Eructó delante de su madre — donde hay confianza da asco.', exampleEn:'He burped in front of his mum — familiarity breeds contempt.', when:'Joking about overly relaxed behaviour with family or close friends.' },
+  { es:'Hablando del rey de Roma', en:'Speak of the devil', example:'¡Hablando del rey de Roma! Acabábamos de mencionarte.', exampleEn:'Speak of the devil! We were just talking about you.', when:'When the person you were just discussing appears.' },
+  { es:'Estar en el quinto pino', en:'To be in the middle of nowhere', example:'Su casa está en el quinto pino.', exampleEn:'His house is in the middle of nowhere.', when:'Describing a remote location.' },
+  { es:'A toda pastilla', en:'At full speed / very fast', example:'Iba a toda pastilla por la autovía.', exampleEn:'He was going full speed on the motorway.', when:'Describing high speed. Spain colloquial.' },
+  { es:'Ir pisando huevos', en:'To walk on eggshells', example:'Con él hay que ir pisando huevos.', exampleEn:'You have to walk on eggshells around him.', when:'Describing extreme caution around someone.' },
+  { es:'Tirar la casa por la ventana', en:'To pull out all the stops / spare no expense', example:'Para la boda tiraron la casa por la ventana.', exampleEn:'For the wedding they pulled out all the stops.', when:'Describing extravagant spending.' },
+  { es:'Ser pan comido', en:'To be a piece of cake', example:'Para él, ese examen fue pan comido.', exampleEn:'For him, that exam was a piece of cake.', when:'Describing something effortless.' },
+  { es:'Costar Dios y ayuda', en:'To take a huge effort', example:'Me costó Dios y ayuda terminar el trabajo.', exampleEn:'It took a huge effort to finish the work.', when:'Describing something extremely difficult.' },
+  { es:'A la tercera va la vencida', en:'Third time\'s the charm', example:'Aprobé el carnet — a la tercera va la vencida.', exampleEn:'I passed the licence — third time\'s the charm.', when:'Celebrating success after multiple attempts.' },
+  { es:'No hay quinto malo', en:'Lucky number five / fifth time\'s the charm', example:'Es nuestro quinto intento — no hay quinto malo.', exampleEn:'It\'s our fifth try — fifth time\'s the charm.', when:'Encouraging optimism after several failed attempts.' },
+  { es:'Quedarse con las ganas', en:'To miss out', example:'No conseguí entradas y me quedé con las ganas.', exampleEn:'I didn\'t get tickets and missed out.', when:'Expressing disappointment at missing something.' },
+  { es:'No dar pie con bola', en:'To not get anything right', example:'Hoy no doy pie con bola.', exampleEn:'I can\'t get anything right today.', when:'Complaining about a bad day.' },
+  { es:'Ser la guinda del pastel', en:'To be the cherry on top', example:'El postre fue la guinda del pastel.', exampleEn:'The dessert was the cherry on top.', when:'Praising the perfect finishing touch.' },
+  { es:'A grandes rasgos', en:'In broad strokes / generally', example:'Te lo cuento a grandes rasgos.', exampleEn:'Let me tell you the broad strokes.', when:'Giving a summary or overview.' },
+  { es:'En un abrir y cerrar de ojos', en:'In the blink of an eye', example:'Se acabaron las vacaciones en un abrir y cerrar de ojos.', exampleEn:'The holidays were over in the blink of an eye.', when:'Describing something that happened very quickly.' },
+  { es:'Por si las moscas', en:'Just in case', example:'Lleva paraguas, por si las moscas.', exampleEn:'Take an umbrella, just in case.', when:'Justifying a precaution. Colloquial.' },
+  { es:'Ni fu ni fa', en:'So-so / meh', example:'La película fue ni fu ni fa.', exampleEn:'The film was so-so.', when:'Expressing neutrality or mediocrity.' },
+  { es:'A bote pronto', en:'Off the top of one\'s head', example:'A bote pronto, no se me ocurre nada.', exampleEn:'Off the top of my head, I can\'t think of anything.', when:'Apologising for not having an immediate answer.' },
+  { es:'Por los pelos', en:'By the skin of one\'s teeth', example:'Aprobé por los pelos.', exampleEn:'I passed by the skin of my teeth.', when:'Describing a very narrow success.' },
+  { es:'A la chita callando', en:'On the sly / quietly', example:'Lo organizó todo a la chita callando.', exampleEn:'He organised it all on the sly.', when:'Describing discreet or secretive behaviour.' },
+  { es:'Por la cara', en:'For free / cheekily', example:'Entró al concierto por la cara.', exampleEn:'He got into the concert for free.', when:'Describing getting something cheekily without paying.' },
+  { es:'Con pelos y señales', en:'In great detail / down to the last detail', example:'Me lo contó con pelos y señales.', exampleEn:'He told me everything in great detail.', when:'Describing a thorough recounting.' }
 ];
 
 const TENSES = {
@@ -1898,6 +2221,140 @@ const DOCUMENTS = [
       ]},
       {heading:'Key Points',content:'1. Much of this vocabulary is Spain-specific — use with caution with Latin American speakers. 2. "Tío/tía" is completely neutral and friendly in Spain; it\'s the equivalent of "mate" or "dude". 3. "Hostia" and "me cago en todo" are strong expletives — use only in informal settings. 4. "En plan" is spreading rapidly among younger speakers and can mean "like", "kind of", or introduce examples. 5. "Venga" is incredibly versatile: agreement (OK), encouragement (go on!), farewell (bye!), disbelief (yeah right!).'}
     ]
+  },
+  {
+    id:'conversation-friends',
+    title:'Conversation with Friends',
+    group:'Conversación',
+    groupColor:'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300',
+    icon:'💬',
+    sections:[
+      {heading:'Introduction',content:'Everything you need to hold a natural conversation in Spanish with friends at A2-B1 level. The goal isn\'t perfection — it\'s to keep the conversation moving, sound natural, and understand what\'s being said to you. Spanish conversations in Spain move fast and rely heavily on fillers, reactions, and short responses. Master those first and longer sentences will follow.'},
+      {heading:'Starting a Conversation',content:[
+        ['Spanish','English','When to use it'],
+        ['¿Qué tal?','How are you? / How\'s it going?','Most common greeting. More natural than ¿Cómo estás?'],
+        ['¿Qué hay?','What\'s up?','Very casual opener. Common in Spain.'],
+        ['¿Cómo te va?','How\'s it going for you?','Slightly more personal than ¿Qué tal?'],
+        ['¿Qué pasa?','What\'s up? / What\'s happening?','Casual, friendly. Also used when something seems wrong.'],
+        ['¿Qué has estado haciendo?','What have you been up to?','Opens conversation about recent life. Uses perfecto tense.'],
+        ['¿Cómo te ha ido?','How has it been going?','Asking about recent days/weeks.'],
+        ['Tío/tía, ¡cuánto tiempo!','Mate, it\'s been ages!','When you haven\'t seen someone in a while.'],
+        ['¿Todo bien?','All good?','Quick check-in.'],
+        ['Buenas','Hi / Hey','Very casual short form. Used constantly in Spain.']
+      ]},
+      {heading:'Keeping the Conversation Going',content:[
+        ['Spanish','English','What it opens up'],
+        ['¿Y tú qué piensas?','And what do you think?','Turns conversation back to them'],
+        ['¿En serio?','Seriously? / Really?','Shows engagement, invites them to continue'],
+        ['¿Cómo fue eso?','How did that go?','Asks for the story behind something'],
+        ['¿Y qué hiciste?','And what did you do?','Moves a story forward'],
+        ['¿Qué te pareció?','What did you think of it?','Opinion on an experience'],
+        ['¿Has ido alguna vez a...?','Have you ever been to...?','Opens travel/experience talk'],
+        ['¿Qué estás haciendo este finde?','What are you doing this weekend?','Plans conversation'],
+        ['¿Has visto...?','Have you seen...? (film/series)','TV/film starter'],
+        ['¿Qué me recomiendas?','What do you recommend?','Food, places, shows'],
+        ['Cuéntame más.','Tell me more.','Shows you\'re listening']
+      ]},
+      {heading:'Answering Naturally',content:[
+        ['Question','Natural answer','Notes'],
+        ['¿Qué tal?','Bien, ¿y tú? / Todo bien / Tirando','Always bounce it back'],
+        ['¿Qué has hecho?','He estado... / Fui a... / Nada especial','Perfecto for recent, indefinido for specific'],
+        ['¿Qué te pareció?','Me pareció... / La verdad es que... / Fue bastante...','Use parecer for natural opinions'],
+        ['¿Te gustó?','Sí, me encantó / No mucho, la verdad / Estuvo bien','Me encantó stronger than me gustó'],
+        ['¿Qué planes tienes?','Tengo pensado... / No sé todavía / Igual me quedo','Igual = maybe/might (very Spanish)'],
+        ['¿Cómo te va el trabajo?','Bastante bien / Un poco estresante / Tirando','Tirando = natural non-committal answer']
+      ]},
+      {heading:'Fillers & Speech Markers',content:[
+        ['Expression','English equivalent','How to use it'],
+        ['o sea','I mean / like / that is','Clarify or rephrase mid-thought'],
+        ['en plan','kind of / like','Soften or approximate: Es en plan raro'],
+        ['a ver','let\'s see / right','Opening a thought: A ver, cuéntame'],
+        ['pues','well / so','Filler before response: Pues sí / Pues no sé'],
+        ['bueno','well / okay','Transition: Bueno, supongo que sí'],
+        ['es que','the thing is','Explaining: Es que no pude ir'],
+        ['la verdad es que','honestly','Softening: La verdad es que no me gustó'],
+        ['¿sabes?','you know?','Check-in: ...¿sabes?, y pasó algo raro'],
+        ['al final','in the end','Al final no fui / Al final resultó bien'],
+        ['por cierto','by the way','Topic change: Por cierto, ¿has hablado con María?'],
+        ['total','anyway / so','Story wrap-up: Total, que al final no pasó nada'],
+        ['o lo que sea','or whatever','Casual addition: Podemos ir al bar o lo que sea']
+      ]},
+      {heading:'Expressing Opinions',content:[
+        ['Spanish','English','Register'],
+        ['Creo que...','I think that...','Neutral, very common'],
+        ['Me parece que...','It seems to me that...','Natural and common'],
+        ['En mi opinión...','In my opinion...','Slightly formal'],
+        ['La verdad es que...','Honestly...','Natural softener before honesty'],
+        ['No sé, pero creo que...','I don\'t know, but I think...','Hedging'],
+        ['Para mí...','For me...','Casual personal take'],
+        ['A mí me parece bien/mal','I think it\'s good/bad','Direct personal opinion']
+      ]},
+      {heading:'Agreeing',content:[
+        ['Spanish','English'],
+        ['Sí, exacto.','Yes, exactly.'],
+        ['Totalmente de acuerdo.','Totally agree.'],
+        ['Tienes razón.','You\'re right.'],
+        ['Sí, claro.','Yes, of course.'],
+        ['Ya, ya.','Yeah, yeah (I hear you).'],
+        ['Por supuesto.','Of course.']
+      ]},
+      {heading:'Disagreeing Politely',content:[
+        ['Spanish','English'],
+        ['No sé, yo creo que...','I don\'t know, I think...'],
+        ['Bueno, depende...','Well, it depends...'],
+        ['No estoy muy de acuerdo.','I don\'t quite agree.'],
+        ['Puede ser, pero...','Maybe, but...'],
+        ['Yo lo veo de otra forma.','I see it differently.'],
+        ['Sí, pero por otro lado...','Yes, but on the other hand...']
+      ]},
+      {heading:'Reactions',content:[
+        ['Spanish','English','When'],
+        ['¡No me digas!','You\'re kidding!','Surprise at news'],
+        ['¡Qué fuerte!','Wow / That\'s intense!','Shock'],
+        ['¡Venga ya!','Come on! / No way!','Disbelief'],
+        ['¡Qué pena!','What a shame!','Sympathy'],
+        ['¡Qué guay!','How cool!','Approval'],
+        ['¡Menos mal!','Thank goodness!','Relief'],
+        ['¡Qué suerte!','How lucky!','Positive reaction'],
+        ['Vaya...','Oh... / Well...','Mild disappointment'],
+        ['¡Anda!','Wow / Really!','Mild surprise'],
+        ['Me alegro.','I\'m glad.','Warm positive reaction']
+      ]},
+      {heading:'Talking About Plans',content:[
+        ['Structure','Example','English'],
+        ['Voy a + infinitivo','Voy a quedar con unos amigos.','I\'m going to meet friends.'],
+        ['Igual + presente','Igual me quedo en casa.','I might just stay home.'],
+        ['A lo mejor + presente','A lo mejor voy.','Maybe I\'ll go.'],
+        ['Me apetece + infinitivo','Me apetece salir esta noche.','I feel like going out tonight.'],
+        ['Tengo ganas de + inf.','Tengo ganas de verte.','I\'m looking forward to seeing you.'],
+        ['Tengo pensado + inf.','Tengo pensado ir a la playa.','I\'m planning to go to the beach.']
+      ]},
+      {heading:'Telling Stories',content:[
+        ['Spanish','English','Note'],
+        ['Pues resulta que...','So it turns out that...','Classic story starter in Spain'],
+        ['Imagínate que...','Imagine that...','Setting up a story'],
+        ['Estaba + gerundio cuando...','I was doing X when...','Imperfecto sets scene, indefinido interrupts'],
+        ['De repente...','Suddenly...','Signals an event (indefinido follows)'],
+        ['Al final...','In the end...','Wrapping up the story'],
+        ['No te lo vas a creer.','You\'re not going to believe this.','Pre-story hook'],
+        ['Fue una pasada.','It was amazing / wild.','Strong positive reaction'],
+        ['Me quedé a cuadros.','I was completely shocked.','Idiomatic reaction']
+      ]},
+      {heading:'Essential Vocab',content:[
+        ['Spanish','English','Notes'],
+        ['el finde','the weekend','Short for fin de semana. Very common.'],
+        ['quedar','to meet up / make plans','Quedamos el viernes = Let\'s meet Friday'],
+        ['la pinta','the look / vibe','¡Tiene buena pinta! = Looks great!'],
+        ['molar','to be cool','Mola mucho = It\'s really cool (Spain only)'],
+        ['apetecer','to feel like','Me apetece = I feel like it'],
+        ['enrollado/a','cool / easy-going','Es muy enrollado = He\'s really cool'],
+        ['pesado/a','annoying / boring','No seas pesado = Don\'t be annoying'],
+        ['majo/a','nice / pleasant','Es muy maja = She\'s very nice'],
+        ['gracioso/a','funny','¡Qué gracioso! = How funny!'],
+        ['estar al loro','to be in the loop','¿Estás al loro? = Are you up to date?']
+      ]},
+      {heading:'Key Points',content:'1. ¿Qué tal? always gets bounced back — Bien, ¿y tú? is the minimum. Spaniards always return the question. 2. Fillers are essential, not lazy — o sea, en plan, pues, a ver, es que are how natural spoken Spanish sounds. Use them. 3. Igual and a lo mejor for "maybe" — these are what people actually say. Igual me quedo en casa sounds natural; quizás me quede en casa sounds formal. 4. Pues resulta que... is one of the most natural story starters in Spain. Learn it. 5. Spanish reactions are physical — ¡Qué fuerte!, ¡no me digas!, ¡menos mal! come with intonation and energy. The words alone are not enough.'}
+    ]
   }
 ];
 
@@ -2009,6 +2466,55 @@ function setStorage(k, v) {
   try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
 }
 
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function diffDays(a, b) {
+  const da = new Date(a + 'T00:00:00');
+  const db = new Date(b + 'T00:00:00');
+  return Math.round((db - da) / 86400000);
+}
+
+function tickStreak() {
+  const today = todayStr();
+  const s = getStorage('aprende.streak', { count: 0, best: 0, lastDate: null });
+  if (s.lastDate === today) return s;
+  if (s.lastDate && diffDays(s.lastDate, today) === 1) {
+    s.count = (s.count || 0) + 1;
+  } else {
+    s.count = 1;
+  }
+  s.best = Math.max(s.best || 0, s.count);
+  s.lastDate = today;
+  setStorage('aprende.streak', s);
+  return s;
+}
+
+function getStreak() {
+  const today = todayStr();
+  const s = getStorage('aprende.streak', { count: 0, best: 0, lastDate: null });
+  if (!s.lastDate) return s;
+  const gap = diffDays(s.lastDate, today);
+  if (gap > 1) return { ...s, count: 0 };
+  return s;
+}
+
+function speakES(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'es-ES';
+    u.rate = 0.95;
+    const voices = window.speechSynthesis.getVoices();
+    const v = voices.find(x => x.lang === 'es-ES') || voices.find(x => x.lang.startsWith('es'));
+    if (v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+
 // ============================================================
 // END OF DATA LAYER — React components follow
 // ============================================================
@@ -2024,6 +2530,25 @@ function Card({ dark, className='', children, onClick }) {
     <div onClick={onClick} className={`rounded-2xl border transition-all ${dark ? 'bg-white/[0.04] border-white/[0.08]' : 'bg-white border-stone-200/80 shadow-sm'} ${className}`}>
       {children}
     </div>
+  );
+}
+
+function SpeakBtn({ text, size='md' }) {
+  const cls = size === 'sm'
+    ? 'w-7 h-7 text-xs'
+    : size === 'lg'
+    ? 'w-10 h-10 text-base'
+    : 'w-8 h-8 text-sm';
+  return (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); speakES(text); }}
+      title="Escuchar"
+      aria-label="Escuchar"
+      className={`${cls} inline-flex items-center justify-center rounded-full bg-orange-100 hover:bg-orange-200 text-orange-700 transition-colors flex-shrink-0`}
+    >
+      🔊
+    </button>
   );
 }
 
@@ -2102,6 +2627,8 @@ function DataTable({ data, dark }) {
 function Inicio({ dark, section, setSection }) {
   const word = getWordOfDay();
   const phrase = getPhraseOfDay();
+  const [streak, setStreak] = useState(() => getStreak());
+  useEffect(() => { setStreak(tickStreak()); }, []);
 
   const SECTION_TILES = [
     { id:'hoy', label:'Hoy', sublabel:'Today', emoji:'⭐', color:'orange' },
@@ -2110,6 +2637,7 @@ function Inicio({ dark, section, setSection }) {
     { id:'vocabulario', label:'Vocabulario', sublabel:'Vocabulary', emoji:'📚', color:'emerald' },
     { id:'conectores', label:'Conectores', sublabel:'Connectors', emoji:'🔗', color:'teal' },
     { id:'frases', label:'Frases', sublabel:'Phrases', emoji:'💬', color:'rose' },
+    { id:'lecturas', label:'Lecturas', sublabel:'Reading', emoji:'📖', color:'sky' },
     { id:'ejercicios', label:'Ejercicios', sublabel:'Exercises', emoji:'✏️', color:'amber' },
     { id:'glosario', label:'Glosario', sublabel:'Glossary', emoji:'🔖', color:'indigo' },
   ];
@@ -2121,6 +2649,7 @@ function Inicio({ dark, section, setSection }) {
     emerald: 'from-emerald-400 to-emerald-500',
     teal: 'from-teal-400 to-teal-500',
     rose: 'from-rose-400 to-rose-500',
+    sky: 'from-sky-400 to-sky-500',
     amber: 'from-amber-400 to-amber-500',
     indigo: 'from-indigo-400 to-indigo-500',
   };
@@ -2130,9 +2659,15 @@ function Inicio({ dark, section, setSection }) {
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[10px] font-bold tracking-widest text-orange-500 uppercase">Palabra del Día</span>
       </div>
-      <p className="text-4xl font-serif font-bold mb-1">{word.es}</p>
+      <div className="flex items-center gap-3 mb-1">
+        <p className="text-4xl font-serif font-bold">{word.es}</p>
+        <SpeakBtn text={word.es} size="lg" />
+      </div>
       <p className={`text-sm font-medium mb-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{word.en}</p>
-      <p className={`text-sm italic mb-1 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{word.example}"</p>
+      <div className="flex items-start gap-2 mb-1">
+        <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{word.example}"</p>
+        <SpeakBtn text={word.example} size="sm" />
+      </div>
       <p className={`text-xs mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{word.exampleEn}</p>
       {word.tip && (
         <div className={`rounded-xl p-3 text-xs ${dark ? 'bg-orange-900/20 text-orange-300' : 'bg-orange-50 text-orange-800'}`}>
@@ -2147,9 +2682,15 @@ function Inicio({ dark, section, setSection }) {
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[10px] font-bold tracking-widest text-rose-500 uppercase">Frase del Día</span>
       </div>
-      <p className="text-2xl font-serif font-bold mb-1">{phrase.es}</p>
+      <div className="flex items-start gap-3 mb-1">
+        <p className="text-2xl font-serif font-bold flex-1">{phrase.es}</p>
+        <SpeakBtn text={phrase.es} size="lg" />
+      </div>
       <p className={`text-sm font-medium mb-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{phrase.en}</p>
-      <p className={`text-sm italic mb-1 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{phrase.example}"</p>
+      <div className="flex items-start gap-2 mb-1">
+        <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{phrase.example}"</p>
+        <SpeakBtn text={phrase.example} size="sm" />
+      </div>
       <p className={`text-xs mb-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{phrase.exampleEn}</p>
       {phrase.when && (
         <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
@@ -2162,14 +2703,29 @@ function Inicio({ dark, section, setSection }) {
   return (
     <div>
       {/* Desktop greeting header */}
-      <div className="hidden lg:block px-8 pt-8 pb-4">
-        <h2 className="text-3xl font-serif font-bold">Buenos días, Liam 👋</h2>
-        <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>A2 → B1 · {new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})}</p>
+      <div className="hidden lg:flex items-start justify-between px-8 pt-8 pb-4">
+        <div>
+          <h2 className="text-3xl font-serif font-bold">Buenos días, Liam 👋</h2>
+          <p className="text-sm mt-1 text-stone-500">A2 → B1 · {new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})}</p>
+        </div>
+        <div className="flex items-center gap-2 bg-gradient-to-br from-orange-500 to-rose-500 text-white px-4 py-2 rounded-2xl shadow-sm">
+          <span className="text-2xl">🔥</span>
+          <div className="leading-tight">
+            <p className="text-xl font-bold">{streak.count}</p>
+            <p className="text-[10px] uppercase tracking-wider opacity-90">Racha</p>
+          </div>
+        </div>
       </div>
       {/* Mobile greeting */}
-      <div className="lg:hidden px-4 pt-5 pb-2">
-        <h2 className="text-2xl font-serif font-bold">Buenos días, Liam 👋</h2>
-        <p className={`text-xs mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})}</p>
+      <div className="lg:hidden px-4 pt-5 pb-2 flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-serif font-bold">Buenos días, Liam 👋</h2>
+          <p className="text-xs mt-1 text-stone-500">{new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})}</p>
+        </div>
+        <div className="flex items-center gap-1.5 bg-gradient-to-br from-orange-500 to-rose-500 text-white px-3 py-1.5 rounded-xl shadow-sm">
+          <span className="text-lg">🔥</span>
+          <p className="text-base font-bold">{streak.count}</p>
+        </div>
       </div>
 
       {/* Desktop 2-col layout */}
@@ -2243,7 +2799,10 @@ function Hoy({ onBack, dark }) {
           <div className="space-y-5">
             <Card dark={dark} className="p-5">
               <p className="text-[10px] font-bold tracking-widest text-orange-500 uppercase mb-2">Palabra del Día</p>
-              <p className="text-5xl font-serif font-bold mb-1">{word.es}</p>
+              <div className="flex items-center gap-3 mb-1">
+                <p className="text-5xl font-serif font-bold">{word.es}</p>
+                <SpeakBtn text={word.es} size="lg" />
+              </div>
               <p className={`text-base font-medium mb-4 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{word.en}</p>
               <div className="space-y-3">
                 <div>
@@ -2259,7 +2818,10 @@ function Hoy({ onBack, dark }) {
             </Card>
             <Card dark={dark} className="p-5">
               <p className="text-[10px] font-bold tracking-widest text-rose-500 uppercase mb-2">Frase del Día</p>
-              <p className="text-3xl font-serif font-bold mb-1">{phrase.es}</p>
+              <div className="flex items-start gap-3 mb-1">
+                <p className="text-3xl font-serif font-bold flex-1">{phrase.es}</p>
+                <SpeakBtn text={phrase.es} size="lg" />
+              </div>
               <p className={`text-sm font-medium mb-4 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{phrase.en}</p>
               <div className="space-y-2">
                 <p className={`text-sm italic ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{phrase.example}"</p>
@@ -2437,7 +2999,8 @@ function Tiempos({ onBack, dark }) {
     {id:'pasado', label:'Pasado'},
     {id:'presente', label:'Presente'},
     {id:'futuro', label:'Futuro'},
-    {id:'subjuntivo', label:'Subjuntivo'}
+    {id:'subjuntivo', label:'Subjuntivo'},
+    {id:'conjugador', label:'Conjugador'}
   ];
 
   return (
@@ -2451,11 +3014,463 @@ function Tiempos({ onBack, dark }) {
           <TabBar dark={dark} tabs={tabs} active={tab} onChange={setTab} />
         </div>
         <div>
-          {(TENSES[tab] || []).map(card => (
-            <TenseCard key={card.id} card={card} dark={dark} />
+          {tab === 'conjugador' ? (
+            <Conjugador dark={dark} />
+          ) : (
+            (TENSES[tab] || []).map(card => (
+              <TenseCard key={card.id} card={card} dark={dark} />
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const READING_PASSAGES = [
+  {
+    id:'mercado',
+    level:'A2',
+    title:'En el mercado de Ruzafa',
+    titleEn:'At the Ruzafa market',
+    intro:'Liam va al mercado de Ruzafa los sábados por la mañana.',
+    paragraphs:[
+      'Cada sábado, Liam se levanta temprano y baja al mercado de Ruzafa. Le gusta el ambiente: los puestos llenos de naranjas, las voces de los vendedores y el olor a pan recién hecho.',
+      'Siempre compra fruta y verdura en el mismo puesto. La señora que lo atiende se llama Carmen y siempre le da un pequeño descuento. "¡Hola, guapo! ¿Cómo estás hoy?", le dice cada vez.',
+      'Después, Liam va a la panadería. Pide una barra de pan y un cruasán. La dependienta le pregunta: "¿Algo más?". Él responde: "No, gracias, así está bien".',
+      'Antes de volver a casa, se sienta en una terraza y pide un café con leche. Mientras toma su café, escribe en su cuaderno las palabras nuevas que ha aprendido esa mañana.'
+    ],
+    glossary:[
+      ['el puesto','market stall'],
+      ['recién hecho','freshly made'],
+      ['atender','to serve / attend to'],
+      ['el descuento','discount'],
+      ['la dependienta','shop assistant'],
+      ['la barra de pan','baguette / loaf'],
+      ['así está bien','that\'s fine']
+    ],
+    questions:[
+      { q:'¿Cuándo va Liam al mercado?', a:'Los sábados por la mañana' },
+      { q:'¿Cómo se llama la señora que le atiende?', a:'Carmen' },
+      { q:'¿Qué pide en la panadería?', a:'Una barra de pan y un cruasán' }
+    ]
+  },
+  {
+    id:'fallas',
+    level:'B1',
+    title:'Mi primera vez en las Fallas',
+    titleEn:'My first time at Las Fallas',
+    intro:'Liam describe su primera experiencia en la fiesta más importante de Valencia.',
+    paragraphs:[
+      'Llevaba dos meses viviendo en Valencia cuando llegaron las Fallas. Mis compañeros de piso me habían avisado: "Te va a encantar, pero también te va a volver loco". Tenían razón.',
+      'Durante una semana entera, la ciudad se transformó. En cada esquina había una falla, una escultura enorme de cartón y madera con figuras satíricas. Algunas eran tan grandes que casi tocaban los balcones.',
+      'Lo que más me impresionó fue la mascletà. A las dos en punto, en la Plaza del Ayuntamiento, comenzaba un espectáculo de petardos que se podía sentir en el pecho. Al principio me asusté, pero después me reí como un niño.',
+      'La última noche fue la cremà. Quemaron todas las fallas. Mientras veía cómo el fuego consumía los monumentos en los que tanta gente había trabajado durante meses, pensé que esa contradicción —crear para destruir— era lo más español que había visto en mi vida.'
+    ],
+    glossary:[
+      ['avisar','to warn / let know'],
+      ['volver loco','to drive crazy'],
+      ['la esquina','street corner'],
+      ['cartón','cardboard'],
+      ['satírico','satirical'],
+      ['la mascletà','daytime firecracker show'],
+      ['el petardo','firecracker'],
+      ['asustarse','to get scared'],
+      ['la cremà','burning ceremony'],
+      ['quemar','to burn'],
+      ['consumir','to consume / devour']
+    ],
+    questions:[
+      { q:'¿Cuánto tiempo llevaba Liam en Valencia cuando empezaron las Fallas?', a:'Dos meses' },
+      { q:'¿Qué es la mascletà?', a:'Un espectáculo de petardos a las dos en punto' },
+      { q:'¿Qué pasa en la cremà?', a:'Queman todas las fallas' }
+    ]
+  },
+  {
+    id:'cafeteria',
+    level:'A2',
+    title:'En la cafetería',
+    titleEn:'At the café',
+    intro:'Una conversación típica en una cafetería española.',
+    paragraphs:[
+      'Liam entra en una cafetería del centro. Hay mucho ruido y huele a café recién hecho. Se acerca a la barra y saluda al camarero.',
+      '—Buenos días, ¿qué te pongo? —pregunta el camarero.',
+      '—Un café con leche y una tostada con tomate, por favor —responde Liam.',
+      '—¿Aceite de oliva? —pregunta el camarero.',
+      '—Sí, por favor.',
+      'Mientras espera, Liam mira a su alrededor. Un grupo de jubilados habla en voz alta sobre fútbol. Una mujer lee el periódico. Dos amigas se ríen en una mesa cerca de la ventana.',
+      'El camarero le trae el desayuno y le dice: "Aquí tienes, guapo". Liam le da las gracias. Para él, este es el momento favorito del día.'
+    ],
+    glossary:[
+      ['oler a','to smell of'],
+      ['acercarse','to approach'],
+      ['la barra','the bar / counter'],
+      ['¿qué te pongo?','what can I get you?'],
+      ['la tostada','toast'],
+      ['mirar a su alrededor','to look around'],
+      ['el jubilado','retired person'],
+      ['en voz alta','out loud / loudly'],
+      ['guapo','good-looking (used as friendly address)']
+    ],
+    questions:[
+      { q:'¿Qué pide Liam?', a:'Un café con leche y una tostada con tomate' },
+      { q:'¿Qué hacen los jubilados?', a:'Hablan en voz alta sobre fútbol' },
+      { q:'¿Cómo le llama el camarero a Liam?', a:'Guapo' }
+    ]
+  },
+  {
+    id:'errores',
+    level:'B1',
+    title:'Los errores también enseñan',
+    titleEn:'Mistakes teach you too',
+    intro:'Liam reflexiona sobre los errores que ha cometido aprendiendo español.',
+    paragraphs:[
+      'Cuando empecé a aprender español, pensaba que cometer errores era lo peor que podía pasarme. Si me equivocaba al pedir algo en un bar, me ponía rojo y quería desaparecer. Ahora, después de un año en Valencia, me doy cuenta de que esos errores fueron los que más me han enseñado.',
+      'Recuerdo una vez que fui a una panadería y pedí "una piña" en lugar de "una pieza" de pan. La dependienta se rió y me corrigió con cariño. Salí avergonzado, pero nunca más he confundido esas dos palabras.',
+      'Otro día, en una cena con amigos, dije que estaba "embarazado" porque pensaba que significaba "avergonzado". Todos se echaron a reír. Aprendí dos cosas: el verdadero significado de la palabra y que reírse de uno mismo es la mejor manera de mejorar.',
+      'Hoy hablo español con más confianza. No porque haya dejado de cometer errores —los sigo cometiendo todos los días— sino porque he aprendido a no tenerles miedo. Cada error es una palabra nueva, una corrección amable, una historia que contar más tarde.'
+    ],
+    glossary:[
+      ['equivocarse','to make a mistake / be wrong'],
+      ['ponerse rojo','to blush'],
+      ['desaparecer','to disappear'],
+      ['darse cuenta','to realise'],
+      ['en lugar de','instead of'],
+      ['con cariño','affectionately'],
+      ['avergonzado','embarrassed'],
+      ['echarse a reír','to burst out laughing'],
+      ['reírse de uno mismo','to laugh at oneself'],
+      ['tener miedo','to be afraid']
+    ],
+    questions:[
+      { q:'¿Qué pidió Liam en la panadería?', a:'Una "piña" en lugar de una "pieza" de pan' },
+      { q:'¿Qué creía que significaba "embarazado"?', a:'Avergonzado' },
+      { q:'¿Por qué habla con más confianza ahora?', a:'Porque ha aprendido a no tener miedo a cometer errores' }
+    ]
+  }
+];
+
+function Lecturas({ onBack, dark }) {
+  const [selected, setSelected] = useState(null);
+  const [showAnswers, setShowAnswers] = useState({});
+
+  if (selected) {
+    return (
+      <div>
+        <BackHeader title={selected.title} subtitle={selected.titleEn} onBack={() => { setSelected(null); setShowAnswers({}); }} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{selected.level}</span>
+            <SpeakBtn text={selected.paragraphs.join(' ')} size="sm" />
+            <span className="text-xs text-stone-500">Toca 🔊 para escuchar todo</span>
+          </div>
+
+          <Card dark={dark} className="p-5 mb-5">
+            <p className="text-sm italic text-stone-500 mb-4">{selected.intro}</p>
+            {selected.paragraphs.map((p, i) => (
+              <div key={i} className="mb-4 group">
+                <div className="flex items-start gap-2">
+                  <p className="text-base leading-relaxed flex-1">{p}</p>
+                  <SpeakBtn text={p} size="sm" />
+                </div>
+              </div>
+            ))}
+          </Card>
+
+          <Card dark={dark} className="p-5 mb-5">
+            <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Vocabulario clave</p>
+            <div className="space-y-2">
+              {selected.glossary.map((g, i) => (
+                <div key={i} className="flex items-baseline gap-3 text-sm">
+                  <span className="font-serif font-bold flex-shrink-0">{g[0]}</span>
+                  <span className="text-stone-300">·</span>
+                  <span className="text-stone-600 flex-1">{g[1]}</span>
+                  <button onClick={() => speakES(g[0])} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card dark={dark} className="p-5">
+            <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Preguntas de comprensión</p>
+            <div className="space-y-3">
+              {selected.questions.map((q, i) => (
+                <div key={i}>
+                  <p className="text-sm font-semibold mb-1">{i + 1}. {q.q}</p>
+                  {showAnswers[i] ? (
+                    <p className="text-sm text-emerald-700 bg-emerald-50 rounded-lg p-2">✓ {q.a}</p>
+                  ) : (
+                    <button onClick={() => setShowAnswers(prev => ({ ...prev, [i]: true }))}
+                      className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-lg font-semibold">
+                      Mostrar respuesta
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <BackHeader title="Lecturas" subtitle="Reading passages" onBack={onBack} dark={dark} />
+      <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
+        <div className="hidden lg:block mb-6">
+          <h2 className="text-2xl font-serif font-bold">Lecturas</h2>
+          <p className="text-sm text-stone-500 mt-1">Mini textos con audio, vocabulario y preguntas</p>
+        </div>
+        <div className="space-y-3">
+          {READING_PASSAGES.map(p => (
+            <button key={p.id} onClick={() => setSelected(p)} className="w-full text-left">
+              <Card dark={dark} className="p-5 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{p.level}</span>
+                  <span className="text-xs text-stone-400">{p.paragraphs.length} párrafos · {p.glossary.length} palabras</span>
+                </div>
+                <p className="font-serif font-bold text-xl mb-1">{p.title}</p>
+                <p className="text-xs text-stone-500 mb-2">{p.titleEn}</p>
+                <p className="text-sm italic text-stone-600">{p.intro}</p>
+              </Card>
+            </button>
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// Verb conjugator — supports a curated set of common verbs
+const CONJUGATOR_VERBS = {
+  'hablar': {
+    en:'to speak', type:'-ar regular',
+    presente:['hablo','hablas','habla','hablamos','habláis','hablan'],
+    indefinido:['hablé','hablaste','habló','hablamos','hablasteis','hablaron'],
+    imperfecto:['hablaba','hablabas','hablaba','hablábamos','hablabais','hablaban'],
+    futuro:['hablaré','hablarás','hablará','hablaremos','hablaréis','hablarán'],
+    condicional:['hablaría','hablarías','hablaría','hablaríamos','hablaríais','hablarían'],
+    subjuntivo:['hable','hables','hable','hablemos','habléis','hablen'],
+    imperfectoSubj:['hablara','hablaras','hablara','habláramos','hablarais','hablaran'],
+    perfecto:['he hablado','has hablado','ha hablado','hemos hablado','habéis hablado','han hablado'],
+  },
+  'comer': {
+    en:'to eat', type:'-er regular',
+    presente:['como','comes','come','comemos','coméis','comen'],
+    indefinido:['comí','comiste','comió','comimos','comisteis','comieron'],
+    imperfecto:['comía','comías','comía','comíamos','comíais','comían'],
+    futuro:['comeré','comerás','comerá','comeremos','comeréis','comerán'],
+    condicional:['comería','comerías','comería','comeríamos','comeríais','comerían'],
+    subjuntivo:['coma','comas','coma','comamos','comáis','coman'],
+    imperfectoSubj:['comiera','comieras','comiera','comiéramos','comierais','comieran'],
+    perfecto:['he comido','has comido','ha comido','hemos comido','habéis comido','han comido'],
+  },
+  'vivir': {
+    en:'to live', type:'-ir regular',
+    presente:['vivo','vives','vive','vivimos','vivís','viven'],
+    indefinido:['viví','viviste','vivió','vivimos','vivisteis','vivieron'],
+    imperfecto:['vivía','vivías','vivía','vivíamos','vivíais','vivían'],
+    futuro:['viviré','vivirás','vivirá','viviremos','viviréis','vivirán'],
+    condicional:['viviría','vivirías','viviría','viviríamos','viviríais','vivirían'],
+    subjuntivo:['viva','vivas','viva','vivamos','viváis','vivan'],
+    imperfectoSubj:['viviera','vivieras','viviera','viviéramos','vivierais','vivieran'],
+    perfecto:['he vivido','has vivido','ha vivido','hemos vivido','habéis vivido','han vivido'],
+  },
+  'ser': {
+    en:'to be (essence)', type:'irregular',
+    presente:['soy','eres','es','somos','sois','son'],
+    indefinido:['fui','fuiste','fue','fuimos','fuisteis','fueron'],
+    imperfecto:['era','eras','era','éramos','erais','eran'],
+    futuro:['seré','serás','será','seremos','seréis','serán'],
+    condicional:['sería','serías','sería','seríamos','seríais','serían'],
+    subjuntivo:['sea','seas','sea','seamos','seáis','sean'],
+    imperfectoSubj:['fuera','fueras','fuera','fuéramos','fuerais','fueran'],
+    perfecto:['he sido','has sido','ha sido','hemos sido','habéis sido','han sido'],
+  },
+  'estar': {
+    en:'to be (state)', type:'irregular',
+    presente:['estoy','estás','está','estamos','estáis','están'],
+    indefinido:['estuve','estuviste','estuvo','estuvimos','estuvisteis','estuvieron'],
+    imperfecto:['estaba','estabas','estaba','estábamos','estabais','estaban'],
+    futuro:['estaré','estarás','estará','estaremos','estaréis','estarán'],
+    condicional:['estaría','estarías','estaría','estaríamos','estaríais','estarían'],
+    subjuntivo:['esté','estés','esté','estemos','estéis','estén'],
+    imperfectoSubj:['estuviera','estuvieras','estuviera','estuviéramos','estuvierais','estuvieran'],
+    perfecto:['he estado','has estado','ha estado','hemos estado','habéis estado','han estado'],
+  },
+  'tener': {
+    en:'to have', type:'irregular',
+    presente:['tengo','tienes','tiene','tenemos','tenéis','tienen'],
+    indefinido:['tuve','tuviste','tuvo','tuvimos','tuvisteis','tuvieron'],
+    imperfecto:['tenía','tenías','tenía','teníamos','teníais','tenían'],
+    futuro:['tendré','tendrás','tendrá','tendremos','tendréis','tendrán'],
+    condicional:['tendría','tendrías','tendría','tendríamos','tendríais','tendrían'],
+    subjuntivo:['tenga','tengas','tenga','tengamos','tengáis','tengan'],
+    imperfectoSubj:['tuviera','tuvieras','tuviera','tuviéramos','tuvierais','tuvieran'],
+    perfecto:['he tenido','has tenido','ha tenido','hemos tenido','habéis tenido','han tenido'],
+  },
+  'hacer': {
+    en:'to do/make', type:'irregular',
+    presente:['hago','haces','hace','hacemos','hacéis','hacen'],
+    indefinido:['hice','hiciste','hizo','hicimos','hicisteis','hicieron'],
+    imperfecto:['hacía','hacías','hacía','hacíamos','hacíais','hacían'],
+    futuro:['haré','harás','hará','haremos','haréis','harán'],
+    condicional:['haría','harías','haría','haríamos','haríais','harían'],
+    subjuntivo:['haga','hagas','haga','hagamos','hagáis','hagan'],
+    imperfectoSubj:['hiciera','hicieras','hiciera','hiciéramos','hicierais','hicieran'],
+    perfecto:['he hecho','has hecho','ha hecho','hemos hecho','habéis hecho','han hecho'],
+  },
+  'ir': {
+    en:'to go', type:'irregular',
+    presente:['voy','vas','va','vamos','vais','van'],
+    indefinido:['fui','fuiste','fue','fuimos','fuisteis','fueron'],
+    imperfecto:['iba','ibas','iba','íbamos','ibais','iban'],
+    futuro:['iré','irás','irá','iremos','iréis','irán'],
+    condicional:['iría','irías','iría','iríamos','iríais','irían'],
+    subjuntivo:['vaya','vayas','vaya','vayamos','vayáis','vayan'],
+    imperfectoSubj:['fuera','fueras','fuera','fuéramos','fuerais','fueran'],
+    perfecto:['he ido','has ido','ha ido','hemos ido','habéis ido','han ido'],
+  },
+  'decir': {
+    en:'to say', type:'irregular',
+    presente:['digo','dices','dice','decimos','decís','dicen'],
+    indefinido:['dije','dijiste','dijo','dijimos','dijisteis','dijeron'],
+    imperfecto:['decía','decías','decía','decíamos','decíais','decían'],
+    futuro:['diré','dirás','dirá','diremos','diréis','dirán'],
+    condicional:['diría','dirías','diría','diríamos','diríais','dirían'],
+    subjuntivo:['diga','digas','diga','digamos','digáis','digan'],
+    imperfectoSubj:['dijera','dijeras','dijera','dijéramos','dijerais','dijeran'],
+    perfecto:['he dicho','has dicho','ha dicho','hemos dicho','habéis dicho','han dicho'],
+  },
+  'querer': {
+    en:'to want/love', type:'irregular',
+    presente:['quiero','quieres','quiere','queremos','queréis','quieren'],
+    indefinido:['quise','quisiste','quiso','quisimos','quisisteis','quisieron'],
+    imperfecto:['quería','querías','quería','queríamos','queríais','querían'],
+    futuro:['querré','querrás','querrá','querremos','querréis','querrán'],
+    condicional:['querría','querrías','querría','querríamos','querríais','querrían'],
+    subjuntivo:['quiera','quieras','quiera','queramos','queráis','quieran'],
+    imperfectoSubj:['quisiera','quisieras','quisiera','quisiéramos','quisierais','quisieran'],
+    perfecto:['he querido','has querido','ha querido','hemos querido','habéis querido','han querido'],
+  },
+  'poder': {
+    en:'to be able to', type:'irregular',
+    presente:['puedo','puedes','puede','podemos','podéis','pueden'],
+    indefinido:['pude','pudiste','pudo','pudimos','pudisteis','pudieron'],
+    imperfecto:['podía','podías','podía','podíamos','podíais','podían'],
+    futuro:['podré','podrás','podrá','podremos','podréis','podrán'],
+    condicional:['podría','podrías','podría','podríamos','podríais','podrían'],
+    subjuntivo:['pueda','puedas','pueda','podamos','podáis','puedan'],
+    imperfectoSubj:['pudiera','pudieras','pudiera','pudiéramos','pudierais','pudieran'],
+    perfecto:['he podido','has podido','ha podido','hemos podido','habéis podido','han podido'],
+  },
+  'venir': {
+    en:'to come', type:'irregular',
+    presente:['vengo','vienes','viene','venimos','venís','vienen'],
+    indefinido:['vine','viniste','vino','vinimos','vinisteis','vinieron'],
+    imperfecto:['venía','venías','venía','veníamos','veníais','venían'],
+    futuro:['vendré','vendrás','vendrá','vendremos','vendréis','vendrán'],
+    condicional:['vendría','vendrías','vendría','vendríamos','vendríais','vendrían'],
+    subjuntivo:['venga','vengas','venga','vengamos','vengáis','vengan'],
+    imperfectoSubj:['viniera','vinieras','viniera','viniéramos','vinierais','vinieran'],
+    perfecto:['he venido','has venido','ha venido','hemos venido','habéis venido','han venido'],
+  },
+  'saber': {
+    en:'to know (facts)', type:'irregular',
+    presente:['sé','sabes','sabe','sabemos','sabéis','saben'],
+    indefinido:['supe','supiste','supo','supimos','supisteis','supieron'],
+    imperfecto:['sabía','sabías','sabía','sabíamos','sabíais','sabían'],
+    futuro:['sabré','sabrás','sabrá','sabremos','sabréis','sabrán'],
+    condicional:['sabría','sabrías','sabría','sabríamos','sabríais','sabrían'],
+    subjuntivo:['sepa','sepas','sepa','sepamos','sepáis','sepan'],
+    imperfectoSubj:['supiera','supieras','supiera','supiéramos','supierais','supieran'],
+    perfecto:['he sabido','has sabido','ha sabido','hemos sabido','habéis sabido','han sabido'],
+  },
+  'dar': {
+    en:'to give', type:'irregular',
+    presente:['doy','das','da','damos','dais','dan'],
+    indefinido:['di','diste','dio','dimos','disteis','dieron'],
+    imperfecto:['daba','dabas','daba','dábamos','dabais','daban'],
+    futuro:['daré','darás','dará','daremos','daréis','darán'],
+    condicional:['daría','darías','daría','daríamos','daríais','darían'],
+    subjuntivo:['dé','des','dé','demos','deis','den'],
+    imperfectoSubj:['diera','dieras','diera','diéramos','dierais','dieran'],
+    perfecto:['he dado','has dado','ha dado','hemos dado','habéis dado','han dado'],
+  },
+  'ver': {
+    en:'to see', type:'irregular',
+    presente:['veo','ves','ve','vemos','veis','ven'],
+    indefinido:['vi','viste','vio','vimos','visteis','vieron'],
+    imperfecto:['veía','veías','veía','veíamos','veíais','veían'],
+    futuro:['veré','verás','verá','veremos','veréis','verán'],
+    condicional:['vería','verías','vería','veríamos','veríais','verían'],
+    subjuntivo:['vea','veas','vea','veamos','veáis','vean'],
+    imperfectoSubj:['viera','vieras','viera','viéramos','vierais','vieran'],
+    perfecto:['he visto','has visto','ha visto','hemos visto','habéis visto','han visto'],
+  },
+};
+
+function Conjugador({ dark }) {
+  const verbList = Object.keys(CONJUGATOR_VERBS);
+  const [verb, setVerb] = useState('hablar');
+  const [filter, setFilter] = useState('');
+  const data = CONJUGATOR_VERBS[verb];
+  const filtered = verbList.filter(v => v.includes(filter.toLowerCase()) || (CONJUGATOR_VERBS[v].en || '').toLowerCase().includes(filter.toLowerCase()));
+  const persons = ['yo','tú','él/ella','nosotros','vosotros','ellos'];
+
+  const tenseGroups = [
+    { key:'presente', label:'Presente' },
+    { key:'indefinido', label:'Pretérito Indefinido' },
+    { key:'imperfecto', label:'Pretérito Imperfecto' },
+    { key:'perfecto', label:'Pretérito Perfecto' },
+    { key:'futuro', label:'Futuro Simple' },
+    { key:'condicional', label:'Condicional' },
+    { key:'subjuntivo', label:'Presente Subjuntivo' },
+    { key:'imperfectoSubj', label:'Imperfecto Subjuntivo' },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <Card dark={dark} className="p-4">
+        <input value={filter} onChange={e => setFilter(e.target.value)}
+          placeholder="Buscar verbo..."
+          className="w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 border-stone-200 focus:border-orange-500 mb-3" />
+        <div className="flex flex-wrap gap-2">
+          {filtered.map(v => (
+            <button key={v} onClick={() => setVerb(v)}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${verb === v ? 'bg-orange-500 text-white' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+              {v}
+            </button>
+          ))}
+        </div>
+      </Card>
+
+      <Card dark={dark} className="p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <p className="font-serif font-bold text-3xl">{verb}</p>
+          <SpeakBtn text={verb} size="lg" />
+        </div>
+        <p className="text-sm text-stone-500 mb-1">{data.en}</p>
+        <p className="text-xs text-stone-400 mb-5">{data.type}</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {tenseGroups.map(g => (
+            <div key={g.key} className="rounded-xl bg-stone-50 p-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-2">{g.label}</p>
+              <div className="space-y-1">
+                {data[g.key].map((form, i) => (
+                  <div key={i} className="flex items-baseline gap-2 text-sm">
+                    <span className="text-stone-400 text-xs w-16 flex-shrink-0">{persons[i]}</span>
+                    <span className="font-semibold flex-1">{form}</span>
+                    <button onClick={() => speakES(form)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
@@ -2553,6 +3568,49 @@ function DocumentCard({ doc, dark }) {
   );
 }
 
+const COMMON_MISTAKES = [
+  { wrong:'Soy 30 años', right:'Tengo 30 años', en:'I am 30 years old', why:'Use "tener" for age, not "ser". The verb is literally "to have years".' },
+  { wrong:'Tengo calor / frío', right:'(correct!)', en:'I am hot / cold (sensation)', why:'Use "tener" for sensations of body temperature, not "estar". "Estoy caliente" means something else entirely (sexual).' },
+  { wrong:'Estoy aburrido', right:'(correct, but...)', en:'I am bored vs boring', why:'"Estoy aburrido" = I am bored. "Soy aburrido" = I am a boring person. Same with cansado, listo, rico, etc.' },
+  { wrong:'Estoy 30 años', right:'Tengo 30 años', en:'I am 30 years old', why:'Common mistake from English. Always "tener" for age in Spanish.' },
+  { wrong:'Sé como nadar', right:'Sé nadar', en:'I know how to swim', why:'"Saber + infinitivo" already means "to know how to". Don\'t add "cómo".' },
+  { wrong:'Pienso que es bueno (subjuntivo)', right:'Pienso que es bueno (indicativo)', en:'I think it\'s good', why:'"Pensar que" affirmative takes indicative. Only "no pienso que" triggers subjunctive.' },
+  { wrong:'Voy a casa de mi amiga', right:'(correct!)', en:'I\'m going to my friend\'s house', why:'No "de" → "a". "Voy a la casa de mi amiga" is also correct but redundant.' },
+  { wrong:'Realizar (= to realise)', right:'Darse cuenta', en:'To realise', why:'False friend! "Realizar" means "to carry out, to achieve". To realise something = "darse cuenta de".' },
+  { wrong:'Estoy embarazada (= I\'m embarrassed)', right:'Tengo vergüenza / Me da vergüenza', en:'I\'m embarrassed', why:'False friend! "Embarazada" = pregnant, not embarrassed. Use "vergüenza".' },
+  { wrong:'Atender (= to attend)', right:'Asistir a', en:'To attend (an event)', why:'False friend! "Atender" = to assist/serve a customer. To attend an event = "asistir a".' },
+  { wrong:'Por / Para mixed up', right:'Por = cause/duration, Para = purpose/destination', en:'For', why:'"Trabajo por dinero" (because of) vs "Trabajo para vivir" (in order to). See cheat sheet.' },
+  { wrong:'Yo gusto el café', right:'Me gusta el café', en:'I like coffee', why:'"Gustar" works backwards: the thing you like is the subject. The person is an indirect object pronoun.' },
+  { wrong:'Este es más mejor', right:'Este es mejor', en:'This is better', why:'"Mejor" already means "more good". Never say "más mejor" (or "más peor").' },
+  { wrong:'Voy a ir a...', right:'Voy a... (or Iré a...)', en:'I\'m going to go to...', why:'Redundant double "ir". Use just "voy a + lugar" or "iré a + lugar".' },
+  { wrong:'Tengo que ir a la mi casa', right:'Tengo que ir a mi casa', en:'I have to go to my house', why:'Don\'t use article + possessive together. Just "mi casa", not "la mi casa".' },
+  { wrong:'Quiero que tú vienes', right:'Quiero que tú vengas', en:'I want you to come', why:'"Querer que + otra persona" triggers subjunctive. WEIRDO rule.' },
+  { wrong:'Si tendría dinero...', right:'Si tuviera dinero...', en:'If I had money...', why:'Hypothetical "si" clauses use imperfect subjunctive, not conditional. "Si + imperfecto subj, + condicional".' },
+  { wrong:'En la mañana', right:'Por la mañana', en:'In the morning', why:'In Spain, use "por" with parts of the day: por la mañana, por la tarde, por la noche.' },
+  { wrong:'Hace dos años que no le veo', right:'Hace dos años que no lo veo', en:'I haven\'t seen him in two years', why:'Use "lo" for direct object (him/it). "Le" is indirect object. (Some Spaniards use leísmo.)' },
+  { wrong:'Me caigo bien con ella', right:'Me cae bien ella', en:'I get along with her', why:'"Caer bien" works like "gustar". "Ella me cae bien" / "Me cae bien".' },
+];
+
+const PRONUNCIATION_GUIDE = [
+  { letter:'a / e / i / o / u', sound:'pure short vowel', example:'casa, mesa, pino, foto, luna', tip:'Spanish vowels never change. They\'re short and clean — never glide like English vowels.' },
+  { letter:'c (before a/o/u)', sound:'/k/ as in cat', example:'casa, color, cuna', tip:'Hard "k" sound.' },
+  { letter:'c (before e/i)', sound:'/θ/ "th" in Spain', example:'cinco, cena, ciudad', tip:'In Spain (Castilian), "ce/ci" sound like English "th" in "thin". In Latin America, it\'s /s/.' },
+  { letter:'g (before a/o/u)', sound:'/g/ as in go', example:'gato, gota, gusto', tip:'Hard "g".' },
+  { letter:'g (before e/i)', sound:'/x/ throaty h', example:'gente, gigante', tip:'Like German "ch" in "Bach" or Scottish "loch". A throat sound.' },
+  { letter:'h', sound:'silent', example:'hola, hablar, hospital', tip:'Always silent in Spanish. Pronounce "hola" as "ola".' },
+  { letter:'j', sound:'/x/ throaty h', example:'jamón, joven, jefe', tip:'Same throaty sound as "g" before e/i. Stronger than English h.' },
+  { letter:'ll', sound:'/ʝ/ like English y', example:'llave, calle, pollo', tip:'In most of Spain, like English "y" in "yes". (Older speakers may pronounce it like "ly".)' },
+  { letter:'ñ', sound:'/ɲ/ ny', example:'año, niño, mañana', tip:'Like the "ny" in "canyon". Tilde matters: "año" (year) vs "ano" (anus)!' },
+  { letter:'qu', sound:'/k/ — u silent', example:'queso, quiero, aquí', tip:'The u is silent. "Queso" sounds like "keso".' },
+  { letter:'r (single, middle)', sound:'tap', example:'pero, caro, hablar', tip:'Quick tap of the tongue, like American English "tt" in "butter".' },
+  { letter:'rr / r (start)', sound:'rolled trill', example:'perro, rojo, ruido', tip:'Rolled "r". Take time to learn it — "pero" (but) vs "perro" (dog) is meaning-changing.' },
+  { letter:'v', sound:'/b/ same as b', example:'vino, vaca, vivir', tip:'V and B sound IDENTICAL in Spanish. Both like a soft English "b".' },
+  { letter:'z', sound:'/θ/ "th" in Spain', example:'zapato, zumo, vez', tip:'In Spain, like English "th" in "thin". In Latin America, like /s/.' },
+  { letter:'y', sound:'/ʝ/ or /i/', example:'yo, ya, hay', tip:'Like English "y" between vowels. At end of word or alone, sounds like "i" (hay = "ai").' },
+  { letter:'b/v at start', sound:'/b/', example:'banco, viento', tip:'Soft b sound. Lips barely close.' },
+  { letter:'d (between vowels)', sound:'/ð/ soft th', example:'nada, todo, ciudad', tip:'Like English "th" in "this". In "ciudad" the final d is barely pronounced.' },
+];
+
 function Chuletas({ onBack, dark }) {
   const [tab, setTab] = useState('gramatica');
 
@@ -2564,12 +3622,67 @@ function Chuletas({ onBack, dark }) {
           <h2 className="text-2xl font-serif font-bold">Chuletas</h2>
         </div>
         <div className="mb-6">
-          <TabBar dark={dark} tabs={[{id:'gramatica',label:'Gramática'},{id:'documentos',label:'Documentos'}]} active={tab} onChange={setTab} />
+          <TabBar dark={dark} tabs={[
+            {id:'gramatica',label:'Gramática'},
+            {id:'errores',label:'Errores'},
+            {id:'pronunciacion',label:'Pronunciación'},
+            {id:'documentos',label:'Documentos'}
+          ]} active={tab} onChange={setTab} />
         </div>
         {tab === 'gramatica' && (
           <div className="space-y-3">
             {CHEAT_SHEETS.map(sheet => (
               <ChulletaCard key={sheet.id} sheet={sheet} dark={dark} />
+            ))}
+          </div>
+        )}
+        {tab === 'errores' && (
+          <div className="space-y-3">
+            <Card dark={dark} className="p-4 bg-amber-50 border-amber-200">
+              <p className="text-xs text-amber-800 font-medium">⚠️ Errores comunes que cometen los anglohablantes al aprender español. Conocerlos te ayudará a evitarlos.</p>
+            </Card>
+            {COMMON_MISTAKES.map((m, i) => (
+              <Card key={i} dark={dark} className="p-4">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-rose-500 font-bold flex-shrink-0">✗</span>
+                    <p className="font-serif text-base line-through text-stone-500">{m.wrong}</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold flex-shrink-0">✓</span>
+                    <div className="flex-1">
+                      <p className="font-serif font-bold text-base">{m.right}</p>
+                      <p className="text-xs text-stone-500 mt-0.5">{m.en}</p>
+                    </div>
+                    {m.right && m.right !== '(correct!)' && m.right !== '(correct, but...)' && (
+                      <SpeakBtn text={m.right} size="sm" />
+                    )}
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-2.5 mt-2">
+                    <p className="text-xs text-blue-900">💡 {m.why}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+        {tab === 'pronunciacion' && (
+          <div className="space-y-3">
+            <Card dark={dark} className="p-4 bg-blue-50 border-blue-200">
+              <p className="text-xs text-blue-800 font-medium">🗣️ Spanish phonetics — Castilian (Spain) variant. Toca 🔊 para escuchar los ejemplos.</p>
+            </Card>
+            {PRONUNCIATION_GUIDE.map((p, i) => (
+              <Card key={i} dark={dark} className="p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <p className="font-serif font-bold text-2xl text-orange-500 min-w-[3rem]">{p.letter}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{p.sound}</p>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="font-serif italic text-base flex-1">{p.example}</p>
+                  <SpeakBtn text={p.example} size="sm" />
+                </div>
+                <p className="text-xs text-stone-600">{p.tip}</p>
+              </Card>
             ))}
           </div>
         )}
@@ -2743,12 +3856,45 @@ function Conectores({ onBack, dark }) {
 // SECTION: Frases
 // ============================================================
 
+const VALENCIAN_PHRASES = [
+  { es:'Bon dia', en:'Good morning / Good day', es_es:'Buenos días', when:'Standard greeting in the morning. You\'ll hear this everywhere in Valencia.' },
+  { es:'Bona vesprada', en:'Good afternoon', es_es:'Buenas tardes', when:'Used from about 2pm until evening. Note: Valencià uses "vesprada", Catalan uses "tarda".' },
+  { es:'Bona nit', en:'Good night', es_es:'Buenas noches', when:'Greeting and goodbye in the evening/night.' },
+  { es:'Com estàs?', en:'How are you?', es_es:'¿Cómo estás?', when:'Casual greeting between friends.' },
+  { es:'Molt bé, gràcies', en:'Very well, thanks', es_es:'Muy bien, gracias', when:'Standard polite reply.' },
+  { es:'Adéu', en:'Goodbye', es_es:'Adiós', when:'Universal goodbye. Sometimes "adéu-siau" for "until we meet again".' },
+  { es:'Per favor', en:'Please', es_es:'Por favor', when:'Almost identical to Spanish.' },
+  { es:'Gràcies / Moltes gràcies', en:'Thanks / Thanks a lot', es_es:'Gracias / Muchas gracias', when:'Daily essential.' },
+  { es:'De res', en:'You\'re welcome', es_es:'De nada', when:'Reply to gracias.' },
+  { es:'Com et dius?', en:'What\'s your name?', es_es:'¿Cómo te llamas?', when:'Introducing yourself.' },
+  { es:'Em dic Liam', en:'My name is Liam', es_es:'Me llamo Liam', when:'Self-introduction.' },
+  { es:'D\'on eres?', en:'Where are you from?', es_es:'¿De dónde eres?', when:'Getting to know someone.' },
+  { es:'Sóc d\'Irlanda', en:'I\'m from Ireland', es_es:'Soy de Irlanda', when:'Answering where you\'re from.' },
+  { es:'No parle valencià', en:'I don\'t speak Valencian', es_es:'No hablo valenciano', when:'Honest disclaimer — but the effort is appreciated.' },
+  { es:'Parles castellà?', en:'Do you speak Spanish (Castilian)?', es_es:'¿Hablas castellano?', when:'Useful when switching languages.' },
+  { es:'Quant val?', en:'How much is it?', es_es:'¿Cuánto vale?', when:'Shopping in Valencia markets.' },
+  { es:'Açò / Això', en:'This / That', es_es:'Esto / Eso', when:'Pointing things out.' },
+  { es:'On està...?', en:'Where is...?', es_es:'¿Dónde está...?', when:'Asking for directions.' },
+  { es:'Ací / Allà', en:'Here / There', es_es:'Aquí / Allá', when:'Locations.' },
+  { es:'A la dreta / A l\'esquerra', en:'To the right / To the left', es_es:'A la derecha / A la izquierda', when:'Directions.' },
+  { es:'Ajuda!', en:'Help!', es_es:'¡Ayuda!', when:'Emergencies.' },
+  { es:'No ho entenc', en:'I don\'t understand', es_es:'No lo entiendo', when:'Asking for clarification.' },
+  { es:'Pots repetir-ho?', en:'Can you repeat that?', es_es:'¿Puedes repetirlo?', when:'When you missed something.' },
+  { es:'Molt bo!', en:'Very good!', es_es:'¡Muy bueno!', when:'Praising food, work, etc.' },
+  { es:'Em fas un favor?', en:'Can you do me a favour?', es_es:'¿Me haces un favor?', when:'Requesting help.' },
+  { es:'Què tal?', en:'How\'s it going?', es_es:'¿Qué tal?', when:'Identical to Spanish — universal casual greeting.' },
+  { es:'Fins ara / Fins després', en:'See you in a bit / See you later', es_es:'Hasta luego', when:'Casual goodbye.' },
+  { es:'Vinga!', en:'Come on! / Go on!', es_es:'¡Venga!', when:'Encouragement, agreement, or "okay then". Heard constantly.' },
+  { es:'Mon\'pare / Ma\'mare', en:'My dad / My mum', es_es:'Mi padre / Mi madre', when:'Affectionate family terms.' },
+  { es:'Una orxata, per favor', en:'A horchata, please', es_es:'Una horchata, por favor', when:'Ordering Valencia\'s iconic drink.' },
+];
+
 function Frases({ onBack, dark }) {
   const [tab, setTab] = useState('situaciones');
   const [expandedSit, setExpandedSit] = useState(null);
   const [idiomsCategory, setIdiomsCategory] = useState('all');
 
-  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'}];
+  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'}];
 
   const idiomCategories = ['all','comida','animales','cuerpo','general'];
   const filteredIdioms = idiomsCategory === 'all' ? IDIOMS : IDIOMS.filter(i => i.category === idiomsCategory);
@@ -2845,6 +3991,29 @@ function Frases({ onBack, dark }) {
                   <p className={`text-sm leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{section.content}</p>
                 )}
               </div>
+            ))}
+          </div>
+        )}
+
+        {tab === 'valencia' && (
+          <div className="space-y-3">
+            <Card dark={dark} className="p-4 bg-amber-50 border-amber-200">
+              <p className="text-sm text-amber-900 font-medium mb-1">🍊 Valencià básico</p>
+              <p className="text-xs text-amber-800">Valencià is the regional language of the Comunitat Valenciana — a Catalan variant. You\'ll hear it daily in Valencia. Learning a few phrases shows respect and warms locals up immediately.</p>
+            </Card>
+            {VALENCIAN_PHRASES.map((p, i) => (
+              <Card key={i} dark={dark} className="p-4">
+                <div className="flex items-start gap-2 mb-1">
+                  <p className="font-serif font-bold text-lg flex-1">{p.es}</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">VAL</span>
+                </div>
+                <p className="text-sm text-stone-600 mb-1">{p.en}</p>
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="text-xs italic text-stone-400">Castellà: <span className="text-stone-500">{p.es_es}</span></p>
+                  <SpeakBtn text={p.es_es} size="sm" />
+                </div>
+                {p.when && <p className="text-xs text-stone-500">{p.when}</p>}
+              </Card>
             ))}
           </div>
         )}
@@ -3085,11 +4254,143 @@ function ExerciseView({ exercise, dark, onComplete, onNext }) {
   return null;
 }
 
+function TimedQuiz({ onExit, dark }) {
+  // Build a pool of MCQ exercises across all categories
+  const pool = React.useMemo(() => {
+    const all = [];
+    EXERCISES.forEach(cat => {
+      cat.exercises.forEach(ex => {
+        if (ex.type === 'mcq') all.push({ ...ex, category: cat.categoryEs });
+      });
+    });
+    return all.sort(() => Math.random() - 0.5).slice(0, 10);
+  }, []);
+
+  const [idx, setIdx] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [finished, setFinished] = useState(false);
+
+  useEffect(() => {
+    if (finished || revealed) return;
+    if (timeLeft <= 0) {
+      setRevealed(true);
+      return;
+    }
+    const t = setTimeout(() => setTimeLeft(t => t - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timeLeft, revealed, finished]);
+
+  useEffect(() => {
+    setSelected(null);
+    setRevealed(false);
+    setTimeLeft(30);
+  }, [idx]);
+
+  if (pool.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-stone-500">No hay preguntas disponibles.</p>
+        <button onClick={onExit} className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-xl font-semibold">Volver</button>
+      </div>
+    );
+  }
+
+  if (finished) {
+    const pct = Math.round((score / pool.length) * 100);
+    return (
+      <div>
+        <BackHeader title="Quiz cronometrado" subtitle="Resultados" onBack={onExit} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-xl mx-auto">
+          <Card dark={dark} className="p-8 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-orange-500 mb-2">Resultado final</p>
+            <p className="font-serif font-bold text-6xl mb-2">{score}/{pool.length}</p>
+            <p className="text-stone-500 mb-6">{pct}% correcto</p>
+            <div className={`inline-block px-4 py-2 rounded-full text-sm font-bold ${pct >= 80 ? 'bg-emerald-100 text-emerald-700' : pct >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
+              {pct >= 80 ? '¡Excelente! 🎉' : pct >= 50 ? 'Bien hecho 👍' : 'Sigue practicando 💪'}
+            </div>
+            <div className="mt-6 flex gap-2">
+              <button onClick={() => window.location.reload()} className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl text-sm font-bold">Otra vez</button>
+              <button onClick={onExit} className="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 py-3 rounded-xl text-sm font-bold">Volver</button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  const ex = pool[idx];
+  const handleSelect = (opt) => {
+    if (revealed) return;
+    setSelected(opt);
+    setRevealed(true);
+    if (opt === ex.answer) setScore(s => s + 1);
+  };
+  const handleNext = () => {
+    if (idx < pool.length - 1) setIdx(i => i + 1);
+    else setFinished(true);
+  };
+
+  return (
+    <div>
+      <BackHeader title="Quiz cronometrado" subtitle={`Pregunta ${idx + 1} / ${pool.length}`} onBack={onExit} dark={dark} />
+      <div className="px-4 lg:px-8 py-6 max-w-xl mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex-1 mr-3">
+            <div className="h-1.5 rounded-full bg-stone-200">
+              <div className="h-1.5 bg-orange-500 rounded-full transition-all" style={{width:`${((idx) / pool.length) * 100}%`}} />
+            </div>
+          </div>
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold ${timeLeft <= 5 ? 'bg-rose-100 text-rose-700 animate-pulse' : 'bg-stone-100 text-stone-700'}`}>
+            <span>⏱</span>
+            <span>{timeLeft}s</span>
+          </div>
+        </div>
+        <p className="text-xs text-stone-400 mb-2">{ex.category} · Puntos: {score}</p>
+
+        <Card dark={dark} className="p-5">
+          <p className="font-semibold text-base mb-4">{ex.question}</p>
+          <div className="space-y-2">
+            {ex.options.map(opt => {
+              const isCorrect = opt === ex.answer;
+              const isSelected = opt === selected;
+              let cls = 'border-stone-200 hover:border-orange-300 hover:bg-orange-50';
+              if (revealed) {
+                if (isCorrect) cls = 'border-emerald-400 bg-emerald-50 text-emerald-800';
+                else if (isSelected) cls = 'border-rose-400 bg-rose-50 text-rose-800';
+                else cls = 'border-stone-200 text-stone-400';
+              }
+              return (
+                <button key={opt} onClick={() => handleSelect(opt)} disabled={revealed}
+                  className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${cls}`}>
+                  {opt} {revealed && isCorrect && ' ✓'} {revealed && isSelected && !isCorrect && ' ✗'}
+                </button>
+              );
+            })}
+          </div>
+          {revealed && (
+            <button onClick={handleNext} className="w-full mt-5 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl text-sm font-bold">
+              {idx < pool.length - 1 ? 'Siguiente →' : 'Ver resultados'}
+            </button>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 function Ejercicios({ onBack, dark }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(null);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState([]);
+  const [timedMode, setTimedMode] = useState(false);
+
+  if (timedMode) {
+    return <TimedQuiz onExit={() => setTimedMode(false)} dark={dark} />;
+  }
 
   const colorMap = {
     orange: 'from-orange-400 to-orange-500',
@@ -3174,6 +4475,20 @@ function Ejercicios({ onBack, dark }) {
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Ejercicios</h2>
         </div>
+
+        <button onClick={() => setTimedMode(true)} className="w-full mb-5 text-left">
+          <Card dark={dark} className="p-5 bg-gradient-to-br from-orange-500 to-rose-500 text-white border-0 hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">⏱</div>
+              <div className="flex-1">
+                <p className="font-bold text-base">Quiz Cronometrado</p>
+                <p className="text-xs opacity-90">10 preguntas · 30 segundos cada una</p>
+              </div>
+              <span className="text-white/70">→</span>
+            </div>
+          </Card>
+        </button>
+
         <div className="space-y-3">
           {EXERCISES.map(cat => (
             <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="w-full text-left">
@@ -3220,6 +4535,7 @@ function Glosario({ onBack, dark }) {
     setStorage('aprende.glossary', seeded);
     return seeded;
   });
+  const [tab, setTab] = useState('lista');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('reciente');
   const [showAdd, setShowAdd] = useState(false);
@@ -3228,6 +4544,47 @@ function Glosario({ onBack, dark }) {
   const [newType, setNewType] = useState('noun');
   const [newExample, setNewExample] = useState('');
   const [translating, setTranslating] = useState(false);
+
+  // Flashcard / SRS state
+  const [srs, setSrs] = useState(() => getStorage('aprende.srs', {}));
+  const [cardIdx, setCardIdx] = useState(0);
+  const [cardFlipped, setCardFlipped] = useState(false);
+  const [cardDir, setCardDir] = useState('es-en'); // 'es-en' or 'en-es'
+
+  useEffect(() => { setStorage('aprende.srs', srs); }, [srs]);
+
+  // Build a due deck (cards never reviewed OR due today)
+  const now = Date.now();
+  const dueDeck = entries.filter(e => {
+    const r = srs[e.id];
+    if (!r) return true;
+    return (r.due || 0) <= now;
+  });
+  const deck = dueDeck.length > 0 ? dueDeck : entries;
+  const currentCard = deck[cardIdx % Math.max(deck.length, 1)];
+
+  const recordReview = (quality) => {
+    // quality: 0 (again), 1 (hard), 2 (good), 3 (easy)
+    if (!currentCard) return;
+    const prev = srs[currentCard.id] || { ease: 2.5, interval: 0, reps: 0 };
+    let { ease, interval, reps } = prev;
+    if (quality === 0) {
+      reps = 0;
+      interval = 0;
+      ease = Math.max(1.3, ease - 0.2);
+    } else {
+      reps += 1;
+      if (reps === 1) interval = 1;
+      else if (reps === 2) interval = 3;
+      else interval = Math.round(interval * ease);
+      if (quality === 1) { ease = Math.max(1.3, ease - 0.15); interval = Math.max(1, Math.round(interval * 0.6)); }
+      if (quality === 3) ease = ease + 0.15;
+    }
+    const due = Date.now() + interval * 86400000;
+    setSrs(prev => ({ ...prev, [currentCard.id]: { ease, interval, reps, due, lastReviewed: Date.now() } }));
+    setCardFlipped(false);
+    setCardIdx(i => i + 1);
+  };
 
   useEffect(() => {
     setStorage('aprende.glossary', entries);
@@ -3283,6 +4640,25 @@ function Glosario({ onBack, dark }) {
     setEntries(prev => prev.filter(e => e.id !== id));
   };
 
+  const handleExportCSV = () => {
+    const escape = (s) => {
+      const v = (s == null ? '' : String(s));
+      return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    };
+    const header = ['Español','English','Tipo','Ejemplo'];
+    const rows = entries.map(e => [e.es, e.en || '', e.type || '', e.example || ''].map(escape).join(','));
+    const csv = '\ufeff' + [header.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `glosario-${todayStr()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <BackHeader title="Glosario" subtitle="My vocabulary" onBack={onBack} dark={dark} />
@@ -3290,11 +4666,19 @@ function Glosario({ onBack, dark }) {
         <div className="hidden lg:flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-serif font-bold">Glosario</h2>
-            <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Mi vocabulario personal</p>
+            <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Mi vocabulario personal · {dueDeck.length} para repasar</p>
           </div>
-          <button onClick={() => setShowAdd(true)} className="bg-orange-500 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ Añadir</button>
+          <div className="flex items-center gap-2">
+            <button onClick={handleExportCSV} className="bg-stone-100 text-stone-700 hover:bg-stone-200 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">⬇️ CSV</button>
+            <button onClick={() => setShowAdd(true)} className="bg-orange-500 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ Añadir</button>
+          </div>
         </div>
 
+        <div className="mb-5">
+          <TabBar dark={dark} tabs={[{id:'lista',label:'Lista'},{id:'tarjetas',label:`Tarjetas (${dueDeck.length})`}]} active={tab} onChange={(t) => { setTab(t); setCardFlipped(false); setCardIdx(0); }} />
+        </div>
+
+        {tab === 'lista' && (<>
         {/* Stats bar */}
         <div className={`flex gap-3 overflow-x-auto hide-scroll mb-5 p-3 rounded-xl ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
           <div className="flex-shrink-0 text-center">
@@ -3334,8 +4718,9 @@ function Glosario({ onBack, dark }) {
         </div>
 
         {/* Mobile add button */}
-        <div className="lg:hidden mb-4">
-          <button onClick={() => setShowAdd(true)} className="w-full bg-orange-500 text-white py-2.5 rounded-xl text-sm font-semibold">+ Añadir palabra</button>
+        <div className="lg:hidden mb-4 flex gap-2">
+          <button onClick={() => setShowAdd(true)} className="flex-1 bg-orange-500 text-white py-2.5 rounded-xl text-sm font-semibold">+ Añadir palabra</button>
+          <button onClick={handleExportCSV} className="bg-stone-100 text-stone-700 px-4 py-2.5 rounded-xl text-sm font-semibold">⬇️ CSV</button>
         </div>
 
         {/* Add modal */}
@@ -3402,6 +4787,7 @@ function Glosario({ onBack, dark }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-serif font-bold text-lg">{entry.es}</p>
+                    <SpeakBtn text={entry.es} size="sm" />
                     <TypeBadge type={entry.type} />
                   </div>
                   {entry.en && <p className={`text-sm font-medium mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{entry.en}</p>}
@@ -3415,6 +4801,176 @@ function Glosario({ onBack, dark }) {
             </Card>
           ))}
         </div>
+        </>)}
+
+        {tab === 'tarjetas' && (
+          <div>
+            {entries.length === 0 ? (
+              <p className="text-center py-12 text-sm text-stone-500">Añade palabras para empezar a repasar.</p>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs text-stone-500">Tarjeta {(cardIdx % deck.length) + 1} / {deck.length}</p>
+                  <button onClick={() => setCardDir(d => d === 'es-en' ? 'en-es' : 'es-en')}
+                    className="text-xs bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-lg font-semibold transition-colors">
+                    {cardDir === 'es-en' ? 'ES → EN' : 'EN → ES'} ↔
+                  </button>
+                </div>
+
+                <div onClick={() => setCardFlipped(f => !f)}
+                  className="cursor-pointer select-none rounded-3xl border bg-white shadow-sm p-8 min-h-[280px] flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
+                  {!cardFlipped ? (
+                    <>
+                      <p className="text-[10px] font-bold tracking-widest text-stone-400 uppercase mb-4">{cardDir === 'es-en' ? 'Español' : 'English'}</p>
+                      <p className="font-serif font-bold text-4xl mb-4">{cardDir === 'es-en' ? currentCard.es : currentCard.en}</p>
+                      {cardDir === 'es-en' && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <SpeakBtn text={currentCard.es} size="lg" />
+                        </div>
+                      )}
+                      <p className="text-xs text-stone-400 mt-4">Toca para girar</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[10px] font-bold tracking-widest text-stone-400 uppercase mb-3">{cardDir === 'es-en' ? 'English' : 'Español'}</p>
+                      <p className="font-serif font-bold text-3xl mb-3">{cardDir === 'es-en' ? currentCard.en : currentCard.es}</p>
+                      {cardDir === 'en-es' && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <SpeakBtn text={currentCard.es} size="lg" />
+                        </div>
+                      )}
+                      {currentCard.example && (
+                        <p className="text-sm italic text-stone-600 mt-4 max-w-sm">"{currentCard.example}"</p>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {cardFlipped && (
+                  <div className="grid grid-cols-4 gap-2 mt-5">
+                    <button onClick={() => recordReview(0)} className="bg-rose-100 hover:bg-rose-200 text-rose-800 py-3 rounded-xl text-xs font-bold transition-colors">
+                      Otra vez
+                      <span className="block text-[10px] opacity-70 mt-0.5">&lt;1 min</span>
+                    </button>
+                    <button onClick={() => recordReview(1)} className="bg-amber-100 hover:bg-amber-200 text-amber-800 py-3 rounded-xl text-xs font-bold transition-colors">
+                      Difícil
+                      <span className="block text-[10px] opacity-70 mt-0.5">~1 día</span>
+                    </button>
+                    <button onClick={() => recordReview(2)} className="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-3 rounded-xl text-xs font-bold transition-colors">
+                      Bien
+                      <span className="block text-[10px] opacity-70 mt-0.5">~3 días</span>
+                    </button>
+                    <button onClick={() => recordReview(3)} className="bg-sky-100 hover:bg-sky-200 text-sky-800 py-3 rounded-xl text-xs font-bold transition-colors">
+                      Fácil
+                      <span className="block text-[10px] opacity-70 mt-0.5">~7 días</span>
+                    </button>
+                  </div>
+                )}
+
+                {!cardFlipped && (
+                  <button onClick={() => setCardFlipped(true)}
+                    className="w-full mt-5 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl text-sm font-bold transition-colors">
+                    Mostrar respuesta
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// GLOBAL SEARCH
+// ============================================================
+
+function buildSearchIndex() {
+  const idx = [];
+  // Words of day
+  WORDS_OF_DAY.forEach(w => idx.push({ kind:'Palabra', section:'hoy', es:w.es, en:w.en, hint:w.example }));
+  // Phrases of day
+  PHRASES_OF_DAY.forEach(p => idx.push({ kind:'Frase', section:'hoy', es:p.es, en:p.en, hint:p.example }));
+  // Tenses
+  Object.keys(TENSES || {}).forEach(group => {
+    (TENSES[group] || []).forEach(t => idx.push({ kind:'Tiempo', section:'tiempos', es:t.title, en:t.subtitle, hint:t.concept }));
+  });
+  // Cheat sheets
+  (typeof CHEAT_SHEETS !== 'undefined' ? CHEAT_SHEETS : []).forEach(c => idx.push({ kind:'Chuleta', section:'chuletas', es:c.title || c.titleEs || '', en:c.subtitle || c.titleEn || '', hint:c.concept || c.intro || '' }));
+  // Vocab themes
+  (typeof VOCAB_THEMES !== 'undefined' ? VOCAB_THEMES : []).forEach(t => {
+    (t.words || []).forEach(w => idx.push({ kind:'Vocab', section:'vocabulario', es:w.es, en:w.en, hint:w.example }));
+  });
+  // Connectors
+  (typeof CONNECTORS !== 'undefined' ? CONNECTORS : []).forEach(g => {
+    (g.items || g.connectors || []).forEach(c => idx.push({ kind:'Conector', section:'conectores', es:c.es || c.word, en:c.en, hint:c.example }));
+  });
+  // Situational phrases
+  (typeof SITUATIONAL_PHRASES !== 'undefined' ? SITUATIONAL_PHRASES : []).forEach(g => {
+    (g.phrases || g.items || []).forEach(p => idx.push({ kind:'Frase', section:'frases', es:p.es, en:p.en, hint:p.example || p.when }));
+  });
+  // Idioms
+  (typeof IDIOMS !== 'undefined' ? IDIOMS : []).forEach(i => idx.push({ kind:'Modismo', section:'frases', es:i.es, en:i.meaning || i.en, hint:i.example }));
+  return idx;
+}
+
+const SEARCH_INDEX = buildSearchIndex();
+
+function GlobalSearch({ open, onClose, onJump }) {
+  const [q, setQ] = useState('');
+  useEffect(() => { if (!open) setQ(''); }, [open]);
+  if (!open) return null;
+  const query = q.trim().toLowerCase();
+  const results = query.length < 2 ? [] : SEARCH_INDEX.filter(r =>
+    (r.es && r.es.toLowerCase().includes(query)) ||
+    (r.en && r.en.toLowerCase().includes(query)) ||
+    (r.hint && r.hint.toLowerCase().includes(query))
+  ).slice(0, 50);
+
+  const KIND_COLOR = {
+    'Palabra':'bg-orange-100 text-orange-700',
+    'Frase':'bg-rose-100 text-rose-700',
+    'Tiempo':'bg-blue-100 text-blue-700',
+    'Chuleta':'bg-purple-100 text-purple-700',
+    'Vocab':'bg-emerald-100 text-emerald-700',
+    'Conector':'bg-teal-100 text-teal-700',
+    'Modismo':'bg-pink-100 text-pink-700',
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-20" style={{background:'rgba(0,0,0,0.5)'}} onClick={onClose}>
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-stone-100">
+          <span className="text-stone-400">🔍</span>
+          <input
+            autoFocus
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Escape') onClose(); }}
+            placeholder="Buscar en todo el contenido..."
+            className="flex-1 outline-none text-base placeholder-stone-400" />
+          <button onClick={onClose} className="text-stone-400 text-2xl leading-none">×</button>
+        </div>
+        <div className="max-h-[60vh] overflow-y-auto">
+          {query.length < 2 && (
+            <p className="text-center text-sm text-stone-400 py-10">Escribe al menos 2 letras para buscar.</p>
+          )}
+          {query.length >= 2 && results.length === 0 && (
+            <p className="text-center text-sm text-stone-400 py-10">Sin resultados para "{q}".</p>
+          )}
+          {results.map((r, i) => (
+            <button key={i} onClick={() => { onJump(r.section); onClose(); }}
+              className="w-full text-left px-5 py-3 border-b border-stone-100 hover:bg-stone-50 transition-colors">
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${KIND_COLOR[r.kind] || 'bg-stone-100 text-stone-700'}`}>{r.kind}</span>
+                <p className="font-serif font-bold text-base flex-1">{r.es}</p>
+              </div>
+              {r.en && <p className="text-xs text-stone-500">{r.en}</p>}
+              {r.hint && <p className="text-xs text-stone-400 italic mt-0.5 truncate">{r.hint}</p>}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -3425,13 +4981,9 @@ function Glosario({ onBack, dark }) {
 // ============================================================
 
 function App() {
-  const [dark, setDark] = useState(() => getStorage('aprende.dark', false));
+  const dark = false;
   const [section, setSection] = useState('inicio');
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-    setStorage('aprende.dark', dark);
-  }, [dark]);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const NAV_ITEMS = [
     { id: 'inicio', label: 'Inicio', emoji: '🏠' },
@@ -3441,6 +4993,7 @@ function App() {
     { id: 'vocabulario', label: 'Vocab', emoji: '📚' },
     { id: 'conectores', label: 'Conectores', emoji: '🔗' },
     { id: 'frases', label: 'Frases', emoji: '💬' },
+    { id: 'lecturas', label: 'Lecturas', emoji: '📖' },
     { id: 'ejercicios', label: 'Ejercicios', emoji: '✏️' },
     { id: 'glosario', label: 'Glosario', emoji: '🔖' },
   ];
@@ -3455,6 +5008,7 @@ function App() {
       case 'vocabulario': return <Vocabulario {...props} />;
       case 'conectores': return <Conectores {...props} />;
       case 'frases': return <Frases {...props} />;
+      case 'lecturas': return <Lecturas {...props} />;
       case 'ejercicios': return <Ejercicios {...props} />;
       case 'glosario': return <Glosario {...props} />;
       default: return <Inicio dark={dark} section={section} setSection={setSection} />;
@@ -3469,6 +5023,13 @@ function App() {
           <h1 className="font-serif font-bold text-2xl text-orange-500">Aprende</h1>
           <p className="text-xs text-stone-500 mt-1">A2 → B1 Español</p>
         </div>
+        <div className="px-3 pt-3">
+          <button onClick={() => setSearchOpen(true)}
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-500 text-sm font-medium transition-colors">
+            <span>🔍</span>
+            <span className="flex-1 text-left">Buscar...</span>
+          </button>
+        </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {NAV_ITEMS.map(item => (
             <button key={item.id} onClick={() => setSection(item.id)}
@@ -3482,11 +5043,6 @@ function App() {
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-inherit">
-          <button onClick={() => setDark(!dark)} className={`w-full py-2 px-4 rounded-xl text-sm font-medium transition-all ${dark ? 'bg-white/[0.08] text-white hover:bg-white/[0.12]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-            {dark ? '☀️ Modo claro' : '🌙 Modo oscuro'}
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}
@@ -3494,13 +5050,15 @@ function App() {
         {/* Mobile header */}
         <header className={`lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
           <h1 className="font-serif font-bold text-xl text-orange-500">Aprende</h1>
-          <button onClick={() => setDark(!dark)} className="text-lg">{dark ? '☀️' : '🌙'}</button>
+          <button onClick={() => setSearchOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 text-stone-600 text-base">🔍</button>
         </header>
 
         <div className="pb-24 lg:pb-8">
           {renderSection()}
         </div>
       </main>
+
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s) => setSection(s)} />
 
       {/* Mobile bottom nav */}
       <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${dark ? 'glass-dark border-white/[0.08]' : 'glass border-stone-200/60'}`}>
