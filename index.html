@@ -3292,18 +3292,21 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
   );
 }
 
-function BackHeader({ title, subtitle, onBack, dark }) {
+function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
   if (!onBack) return null;
   return (
     <div className={`sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center gap-3 ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
-      <button onClick={onBack} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${dark ? 'bg-white/[0.08] text-white hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+      <button onClick={onBack} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 ${dark ? 'bg-white/[0.08] text-white hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
         <span>←</span>
         <span className="hidden sm:inline">Volver</span>
       </button>
-      <div>
-        <p className="font-bold text-sm leading-tight">{title}</p>
-        {subtitle && <p className="text-xs text-stone-500">{subtitle}</p>}
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-sm leading-tight truncate">{title}</p>
+        {subtitle && <p className="text-xs text-stone-500 truncate">{subtitle}</p>}
       </div>
+      {onSearch && (
+        <button onClick={onSearch} className={`lg:hidden flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm ${dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>🔍</button>
+      )}
     </div>
   );
 }
@@ -3325,10 +3328,10 @@ function TypeBadge({ type }) {
 
 function TabBar({ tabs, active, onChange, dark }) {
   return (
-    <div className={`flex gap-1 p-1 rounded-xl ${dark ? 'bg-white/[0.06]' : 'bg-stone-100'}`}>
+    <div className={`flex gap-1 p-1 rounded-xl overflow-x-auto hide-scroll ${dark ? 'bg-white/[0.06]' : 'bg-stone-100'}`}>
       {tabs.map(t => (
         <button key={t.id} onClick={() => onChange(t.id)}
-          className={`flex-1 py-1.5 px-3 rounded-lg text-sm font-medium transition-all ${active === t.id ? 'bg-orange-500 text-white shadow-sm' : dark ? 'text-stone-400 hover:text-white' : 'text-stone-600 hover:text-stone-900'}`}>
+          className={`flex-shrink-0 flex-1 min-w-[64px] py-1.5 px-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${active === t.id ? 'bg-orange-500 text-white shadow-sm' : dark ? 'text-stone-400 hover:text-white' : 'text-stone-600 hover:text-stone-900'}`}>
           {t.label}
         </button>
       ))}
@@ -3519,7 +3522,7 @@ function Inicio({ dark, section, setSection }) {
 // SECTION: Hoy
 // ============================================================
 
-function Hoy({ onBack, dark }) {
+function Hoy({ onBack, dark, onSearch }) {
   const [tab, setTab] = useState('hoy');
   const [expanded, setExpanded] = useState(null);
 
@@ -3530,7 +3533,7 @@ function Hoy({ onBack, dark }) {
 
   return (
     <div>
-      <BackHeader title="Hoy" subtitle="Palabra y frase del día" onBack={onBack} dark={dark} />
+      <BackHeader title="Hoy" subtitle="Palabra y frase del día" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Hoy</h2>
@@ -3755,7 +3758,7 @@ const TENSE_TAB_COLORS = {
   subjuntivo: { tile:'from-rose-500 to-rose-600',    badge:'bg-rose-100 text-rose-700' },
 };
 
-function Tiempos({ onBack, dark }) {
+function Tiempos({ onBack, dark, onSearch }) {
   const [tab, setTab] = useState('pasado');
   const [selectedTense, setSelectedTense] = useState(null);
 
@@ -3783,7 +3786,7 @@ function Tiempos({ onBack, dark }) {
 
   return (
     <div>
-      <BackHeader title="Tiempos verbales" subtitle="Tenses reference" onBack={onBack} dark={dark} />
+      <BackHeader title="Tiempos verbales" subtitle="Tenses reference" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
         <div className="hidden lg:block mb-4">
           <h2 className="text-2xl font-serif font-bold">Tiempos verbales</h2>
@@ -3794,21 +3797,21 @@ function Tiempos({ onBack, dark }) {
         {tab === 'conjugador' ? (
           <Conjugador dark={dark} />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {(TENSES[tab] || []).map(card => (
               <button key={card.id} onClick={() => setSelectedTense(card)}
-                className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
+                className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
                 {/* Colour strip */}
                 <div className={`h-1.5 w-full bg-gradient-to-r ${tabColors.tile}`} />
-                <div className="p-4">
-                  <p className="font-serif font-bold text-base mb-1">{card.title}</p>
+                <div className="p-4 flex flex-col flex-1">
+                  <p className="font-serif font-bold text-base lg:text-lg mb-1 leading-snug">{card.title}</p>
                   {card.subtitle && (
-                    <p className={`text-xs mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.subtitle}</p>
+                    <p className={`text-xs lg:text-sm mb-2 font-medium ${dark ? 'text-orange-300' : 'text-orange-600'}`}>{card.subtitle}</p>
                   )}
                   {card.when && (
-                    <p className={`text-xs leading-relaxed line-clamp-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.when}</p>
+                    <p className={`text-sm leading-relaxed line-clamp-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.when}</p>
                   )}
-                  <p className={`text-[10px] font-semibold mt-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Toca para ver conjugación →</p>
+                  <p className={`text-xs font-semibold mt-auto pt-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Ver conjugación →</p>
                 </div>
               </button>
             ))}
@@ -4168,7 +4171,7 @@ const READING_PASSAGES = [
   }
 ];
 
-function Lecturas({ onBack, dark }) {
+function Lecturas({ onBack, dark, onSearch }) {
   const [selected, setSelected] = useState(null);
   const [showAnswers, setShowAnswers] = useState({});
 
@@ -4234,7 +4237,7 @@ function Lecturas({ onBack, dark }) {
 
   return (
     <div>
-      <BackHeader title="Lecturas" subtitle="Reading passages" onBack={onBack} dark={dark} />
+      <BackHeader title="Lecturas" subtitle="Reading passages" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Lecturas</h2>
@@ -4598,7 +4601,7 @@ const CONVERSATIONS = [
   }
 ];
 
-function Conversaciones({ onBack, dark }) {
+function Conversaciones({ onBack, dark, onSearch }) {
   const [selected, setSelected] = useState(null);
   const [showTranslation, setShowTranslation] = useState(true);
   const [playingIdx, setPlayingIdx] = useState(null);
@@ -4747,7 +4750,7 @@ function Conversaciones({ onBack, dark }) {
 
   return (
     <div>
-      <BackHeader title="Conversaciones" subtitle="Listening practice" onBack={onBack} dark={dark} />
+      <BackHeader title="Conversaciones" subtitle="Listening practice" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Conversaciones</h2>
@@ -5889,7 +5892,7 @@ const PRONUNCIATION_GUIDE = [
   { letter:'d (between vowels)', sound:'/ð/ soft th', example:'nada, todo, ciudad', tip:'Like English "th" in "this". In "ciudad" the final d is barely pronounced.' },
 ];
 
-function Chuletas({ onBack, dark }) {
+function Chuletas({ onBack, dark, onSearch }) {
   const [tab, setTab] = useState('gramatica');
   const [selectedSheet, setSelectedSheet] = useState(null);
   const [selectedDoc, setSelectedDoc] = useState(null);
@@ -6069,7 +6072,7 @@ function Chuletas({ onBack, dark }) {
   // ---- LIST / GRID VIEW ----
   return (
     <div>
-      <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} />
+      <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Chuletas</h2>
@@ -6291,7 +6294,7 @@ function VocabTemas({ onBack, dark }) {
   );
 }
 
-function Vocabulario({ onBack, dark, initialTab }) {
+function Vocabulario({ onBack, dark, initialTab, onSearch }) {
   const [tab, setTab] = useState(initialTab || 'temas');
   const tabs = [
     { id:'temas', label:'Temas' },
@@ -6299,14 +6302,14 @@ function Vocabulario({ onBack, dark, initialTab }) {
   ];
   return (
     <div>
-      <BackHeader title="Vocabulario" subtitle="Vocab + Glosario" onBack={onBack} dark={dark} />
+      <BackHeader title="Vocabulario" subtitle="Vocab + Glosario" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
         <div className="hidden lg:block mb-4">
           <h2 className="text-2xl font-serif font-bold">Vocabulario</h2>
         </div>
         <TabBar dark={dark} tabs={tabs} active={tab} onChange={setTab} />
       </div>
-      {tab === 'temas' && <VocabTemas onBack={onBack} dark={dark} />}
+      {tab === 'temas' && <VocabTemas onBack={onBack} dark={dark} onSearch={onSearch} />}
       {tab === 'glosario' && <GlosarioInner dark={dark} />}
     </div>
   );
@@ -6421,7 +6424,7 @@ function ConectoresPanel({ dark }) {
 function Conectores({ onBack, dark }) {
   return (
     <div>
-      <BackHeader title="Conectores" subtitle="Connectors reference" onBack={onBack} dark={dark} />
+      <BackHeader title="Conectores" subtitle="Connectors reference" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Conectores</h2>
@@ -6469,7 +6472,7 @@ const VALENCIAN_PHRASES = [
   { es:'Una orxata, per favor', en:'A horchata, please', es_es:'Una horchata, por favor', when:'Ordering Valencia\'s iconic drink.' },
 ];
 
-function Frases({ onBack, dark, initialTab }) {
+function Frases({ onBack, dark, initialTab, onSearch }) {
   const [tab, setTab] = useState(initialTab || 'situaciones');
   const [selectedSit, setSelectedSit] = useState(null);
   const [selectedValGroup, setSelectedValGroup] = useState(null);
@@ -6526,7 +6529,7 @@ function Frases({ onBack, dark, initialTab }) {
 
   return (
     <div>
-      <BackHeader title="Frases" subtitle="Phrases & idioms" onBack={onBack} dark={dark} />
+      <BackHeader title="Frases" subtitle="Phrases & idioms" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className={`px-4 lg:px-8 py-6 ${containerWidth} mx-auto`}>
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Frases</h2>
@@ -7289,7 +7292,7 @@ function EscrituraView({ prompt, dark, onBack }) {
 
   return (
     <div>
-      <BackHeader title={prompt.title} subtitle={`Nivel ${prompt.level} · Objetivo: ${target} palabras`} onBack={onBack} dark={dark} />
+      <BackHeader title={prompt.title} subtitle={`Nivel ${prompt.level} · Objetivo: ${target} palabras`} onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
         <Card dark={dark} className="p-5 mb-4">
           <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-orange-300' : 'text-orange-600'}`}>📝 Tu tarea</p>
@@ -7350,7 +7353,7 @@ function EscrituraView({ prompt, dark, onBack }) {
   );
 }
 
-function Ejercicios({ onBack, dark }) {
+function Ejercicios({ onBack, dark, onSearch }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(null);
   const [score, setScore] = useState(0);
@@ -7474,7 +7477,7 @@ function Ejercicios({ onBack, dark }) {
 
   return (
     <div>
-      <BackHeader title="Ejercicios" subtitle="Practice exercises" onBack={onBack} dark={dark} />
+      <BackHeader title="Ejercicios" subtitle="Practice exercises" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Ejercicios</h2>
@@ -8050,7 +8053,7 @@ function App() {
   ];
 
   const renderSection = () => {
-    const props = { dark, onBack: () => setSection('inicio') };
+    const props = { dark, onBack: () => setSection('inicio'), onSearch: () => setSearchOpen(true) };
     switch(section) {
       case 'inicio': return <Inicio dark={dark} section={section} setSection={setSection} />;
       case 'hoy': return <Hoy {...props} />;
@@ -8098,8 +8101,8 @@ function App() {
 
       {/* Main content */}
       <main className="lg:ml-64 min-h-screen">
-        {/* Mobile header */}
-        <header className={`lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
+        {/* Mobile header — only on inicio (sub-sections use BackHeader instead) */}
+        <header className={`${section === 'inicio' ? 'flex' : 'hidden'} lg:hidden sticky top-0 z-30 px-4 py-3 items-center justify-between ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
           <h1 className="font-serif font-bold text-xl text-orange-500">La Vida Español</h1>
           <button onClick={() => setSearchOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 text-stone-600 text-base">🔍</button>
         </header>
