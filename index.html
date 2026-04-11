@@ -1190,6 +1190,49 @@ const CHEAT_SHEETS = [
         ['Months','enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre']
       ]}
     ]
+  },
+  {
+    id:'haber',
+    title:'Haber',
+    titleEn:'To have (auxiliary) · There to be',
+    color:'green',
+    content:[
+      { heading:'Two completely different jobs', rows:[
+        ['As auxiliary (compound tenses)','He comido paella.','I have eaten paella.'],
+        ['As "there is / there are"','Hay mucha gente en la plaza.','There are a lot of people in the square.'],
+        ['Never confuse with tener','"Tengo" = I possess · "He" = I have done','Tengo un coche ≠ He comprado un coche.']
+      ]},
+      { heading:'"Hay" vs "está/están"', rows:[
+        ['Existence (unknown/new thing)','Hay un banco en la esquina.','There\'s a bank on the corner.'],
+        ['Location of a known thing','El banco está en la esquina.','The bank is on the corner.'],
+        ['Quantity / indefinite','Hay tres manzanas en la mesa.','There are three apples on the table.'],
+        ['Specific / definite','Las manzanas están en la mesa.','The apples are on the table.']
+      ]},
+      { heading:'Auxiliary forms across all tenses', rows:[
+        ['Pretérito perfecto','he / has / ha / hemos / habéis / han + participio','he hablado · I have spoken'],
+        ['Pluscuamperfecto','había / habías / había / habíamos / habíais / habían + part.','había hablado · I had spoken'],
+        ['Futuro perfecto','habré / habrás / habrá / habremos / habréis / habrán + part.','habré hablado · I will have spoken'],
+        ['Condicional perfecto','habría / habrías / habría / habríamos / habríais / habrían + part.','habría hablado · I would have spoken'],
+        ['Subjuntivo perfecto','haya / hayas / haya / hayamos / hayáis / hayan + part.','haya hablado · (subj.) I have spoken'],
+        ['Pluscuamperfecto subj.','hubiera / hubieras / hubiera / hubiéramos / hubierais / hubieran + part.','hubiera hablado · I had spoken (subj.)']
+      ]},
+      { heading:'"Hay" across all tenses (always singular!)', rows:[
+        ['Presente','hay','there is / there are'],
+        ['Pretérito indefinido','hubo','there was / there were (completed)'],
+        ['Imperfecto','había','there was / there were (ongoing)'],
+        ['Futuro','habrá','there will be'],
+        ['Condicional','habría','there would be'],
+        ['Pret. perfecto','ha habido','there has been'],
+        ['Subjuntivo pres.','haya','(that) there is / are']
+      ]},
+      { heading:'Common traps and fixed expressions', rows:[
+        ['"Hay que" + infinitive','Hay que madrugar mañana.','One has to / you must get up early tomorrow.'],
+        ['"Haber de" + infinitive','He de irme ya.','I have to leave now. (formal/literary)'],
+        ['Never pluralise "hay"','Había muchas personas. ✓','"Habían" muchas personas. ✗ (Castilian standard)'],
+        ['Haber vs tener','He terminado el trabajo. ≠ Tengo el trabajo terminado.','"He" = auxiliary · "tengo" = possess'],
+        ['"No hay de qué"','— Gracias. — No hay de qué.','— Thanks. — Don\'t mention it.']
+      ]}
+    ]
   }
 ];
 
@@ -2638,6 +2681,7 @@ function Inicio({ dark, section, setSection }) {
     { id:'conectores', label:'Conectores', sublabel:'Connectors', emoji:'🔗', color:'teal' },
     { id:'frases', label:'Frases', sublabel:'Phrases', emoji:'💬', color:'rose' },
     { id:'lecturas', label:'Lecturas', sublabel:'Reading', emoji:'📖', color:'sky' },
+    { id:'conversaciones', label:'Conversaciones', sublabel:'Listening', emoji:'🎧', color:'violet' },
     { id:'ejercicios', label:'Ejercicios', sublabel:'Exercises', emoji:'✏️', color:'amber' },
     { id:'glosario', label:'Glosario', sublabel:'Glossary', emoji:'🔖', color:'indigo' },
   ];
@@ -2652,6 +2696,7 @@ function Inicio({ dark, section, setSection }) {
     sky: 'from-sky-400 to-sky-500',
     amber: 'from-amber-400 to-amber-500',
     indigo: 'from-indigo-400 to-indigo-500',
+    violet: 'from-violet-400 to-violet-500',
   };
 
   const WordCard = () => (
@@ -2853,17 +2898,29 @@ function Hoy({ onBack, dark }) {
                       <div className="pt-4 space-y-4">
                         <div>
                           <p className="text-[10px] font-bold tracking-widest text-orange-500 uppercase mb-1">Palabra</p>
-                          <p className="font-serif text-2xl font-bold">{day.word.es}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-serif text-2xl font-bold">{day.word.es}</p>
+                            <SpeakBtn text={day.word.es} size="md" />
+                          </div>
                           <p className={`text-sm mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{day.word.en}</p>
-                          <p className={`text-sm italic mb-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{day.word.example}"</p>
+                          <div className="flex items-start gap-2 mb-1">
+                            <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{day.word.example}"</p>
+                            <SpeakBtn text={day.word.example} size="sm" />
+                          </div>
                           <p className={`text-xs mb-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{day.word.exampleEn}</p>
                           {day.word.tip && <p className={`text-xs p-2 rounded-lg ${dark ? 'bg-orange-900/20 text-orange-300' : 'bg-orange-50 text-orange-700'}`}>💡 {day.word.tip}</p>}
                         </div>
                         <div>
                           <p className="text-[10px] font-bold tracking-widest text-rose-500 uppercase mb-1">Frase</p>
-                          <p className="font-serif text-xl font-bold">{day.phrase.es}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-serif text-xl font-bold">{day.phrase.es}</p>
+                            <SpeakBtn text={day.phrase.es} size="md" />
+                          </div>
                           <p className={`text-sm mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{day.phrase.en}</p>
-                          <p className={`text-sm italic mb-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{day.phrase.example}"</p>
+                          <div className="flex items-start gap-2 mb-1">
+                            <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{day.phrase.example}"</p>
+                            <SpeakBtn text={day.phrase.example} size="sm" />
+                          </div>
                           <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{day.phrase.exampleEn}</p>
                         </div>
                       </div>
@@ -3242,6 +3299,490 @@ function Lecturas({ onBack, dark }) {
   );
 }
 
+// ============================================================
+// SECTION: Conversaciones — two-speaker listening practice
+// ============================================================
+
+const CONVERSATIONS = [
+  {
+    id:'cafe-pedido',
+    level:'A2',
+    emoji:'☕',
+    title:'En la cafetería',
+    titleEn:'At the café',
+    setting:'Una mañana de martes. Un cliente entra en una cafetería del barrio de Ruzafa.',
+    speakers:[
+      { id:'A', name:'Camarero', color:'bg-orange-100 text-orange-700' },
+      { id:'B', name:'Cliente', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Buenos días, ¿qué le pongo?', en:'Good morning, what can I get you?' },
+      { who:'B', es:'Hola, buenos días. Un café con leche y un cruasán, por favor.', en:'Hi, good morning. A coffee with milk and a croissant, please.' },
+      { who:'A', es:'¿Lo quiere caliente o templado?', en:'Do you want it hot or warm?' },
+      { who:'B', es:'Templado, por favor. Que no esté hirviendo.', en:'Warm, please. Not boiling.' },
+      { who:'A', es:'Muy bien. ¿Para tomar aquí o para llevar?', en:'Perfect. Have here or take away?' },
+      { who:'B', es:'Para aquí. ¿Me pone también un zumo de naranja natural?', en:'Have here. Could you also give me a fresh orange juice?' },
+      { who:'A', es:'Claro. ¿Algo más?', en:'Of course. Anything else?' },
+      { who:'B', es:'No, gracias, eso es todo. ¿Cuánto es?', en:'No thanks, that\'s all. How much is it?' },
+      { who:'A', es:'Son seis euros con cincuenta.', en:'That\'ll be six euros fifty.' },
+      { who:'B', es:'Aquí tiene. Gracias.', en:'Here you go. Thanks.' }
+    ],
+    vocab:[
+      { es:'¿qué le pongo?', en:'what can I get you? (lit. what shall I put for you)' },
+      { es:'para llevar', en:'to take away' },
+      { es:'zumo natural', en:'fresh-squeezed juice' },
+      { es:'¿cuánto es?', en:'how much is it?' }
+    ],
+    notes:'The camarero uses "le" (usted) — the polite register that\'s standard in Spanish cafés. In very casual places you might hear "tú" instead.'
+  },
+  {
+    id:'restaurante-menu',
+    level:'A2',
+    emoji:'🍽️',
+    title:'En el restaurante',
+    titleEn:'At the restaurant',
+    setting:'Un mediodía en un restaurante del centro de Valencia. Dos amigos piden el menú del día.',
+    speakers:[
+      { id:'A', name:'Camarera', color:'bg-orange-100 text-orange-700' },
+      { id:'B', name:'Cliente', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Buenas, ¿ya han decidido?', en:'Hi, have you decided yet?' },
+      { who:'B', es:'Sí, vamos a tomar el menú del día los dos. ¿Qué tienen de primero?', en:'Yes, we\'ll both have the set menu. What do you have for starters?' },
+      { who:'A', es:'De primero tienen ensalada mixta, crema de verduras o paella.', en:'For starters you have mixed salad, cream of vegetables or paella.' },
+      { who:'B', es:'Yo la paella. Mi amigo la ensalada.', en:'I\'ll have the paella. My friend the salad.' },
+      { who:'A', es:'¿Y de segundo?', en:'And for main?' },
+      { who:'B', es:'Para mí el pescado del día. Y él el pollo asado.', en:'The fish of the day for me. And roast chicken for him.' },
+      { who:'A', es:'Muy bien. ¿Para beber?', en:'Perfect. And to drink?' },
+      { who:'B', es:'Una jarra de agua y dos copas de vino tinto.', en:'A jug of water and two glasses of red wine.' },
+      { who:'A', es:'¿El pan y el postre están incluidos en el menú?', en:'Bread and dessert are included in the menu?' },
+      { who:'A', es:'Sí, todo incluido. Café también si quieren.', en:'Yes, all included. Coffee too if you want.' },
+      { who:'B', es:'Perfecto, gracias.', en:'Perfect, thanks.' }
+    ],
+    vocab:[
+      { es:'menú del día', en:'set lunch menu (starter, main, dessert, drink — usually €12–15)' },
+      { es:'de primero / de segundo', en:'for starters / for main' },
+      { es:'pescado del día', en:'fish of the day' },
+      { es:'jarra de agua', en:'jug of water (usually free)' }
+    ],
+    notes:'The "menú del día" is a Spanish lunchtime institution — 2 or 3 courses, drink and coffee for around €13 in Valencia. Always ask if bread and postre are incluidos.'
+  },
+  {
+    id:'mercado-ruzafa',
+    level:'A2',
+    emoji:'🥬',
+    title:'En el mercado',
+    titleEn:'At the market',
+    setting:'Comprando verduras en el Mercado de Ruzafa un sábado por la mañana.',
+    speakers:[
+      { id:'A', name:'Frutero', color:'bg-green-100 text-green-700' },
+      { id:'B', name:'Clienta', color:'bg-rose-100 text-rose-700' }
+    ],
+    lines:[
+      { who:'A', es:'¡Buenas! ¿Qué le pongo, guapa?', en:'Hey there! What can I get you, love?' },
+      { who:'B', es:'Póngame un kilo de tomates, pero que estén bien maduros para ensalada.', en:'Give me a kilo of tomatoes, but nice ripe ones for salad.' },
+      { who:'A', es:'Estos de aquí están buenísimos. ¿Algo más?', en:'These here are amazing. Anything else?' },
+      { who:'B', es:'Medio kilo de cebollas y un par de calabacines.', en:'Half a kilo of onions and a couple of courgettes.' },
+      { who:'A', es:'¿Grandes o pequeños los calabacines?', en:'Big or small courgettes?' },
+      { who:'B', es:'Medianos está bien. ¿A cuánto están los aguacates?', en:'Medium is fine. How much are the avocados?' },
+      { who:'A', es:'A dos euros la pieza, pero llévese tres por cinco.', en:'Two euros each, but take three for five.' },
+      { who:'B', es:'Vale, me llevo tres. ¿Cuánto es todo?', en:'OK, I\'ll take three. How much altogether?' },
+      { who:'A', es:'A ver... son once euros con veinte.', en:'Let me see... that\'s eleven twenty.' },
+      { who:'B', es:'Aquí tiene. Muchas gracias.', en:'Here you go. Thank you.' },
+      { who:'A', es:'A ti, guapa. ¡Hasta la próxima!', en:'Thank you, love. See you next time!' }
+    ],
+    vocab:[
+      { es:'póngame', en:'give me (polite imperative of poner)' },
+      { es:'maduros', en:'ripe' },
+      { es:'¿a cuánto están?', en:'how much are they? (for produce with variable prices)' },
+      { es:'la pieza', en:'each (lit. the piece)' }
+    ],
+    notes:'"Guapa/guapo" from a market vendor is totally normal and friendly — not flirtatious. It\'s the Spanish equivalent of "love" or "mate".'
+  },
+  {
+    id:'farmacia-dolor',
+    level:'A2',
+    emoji:'💊',
+    title:'En la farmacia',
+    titleEn:'At the pharmacy',
+    setting:'En una farmacia de guardia. El cliente tiene dolor de cabeza y mocos.',
+    speakers:[
+      { id:'A', name:'Farmacéutica', color:'bg-teal-100 text-teal-700' },
+      { id:'B', name:'Cliente', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Buenos días, ¿en qué puedo ayudarle?', en:'Good morning, how can I help you?' },
+      { who:'B', es:'Hola. Llevo dos días con dolor de cabeza y mocos. ¿Me puede recomendar algo?', en:'Hi. I\'ve had a headache and a runny nose for two days. Can you recommend something?' },
+      { who:'A', es:'¿Tiene fiebre?', en:'Do you have a fever?' },
+      { who:'B', es:'No, fiebre no. Solo me encuentro un poco cansado.', en:'No, no fever. I just feel a bit tired.' },
+      { who:'A', es:'Parece un resfriado. Le puedo dar paracetamol y un descongestivo.', en:'Sounds like a cold. I can give you paracetamol and a decongestant.' },
+      { who:'B', es:'¿Necesito receta?', en:'Do I need a prescription?' },
+      { who:'A', es:'No, no hace falta. Tome el paracetamol cada ocho horas si le duele.', en:'No, no need. Take the paracetamol every eight hours if it hurts.' },
+      { who:'B', es:'Vale. ¿Y el descongestivo?', en:'OK. And the decongestant?' },
+      { who:'A', es:'Una pastilla por la mañana y otra por la noche, máximo cinco días.', en:'One pill in the morning and another at night, maximum five days.' },
+      { who:'B', es:'Perfecto. ¿Cuánto es en total?', en:'Perfect. How much altogether?' },
+      { who:'A', es:'Siete euros con sesenta. Que se mejore.', en:'Seven sixty. Get well soon.' }
+    ],
+    vocab:[
+      { es:'llevo dos días con...', en:'I\'ve had... for two days' },
+      { es:'mocos', en:'runny nose / snot' },
+      { es:'no hace falta', en:'no need / it\'s not necessary' },
+      { es:'que se mejore', en:'get well soon (formal)' }
+    ],
+    notes:'Spanish pharmacists are often the first stop for minor illness — they can diagnose basic things and recommend over-the-counter meds without a doctor.'
+  },
+  {
+    id:'entrevista-trabajo',
+    level:'B1',
+    emoji:'💼',
+    title:'Entrevista de trabajo',
+    titleEn:'Job interview',
+    setting:'Primera ronda de entrevista para un puesto de diseñador en una empresa de Valencia.',
+    speakers:[
+      { id:'A', name:'Entrevistador', color:'bg-indigo-100 text-indigo-700' },
+      { id:'B', name:'Candidato', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Gracias por venir. Cuéntame un poco sobre ti.', en:'Thanks for coming. Tell me a bit about yourself.' },
+      { who:'B', es:'Pues soy diseñador con cinco años de experiencia. Trabajé en Dublín antes de mudarme a Valencia el año pasado.', en:'Well, I\'m a designer with five years of experience. I worked in Dublin before moving to Valencia last year.' },
+      { who:'A', es:'¿Por qué te interesa este puesto?', en:'Why are you interested in this role?' },
+      { who:'B', es:'Me atrae mucho vuestro enfoque en proyectos sostenibles. Es algo que quería hacer desde hace tiempo.', en:'I\'m really drawn to your focus on sustainable projects. It\'s something I\'ve wanted to do for a while.' },
+      { who:'A', es:'¿Cuáles dirías que son tus puntos fuertes?', en:'What would you say your strengths are?' },
+      { who:'B', es:'Soy muy organizado y trabajo bien en equipo. Creo que también tengo buen ojo para el detalle.', en:'I\'m very organised and I work well in a team. I think I also have a good eye for detail.' },
+      { who:'A', es:'¿Y algún punto débil?', en:'And any weaknesses?' },
+      { who:'B', es:'A veces me cuesta delegar. Pero estoy trabajando en eso.', en:'Sometimes I find it hard to delegate. But I\'m working on it.' },
+      { who:'A', es:'¿Tienes alguna pregunta para nosotros?', en:'Do you have any questions for us?' },
+      { who:'B', es:'Sí, ¿cómo es el día a día del equipo? ¿Trabajáis en remoto o en oficina?', en:'Yes, what\'s the team\'s day-to-day like? Do you work remotely or in the office?' },
+      { who:'A', es:'Un modelo híbrido. Tres días en oficina, dos en casa.', en:'A hybrid model. Three days in the office, two at home.' },
+      { who:'B', es:'Perfecto. Muchas gracias por vuestro tiempo.', en:'Perfect. Thanks so much for your time.' }
+    ],
+    vocab:[
+      { es:'puntos fuertes / débiles', en:'strengths / weaknesses' },
+      { es:'me cuesta + inf', en:'I find it hard to...' },
+      { es:'buen ojo para el detalle', en:'a good eye for detail' },
+      { es:'el día a día', en:'day-to-day, daily routine' }
+    ],
+    notes:'"Trabajé" (indefinido) for completed past jobs. Switch to imperfecto only if describing what you "used to do". Spanish interviewers often use "tú" immediately — formality is dropping fast.'
+  },
+  {
+    id:'alquiler-piso',
+    level:'B1',
+    emoji:'🏠',
+    title:'Alquilando un piso',
+    titleEn:'Renting a flat',
+    setting:'Visitando un piso en Benimaclet. El posible inquilino habla con el propietario.',
+    speakers:[
+      { id:'A', name:'Propietario', color:'bg-amber-100 text-amber-700' },
+      { id:'B', name:'Inquilino', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Pase, pase. Como ve, el piso es muy luminoso.', en:'Come in, come in. As you can see, the flat is very bright.' },
+      { who:'B', es:'Sí, la verdad es que tiene muy buena luz. ¿Cuántos metros cuadrados tiene?', en:'Yes, it really does have great light. How many square metres is it?' },
+      { who:'A', es:'Unos setenta. Dos habitaciones, salón-comedor, cocina independiente y un balcón.', en:'About seventy. Two bedrooms, living-dining room, separate kitchen and a balcony.' },
+      { who:'B', es:'¿El alquiler incluye los gastos de comunidad?', en:'Does the rent include the building fees?' },
+      { who:'A', es:'Sí, la comunidad está incluida. El agua también. La luz y el gas los pone usted.', en:'Yes, community fees are included. Water too. Electricity and gas are on you.' },
+      { who:'B', es:'¿Y cuánto piden de fianza?', en:'And how much deposit do you want?' },
+      { who:'A', es:'Dos meses de fianza y un mes por adelantado.', en:'Two months\' deposit and one month in advance.' },
+      { who:'B', es:'¿Se permiten mascotas? Tengo un gato pequeño.', en:'Are pets allowed? I have a small cat.' },
+      { who:'A', es:'Un gato no hay problema. Perros sí que no me gustan mucho por los vecinos.', en:'A cat\'s no problem. Dogs I\'m not so keen on because of the neighbours.' },
+      { who:'B', es:'Claro. ¿Y el contrato sería por cuánto tiempo?', en:'Of course. And what length would the contract be?' },
+      { who:'A', es:'Un año mínimo, prorrogable hasta cinco.', en:'One year minimum, extendable up to five.' },
+      { who:'B', es:'Me gusta el piso. ¿Le puedo confirmar mañana?', en:'I like the flat. Can I confirm tomorrow?' },
+      { who:'A', es:'Por supuesto. Tiene mi teléfono.', en:'Of course. You\'ve got my number.' }
+    ],
+    vocab:[
+      { es:'luminoso', en:'bright (full of light)' },
+      { es:'gastos de comunidad', en:'community / building fees' },
+      { es:'fianza', en:'deposit' },
+      { es:'prorrogable', en:'extendable / renewable' }
+    ],
+    notes:'Note the politeness — they use usted throughout. Spanish rental contracts legally extend year-by-year up to 5 years (7 for companies). The tenant has the right to stay.'
+  },
+  {
+    id:'amigos-bar',
+    level:'B1',
+    emoji:'🍻',
+    title:'Con amigos en un bar',
+    titleEn:'With friends at a bar',
+    setting:'Viernes por la noche. Dos amigos se encuentran en un bar de tapas y se ponen al día.',
+    speakers:[
+      { id:'A', name:'Marta', color:'bg-rose-100 text-rose-700' },
+      { id:'B', name:'Álex', color:'bg-violet-100 text-violet-700' }
+    ],
+    lines:[
+      { who:'A', es:'¡Hombre, cuánto tiempo! ¿Qué tal todo?', en:'Hey, long time no see! How\'s everything?' },
+      { who:'B', es:'Tía, liadísimo con el curro. Pero bueno, ya estoy aquí. ¿Y tú?', en:'Mate, totally swamped with work. But anyway, I\'m here now. And you?' },
+      { who:'A', es:'Tirando. La semana pasada estuve con una gripe que no veas.', en:'Getting by. Last week I had an awful flu.' },
+      { who:'B', es:'Jo, qué rollo. ¿Y ya estás mejor?', en:'Ugh, what a pain. Are you better now?' },
+      { who:'A', es:'Sí, ya se me ha pasado. Oye, ¿pedimos algo?', en:'Yeah, it\'s gone now. Hey, shall we order something?' },
+      { who:'B', es:'Venga, unas bravas y unas cañas, ¿te mola?', en:'Go on, some patatas bravas and a couple of beers, sound good?' },
+      { who:'A', es:'Guay. Por cierto, ¿te has enterado de lo de Javi?', en:'Cool. By the way, have you heard about Javi?' },
+      { who:'B', es:'¡Qué va! Cuenta, cuenta.', en:'No way! Tell me, tell me.' },
+      { who:'A', es:'Se ha mudado a Berlín. De la noche a la mañana.', en:'He\'s moved to Berlin. Out of the blue.' },
+      { who:'B', es:'¿En serio? Flipo. Pero si acababa de empezar el curro nuevo.', en:'Seriously? I can\'t believe it. He\'d only just started the new job.' },
+      { who:'A', es:'Ya ves. Dice que necesitaba un cambio.', en:'I know, right. He says he needed a change.' },
+      { who:'B', es:'Bueno, cada uno a lo suyo. ¡Salud!', en:'Well, each to their own. Cheers!' },
+      { who:'A', es:'¡Salud!', en:'Cheers!' }
+    ],
+    vocab:[
+      { es:'liadísimo', en:'totally swamped / super busy' },
+      { es:'el curro', en:'work, job (slang)' },
+      { es:'tirando', en:'getting by (answer to "how are you?")' },
+      { es:'¿te mola?', en:'do you fancy it? sound good?' },
+      { es:'flipo', en:'I\'m blown away / mind-blown' },
+      { es:'cada uno a lo suyo', en:'each to their own' }
+    ],
+    notes:'Full-on Castilian slang mode. "Tío/tía" as address, "curro" for work, "flipar" for amazed, "guay" for cool. "Venga" is the all-purpose "come on / go on / OK then".'
+  },
+  {
+    id:'medico-dolor',
+    level:'B1',
+    emoji:'🩺',
+    title:'En el médico',
+    titleEn:'At the doctor',
+    setting:'Consulta del médico de cabecera. El paciente describe un dolor en la espalda.',
+    speakers:[
+      { id:'A', name:'Médica', color:'bg-teal-100 text-teal-700' },
+      { id:'B', name:'Paciente', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Buenos días. Siéntese. Cuénteme qué le pasa.', en:'Good morning. Have a seat. Tell me what\'s wrong.' },
+      { who:'B', es:'Pues llevo una semana con un dolor muy fuerte en la parte baja de la espalda.', en:'Well, I\'ve had a really strong pain in my lower back for a week.' },
+      { who:'A', es:'¿Le empezó después de algo en concreto? ¿Cargó algún peso?', en:'Did it start after something specific? Did you lift something heavy?' },
+      { who:'B', es:'Ahora que lo dice, ayudé a un amigo con una mudanza hace nueve días.', en:'Now that you mention it, I helped a friend with a move nine days ago.' },
+      { who:'A', es:'Eso puede ser. ¿El dolor le baja por la pierna?', en:'That could be it. Does the pain go down your leg?' },
+      { who:'B', es:'Un poco por el lado derecho, sobre todo cuando me agacho.', en:'A bit on the right side, especially when I bend down.' },
+      { who:'A', es:'¿Ha tomado algo?', en:'Have you taken anything?' },
+      { who:'B', es:'Ibuprofeno, pero me alivia solo un rato.', en:'Ibuprofen, but it only helps for a while.' },
+      { who:'A', es:'Le voy a mandar un relajante muscular. Y reposo relativo — nada de cargar peso.', en:'I\'m going to prescribe a muscle relaxant. And relative rest — no heavy lifting.' },
+      { who:'B', es:'¿Puedo seguir yendo al trabajo?', en:'Can I keep going to work?' },
+      { who:'A', es:'Si es de oficina, sí. Levántese cada media hora. Si no mejora en diez días, vuelva.', en:'If it\'s office work, yes. Stand up every half hour. If it doesn\'t improve in ten days, come back.' },
+      { who:'B', es:'Muchas gracias, doctora.', en:'Thank you very much, doctor.' }
+    ],
+    vocab:[
+      { es:'me pasa', en:'what\'s wrong with me (lit. what happens to me)' },
+      { es:'la parte baja de la espalda', en:'lower back' },
+      { es:'agacharse', en:'to bend down' },
+      { es:'reposo relativo', en:'relative rest (not strict bed rest)' }
+    ],
+    notes:'"Llevo + time + con..." is the core structure for describing how long you\'ve had a symptom. Doctors use usted, and "le" throughout. "Ahora que lo dice" = "now that you mention it" is very natural.'
+  },
+  {
+    id:'aeropuerto-facturacion',
+    level:'A2',
+    emoji:'✈️',
+    title:'En el aeropuerto',
+    titleEn:'At the airport',
+    setting:'Mostrador de facturación en Manises. Un vuelo a Dublín a punto de cerrar.',
+    speakers:[
+      { id:'A', name:'Agente', color:'bg-blue-100 text-blue-700' },
+      { id:'B', name:'Pasajero', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Buenos días. ¿Pasaporte o DNI, por favor?', en:'Good morning. Passport or ID, please?' },
+      { who:'B', es:'Aquí tiene el pasaporte.', en:'Here\'s my passport.' },
+      { who:'A', es:'¿Factura alguna maleta?', en:'Are you checking in any luggage?' },
+      { who:'B', es:'Sí, una. ¿Cuánto puede pesar?', en:'Yes, one. How much can it weigh?' },
+      { who:'A', es:'Hasta veintitrés kilos. Póngala aquí encima, por favor.', en:'Up to twenty-three kilos. Put it on here, please.' },
+      { who:'B', es:'¿Cuánto pesa?', en:'How much does it weigh?' },
+      { who:'A', es:'Veinticuatro kilos y medio. Tiene exceso de equipaje.', en:'Twenty-four and a half kilos. You\'ve got excess baggage.' },
+      { who:'B', es:'¡Vaya! ¿Cuánto me cobran?', en:'Oh no! How much will you charge me?' },
+      { who:'A', es:'Son cincuenta euros. O si prefiere, puede sacar algo y ponerlo en la cabina.', en:'That\'s fifty euros. Or if you prefer, you can take something out and put it in your carry-on.' },
+      { who:'B', es:'Voy a sacar los zapatos. Un momento.', en:'I\'ll take the shoes out. One second.' },
+      { who:'A', es:'Perfecto. Ahora pesa veintidós novecientos. Todo correcto.', en:'Perfect. Now it weighs twenty-two nine hundred. All good.' },
+      { who:'B', es:'¡Uf, menos mal! Gracias.', en:'Phew, thank goodness! Thanks.' },
+      { who:'A', es:'Aquí tiene la tarjeta de embarque. Puerta B12, embarque a las once y cuarto.', en:'Here\'s your boarding pass. Gate B12, boarding at eleven fifteen.' }
+    ],
+    vocab:[
+      { es:'facturar', en:'to check in (luggage)' },
+      { es:'exceso de equipaje', en:'excess baggage' },
+      { es:'la cabina', en:'hand luggage / carry-on' },
+      { es:'menos mal', en:'thank goodness' }
+    ],
+    notes:'"Vaya" is the all-purpose exclamation — good, bad, surprise, dismay. "¡Menos mal!" is the go-to "thank goodness" expression.'
+  },
+  {
+    id:'direcciones-perdido',
+    level:'A2',
+    emoji:'🗺️',
+    title:'Pidiendo direcciones',
+    titleEn:'Asking for directions',
+    setting:'Un turista está perdido cerca de la Ciudad de las Artes y las Ciencias y pregunta a un local.',
+    speakers:[
+      { id:'A', name:'Turista', color:'bg-sky-100 text-sky-700' },
+      { id:'B', name:'Local', color:'bg-green-100 text-green-700' }
+    ],
+    lines:[
+      { who:'A', es:'Perdone, ¿me podría ayudar? Estoy un poco perdido.', en:'Excuse me, could you help me? I\'m a bit lost.' },
+      { who:'B', es:'Claro, dime. ¿Adónde quieres ir?', en:'Sure, tell me. Where do you want to go?' },
+      { who:'A', es:'Busco el Oceanográfico. ¿Está por aquí cerca?', en:'I\'m looking for the Oceanogràfic. Is it around here?' },
+      { who:'B', es:'Sí, muy cerca. Sigue todo recto por esta calle unos cinco minutos.', en:'Yes, very close. Keep going straight down this street for about five minutes.' },
+      { who:'A', es:'¿Y luego?', en:'And then?' },
+      { who:'B', es:'Cuando llegues a una plaza grande, gira a la izquierda. Vas a ver un puente.', en:'When you get to a big square, turn left. You\'ll see a bridge.' },
+      { who:'A', es:'¿Cruzo el puente?', en:'Do I cross the bridge?' },
+      { who:'B', es:'Exacto. Cruzas el puente y ya lo verás a la derecha. No tiene pérdida.', en:'Exactly. Cross the bridge and you\'ll see it on the right. You can\'t miss it.' },
+      { who:'A', es:'¿Se tarda mucho andando?', en:'Does it take long on foot?' },
+      { who:'B', es:'Unos quince minutos como máximo.', en:'About fifteen minutes max.' },
+      { who:'A', es:'Muchísimas gracias, muy amable.', en:'Thanks so much, very kind of you.' },
+      { who:'B', es:'De nada, ¡que lo disfrutes!', en:'You\'re welcome, enjoy it!' }
+    ],
+    vocab:[
+      { es:'todo recto', en:'straight on' },
+      { es:'no tiene pérdida', en:'you can\'t miss it' },
+      { es:'¿se tarda mucho?', en:'does it take long?' },
+      { es:'que lo disfrutes', en:'enjoy it (subjunctive)' }
+    ],
+    notes:'Note the switch to "tú" — Spaniards drop "usted" fast once the conversation becomes friendly. "Cuando + subjuntivo" ("cuando llegues") is used for future actions.'
+  }
+];
+
+function Conversaciones({ onBack, dark }) {
+  const [selected, setSelected] = useState(null);
+  const [showTranslation, setShowTranslation] = useState(true);
+  const [playingIdx, setPlayingIdx] = useState(null);
+  const stopRef = React.useRef(false);
+
+  React.useEffect(() => {
+    return () => { try { window.speechSynthesis.cancel(); } catch(e){} };
+  }, []);
+
+  const playAll = (lines) => {
+    try { window.speechSynthesis.cancel(); } catch(e){}
+    stopRef.current = false;
+    let i = 0;
+    const next = () => {
+      if (stopRef.current || i >= lines.length) {
+        setPlayingIdx(null);
+        return;
+      }
+      setPlayingIdx(i);
+      const u = new SpeechSynthesisUtterance(lines[i].es);
+      u.lang = 'es-ES';
+      u.rate = 0.95;
+      // Tiny pitch variation by speaker
+      u.pitch = lines[i].who === 'A' ? 1.0 : 1.1;
+      u.onend = () => { i++; setTimeout(next, 400); };
+      u.onerror = () => { i++; setTimeout(next, 400); };
+      window.speechSynthesis.speak(u);
+    };
+    next();
+  };
+
+  const stopAll = () => {
+    stopRef.current = true;
+    try { window.speechSynthesis.cancel(); } catch(e){}
+    setPlayingIdx(null);
+  };
+
+  if (selected) {
+    return (
+      <div>
+        <BackHeader title={selected.title} subtitle={selected.titleEn} onBack={() => { stopAll(); setSelected(null); }} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{selected.level}</span>
+            <span className="text-xs text-stone-400">{selected.lines.length} líneas</span>
+            <div className="flex-1"></div>
+            <button onClick={() => setShowTranslation(!showTranslation)}
+              className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700">
+              {showTranslation ? 'Ocultar traducción' : 'Mostrar traducción'}
+            </button>
+          </div>
+
+          <Card dark={dark} className="p-5 mb-5">
+            <p className="text-sm italic text-stone-500 mb-4">{selected.setting}</p>
+            <div className="flex gap-2 mb-4">
+              {playingIdx === null ? (
+                <button onClick={() => playAll(selected.lines)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+                  <span>▶</span> Reproducir todo
+                </button>
+              ) : (
+                <button onClick={stopAll}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-800 hover:bg-stone-900 text-white text-sm font-bold">
+                  <span>⏹</span> Parar
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              {selected.lines.map((line, i) => {
+                const speaker = selected.speakers.find(s => s.id === line.who) || selected.speakers[0];
+                const isPlaying = playingIdx === i;
+                return (
+                  <div key={i} className={`rounded-xl p-3 transition-colors ${isPlaying ? 'bg-amber-50 ring-2 ring-amber-300' : 'bg-stone-50'}`}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${speaker.color}`}>{speaker.name}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <p className="text-base leading-relaxed flex-1">{line.es}</p>
+                      <SpeakBtn text={line.es} size="sm" />
+                    </div>
+                    {showTranslation && (
+                      <p className="text-xs text-stone-500 mt-1">{line.en}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+
+          {selected.vocab && selected.vocab.length > 0 && (
+            <Card dark={dark} className="p-5 mb-5">
+              <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Vocabulario clave</p>
+              <div className="space-y-2">
+                {selected.vocab.map((v, i) => (
+                  <div key={i} className="flex items-baseline gap-3 text-sm">
+                    <span className="font-serif font-bold flex-shrink-0">{v.es}</span>
+                    <span className="text-stone-300">·</span>
+                    <span className="text-stone-600 flex-1">{v.en}</span>
+                    <button onClick={() => speakES(v.es)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {selected.notes && (
+            <Card dark={dark} className="p-5">
+              <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-2">Notas culturales</p>
+              <p className="text-sm text-stone-700 leading-relaxed">{selected.notes}</p>
+            </Card>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <BackHeader title="Conversaciones" subtitle="Listening practice" onBack={onBack} dark={dark} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+        <div className="hidden lg:block mb-6">
+          <h2 className="text-2xl font-serif font-bold">Conversaciones</h2>
+          <p className="text-sm text-stone-500 mt-1">Diálogos reales con dos voces, audio y vocabulario</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {CONVERSATIONS.map(c => (
+            <button key={c.id} onClick={() => setSelected(c)} className="text-left">
+              <Card dark={dark} className="p-5 hover:shadow-md transition-shadow h-full">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">{c.emoji}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{c.level}</span>
+                  <span className="text-xs text-stone-400 ml-auto">{c.lines.length} líneas</span>
+                </div>
+                <p className="font-serif font-bold text-lg mb-1">{c.title}</p>
+                <p className="text-xs text-stone-500 mb-2">{c.titleEn}</p>
+                <p className="text-xs italic text-stone-600 line-clamp-3">{c.setting}</p>
+              </Card>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Verb conjugator — supports a curated set of common verbs
 const CONJUGATOR_VERBS = {
   'hablar': {
@@ -3287,6 +3828,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['sea','seas','sea','seamos','seáis','sean'],
     imperfectoSubj:['fuera','fueras','fuera','fuéramos','fuerais','fueran'],
     perfecto:['he sido','has sido','ha sido','hemos sido','habéis sido','han sido'],
+    usage:{
+      presente:{ when:'Identity, essence, nationality, occupation, time, relationships, permanent traits (DOCTOR).', examples:[
+        {es:'Soy de Irlanda, pero vivo en Valencia.',en:'I\'m from Ireland, but I live in Valencia.'},
+        {es:'Son las tres de la tarde.',en:'It\'s three in the afternoon.'}
+      ]},
+      indefinido:{ when:'Completed past states or events that defined something. Shares forms with "ir" — same conjugation.', examples:[
+        {es:'La fiesta fue increíble.',en:'The party was incredible.'},
+        {es:'Fui profesor durante diez años.',en:'I was a teacher for ten years.'}
+      ]},
+      imperfecto:{ when:'Descriptions in the past, how things used to be, age, time, background. Extremely common for storytelling.', examples:[
+        {es:'Cuando era pequeño, vivía en Dublín.',en:'When I was little, I lived in Dublin.'},
+        {es:'Eran las diez cuando me llamó.',en:'It was ten when he called me.'}
+      ]},
+      futuro:{ when:'Predictions, promises, or present-day conjecture ("it must be..."). "¿Quién será?" = "who could that be?"', examples:[
+        {es:'Mañana será un día largo.',en:'Tomorrow will be a long day.'},
+        {es:'¿Quién será a estas horas?',en:'Who could it be at this hour?'}
+      ]},
+      condicional:{ when:'Hypotheticals, polite statements, past conjecture. "Sería mejor..." = "it would be better..."', examples:[
+        {es:'Sería mejor salir ahora.',en:'It would be better to leave now.'},
+        {es:'Sería sobre las diez cuando llegó.',en:'It must have been around ten when he arrived.'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers: desires, doubts, emotions, impersonal expressions ("es importante que sea...").', examples:[
+        {es:'Es importante que seas puntual.',en:'It\'s important that you\'re on time.'},
+        {es:'No creo que sea buena idea.',en:'I don\'t think it\'s a good idea.'}
+      ]},
+      imperfectoSubj:{ when:'Hypothetical conditions ("si fuera rico..."), polite requests, past subjunctive triggers.', examples:[
+        {es:'Si fuera tú, aceptaría el trabajo.',en:'If I were you, I\'d take the job.'},
+        {es:'Quería que fuera perfecto.',en:'He wanted it to be perfect.'}
+      ]},
+      perfecto:{ when:'For things that "have been" recently or in an ongoing timeframe. Less common than with other verbs.', examples:[
+        {es:'Ha sido un día muy largo.',en:'It\'s been a very long day.'},
+        {es:'Siempre ha sido así.',en:'It\'s always been like that.'}
+      ]}
+    }
   },
   'estar': {
     en:'to be (state)', type:'irregular',
@@ -3298,6 +3873,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['esté','estés','esté','estemos','estéis','estén'],
     imperfectoSubj:['estuviera','estuvieras','estuviera','estuviéramos','estuvierais','estuvieran'],
     perfecto:['he estado','has estado','ha estado','hemos estado','habéis estado','han estado'],
+    usage:{
+      presente:{ when:'Location, current state, moods, progressive actions (estoy + gerund). Everything temporary or situational (PLACE).', examples:[
+        {es:'Estoy en Valencia esta semana.',en:'I\'m in Valencia this week.'},
+        {es:'¿Cómo estás hoy?',en:'How are you today?'}
+      ]},
+      indefinido:{ when:'Completed past states or visits. "Estuve en..." = "I was in / I went to..."', examples:[
+        {es:'Ayer estuve en casa de mis padres.',en:'Yesterday I was at my parents\' house.'},
+        {es:'El año pasado estuvimos en París.',en:'Last year we were in Paris.'}
+      ]},
+      imperfecto:{ when:'Ongoing past states, descriptions, or setting the scene. "Estaba cansado" = "I was tired (at that time)".', examples:[
+        {es:'Estaba durmiendo cuando me llamaste.',en:'I was sleeping when you called me.'},
+        {es:'No contesté porque estaba reunido.',en:'I didn\'t answer because I was in a meeting.'}
+      ]},
+      futuro:{ when:'Future states or conjecture ("he must be..."). "¿Dónde estará?" = "where could he be?"', examples:[
+        {es:'Mañana estaré en Madrid.',en:'Tomorrow I\'ll be in Madrid.'},
+        {es:'Estará durmiendo todavía.',en:'He must still be sleeping.'}
+      ]},
+      condicional:{ when:'Polite hypotheticals and "would be" statements.', examples:[
+        {es:'Estaría encantado de ayudarte.',en:'I\'d be delighted to help you.'},
+        {es:'Si no fuera por ti, estaría perdido.',en:'If it weren\'t for you, I\'d be lost.'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers. "Aunque esté cansado..." = "even if I\'m tired...".', examples:[
+        {es:'Espero que estés bien.',en:'I hope you\'re well.'},
+        {es:'No creo que esté en casa.',en:'I don\'t think he\'s at home.'}
+      ]},
+      imperfectoSubj:{ when:'Past hypotheticals: "si estuviera..." = "if I were...".', examples:[
+        {es:'Si estuviera en tu lugar, lo aceptaría.',en:'If I were in your place, I\'d accept it.'},
+        {es:'Ojalá estuviera allí contigo.',en:'I wish I were there with you.'}
+      ]},
+      perfecto:{ when:'For recent visits, or states that have been in effect. Very common in Spain with "hoy/esta semana".', examples:[
+        {es:'Esta mañana he estado en el médico.',en:'This morning I was at the doctor\'s.'},
+        {es:'¿Has estado alguna vez en Sevilla?',en:'Have you ever been to Seville?'}
+      ]}
+    }
   },
   'tener': {
     en:'to have', type:'irregular',
@@ -3309,6 +3918,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['tenga','tengas','tenga','tengamos','tengáis','tengan'],
     imperfectoSubj:['tuviera','tuvieras','tuviera','tuviéramos','tuvierais','tuvieran'],
     perfecto:['he tenido','has tenido','ha tenido','hemos tenido','habéis tenido','han tenido'],
+    usage:{
+      presente:{ when:'Possession, age, obligations (tener que), and many body/emotion idioms (tener hambre, frío, ganas, miedo, sueño).', examples:[
+        {es:'Tengo treinta años y dos hermanos.',en:'I\'m thirty and I have two siblings.'},
+        {es:'Tengo que madrugar mañana.',en:'I have to get up early tomorrow.'}
+      ]},
+      indefinido:{ when:'Had something at a specific moment, or "got" something. "Tuve un problema" = "I had a problem".', examples:[
+        {es:'Ayer tuve una reunión muy larga.',en:'Yesterday I had a very long meeting.'},
+        {es:'Tuvimos suerte con el tiempo.',en:'We got lucky with the weather.'}
+      ]},
+      imperfecto:{ when:'Had as an ongoing state — age, ongoing possession, descriptions in the past. "Tenía diez años" = "I was ten".', examples:[
+        {es:'Cuando tenía veinte años, vivía en Londres.',en:'When I was twenty, I lived in London.'},
+        {es:'Tenía un gato que se llamaba Luna.',en:'I had a cat called Luna.'}
+      ]},
+      futuro:{ when:'Will have, or present conjecture ("must have"). Irregular stem "tendr-".', examples:[
+        {es:'Mañana tendré más tiempo.',en:'Tomorrow I\'ll have more time.'},
+        {es:'Tendrá unos cuarenta años.',en:'He must be around forty.'}
+      ]},
+      condicional:{ when:'Would have, or politeness. "Tendría que..." = "I would have to / I should..."', examples:[
+        {es:'Tendrías que hablar con él.',en:'You should talk to him.'},
+        {es:'Tendría más amigos si saliera más.',en:'I\'d have more friends if I went out more.'}
+      ]},
+      subjuntivo:{ when:'Subjunctive after triggers. "Espero que tengas..." = "I hope you have..."', examples:[
+        {es:'Espero que tengas un buen día.',en:'I hope you have a good day.'},
+        {es:'No creo que tenga razón.',en:'I don\'t think he\'s right.'}
+      ]},
+      imperfectoSubj:{ when:'Past/hypothetical subjunctive. "Si tuviera tiempo..." = "if I had time..."', examples:[
+        {es:'Si tuviera dinero, viajaría más.',en:'If I had money, I\'d travel more.'},
+        {es:'Ojalá tuviera tu paciencia.',en:'I wish I had your patience.'}
+      ]},
+      perfecto:{ when:'Has had — in an ongoing timeframe. Also used for recent experiences.', examples:[
+        {es:'Hoy he tenido un día muy duro.',en:'I\'ve had a really hard day today.'},
+        {es:'Nunca he tenido coche.',en:'I\'ve never had a car.'}
+      ]}
+    }
   },
   'hacer': {
     en:'to do/make', type:'irregular',
@@ -3320,6 +3963,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['haga','hagas','haga','hagamos','hagáis','hagan'],
     imperfectoSubj:['hiciera','hicieras','hiciera','hiciéramos','hicierais','hicieran'],
     perfecto:['he hecho','has hecho','ha hecho','hemos hecho','habéis hecho','han hecho'],
+    usage:{
+      presente:{ when:'Do / make activities, weather ("hace frío"), time expressions ("hace dos días"). Irregular yo: hago.', examples:[
+        {es:'Hago yoga los martes.',en:'I do yoga on Tuesdays.'},
+        {es:'Hace mucho calor hoy.',en:'It\'s very hot today.'}
+      ]},
+      indefinido:{ when:'Completed past actions. "Hice" / "hizo" — watch the spelling change to z in the él form.', examples:[
+        {es:'Ayer hice la compra en Mercadona.',en:'Yesterday I did the shopping in Mercadona.'},
+        {es:'¿Qué hiciste el fin de semana?',en:'What did you do at the weekend?'}
+      ]},
+      imperfecto:{ when:'Used to do / was doing. Also weather descriptions in the past ("hacía frío").', examples:[
+        {es:'Hacía frío cuando salí.',en:'It was cold when I went out.'},
+        {es:'De pequeño, hacía natación.',en:'As a kid, I used to swim.'}
+      ]},
+      futuro:{ when:'Will do. Irregular stem "har-". Also conjecture ("that must be...").', examples:[
+        {es:'Mañana haré la mudanza.',en:'Tomorrow I\'ll do the move.'},
+        {es:'Haremos una fiesta el sábado.',en:'We\'ll throw a party on Saturday.'}
+      ]},
+      condicional:{ when:'Would do / would make. Polite suggestions.', examples:[
+        {es:'¿Qué harías tú en mi lugar?',en:'What would you do in my place?'},
+        {es:'Yo haría lo mismo.',en:'I\'d do the same thing.'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers. Formation from yo: hag- → haga.', examples:[
+        {es:'Quiero que hagas lo correcto.',en:'I want you to do the right thing.'},
+        {es:'Es mejor que lo hagamos juntos.',en:'It\'s better if we do it together.'}
+      ]},
+      imperfectoSubj:{ when:'Past hypothetical. "Si hiciera..." = "if I did / if I were to...".', examples:[
+        {es:'Si hiciera más calor, iríamos a la playa.',en:'If it were hotter, we\'d go to the beach.'},
+        {es:'Me dijo que hiciera la cena.',en:'He told me to make dinner.'}
+      ]},
+      perfecto:{ when:'Have done — recent past, especially with hoy/esta semana. Common in Spain.', examples:[
+        {es:'Hoy he hecho muchas cosas.',en:'Today I\'ve done a lot of things.'},
+        {es:'Ya he hecho los deberes.',en:'I\'ve already done my homework.'}
+      ]}
+    }
   },
   'ir': {
     en:'to go', type:'irregular',
@@ -3331,6 +4008,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['vaya','vayas','vaya','vayamos','vayáis','vayan'],
     imperfectoSubj:['fuera','fueras','fuera','fuéramos','fuerais','fueran'],
     perfecto:['he ido','has ido','ha ido','hemos ido','habéis ido','han ido'],
+    usage:{
+      presente:{ when:'Movement to a place. Also "ir a + infinitive" = near future ("I\'m going to..."). Extremely common.', examples:[
+        {es:'Voy al mercado ahora.',en:'I\'m going to the market now.'},
+        {es:'Voy a llamarte esta tarde.',en:'I\'m going to call you this afternoon.'}
+      ]},
+      indefinido:{ when:'Went to somewhere — completed past trip. Shares forms with "ser": fui, fuiste, fue.', examples:[
+        {es:'Ayer fui a la playa con mis amigos.',en:'Yesterday I went to the beach with my friends.'},
+        {es:'Fuimos a Barcelona el mes pasado.',en:'We went to Barcelona last month.'}
+      ]},
+      imperfecto:{ when:'Used to go / was going. Background action. "Iba al colegio..." = "I used to go to school...".', examples:[
+        {es:'De niño, iba a casa de mis abuelos los domingos.',en:'As a child, I used to go to my grandparents\' on Sundays.'},
+        {es:'Iba a llamarte, pero me olvidé.',en:'I was going to call you, but I forgot.'}
+      ]},
+      futuro:{ when:'Will go. Less common than "ir a + inf"; used for more distant or formal plans.', examples:[
+        {es:'El año que viene iré a Argentina.',en:'Next year I\'ll go to Argentina.'},
+        {es:'Iremos a verte pronto.',en:'We\'ll come to see you soon.'}
+      ]},
+      condicional:{ when:'Would go. Hypothetical or polite. "Yo iría..." = "I would go...".', examples:[
+        {es:'Iría contigo si pudiera.',en:'I\'d go with you if I could.'},
+        {es:'¿Irías a esa fiesta conmigo?',en:'Would you go to that party with me?'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers. Irregular form "vaya" — not derived from yo.', examples:[
+        {es:'Quiero que vayas al médico.',en:'I want you to go to the doctor.'},
+        {es:'Espero que vayamos pronto.',en:'I hope we go soon.'}
+      ]},
+      imperfectoSubj:{ when:'"Si fuera..." = "if I went...". Also reported speech in the past.', examples:[
+        {es:'Si fuera a Madrid, te avisaría.',en:'If I were going to Madrid, I\'d let you know.'},
+        {es:'Me pidió que fuera con él.',en:'He asked me to go with him.'}
+      ]},
+      perfecto:{ when:'Have been / have gone. Common with "ya", "nunca", "alguna vez".', examples:[
+        {es:'¿Has ido alguna vez a México?',en:'Have you ever been to Mexico?'},
+        {es:'Esta semana he ido tres veces al gimnasio.',en:'This week I\'ve been to the gym three times.'}
+      ]}
+    }
   },
   'decir': {
     en:'to say', type:'irregular',
@@ -3342,6 +4053,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['diga','digas','diga','digamos','digáis','digan'],
     imperfectoSubj:['dijera','dijeras','dijera','dijéramos','dijerais','dijeran'],
     perfecto:['he dicho','has dicho','ha dicho','hemos dicho','habéis dicho','han dicho'],
+    usage:{
+      presente:{ when:'Say / tell right now. Irregular yo form: digo. Stem change e→i.', examples:[
+        {es:'Digo la verdad siempre.',en:'I always tell the truth.'},
+        {es:'¿Qué dices?',en:'What are you saying?'}
+      ]},
+      indefinido:{ when:'Said something at a specific moment. Note: no "i" before -eron → dijeron (not dijieron).', examples:[
+        {es:'Me dijo que vendría.',en:'He told me he\'d come.'},
+        {es:'¿Qué te dijeron en la reunión?',en:'What did they tell you in the meeting?'}
+      ]},
+      imperfecto:{ when:'Was saying / used to say. Ongoing or habitual past speech.', examples:[
+        {es:'Siempre decía lo mismo.',en:'He always used to say the same thing.'},
+        {es:'Mientras decía eso, sonaba el teléfono.',en:'While he was saying that, the phone was ringing.'}
+      ]},
+      futuro:{ when:'Will say. Irregular stem "dir-". Also present conjecture.', examples:[
+        {es:'Te diré la verdad mañana.',en:'I\'ll tell you the truth tomorrow.'},
+        {es:'¿Qué dirá la gente?',en:'What will people say?'}
+      ]},
+      condicional:{ when:'Would say. Polite requests and hypotheticals. "Yo diría..." = "I\'d say...".', examples:[
+        {es:'Yo diría que sí.',en:'I\'d say yes.'},
+        {es:'No sé qué le diría en tu lugar.',en:'I don\'t know what I\'d say to him in your place.'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers — especially in reported speech / requests.', examples:[
+        {es:'Quiero que me digas la verdad.',en:'I want you to tell me the truth.'},
+        {es:'No creo que diga nada.',en:'I don\'t think he\'ll say anything.'}
+      ]},
+      imperfectoSubj:{ when:'Past/hypothetical subjunctive. Very common in reported speech ("me pidió que le dijera").', examples:[
+        {es:'Me pidió que le dijera la verdad.',en:'He asked me to tell him the truth.'},
+        {es:'Si te lo dijera, no me creerías.',en:'If I told you, you wouldn\'t believe me.'}
+      ]},
+      perfecto:{ when:'Have said / have told — recent. Very common with "ya", "nunca".', examples:[
+        {es:'Ya te lo he dicho mil veces.',en:'I\'ve already told you a thousand times.'},
+        {es:'Nunca he dicho eso.',en:'I\'ve never said that.'}
+      ]}
+    }
   },
   'querer': {
     en:'to want/love', type:'irregular',
@@ -3353,6 +4098,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['quiera','quieras','quiera','queramos','queráis','quieran'],
     imperfectoSubj:['quisiera','quisieras','quisiera','quisiéramos','quisierais','quisieran'],
     perfecto:['he querido','has querido','ha querido','hemos querido','habéis querido','han querido'],
+    usage:{
+      presente:{ when:'Want or love right now. Stem change e→ie. "Te quiero" = "I love you" (not romantic amar).', examples:[
+        {es:'Quiero un café con leche.',en:'I want a coffee with milk.'},
+        {es:'Te quiero mucho.',en:'I love you a lot.'}
+      ]},
+      indefinido:{ when:'Completed past want — sometimes implies "tried" ("quise llamarte" = "I tried to call you"). "No quise" = "I refused".', examples:[
+        {es:'Quise hablar con él, pero no pude.',en:'I tried to speak with him, but I couldn\'t.'},
+        {es:'No quiso venir.',en:'He refused to come.'}
+      ]},
+      imperfecto:{ when:'Was wanting / used to want. Polite softening: "Quería preguntarte..." = "I wanted to ask you..."', examples:[
+        {es:'Quería preguntarte una cosa.',en:'I wanted to ask you something.'},
+        {es:'De niño, quería ser astronauta.',en:'As a child, I wanted to be an astronaut.'}
+      ]},
+      futuro:{ when:'Will want. Irregular stem "querr-" (double r).', examples:[
+        {es:'Mañana querrá verte.',en:'Tomorrow he\'ll want to see you.'},
+        {es:'No querrán esperar más.',en:'They won\'t want to wait any more.'}
+      ]},
+      condicional:{ when:'Would want. Very polite: "Querría..." = "I\'d like..." (softer than "quiero").', examples:[
+        {es:'Querría una mesa para dos, por favor.',en:'I\'d like a table for two, please.'},
+        {es:'¿Qué querrías hacer este finde?',en:'What would you like to do this weekend?'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers. "Quiero que quieras..." is rare but exists.', examples:[
+        {es:'Espero que quieras venir.',en:'I hope you\'ll want to come.'},
+        {es:'No importa lo que quiera la gente.',en:'It doesn\'t matter what people want.'}
+      ]},
+      imperfectoSubj:{ when:'Very polite: "Quisiera..." = "I\'d like..." (even softer than condicional). Also hypothetical.', examples:[
+        {es:'Quisiera hacer una reserva.',en:'I\'d like to make a reservation.'},
+        {es:'Si quisiera, podría hacerlo.',en:'If I wanted to, I could do it.'}
+      ]},
+      perfecto:{ when:'Have wanted / loved. Used for ongoing feelings.', examples:[
+        {es:'Siempre he querido aprender italiano.',en:'I\'ve always wanted to learn Italian.'},
+        {es:'Nunca he querido marcharme.',en:'I\'ve never wanted to leave.'}
+      ]}
+    }
   },
   'poder': {
     en:'to be able to', type:'irregular',
@@ -3364,6 +4143,40 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['pueda','puedas','pueda','podamos','podáis','puedan'],
     imperfectoSubj:['pudiera','pudieras','pudiera','pudiéramos','pudierais','pudieran'],
     perfecto:['he podido','has podido','ha podido','hemos podido','habéis podido','han podido'],
+    usage:{
+      presente:{ when:'Can / be able to. Asking permission, expressing capability. Stem change o→ue.', examples:[
+        {es:'¿Puedo usar tu baño?',en:'Can I use your bathroom?'},
+        {es:'No puedo ir esta noche.',en:'I can\'t go tonight.'}
+      ]},
+      indefinido:{ when:'Was able to (and managed it). "Pude" = "I managed to". "No pude" = "I couldn\'t" (tried but failed).', examples:[
+        {es:'Al final pude terminar el trabajo.',en:'In the end I managed to finish the work.'},
+        {es:'No pudimos entrar — estaba cerrado.',en:'We couldn\'t get in — it was closed.'}
+      ]},
+      imperfecto:{ when:'Was able to (ongoing capability). "Podía hacer..." = "I was able to / I used to be able to...".', examples:[
+        {es:'Antes podía correr diez kilómetros.',en:'I used to be able to run ten kilometres.'},
+        {es:'No podía dormir anoche.',en:'I couldn\'t sleep last night.'}
+      ]},
+      futuro:{ when:'Will be able to. Irregular stem "podr-". Also conjecture ("he might...").', examples:[
+        {es:'Mañana podré ayudarte.',en:'Tomorrow I\'ll be able to help you.'},
+        {es:'Podrá estar de camino.',en:'He might be on his way.'}
+      ]},
+      condicional:{ when:'Could / would be able to. Core of polite requests: "¿Podrías...?" = "Could you...?"', examples:[
+        {es:'¿Podrías pasarme la sal?',en:'Could you pass me the salt?'},
+        {es:'Podría llover esta tarde.',en:'It could rain this afternoon.'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers. Formation: pued- → pueda.', examples:[
+        {es:'Espero que puedas venir.',en:'I hope you can come.'},
+        {es:'No creo que pueda ayudarte.',en:'I don\'t think he can help you.'}
+      ]},
+      imperfectoSubj:{ when:'Very polite: "Pudiera" for "might". Also hypothetical "si pudiera..." = "if I could...".', examples:[
+        {es:'Si pudiera, te ayudaría.',en:'If I could, I\'d help you.'},
+        {es:'Me gustaría que pudieras venir.',en:'I\'d like you to be able to come.'}
+      ]},
+      perfecto:{ when:'Have been able to — recently. "No he podido" = "I haven\'t been able to".', examples:[
+        {es:'No he podido llamarte antes, perdona.',en:'I haven\'t been able to call you earlier, sorry.'},
+        {es:'Esta semana he podido descansar un poco.',en:'This week I\'ve been able to rest a bit.'}
+      ]}
+    }
   },
   'venir': {
     en:'to come', type:'irregular',
@@ -3408,6 +4221,96 @@ const CONJUGATOR_VERBS = {
     subjuntivo:['vea','veas','vea','veamos','veáis','vean'],
     imperfectoSubj:['viera','vieras','viera','viéramos','vierais','vieran'],
     perfecto:['he visto','has visto','ha visto','hemos visto','habéis visto','han visto'],
+  },
+  'haber': {
+    en:'to have (aux) / there to be', type:'auxiliar — irregular',
+    presente:['he','has','ha (hay)','hemos','habéis','han'],
+    indefinido:['hube','hubiste','hubo','hubimos','hubisteis','hubieron'],
+    imperfecto:['había','habías','había','habíamos','habíais','habían'],
+    futuro:['habré','habrás','habrá','habremos','habréis','habrán'],
+    condicional:['habría','habrías','habría','habríamos','habríais','habrían'],
+    subjuntivo:['haya','hayas','haya','hayamos','hayáis','hayan'],
+    imperfectoSubj:['hubiera','hubieras','hubiera','hubiéramos','hubierais','hubieran'],
+    perfecto:['he habido','has habido','ha habido','hemos habido','habéis habido','han habido'],
+    usage:{
+      presente:{ when:'As an auxiliary for the present perfect (he hablado). The 3rd-person singular "hay" means "there is/are" and is always singular.', examples:[
+        {es:'He comido paella hoy.',en:'I\'ve eaten paella today.'},
+        {es:'Hay mucha gente en la playa.',en:'There are a lot of people on the beach.'}
+      ]},
+      indefinido:{ when:'"Hubo" = "there was/were" for a completed, one-off event. Rarely used as an auxiliary in spoken Spanish.', examples:[
+        {es:'Ayer hubo una fiesta enorme en la plaza.',en:'Yesterday there was a huge party in the square.'},
+        {es:'Hubo un accidente en la autovía.',en:'There was an accident on the motorway.'}
+      ]},
+      imperfecto:{ when:'"Había" = "there was/were" for descriptive or ongoing past. Also auxiliary for the pluperfect (había hablado = "I had spoken").', examples:[
+        {es:'Había mucha gente en el concierto.',en:'There were a lot of people at the concert.'},
+        {es:'Cuando llegué, ya se había ido.',en:'When I arrived, he had already left.'}
+      ]},
+      futuro:{ when:'"Habrá" = "there will be". Also auxiliary for futuro perfecto (habré terminado = "I will have finished"). Can also express probability ("must be").', examples:[
+        {es:'Mañana habrá tormenta.',en:'There\'ll be a storm tomorrow.'},
+        {es:'Para las seis ya habré terminado.',en:'By six I\'ll already have finished.'}
+      ]},
+      condicional:{ when:'"Habría" = "there would be", or the conditional perfect auxiliary (habría hablado = "I would have spoken"). Core of hypothetical past.', examples:[
+        {es:'Si hubiera sabido, habría venido antes.',en:'If I\'d known, I would have come earlier.'},
+        {es:'Habría más gente si no lloviera.',en:'There\'d be more people if it weren\'t raining.'}
+      ]},
+      subjuntivo:{ when:'"Haya" = subjunctive "there is/are", or auxiliary for the perfect subjunctive (que haya hablado). Used after triggers like "espero que", "dudo que".', examples:[
+        {es:'Espero que haya suficiente comida.',en:'I hope there\'s enough food.'},
+        {es:'No creo que haya llegado todavía.',en:'I don\'t think he\'s arrived yet.'}
+      ]},
+      imperfectoSubj:{ when:'"Hubiera" = the backbone of hypothetical sentences. "Si hubiera..." = "if I had...". Very common in spoken Spanish.', examples:[
+        {es:'Si hubiera estudiado más, habría aprobado.',en:'If I had studied more, I would have passed.'},
+        {es:'Ojalá hubiera venido contigo.',en:'I wish I had come with you.'}
+      ]},
+      perfecto:{ when:'Rarely used — "he habido" exists but is almost never heard. Far more common: "ha habido" = "there has been".', examples:[
+        {es:'Ha habido muchos cambios este año.',en:'There have been a lot of changes this year.'},
+        {es:'Últimamente ha habido problemas con el ascensor.',en:'Lately there have been problems with the lift.'}
+      ]}
+    }
+  },
+  'salir': {
+    en:'to leave / to go out', type:'-ir irregular (yo-go)',
+    presente:['salgo','sales','sale','salimos','salís','salen'],
+    indefinido:['salí','saliste','salió','salimos','salisteis','salieron'],
+    imperfecto:['salía','salías','salía','salíamos','salíais','salían'],
+    futuro:['saldré','saldrás','saldrá','saldremos','saldréis','saldrán'],
+    condicional:['saldría','saldrías','saldría','saldríamos','saldríais','saldrían'],
+    subjuntivo:['salga','salgas','salga','salgamos','salgáis','salgan'],
+    imperfectoSubj:['saliera','salieras','saliera','saliéramos','salierais','salieran'],
+    perfecto:['he salido','has salido','ha salido','hemos salido','habéis salido','han salido'],
+    usage:{
+      presente:{ when:'For current or habitual going out — leaving the house, dating, how something turns out. Irregular yo form: salgo.', examples:[
+        {es:'Salgo del trabajo a las seis.',en:'I finish work at six.'},
+        {es:'¿Sales esta noche con nosotros?',en:'Are you going out with us tonight?'}
+      ]},
+      indefinido:{ when:'For a specific past leaving or going out. Completed action at a known moment.', examples:[
+        {es:'Anoche salí con Marta hasta las tres.',en:'Last night I was out with Marta until three.'},
+        {es:'Salió de casa sin decir nada.',en:'He left the house without saying anything.'}
+      ]},
+      imperfecto:{ when:'For habitual or ongoing past — what you used to do, or background context.', examples:[
+        {es:'Antes salía todos los fines de semana.',en:'I used to go out every weekend.'},
+        {es:'Cuando era joven, salía mucho por el centro.',en:'When I was young, I went out a lot around the centre.'}
+      ]},
+      futuro:{ when:'For future plans or predictions. Note the irregular stem "saldr-".', examples:[
+        {es:'Saldré del trabajo temprano mañana.',en:'I\'ll leave work early tomorrow.'},
+        {es:'El tren saldrá a las ocho en punto.',en:'The train will leave at eight sharp.'}
+      ]},
+      condicional:{ when:'For hypotheticals, polite suggestions, or "would go out".', examples:[
+        {es:'Saldría contigo si no estuviera tan cansado.',en:'I\'d go out with you if I weren\'t so tired.'},
+        {es:'¿Saldrías conmigo este sábado?',en:'Would you go out with me this Saturday?'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers — wishes, doubts, emotions. Formation from yo form: salg- → salga.', examples:[
+        {es:'Espero que salga bien la entrevista.',en:'I hope the interview goes well.'},
+        {es:'No quiero que salgas sola tan tarde.',en:'I don\'t want you going out alone so late.'}
+      ]},
+      imperfectoSubj:{ when:'Hypothetical or past subjunctive — "if I went out", reported requests, polite.', examples:[
+        {es:'Si saliera antes del trabajo, te vería.',en:'If I left work earlier, I\'d see you.'},
+        {es:'Me pidió que saliera con ella.',en:'She asked me to go out with her.'}
+      ]},
+      perfecto:{ when:'For recent going out, especially "today / this week / already / yet" in Spain.', examples:[
+        {es:'Esta semana hemos salido tres veces.',en:'This week we\'ve been out three times.'},
+        {es:'Ya ha salido de la reunión.',en:'He\'s already out of the meeting.'}
+      ]}
+    }
   },
 };
 
@@ -3454,21 +4357,41 @@ function Conjugador({ dark }) {
         <p className="text-sm text-stone-500 mb-1">{data.en}</p>
         <p className="text-xs text-stone-400 mb-5">{data.type}</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tenseGroups.map(g => (
-            <div key={g.key} className="rounded-xl bg-stone-50 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-2">{g.label}</p>
-              <div className="space-y-1">
-                {data[g.key].map((form, i) => (
-                  <div key={i} className="flex items-baseline gap-2 text-sm">
-                    <span className="text-stone-400 text-xs w-16 flex-shrink-0">{persons[i]}</span>
-                    <span className="font-semibold flex-1">{form}</span>
-                    <button onClick={() => speakES(form)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {tenseGroups.map(g => {
+            const forms = data[g.key];
+            const u = data.usage && data.usage[g.key];
+            return (
+              <div key={g.key} className="rounded-xl bg-stone-50 p-4 flex flex-col">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-2">{g.label}</p>
+                <div className="space-y-1 mb-3">
+                  {forms.map((form, i) => (
+                    <div key={i} className="flex items-baseline gap-2 text-sm">
+                      <span className="text-stone-400 text-xs w-16 flex-shrink-0">{persons[i]}</span>
+                      <span className="font-semibold flex-1">{form}</span>
+                      <button onClick={() => speakES(form)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                    </div>
+                  ))}
+                </div>
+                {u && (
+                  <div className="mt-auto pt-3 border-t border-stone-200">
+                    <p className="text-[11px] italic text-stone-600 mb-2 leading-snug">{u.when}</p>
+                    <div className="space-y-2">
+                      {u.examples.map((ex, i) => (
+                        <div key={i} className="text-xs">
+                          <div className="flex items-start gap-1.5">
+                            <span className="text-stone-800 font-medium flex-1 leading-snug">{ex.es}</span>
+                            <SpeakBtn text={ex.es} size="sm" />
+                          </div>
+                          <div className="text-stone-400 text-[10px] leading-snug mt-0.5">{ex.en}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Card>
     </div>
@@ -3570,25 +4493,41 @@ function DocumentCard({ doc, dark }) {
 
 const COMMON_MISTAKES = [
   { wrong:'Soy 30 años', right:'Tengo 30 años', en:'I am 30 years old', why:'Use "tener" for age, not "ser". The verb is literally "to have years".' },
-  { wrong:'Tengo calor / frío', right:'(correct!)', en:'I am hot / cold (sensation)', why:'Use "tener" for sensations of body temperature, not "estar". "Estoy caliente" means something else entirely (sexual).' },
-  { wrong:'Estoy aburrido', right:'(correct, but...)', en:'I am bored vs boring', why:'"Estoy aburrido" = I am bored. "Soy aburrido" = I am a boring person. Same with cansado, listo, rico, etc.' },
-  { wrong:'Estoy 30 años', right:'Tengo 30 años', en:'I am 30 years old', why:'Common mistake from English. Always "tener" for age in Spanish.' },
+  { wrong:'Estoy caliente', right:'Tengo calor', en:'I am hot (body temperature)', why:'"Estoy caliente" has a sexual meaning in Spain (horny). Always use "tener calor" for body temperature. Same for "tener frío" = to feel cold.' },
+  { wrong:'Soy aburrido (if you mean "I feel bored")', right:'Estoy aburrido', en:'I am bored', why:'"Estoy aburrido" = I feel bored right now. "Soy aburrido" = I am a boring person. Ser vs estar changes the meaning. Same trap: cansado, listo, rico, malo.' },
+  { wrong:'Voy en casa de mi amiga', right:'Voy a casa de mi amiga', en:'I\'m going to my friend\'s house', why:'Movement towards = "a", never "en". "En" describes a fixed location. "Estoy en casa de mi amiga" vs "Voy a casa de mi amiga".' },
   { wrong:'Sé como nadar', right:'Sé nadar', en:'I know how to swim', why:'"Saber + infinitivo" already means "to know how to". Don\'t add "cómo".' },
-  { wrong:'Pienso que es bueno (subjuntivo)', right:'Pienso que es bueno (indicativo)', en:'I think it\'s good', why:'"Pensar que" affirmative takes indicative. Only "no pienso que" triggers subjunctive.' },
-  { wrong:'Voy a casa de mi amiga', right:'(correct!)', en:'I\'m going to my friend\'s house', why:'No "de" → "a". "Voy a la casa de mi amiga" is also correct but redundant.' },
-  { wrong:'Realizar (= to realise)', right:'Darse cuenta', en:'To realise', why:'False friend! "Realizar" means "to carry out, to achieve". To realise something = "darse cuenta de".' },
-  { wrong:'Estoy embarazada (= I\'m embarrassed)', right:'Tengo vergüenza / Me da vergüenza', en:'I\'m embarrassed', why:'False friend! "Embarazada" = pregnant, not embarrassed. Use "vergüenza".' },
-  { wrong:'Atender (= to attend)', right:'Asistir a', en:'To attend (an event)', why:'False friend! "Atender" = to assist/serve a customer. To attend an event = "asistir a".' },
-  { wrong:'Por / Para mixed up', right:'Por = cause/duration, Para = purpose/destination', en:'For', why:'"Trabajo por dinero" (because of) vs "Trabajo para vivir" (in order to). See cheat sheet.' },
-  { wrong:'Yo gusto el café', right:'Me gusta el café', en:'I like coffee', why:'"Gustar" works backwards: the thing you like is the subject. The person is an indirect object pronoun.' },
-  { wrong:'Este es más mejor', right:'Este es mejor', en:'This is better', why:'"Mejor" already means "more good". Never say "más mejor" (or "más peor").' },
-  { wrong:'Voy a ir a...', right:'Voy a... (or Iré a...)', en:'I\'m going to go to...', why:'Redundant double "ir". Use just "voy a + lugar" or "iré a + lugar".' },
-  { wrong:'Tengo que ir a la mi casa', right:'Tengo que ir a mi casa', en:'I have to go to my house', why:'Don\'t use article + possessive together. Just "mi casa", not "la mi casa".' },
-  { wrong:'Quiero que tú vienes', right:'Quiero que tú vengas', en:'I want you to come', why:'"Querer que + otra persona" triggers subjunctive. WEIRDO rule.' },
-  { wrong:'Si tendría dinero...', right:'Si tuviera dinero...', en:'If I had money...', why:'Hypothetical "si" clauses use imperfect subjunctive, not conditional. "Si + imperfecto subj, + condicional".' },
-  { wrong:'En la mañana', right:'Por la mañana', en:'In the morning', why:'In Spain, use "por" with parts of the day: por la mañana, por la tarde, por la noche.' },
-  { wrong:'Hace dos años que no le veo', right:'Hace dos años que no lo veo', en:'I haven\'t seen him in two years', why:'Use "lo" for direct object (him/it). "Le" is indirect object. (Some Spaniards use leísmo.)' },
-  { wrong:'Me caigo bien con ella', right:'Me cae bien ella', en:'I get along with her', why:'"Caer bien" works like "gustar". "Ella me cae bien" / "Me cae bien".' },
+  { wrong:'No pienso que es bueno', right:'No pienso que sea bueno', en:'I don\'t think it\'s good', why:'"Pensar que" affirmative takes indicative ("pienso que es bueno"). The NEGATIVE "no pienso que" triggers subjunctive because it expresses doubt.' },
+  { wrong:'Realizar mi error', right:'Darme cuenta de mi error', en:'To realise my mistake', why:'False friend! "Realizar" means "to carry out, to achieve". To realise something mentally = "darse cuenta de".' },
+  { wrong:'Estoy embarazada', right:'Tengo vergüenza / Me da vergüenza', en:'I\'m embarrassed', why:'False friend! "Embarazada" = pregnant. Use "vergüenza" for embarrassment. "Me da vergüenza hablar en público" = I\'m embarrassed speaking in public.' },
+  { wrong:'Atender al concierto', right:'Asistir al concierto', en:'To attend the concert', why:'False friend! "Atender" = to assist/serve a customer or pay attention. To attend an event = "asistir a".' },
+  { wrong:'Trabajo para vivir en Valencia', right:'Trabajo por vivir en Valencia', en:'I work because I live in Valencia (not "in order to live")', why:'Por = cause/motivation ("because of"). Para = purpose/destination ("in order to"). "Estudio español para hablar con locales" (purpose) vs "Estudio español por amor al idioma" (motivation).' },
+  { wrong:'Yo gusto el café', right:'Me gusta el café', en:'I like coffee', why:'"Gustar" works backwards: the thing you like is the subject. "Me gusta" literally means "coffee pleases me". Same with encantar, molestar, doler, faltar, quedar.' },
+  { wrong:'Este es más mejor', right:'Este es mejor', en:'This is better', why:'"Mejor" already means "more good". Never say "más mejor" or "más peor". Same for "más mayor" / "más menor".' },
+  { wrong:'Voy a ir a la playa', right:'Voy a la playa / Iré a la playa', en:'I\'m going to the beach', why:'Redundant double "ir". Use just "voy a + lugar" or the future "iré a + lugar".' },
+  { wrong:'Tengo que ir a la mi casa', right:'Tengo que ir a mi casa', en:'I have to go to my house', why:'Don\'t use article + possessive together. Just "mi casa", never "la mi casa".' },
+  { wrong:'Quiero que tú vienes', right:'Quiero que tú vengas', en:'I want you to come', why:'"Querer que + otra persona" triggers subjunctive. Any verb of wishing/desiring + "que" + different subject → subjuntivo. WEIRDO rule.' },
+  { wrong:'Si tendría dinero, viajaría', right:'Si tuviera dinero, viajaría', en:'If I had money, I\'d travel', why:'Hypothetical "si" clauses use imperfect subjunctive, not conditional. Formula: "Si + imperfecto subjuntivo, + condicional". Never "si + condicional".' },
+  { wrong:'En la mañana', right:'Por la mañana', en:'In the morning', why:'In Spain, use "por" with parts of the day: por la mañana, por la tarde, por la noche. "En la mañana" is more Latin American.' },
+  { wrong:'Hace dos años que no le veo', right:'Hace dos años que no lo veo', en:'I haven\'t seen him in two years', why:'Use "lo" for direct object (him/it), "le" for indirect object. Spain tolerates leísmo for people, but "lo" is the prescriptive form.' },
+  { wrong:'Me caigo bien con ella', right:'Me cae bien ella', en:'I get along with her', why:'"Caer bien" works like "gustar". She falls well to me = I like her. "Ella me cae bien" or just "Me cae bien".' },
+  { wrong:'La problema es grande', right:'El problema es grande', en:'The problem is big', why:'"Problema" is masculine despite ending in -a. Same trap: el día, el mapa, el tema, el sistema, el programa, el idioma, el clima, el planeta — all Greek-origin and masculine.' },
+  { wrong:'El mano, el foto', right:'La mano, la foto', en:'The hand, the photo', why:'"Mano" is feminine despite ending in -o. "Foto" is short for "fotografía" so it stays feminine. Same: la moto, la radio.' },
+  { wrong:'Busco por un piso', right:'Busco un piso', en:'I\'m looking for a flat', why:'"Buscar" never takes "por". The object follows directly. Same with "pedir" (ask for) and "esperar" (wait for) — no preposition in Spanish.' },
+  { wrong:'Preguntar una pregunta', right:'Hacer una pregunta', en:'To ask a question', why:'Use "hacer una pregunta", never "preguntar una pregunta" (redundant). "Preguntar algo a alguien" is fine: "Le pregunté dónde vivía".' },
+  { wrong:'Escuchar a la música', right:'Escuchar música', en:'To listen to music', why:'No preposition. "Escuchar" is transitive. But for people you DO use "a": "Escucho a mi profesora".' },
+  { wrong:'Cada días', right:'Cada día / Todos los días', en:'Every day', why:'"Cada" takes singular. "Cada día" or "cada semana". For plurals use "todos los días".' },
+  { wrong:'Soy acuerdo', right:'Estoy de acuerdo', en:'I agree', why:'"Estar de acuerdo", not "ser". Fixed expression — always with "estar" and always with "de".' },
+  { wrong:'Es muy importante de practicar', right:'Es muy importante practicar', en:'It is very important to practise', why:'Impersonal "es + adjective + infinitive" takes NO preposition. "Es difícil aprender", "Es necesario estudiar" — all direct.' },
+  { wrong:'Aunque es caro, lo compro (uncertain future)', right:'Aunque sea caro, lo compraré', en:'Even if it\'s expensive, I\'ll buy it', why:'"Aunque" + indicative = known fact. "Aunque" + subjunctive = hypothetical or concession about the future. Choose based on certainty.' },
+  { wrong:'Me olvidé las llaves', right:'Se me olvidaron las llaves', en:'I forgot the keys', why:'"Accidental se" is very Spanish. "Se me olvidó/olvidaron + thing" pushes blame onto the situation, not you. Same with "se me cayó" (I dropped it), "se me rompió" (it broke on me).' },
+  { wrong:'Quiero un poco de agua fría', right:'Quiero un poco de agua fría', en:'I want a little cold water', why:'Watch out: "agua" is feminine but takes "el agua" in singular (stressed initial A-sound). Plural "las aguas", adjective still feminine: "el agua fría".' },
+  { wrong:'Más grande que mí', right:'Más grande que yo', en:'Bigger than me', why:'After "que" in comparisons, use subject pronouns (yo, tú, él), not object pronouns (mí, ti). Same after "como", "entre", "excepto", "según".' },
+  { wrong:'Muy mucho', right:'Mucho (or muchísimo)', en:'Very much', why:'Never combine "muy" and "mucho". Use "muchísimo" for "very much". "Muy" modifies adjectives/adverbs, "mucho" modifies verbs/nouns.' },
+  { wrong:'Hay personas que quieren...', right:'Hay personas que quieran... (hypothetical)', en:'Are there people who want...? (hypothetical)', why:'"Hay" + relative clause: if the antecedent is unknown/hypothetical, use subjunctive. "Busco un amigo que hable inglés" (hypothetical) vs "Tengo un amigo que habla inglés" (known).' },
+  { wrong:'Pedí para un café', right:'Pedí un café', en:'I ordered a coffee', why:'"Pedir" means "to ask for" — the "for" is baked in. Never add "por" or "para".' },
+  { wrong:'Es la primera vez que voy', right:'Es la primera vez que voy / vaya', en:'It\'s the first time I go', why:'"Es la primera vez que + indicative" is accepted in speech. Formal writing prefers subjunctive: "Es la primera vez que vaya a Madrid".' },
+  { wrong:'No tengo ningún dinero', right:'No tengo dinero / No tengo nada de dinero', en:'I don\'t have any money', why:'"Ningún" doesn\'t combine with uncountables. Use "no tengo + noun" or "no tengo nada de + noun". "Ningún" works with countables: "No tengo ningún amigo aquí".' },
 ];
 
 const PRONUNCIATION_GUIDE = [
@@ -3613,11 +4552,23 @@ const PRONUNCIATION_GUIDE = [
 
 function Chuletas({ onBack, dark }) {
   const [tab, setTab] = useState('gramatica');
+  const [selectedSheet, setSelectedSheet] = useState(null);
+
+  const tileColorMap = {
+    orange:'from-orange-400 to-orange-500',
+    blue:'from-blue-400 to-blue-500',
+    purple:'from-purple-400 to-purple-500',
+    green:'from-green-400 to-green-500',
+    teal:'from-teal-400 to-teal-500',
+    amber:'from-amber-400 to-amber-500',
+    rose:'from-rose-400 to-rose-500',
+    stone:'from-stone-400 to-stone-500',
+  };
 
   return (
     <div>
       <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} />
-      <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Chuletas</h2>
         </div>
@@ -3627,14 +4578,53 @@ function Chuletas({ onBack, dark }) {
             {id:'errores',label:'Errores'},
             {id:'pronunciacion',label:'Pronunciación'},
             {id:'documentos',label:'Documentos'}
-          ]} active={tab} onChange={setTab} />
+          ]} active={tab} onChange={(id) => { setTab(id); setSelectedSheet(null); }} />
         </div>
         {tab === 'gramatica' && (
-          <div className="space-y-3">
-            {CHEAT_SHEETS.map(sheet => (
-              <ChulletaCard key={sheet.id} sheet={sheet} dark={dark} />
-            ))}
-          </div>
+          selectedSheet ? (
+            <div className="max-w-3xl mx-auto">
+              <button onClick={() => setSelectedSheet(null)}
+                className="mb-4 flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
+                <span>←</span> Volver a chuletas
+              </button>
+              <Card dark={dark} className="overflow-hidden">
+                <div className={`px-5 py-4 bg-gradient-to-br ${tileColorMap[selectedSheet.color] || tileColorMap.stone} text-white`}>
+                  <p className="font-serif font-bold text-2xl">{selectedSheet.title}</p>
+                  <p className="text-xs opacity-90 mt-0.5">{selectedSheet.titleEn}</p>
+                </div>
+                <div className="px-5 pb-5 pt-4 space-y-5">
+                  {selectedSheet.content.map((section, si) => (
+                    <div key={si}>
+                      {section.heading && (
+                        <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{section.heading}</p>
+                      )}
+                      {section.rows && Array.isArray(section.rows) && (
+                        <DataTable data={section.rows} dark={dark} />
+                      )}
+                      {section.text && (
+                        <p className={`text-sm ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.text}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {CHEAT_SHEETS.map(sheet => (
+                <button key={sheet.id} onClick={() => setSelectedSheet(sheet)} className="text-left">
+                  <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
+                    <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
+                    <div className="p-5">
+                      <p className="font-serif font-bold text-lg leading-tight">{sheet.title}</p>
+                      <p className={`text-xs mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sheet.titleEn}</p>
+                      <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{sheet.content.length} {sheet.content.length === 1 ? 'sección' : 'secciones'} · Toca para abrir</p>
+                    </div>
+                  </Card>
+                </button>
+              ))}
+            </div>
+          )
         )}
         {tab === 'errores' && (
           <div className="space-y-3">
@@ -3830,11 +4820,17 @@ function Conectores({ onBack, dark }) {
                     {group.items.map((item, ii) => (
                       <div key={ii} className={`px-5 py-4 ${ii > 0 ? `border-t ${dark ? 'border-white/[0.04]' : 'border-stone-50'}` : ''}`}>
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <p className="font-serif font-bold text-lg">{item.es}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-serif font-bold text-lg">{item.es}</p>
+                            <SpeakBtn text={item.es} size="sm" />
+                          </div>
                           <LevelBadge level={item.level} />
                         </div>
                         <p className={`text-sm font-medium mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{item.en}</p>
-                        <p className={`text-sm italic mb-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{item.example}"</p>
+                        <div className="flex items-start gap-2 mb-1">
+                          <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{item.example}"</p>
+                          <SpeakBtn text={item.example} size="sm" />
+                        </div>
                         <p className={`text-xs mb-1 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{item.exampleEn}</p>
                         {item.notes && (
                           <p className={`text-xs ${dark ? 'text-teal-400' : 'text-teal-700'}`}>📌 {item.notes}</p>
@@ -3893,6 +4889,7 @@ function Frases({ onBack, dark }) {
   const [tab, setTab] = useState('situaciones');
   const [expandedSit, setExpandedSit] = useState(null);
   const [idiomsCategory, setIdiomsCategory] = useState('all');
+  const [selectedIdiom, setSelectedIdiom] = useState(null);
 
   const tabs = [{id:'situaciones',label:'Situaciones'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'}];
 
@@ -3936,6 +4933,7 @@ function Frases({ onBack, dark }) {
                         <div key={pi} className={`px-5 py-4 ${pi > 0 ? `border-t ${dark ? 'border-white/[0.04]' : 'border-stone-50'}` : ''}`}>
                           <div className="flex items-start gap-2 mb-1">
                             <p className="font-semibold text-base flex-1">{phrase.es}</p>
+                            <SpeakBtn text={phrase.es} size="sm" />
                             {registerBadge(phrase.register)}
                           </div>
                           <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{phrase.en}</p>
@@ -3953,27 +4951,55 @@ function Frases({ onBack, dark }) {
         )}
 
         {tab === 'modismos' && (
-          <div>
-            <div className="flex gap-2 mb-5 overflow-x-auto hide-scroll">
-              {idiomCategories.map(cat => (
-                <button key={cat} onClick={() => setIdiomsCategory(cat)}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${idiomsCategory === cat ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>
-                  {cat === 'all' ? 'Todos' : cat}
-                </button>
-              ))}
+          selectedIdiom ? (
+            <div className="max-w-2xl mx-auto">
+              <button onClick={() => setSelectedIdiom(null)}
+                className="mb-4 flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
+                <span>←</span> Volver a modismos
+              </button>
+              <Card dark={dark} className="p-6">
+                <div className="flex items-start gap-2 mb-2">
+                  <p className="font-serif font-bold text-3xl flex-1">{selectedIdiom.es}</p>
+                  <SpeakBtn text={selectedIdiom.es} size="lg" />
+                </div>
+                <p className={`text-sm italic mb-4 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Literal: "{selectedIdiom.literal}"</p>
+                <div className="bg-orange-50 rounded-xl p-4 mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-orange-600 mb-1">Significado</p>
+                  <p className="text-base font-semibold text-stone-800">{selectedIdiom.meaning}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Ejemplo</p>
+                  <div className="flex items-start gap-2 mb-1">
+                    <p className="font-serif italic text-base flex-1">"{selectedIdiom.example}"</p>
+                    <SpeakBtn text={selectedIdiom.example} size="sm" />
+                  </div>
+                  <p className="text-xs text-stone-500">{selectedIdiom.exampleEn}</p>
+                </div>
+              </Card>
             </div>
-            <div className="space-y-3">
-              {filteredIdioms.map((idiom, ii) => (
-                <Card key={ii} dark={dark} className="p-4">
-                  <p className="font-serif font-bold text-xl mb-1">{idiom.es}</p>
-                  <p className={`text-xs italic mb-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Lit: "{idiom.literal}"</p>
-                  <p className={`text-sm font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{idiom.meaning}</p>
-                  <p className={`text-sm italic mb-1 ${dark ? 'text-stone-400' : 'text-stone-600'}`}>"{idiom.example}"</p>
-                  <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{idiom.exampleEn}</p>
-                </Card>
-              ))}
+          ) : (
+            <div>
+              <div className="flex gap-2 mb-5 overflow-x-auto hide-scroll">
+                {idiomCategories.map(cat => (
+                  <button key={cat} onClick={() => setIdiomsCategory(cat)}
+                    className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${idiomsCategory === cat ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>
+                    {cat === 'all' ? 'Todos' : cat}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {filteredIdioms.map((idiom, ii) => (
+                  <button key={ii} onClick={() => setSelectedIdiom(idiom)} className="text-left">
+                    <Card dark={dark} className="p-4 h-full hover:shadow-md transition-all hover:-translate-y-0.5">
+                      <p className="font-serif font-bold text-base mb-1 leading-tight">{idiom.es}</p>
+                      <p className={`text-[11px] italic mb-2 line-clamp-1 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Lit: "{idiom.literal}"</p>
+                      <p className={`text-xs line-clamp-2 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{idiom.meaning}</p>
+                    </Card>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {tab === 'argot' && slangDoc && (
@@ -4005,6 +5031,7 @@ function Frases({ onBack, dark }) {
               <Card key={i} dark={dark} className="p-4">
                 <div className="flex items-start gap-2 mb-1">
                   <p className="font-serif font-bold text-lg flex-1">{p.es}</p>
+                  <SpeakBtn text={p.es} size="sm" />
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">VAL</span>
                 </div>
                 <p className="text-sm text-stone-600 mb-1">{p.en}</p>
@@ -4994,6 +6021,7 @@ function App() {
     { id: 'conectores', label: 'Conectores', emoji: '🔗' },
     { id: 'frases', label: 'Frases', emoji: '💬' },
     { id: 'lecturas', label: 'Lecturas', emoji: '📖' },
+    { id: 'conversaciones', label: 'Conversaciones', emoji: '🎧' },
     { id: 'ejercicios', label: 'Ejercicios', emoji: '✏️' },
     { id: 'glosario', label: 'Glosario', emoji: '🔖' },
   ];
@@ -5009,6 +6037,7 @@ function App() {
       case 'conectores': return <Conectores {...props} />;
       case 'frases': return <Frases {...props} />;
       case 'lecturas': return <Lecturas {...props} />;
+      case 'conversaciones': return <Conversaciones {...props} />;
       case 'ejercicios': return <Ejercicios {...props} />;
       case 'glosario': return <Glosario {...props} />;
       default: return <Inicio dark={dark} section={section} setSection={setSection} />;
