@@ -3787,7 +3787,7 @@ function Tiempos({ onBack, dark, onSearch }) {
   return (
     <div>
       <BackHeader title="Tiempos verbales" subtitle="Tenses reference" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+      <div className={`px-4 lg:px-8 py-6 mx-auto ${tab === 'conjugador' ? 'max-w-6xl' : 'max-w-3xl'}`}>
         <div className="hidden lg:block mb-4">
           <h2 className="text-2xl font-serif font-bold">Tiempos verbales</h2>
         </div>
@@ -5697,19 +5697,19 @@ function Conjugador({ dark }) {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
             {tenseGroups.map(g => {
               const forms = data[g.key];
               if (!forms) return null;
               const u = data.usage && data.usage[g.key];
               return (
-                <div key={g.key} className={`rounded-xl p-4 flex flex-col ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
+                <div key={g.key} className={`rounded-xl p-3 flex flex-col ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-3">{g.label}</p>
                   {/* CSS grid: pronoun(fixed) | form(fill) | speak(fixed) — never wraps */}
                   <div className="space-y-1.5 mb-3">
                     {forms.map((form, i) => (
                       <div key={i} className="grid items-center gap-x-2 text-sm"
-                           style={{gridTemplateColumns:'4.5rem 1fr 1.25rem'}}>
+                           style={{gridTemplateColumns:'3rem 1fr 1.25rem'}}>
                         <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{persons[i]}</span>
                         <span className={`font-bold whitespace-nowrap overflow-hidden text-ellipsis ${dark ? 'text-stone-100' : 'text-stone-900'}`}>{form}</span>
                         <button onClick={() => speakES(form)} className="text-stone-400 hover:text-orange-500 text-xs leading-none">🔊</button>
