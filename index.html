@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Aprende — A2 → B1 Español</title>
+<title>La Vida Español de Liam</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23c60b1e'/><rect y='8' width='32' height='16' fill='%23f1bf00'/></svg>">
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -2544,18 +2545,66 @@ function getStreak() {
   return s;
 }
 
-function speakES(text) {
+// Voice engine — cached voices, gendered selection, dialectal support
+let _voices = [];
+(function initVoiceCache() {
+  if (!('speechSynthesis' in window)) return;
+  const load = () => { _voices = window.speechSynthesis.getVoices(); };
+  load();
+  window.speechSynthesis.addEventListener('voiceschanged', load);
+})();
+
+const FEMALE_NAMES = ['Mónica','Monica','Lucía','Lucia','Paulina','Elena','Rosa','Laura','María','Penélope'];
+const MALE_NAMES   = ['Jorge','Diego','Juan','Miguel','Carlos','Enrique','Álvaro','Alvaro'];
+
+function pickVoice(gender, dialect) {
+  if (!_voices.length) _voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  const lang = dialect || 'es-ES';
+  let pool = _voices.filter(v => v.lang === lang);
+  if (!pool.length) pool = _voices.filter(v => v.lang.startsWith('es'));
+  if (!pool.length) return null;
+  if (gender === 'female') {
+    const hit = pool.find(v => FEMALE_NAMES.some(n => v.name.includes(n)));
+    if (hit) return hit;
+    // fallback: pick the one that is NOT the male voice
+    const notMale = pool.find(v => !MALE_NAMES.some(n => v.name.includes(n)));
+    if (notMale) return notMale;
+  }
+  if (gender === 'male') {
+    const hit = pool.find(v => MALE_NAMES.some(n => v.name.includes(n)));
+    if (hit) return hit;
+    // fallback: last voice in pool (often different gender from first)
+    return pool[pool.length - 1];
+  }
+  return pool[0] || null;
+}
+
+function speakES(text, opts) {
   try {
     if (!('speechSynthesis' in window)) return;
+    const { gender=null, dialect='es-ES', rate=0.92, pitch=1.0 } = opts || {};
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'es-ES';
-    u.rate = 0.95;
-    const voices = window.speechSynthesis.getVoices();
-    const v = voices.find(x => x.lang === 'es-ES') || voices.find(x => x.lang.startsWith('es'));
+    u.lang = dialect;
+    u.rate = rate;
+    u.pitch = pitch;
+    const v = pickVoice(gender, dialect);
     if (v) u.voice = v;
     window.speechSynthesis.speak(u);
   } catch {}
+}
+
+function makeSpeakUtterance(text, opts) {
+  // Creates but does NOT speak — used for queueing in Conversaciones
+  if (!('speechSynthesis' in window)) return null;
+  const { gender=null, dialect='es-ES', rate=0.92, pitch=1.0 } = opts || {};
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = dialect;
+  u.rate = rate;
+  u.pitch = pitch;
+  const v = pickVoice(gender, dialect);
+  if (v) u.voice = v;
+  return u;
 }
 
 // ============================================================
@@ -2576,7 +2625,7 @@ function Card({ dark, className='', children, onClick }) {
   );
 }
 
-function SpeakBtn({ text, size='md' }) {
+function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
   const cls = size === 'sm'
     ? 'w-7 h-7 text-xs'
     : size === 'lg'
@@ -2585,7 +2634,7 @@ function SpeakBtn({ text, size='md' }) {
   return (
     <button
       type="button"
-      onClick={(e) => { e.stopPropagation(); speakES(text); }}
+      onClick={(e) => { e.stopPropagation(); speakES(text, { gender, dialect }); }}
       title="Escuchar"
       aria-label="Escuchar"
       className={`${cls} inline-flex items-center justify-center rounded-full bg-orange-100 hover:bg-orange-200 text-orange-700 transition-colors flex-shrink-0`}
@@ -2596,9 +2645,13 @@ function SpeakBtn({ text, size='md' }) {
 }
 
 function BackHeader({ title, subtitle, onBack, dark }) {
+  if (!onBack) return null;
   return (
-    <div className={`lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center gap-3 ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
-      <button onClick={onBack} className={`w-9 h-9 rounded-xl flex items-center justify-center ${dark ? 'bg-white/[0.08] text-white' : 'bg-stone-100 text-stone-700'}`}>←</button>
+    <div className={`sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center gap-3 ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
+      <button onClick={onBack} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${dark ? 'bg-white/[0.08] text-white hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+        <span>←</span>
+        <span className="hidden sm:inline">Volver</span>
+      </button>
       <div>
         <p className="font-bold text-sm leading-tight">{title}</p>
         {subtitle && <p className="text-xs text-stone-500">{subtitle}</p>}
@@ -2674,16 +2727,13 @@ function Inicio({ dark, section, setSection }) {
   useEffect(() => { setStreak(tickStreak()); }, []);
 
   const SECTION_TILES = [
-    { id:'hoy', label:'Hoy', sublabel:'Today', emoji:'⭐', color:'orange' },
     { id:'tiempos', label:'Tiempos', sublabel:'Tenses', emoji:'🕐', color:'blue' },
     { id:'chuletas', label:'Chuletas', sublabel:'Cheat Sheets', emoji:'📋', color:'purple' },
-    { id:'vocabulario', label:'Vocabulario', sublabel:'Vocabulary', emoji:'📚', color:'emerald' },
-    { id:'conectores', label:'Conectores', sublabel:'Connectors', emoji:'🔗', color:'teal' },
-    { id:'frases', label:'Frases', sublabel:'Phrases', emoji:'💬', color:'rose' },
+    { id:'vocabulario', label:'Vocabulario', sublabel:'Vocab + Glosario', emoji:'📚', color:'emerald' },
+    { id:'frases', label:'Frases', sublabel:'Phrases + Idioms', emoji:'💬', color:'rose' },
     { id:'lecturas', label:'Lecturas', sublabel:'Reading', emoji:'📖', color:'sky' },
     { id:'conversaciones', label:'Conversaciones', sublabel:'Listening', emoji:'🎧', color:'violet' },
     { id:'ejercicios', label:'Ejercicios', sublabel:'Exercises', emoji:'✏️', color:'amber' },
-    { id:'glosario', label:'Glosario', sublabel:'Glossary', emoji:'🔖', color:'indigo' },
   ];
 
   const colorMap = {
@@ -3050,8 +3100,18 @@ function TenseCard({ card, dark }) {
   );
 }
 
+// Tense tile color map
+const TENSE_TAB_COLORS = {
+  pasado:     { tile:'from-blue-500 to-blue-600',    badge:'bg-blue-100 text-blue-700' },
+  presente:   { tile:'from-emerald-500 to-emerald-600', badge:'bg-emerald-100 text-emerald-700' },
+  futuro:     { tile:'from-violet-500 to-violet-600', badge:'bg-violet-100 text-violet-700' },
+  subjuntivo: { tile:'from-rose-500 to-rose-600',    badge:'bg-rose-100 text-rose-700' },
+};
+
 function Tiempos({ onBack, dark }) {
   const [tab, setTab] = useState('pasado');
+  const [selectedTense, setSelectedTense] = useState(null);
+
   const tabs = [
     {id:'pasado', label:'Pasado'},
     {id:'presente', label:'Presente'},
@@ -3060,25 +3120,53 @@ function Tiempos({ onBack, dark }) {
     {id:'conjugador', label:'Conjugador'}
   ];
 
+  // When a tense is selected, show its full card
+  if (selectedTense) {
+    return (
+      <div>
+        <BackHeader title={selectedTense.name} subtitle={selectedTense.subtitle} onBack={() => setSelectedTense(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+          <TenseCard card={selectedTense} dark={dark} />
+        </div>
+      </div>
+    );
+  }
+
+  const tabColors = TENSE_TAB_COLORS[tab] || TENSE_TAB_COLORS.pasado;
+
   return (
     <div>
       <BackHeader title="Tiempos verbales" subtitle="Tenses reference" onBack={onBack} dark={dark} />
       <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
-        <div className="hidden lg:block mb-6">
+        <div className="hidden lg:block mb-4">
           <h2 className="text-2xl font-serif font-bold">Tiempos verbales</h2>
         </div>
         <div className="mb-6">
-          <TabBar dark={dark} tabs={tabs} active={tab} onChange={setTab} />
+          <TabBar dark={dark} tabs={tabs} active={tab} onChange={(t) => { setTab(t); setSelectedTense(null); }} />
         </div>
-        <div>
-          {tab === 'conjugador' ? (
-            <Conjugador dark={dark} />
-          ) : (
-            (TENSES[tab] || []).map(card => (
-              <TenseCard key={card.id} card={card} dark={dark} />
-            ))
-          )}
-        </div>
+        {tab === 'conjugador' ? (
+          <Conjugador dark={dark} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(TENSES[tab] || []).map(card => (
+              <button key={card.id} onClick={() => setSelectedTense(card)}
+                className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
+                {/* Colour strip */}
+                <div className={`h-1.5 w-full bg-gradient-to-r ${tabColors.tile}`} />
+                <div className="p-4">
+                  <p className="font-serif font-bold text-base mb-1">{card.name}</p>
+                  {card.subtitle && (
+                    <p className={`text-xs mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.subtitle}</p>
+                  )}
+                  {card.when && (
+                    <p className={`text-xs leading-relaxed line-clamp-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.when}</p>
+                  )}
+                  <p className={`text-[10px] font-semibold mt-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Toca para ver conjugación →</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -3279,18 +3367,19 @@ function Lecturas({ onBack, dark }) {
           <h2 className="text-2xl font-serif font-bold">Lecturas</h2>
           <p className="text-sm text-stone-500 mt-1">Mini textos con audio, vocabulario y preguntas</p>
         </div>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {READING_PASSAGES.map(p => (
-            <button key={p.id} onClick={() => setSelected(p)} className="w-full text-left">
-              <Card dark={dark} className="p-5 hover:shadow-md transition-shadow">
+            <button key={p.id} onClick={() => setSelected(p)} className="text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border-stone-200/80 shadow-sm">
+              <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 to-sky-500" />
+              <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{p.level}</span>
-                  <span className="text-xs text-stone-400">{p.paragraphs.length} párrafos · {p.glossary.length} palabras</span>
+                  <span className="text-xs text-stone-400">{p.paragraphs.length} párrs</span>
                 </div>
-                <p className="font-serif font-bold text-xl mb-1">{p.title}</p>
+                <p className="font-serif font-bold text-base mb-1 leading-snug">{p.title}</p>
                 <p className="text-xs text-stone-500 mb-2">{p.titleEn}</p>
-                <p className="text-sm italic text-stone-600">{p.intro}</p>
-              </Card>
+                <p className="text-xs italic text-stone-500 line-clamp-2">{p.intro}</p>
+              </div>
             </button>
           ))}
         </div>
@@ -3656,13 +3745,15 @@ function Conversaciones({ onBack, dark }) {
         return;
       }
       setPlayingIdx(i);
-      const u = new SpeechSynthesisUtterance(lines[i].es);
-      u.lang = 'es-ES';
-      u.rate = 0.95;
-      // Tiny pitch variation by speaker
-      u.pitch = lines[i].who === 'A' ? 1.0 : 1.1;
-      u.onend = () => { i++; setTimeout(next, 400); };
-      u.onerror = () => { i++; setTimeout(next, 400); };
+      const line = lines[i];
+      // Speaker A = female Castilian, Speaker B = male Castilian — distinct voices
+      const voiceOpts = line.who === 'A'
+        ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
+        : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
+      const u = makeSpeakUtterance(line.es, voiceOpts);
+      if (!u) { i++; setTimeout(next, 400); return; }
+      u.onend = () => { i++; setTimeout(next, 420); };
+      u.onerror = () => { i++; setTimeout(next, 420); };
       window.speechSynthesis.speak(u);
     };
     next();
@@ -3716,7 +3807,7 @@ function Conversaciones({ onBack, dark }) {
                     </div>
                     <div className="flex items-start gap-2">
                       <p className="text-base leading-relaxed flex-1">{line.es}</p>
-                      <SpeakBtn text={line.es} size="sm" />
+                      <SpeakBtn text={line.es} size="sm" gender={line.who === 'A' ? 'female' : 'male'} dialect="es-ES" />
                     </div>
                     {showTranslation && (
                       <p className="text-xs text-stone-500 mt-1">{line.en}</p>
@@ -4677,7 +4768,7 @@ function Chuletas({ onBack, dark }) {
           </div>
         )}
         {tab === 'documentos' && (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {DOCUMENTS.map(doc => (
               <DocumentCard key={doc.id} doc={doc} dark={dark} />
             ))}
@@ -4692,7 +4783,7 @@ function Chuletas({ onBack, dark }) {
 // SECTION: Vocabulario
 // ============================================================
 
-function Vocabulario({ onBack, dark }) {
+function VocabTemas({ onBack, dark }) {
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [filter, setFilter] = useState('all');
 
@@ -4710,11 +4801,6 @@ function Vocabulario({ onBack, dark }) {
       <div>
         <BackHeader title={selectedTheme.titleEs} subtitle={selectedTheme.titleEn} onBack={() => setSelectedTheme(null)} dark={dark} />
         <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
-          <div className="hidden lg:flex items-center gap-3 mb-6">
-            <button onClick={() => setSelectedTheme(null)} className={`text-sm font-medium ${dark ? 'text-stone-400 hover:text-white' : 'text-stone-500 hover:text-stone-900'}`}>← Vocabulario</button>
-            <span className="text-stone-300">|</span>
-            <h2 className="text-xl font-serif font-bold">{selectedTheme.titleEs}</h2>
-          </div>
           <div className="mb-5 overflow-x-auto hide-scroll">
             <div className="flex gap-2">
               {types.map(t => (
@@ -4749,26 +4835,40 @@ function Vocabulario({ onBack, dark }) {
   }
 
   return (
-    <div>
-      <BackHeader title="Vocabulario" subtitle="Temas" onBack={onBack} dark={dark} />
-      <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Vocabulario</h2>
-          <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>12 temas</p>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          {VOCAB_THEMES.map(theme => (
-            <button key={theme.theme} onClick={() => { setSelectedTheme(theme); setFilter('all'); }}
-              className={`rounded-2xl p-4 text-left transition-all hover:scale-[1.02] ${dark ? 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border border-stone-200/80 shadow-sm hover:shadow'}`}>
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3 ${colorAccentMap[theme.color] || 'bg-stone-400'} text-white`}>
-                {theme.emoji}
-              </div>
-              <p className="font-bold text-sm leading-tight">{theme.titleEs}</p>
-              <p className={`text-xs mt-0.5 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{theme.words.length} palabras</p>
-            </button>
-          ))}
-        </div>
+    <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {VOCAB_THEMES.map(theme => (
+          <button key={theme.theme} onClick={() => { setSelectedTheme(theme); setFilter('all'); }}
+            className={`rounded-2xl p-4 text-left transition-all hover:scale-[1.02] ${dark ? 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border border-stone-200/80 shadow-sm hover:shadow'}`}>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-3 ${colorAccentMap[theme.color] || 'bg-stone-400'} text-white`}>
+              {theme.emoji}
+            </div>
+            <p className="font-bold text-sm leading-tight">{theme.titleEs}</p>
+            <p className={`text-xs mt-0.5 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{theme.words.length} palabras</p>
+          </button>
+        ))}
       </div>
+    </div>
+  );
+}
+
+function Vocabulario({ onBack, dark, initialTab }) {
+  const [tab, setTab] = useState(initialTab || 'temas');
+  const tabs = [
+    { id:'temas', label:'Temas' },
+    { id:'glosario', label:'Glosario' },
+  ];
+  return (
+    <div>
+      <BackHeader title="Vocabulario" subtitle="Vocab + Glosario" onBack={onBack} dark={dark} />
+      <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
+        <div className="hidden lg:block mb-4">
+          <h2 className="text-2xl font-serif font-bold">Vocabulario</h2>
+        </div>
+        <TabBar dark={dark} tabs={tabs} active={tab} onChange={setTab} />
+      </div>
+      {tab === 'temas' && <VocabTemas onBack={onBack} dark={dark} />}
+      {tab === 'glosario' && <GlosarioInner dark={dark} />}
     </div>
   );
 }
@@ -4777,7 +4877,7 @@ function Vocabulario({ onBack, dark }) {
 // SECTION: Conectores
 // ============================================================
 
-function Conectores({ onBack, dark }) {
+function ConectoresPanel({ dark }) {
   const [levelFilter, setLevelFilter] = useState('all');
   const [expanded, setExpanded] = useState(null);
 
@@ -4790,59 +4890,67 @@ function Conectores({ onBack, dark }) {
 
   return (
     <div>
+      <div className="flex gap-2 mb-6">
+        {levels.map(l => (
+          <button key={l.id} onClick={() => setLevelFilter(l.id)}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${levelFilter === l.id ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>
+            {l.label}
+          </button>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {filteredGroups.map((group, gi) => {
+          const isOpen = expanded === gi;
+          return (
+            <Card key={gi} dark={dark} className="overflow-hidden">
+              <button className="w-full px-5 py-4 flex items-center justify-between" onClick={() => setExpanded(isOpen ? null : gi)}>
+                <div className="text-left">
+                  <p className="font-bold">{group.group}</p>
+                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.groupEn} · {group.items.length} conectores</p>
+                </div>
+                <span className={`text-lg transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
+              </button>
+              {isOpen && (
+                <div className={`border-t ${dark ? 'border-white/[0.06]' : 'border-stone-100'}`}>
+                  {group.items.map((item, ii) => (
+                    <div key={ii} className={`px-5 py-4 ${ii > 0 ? `border-t ${dark ? 'border-white/[0.04]' : 'border-stone-50'}` : ''}`}>
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-serif font-bold text-lg">{item.es}</p>
+                          <SpeakBtn text={item.es} size="sm" />
+                        </div>
+                        <LevelBadge level={item.level} />
+                      </div>
+                      <p className={`text-sm font-medium mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{item.en}</p>
+                      <div className="flex items-start gap-2 mb-1">
+                        <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{item.example}"</p>
+                        <SpeakBtn text={item.example} size="sm" />
+                      </div>
+                      <p className={`text-xs mb-1 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{item.exampleEn}</p>
+                      {item.notes && (
+                        <p className={`text-xs ${dark ? 'text-teal-400' : 'text-teal-700'}`}>📌 {item.notes}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Conectores({ onBack, dark }) {
+  return (
+    <div>
       <BackHeader title="Conectores" subtitle="Connectors reference" onBack={onBack} dark={dark} />
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Conectores</h2>
         </div>
-        <div className="flex gap-2 mb-6">
-          {levels.map(l => (
-            <button key={l.id} onClick={() => setLevelFilter(l.id)}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${levelFilter === l.id ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>
-              {l.label}
-            </button>
-          ))}
-        </div>
-        <div className="space-y-3">
-          {filteredGroups.map((group, gi) => {
-            const isOpen = expanded === gi;
-            return (
-              <Card key={gi} dark={dark} className="overflow-hidden">
-                <button className="w-full px-5 py-4 flex items-center justify-between" onClick={() => setExpanded(isOpen ? null : gi)}>
-                  <div className="text-left">
-                    <p className="font-bold">{group.group}</p>
-                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.groupEn} · {group.items.length} conectores</p>
-                  </div>
-                  <span className={`text-lg transition-transform ${isOpen ? 'rotate-180' : ''}`}>▾</span>
-                </button>
-                {isOpen && (
-                  <div className={`border-t ${dark ? 'border-white/[0.06]' : 'border-stone-100'}`}>
-                    {group.items.map((item, ii) => (
-                      <div key={ii} className={`px-5 py-4 ${ii > 0 ? `border-t ${dark ? 'border-white/[0.04]' : 'border-stone-50'}` : ''}`}>
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-serif font-bold text-lg">{item.es}</p>
-                            <SpeakBtn text={item.es} size="sm" />
-                          </div>
-                          <LevelBadge level={item.level} />
-                        </div>
-                        <p className={`text-sm font-medium mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{item.en}</p>
-                        <div className="flex items-start gap-2 mb-1">
-                          <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{item.example}"</p>
-                          <SpeakBtn text={item.example} size="sm" />
-                        </div>
-                        <p className={`text-xs mb-1 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{item.exampleEn}</p>
-                        {item.notes && (
-                          <p className={`text-xs ${dark ? 'text-teal-400' : 'text-teal-700'}`}>📌 {item.notes}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </Card>
-            );
-          })}
-        </div>
+        <ConectoresPanel dark={dark} />
       </div>
     </div>
   );
@@ -4885,13 +4993,13 @@ const VALENCIAN_PHRASES = [
   { es:'Una orxata, per favor', en:'A horchata, please', es_es:'Una horchata, por favor', when:'Ordering Valencia\'s iconic drink.' },
 ];
 
-function Frases({ onBack, dark }) {
-  const [tab, setTab] = useState('situaciones');
+function Frases({ onBack, dark, initialTab }) {
+  const [tab, setTab] = useState(initialTab || 'situaciones');
   const [expandedSit, setExpandedSit] = useState(null);
   const [idiomsCategory, setIdiomsCategory] = useState('all');
   const [selectedIdiom, setSelectedIdiom] = useState(null);
 
-  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'}];
+  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'},{id:'conectores',label:'Conectores'}];
 
   const idiomCategories = ['all','comida','animales','cuerpo','general'];
   const filteredIdioms = idiomsCategory === 'all' ? IDIOMS : IDIOMS.filter(i => i.category === idiomsCategory);
@@ -5043,6 +5151,10 @@ function Frases({ onBack, dark }) {
               </Card>
             ))}
           </div>
+        )}
+
+        {tab === 'conectores' && (
+          <ConectoresPanel dark={dark} />
         )}
       </div>
     </div>
@@ -5516,24 +5628,18 @@ function Ejercicios({ onBack, dark }) {
           </Card>
         </button>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {EXERCISES.map(cat => (
-            <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="w-full text-left">
-              <Card dark={dark} className="p-5 hover:scale-[1.01] transition-transform">
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white bg-gradient-to-br flex-shrink-0 ${colorMap[cat.color] || colorMap.orange}`}>
-                    <span className="text-xl">✏️</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-bold">{cat.categoryEs}</p>
-                      <LevelBadge level={cat.level} />
-                    </div>
-                    <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.exercises.length} ejercicios</p>
-                  </div>
-                  <span className="text-stone-400">→</span>
+            <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border-stone-200/80 shadow-sm">
+              <div className={`h-1.5 w-full bg-gradient-to-r ${colorMap[cat.color] || colorMap.orange}`} />
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white text-base bg-gradient-to-br ${colorMap[cat.color] || colorMap.orange}`}>✏️</div>
+                  <LevelBadge level={cat.level} />
                 </div>
-              </Card>
+                <p className="font-bold text-sm mb-1">{cat.categoryEs}</p>
+                <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.exercises.length} ejercicios</p>
+              </div>
             </button>
           ))}
         </div>
@@ -5554,7 +5660,8 @@ async function autoTranslate(word) {
   } catch { return ''; }
 }
 
-function Glosario({ onBack, dark }) {
+function GlosarioInner({ dark }) {
+  const onBack = null; // embedded inside Vocabulario — no standalone back needed
   const [entries, setEntries] = useState(() => {
     const saved = getStorage('aprende.glossary', null);
     if (saved && saved.length > 0) return saved;
@@ -5688,12 +5795,11 @@ function Glosario({ onBack, dark }) {
 
   return (
     <div>
-      <BackHeader title="Glosario" subtitle="My vocabulary" onBack={onBack} dark={dark} />
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
-        <div className="hidden lg:flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 lg:mb-6">
           <div>
-            <h2 className="text-2xl font-serif font-bold">Glosario</h2>
-            <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Mi vocabulario personal · {dueDeck.length} para repasar</p>
+            <h2 className={`text-lg font-serif font-bold ${dark ? 'text-white' : 'text-stone-800'}`}>Mi glosario personal</h2>
+            <p className={`text-sm mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{dueDeck.length} para repasar</p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={handleExportCSV} className="bg-stone-100 text-stone-700 hover:bg-stone-200 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">⬇️ CSV</button>
@@ -6014,16 +6120,13 @@ function App() {
 
   const NAV_ITEMS = [
     { id: 'inicio', label: 'Inicio', emoji: '🏠' },
-    { id: 'hoy', label: 'Hoy', emoji: '⭐' },
     { id: 'tiempos', label: 'Tiempos', emoji: '🕐' },
     { id: 'chuletas', label: 'Chuletas', emoji: '📋' },
-    { id: 'vocabulario', label: 'Vocab', emoji: '📚' },
-    { id: 'conectores', label: 'Conectores', emoji: '🔗' },
+    { id: 'vocabulario', label: 'Vocabulario', emoji: '📚' },
     { id: 'frases', label: 'Frases', emoji: '💬' },
     { id: 'lecturas', label: 'Lecturas', emoji: '📖' },
     { id: 'conversaciones', label: 'Conversaciones', emoji: '🎧' },
     { id: 'ejercicios', label: 'Ejercicios', emoji: '✏️' },
-    { id: 'glosario', label: 'Glosario', emoji: '🔖' },
   ];
 
   const renderSection = () => {
@@ -6034,12 +6137,12 @@ function App() {
       case 'tiempos': return <Tiempos {...props} />;
       case 'chuletas': return <Chuletas {...props} />;
       case 'vocabulario': return <Vocabulario {...props} />;
-      case 'conectores': return <Conectores {...props} />;
+      case 'conectores': return <Frases {...props} initialTab="conectores" />;
       case 'frases': return <Frases {...props} />;
       case 'lecturas': return <Lecturas {...props} />;
       case 'conversaciones': return <Conversaciones {...props} />;
       case 'ejercicios': return <Ejercicios {...props} />;
-      case 'glosario': return <Glosario {...props} />;
+      case 'glosario': return <Vocabulario {...props} initialTab="glosario" />;
       default: return <Inicio dark={dark} section={section} setSection={setSection} />;
     }
   };
@@ -6049,8 +6152,7 @@ function App() {
       {/* Desktop sidebar */}
       <aside className={`hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 border-r ${dark ? 'glass-dark border-white/[0.08]' : 'glass border-stone-200/60'}`}>
         <div className="p-6 border-b border-inherit">
-          <h1 className="font-serif font-bold text-2xl text-orange-500">Aprende</h1>
-          <p className="text-xs text-stone-500 mt-1">A2 → B1 Español</p>
+          <h1 className="font-serif font-bold text-xl text-orange-500 leading-tight">La Vida Español<br/><span className="text-base font-semibold text-stone-500">de Liam</span></h1>
         </div>
         <div className="px-3 pt-3">
           <button onClick={() => setSearchOpen(true)}
@@ -6078,7 +6180,7 @@ function App() {
       <main className="lg:ml-64 min-h-screen">
         {/* Mobile header */}
         <header className={`lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center justify-between ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
-          <h1 className="font-serif font-bold text-xl text-orange-500">Aprende</h1>
+          <h1 className="font-serif font-bold text-xl text-orange-500">La Vida Español</h1>
           <button onClick={() => setSearchOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 text-stone-600 text-base">🔍</button>
         </header>
 
