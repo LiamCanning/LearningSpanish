@@ -1141,6 +1141,7 @@ const TENSES = {
 const CHEAT_SHEETS = [
   {
     id:'ser-estar',
+    category:'verbos',
     title:'Ser vs Estar',
     titleEn:'Two verbs for "to be"',
     color:'orange',
@@ -1185,6 +1186,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'por-para',
+    category:'gramatica',
     title:'Por vs Para',
     titleEn:'Two prepositions for "for/by"',
     color:'blue',
@@ -1220,6 +1222,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'se-constructions',
+    category:'gramatica',
     title:'Las Construcciones con "Se"',
     titleEn:'Se constructions',
     color:'purple',
@@ -1250,6 +1253,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'imperativos',
+    category:'verbos',
     title:'El Imperativo',
     titleEn:'Commands and imperatives',
     color:'green',
@@ -1289,6 +1293,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'reported-speech',
+    category:'gramatica',
     title:'Estilo Indirecto',
     titleEn:'Reported speech',
     color:'teal',
@@ -1332,6 +1337,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'comparatives',
+    category:'gramatica',
     title:'Comparativos y Superlativos',
     titleEn:'Comparisons',
     color:'amber',
@@ -1373,6 +1379,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'pronouns',
+    category:'gramatica',
     title:'Pronombres',
     titleEn:'Pronouns reference',
     color:'rose',
@@ -1418,6 +1425,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'numbers-time',
+    category:'lexico',
     title:'Números, Tiempo y Fechas',
     titleEn:'Numbers, time and dates',
     color:'stone',
@@ -1470,6 +1478,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'haber',
+    category:'verbos',
     title:'Haber',
     titleEn:'To have (auxiliary) · There to be',
     color:'green',
@@ -1532,6 +1541,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'verb-prepositions',
+    category:'lexico',
     title:'Verbo + Preposición',
     titleEn:'Verb + Preposition Pairings',
     color:'blue',
@@ -1589,6 +1599,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'verb-chains',
+    category:'lexico',
     title:'Cadenas Verbales',
     titleEn:'Verb-Chain Patterns',
     color:'green',
@@ -1631,6 +1642,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'false-friends',
+    category:'lexico',
     title:'Falsos Amigos',
     titleEn:'False Friends',
     color:'rose',
@@ -1674,6 +1686,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'acentos',
+    category:'gramatica',
     title:'Acentos y Sílabas',
     titleEn:'Accent & Stress Rules',
     color:'amber',
@@ -1726,6 +1739,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'diminutivos',
+    category:'lexico',
     title:'Diminutivos y Aumentativos',
     titleEn:'Diminutives & Augmentatives',
     color:'violet',
@@ -1763,6 +1777,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'leismo',
+    category:'gramatica',
     title:'Leísmo, Vosotros y Registro',
     titleEn:'Leísmo, Vosotros & Register',
     color:'teal',
@@ -1811,6 +1826,7 @@ const CHEAT_SHEETS = [
   },
   {
     id:'quedar-dejar-llevar',
+    category:'verbos',
     title:'Quedarse · Dejar · Llevarse',
     titleEn:'Keep it · Leave it · Take it',
     color:'orange',
@@ -1896,7 +1912,87 @@ const CHEAT_SHEETS = [
         {es:'Deja de intentarlo — no te lo vas a llevar. Yo me lo quedo.',en:'Stop trying — you\'re not taking it. I\'m keeping it.'}
       ]}
     ]
-  }
+  },
+  {
+    id:'llevar-uses',
+    category:'verbos',
+    title:'Llevar — todos los usos',
+    titleEn:'Llevar / Llevarse: the complete guide',
+    color:'teal',
+    content:[
+      { heading:'The 4 core meanings', rows:[
+        ['1 — To carry / bring','llevar algo de A a B','Llevé las maletas al hotel. / Te llevo el café.'],
+        ['2 — To take someone','llevar a alguien a un sitio','¿Te llevo al aeropuerto? / La policía lo llevó a comisaría.'],
+        ['3 — To wear','llevar + prenda','Hoy llevo una chaqueta azul. / ¿Siempre llevas gafas?'],
+        ['4 — Duration (most useful!)','llevar + time + gerundio','Llevo tres años viviendo en Valencia. / ¿Cuánto tiempo llevas esperando?']
+      ], examples:[
+        {es:'Llevo dos horas esperando el autobús — ¿qué pasa?', en:'I\'ve been waiting for the bus for two hours — what\'s going on?'},
+        {es:'¿Llevas la chaqueta? Hace frío esta noche.', en:'Are you wearing your jacket? It\'s cold tonight.'},
+        {es:'Te llevo al médico — no puedes ir solo.', en:'I\'ll take you to the doctor — you can\'t go alone.'}
+      ]},
+      { heading:'Duration: llevar + time + gerundio', rows:[
+        ['Pattern','Llevo + [time] + [verb]-ando/iendo','= I have been [verb]ing for [time]'],
+        ['Llevo dos años aprendiendo español.','I\'ve been learning Spanish for two years.','(use this, not "he estado aprendiendo")'],
+        ['¿Cuánto tiempo llevas viviendo aquí?','How long have you been living here?','very common question'],
+        ['Llevaba una hora esperando cuando llegó.','I had been waiting an hour when he arrived.','imperfecto for past duration'],
+        ['¿Cuánto llevas con tu novia?','How long have you been with your girlfriend?','informal, very natural'],
+        ['Llevo toda la semana sin dormir bien.','I\'ve been sleeping badly all week.','llevar + sin + infinitivo = without doing']
+      ], examples:[
+        {es:'Llevo seis meses en Valencia y ya me siento como en casa.', en:'I\'ve been in Valencia for six months and already feel at home.'},
+        {es:'Llevaba tres horas en la cola cuando cerraron la ventanilla.', en:'I\'d been in the queue for three hours when they closed the window.'}
+      ]},
+      { heading:'Llevarse — the reflexive', rows:[
+        ['llevarse algo','to take something away (it moves with you)','Me llevo las sobras. = I\'m taking the leftovers.'],
+        ['llevarse bien/mal con','to get on well/badly with','Me llevo muy bien con mi jefe.'],
+        ['llevarse una sorpresa','to get a surprise','Me llevé una sorpresa cuando llegué.'],
+        ['llevarse un susto','to get a fright','Me llevé un susto enorme — pensé que era un ladrón.'],
+        ['llevarse bien','to go well together (things)','El vino y el queso se llevan muy bien.'],
+        ['llevarse la palma','to take the prize / win hands down','En cuanto a la paella, Valencia se lleva la palma.'],
+        ['llevarse por delante','to wipe out / mow down','El camión se llevó por delante la señal de tráfico.']
+      ], examples:[
+        {es:'¿Te lo llevo o lo dejo aquí?', en:'Shall I take it for you or leave it here?'},
+        {es:'Me llevo fatal con mi vecino — siempre pone la música muy alta.', en:'I get on terribly with my neighbour — he always plays music really loud.'},
+        {es:'Me llevé una sorpresa cuando vi lo barato que era el piso.', en:'I got a surprise when I saw how cheap the flat was.'}
+      ]},
+      { heading:'Real-world contexts', rows:[
+        ['Café / bar','¿Para aquí o para llevar?','Have in or take away?'],
+        ['Café / bar','Me llevo un croissant también.','I\'ll take a croissant too.'],
+        ['Restaurant','¿Le llevo los platos ya?','Shall I take the plates now?'],
+        ['Restaurant','Me llevo las sobras — están muy buenas.','I\'ll take the leftovers — they\'re really good.'],
+        ['Shopping','Me llevo el rojo. ¿Me lo envuelves?','I\'ll take the red one. Can you wrap it?'],
+        ['Airport / travel','¿Puedes llevarme al aeropuerto?','Can you take me to the airport?'],
+        ['Doctor / emergencies','Llévame a urgencias, por favor.','Take me to A&E, please.'],
+        ['Everyday','¿Llevas dinero en efectivo?','Are you carrying cash?'],
+        ['Everyday','¿Cuánto llevas esperando?','How long have you been waiting?'],
+        ['Relationships','¿Cuánto tiempo lleváis juntos?','How long have you been together?']
+      ], examples:[
+        {es:'— ¿Es para aquí o para llevar? — Para llevar, gracias.', en:'— Have in or take away? — Take away, thanks.'},
+        {es:'Llevamos juntos cuatro años y aún no nos hemos cansado el uno del otro.', en:'We\'ve been together four years and still haven\'t got tired of each other.'}
+      ]},
+      { heading:'Llevar vs Traer — common confusion', rows:[
+        ['llevar','to take / carry AWAY from here (towards there)','Te llevo el café. (I\'ll bring/take coffee to you — I move towards you)'],
+        ['traer','to bring TOWARDS here (towards the speaker)','Trae la cuenta. (Bring the bill — to me, the speaker)'],
+        ['Tip','Think of direction relative to YOU','If YOU are moving: llevar. If the thing moves TO you: traer.'],
+        ['Restaurant (you call waiter)','¿Me trae la cuenta?','Can you bring me the bill? (it comes to you)'],
+        ['Restaurant (waiter offers)','¿Le llevo el postre?','Shall I take the dessert over? (waiter moves to you)'],
+        ['Asking a friend for a lift','¿Me puedes llevar?','Can you take me? (you both move away)'],
+        ['Asking someone to bring something','¿Puedes traer vino?','Can you bring wine? (it comes to you/here)']
+      ], examples:[
+        {es:'¿Me traes un vaso de agua? — Ahora te lo llevo.', en:'Can you bring me a glass of water? — I\'ll bring it to you now.'},
+        {es:'Voy al súper — ¿te llevo algo? — Tráeme una barra de pan.', en:'I\'m going to the supermarket — shall I bring you something? — Bring me a baguette.'}
+      ]},
+      { heading:'Common mistakes with llevar', rows:[
+        ['❌ He estado llevando la chaqueta.','✅ Llevo la chaqueta puesta.','Don\'t use estar+gerundio for wearing — use llevar in present.'],
+        ['❌ Estoy viviendo aquí por 3 años.','✅ Llevo 3 años viviendo aquí.','Duration: use llevar construction, not estar + por.'],
+        ['❌ Me llevo bien a mi jefe.','✅ Me llevo bien con mi jefe.','Always: llevarse bien CON, not "a".'],
+        ['❌ Traer el perro al parque.','✅ Llevar el perro al parque.','You take the dog to the park (you both move away from home).'],
+        ['❌ Llevo esperando desde dos horas.','✅ Llevo dos horas esperando.','Word order: llevar + time expression + gerundio.']
+      ], examples:[
+        {es:'Lleva puesto el mismo jersey tres días seguidos — alguien debería decirle algo.', en:'He\'s been wearing the same jumper for three days in a row — someone should say something.'},
+        {es:'Llevo toda la tarde intentando llamarte — ¿todo bien?', en:'I\'ve been trying to call you all afternoon — everything OK?'}
+      ]}
+    ]
+  },
 ];
 
 const VOCAB_THEMES = [
@@ -6112,6 +6208,7 @@ function Chuletas({ onBack, dark, onSearch }) {
   const [selectedSheet, setSelectedSheet] = useState(null);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [selectedMistake, setSelectedMistake] = useState(null);
+  const [sheetFilter, setSheetFilter] = useState('todos');
 
   const tileColorMap = {
     orange:'from-orange-400 to-orange-500',
@@ -6301,8 +6398,23 @@ function Chuletas({ onBack, dark, onSearch }) {
           ]} active={tab} onChange={(id) => { setTab(id); setSelectedSheet(null); setSelectedDoc(null); setSelectedMistake(null); }} />
         </div>
         {tab === 'gramatica' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CHEAT_SHEETS.map(sheet => (
+          <div>
+            {/* Category filter pills */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {[
+                {id:'todos', label:'Todos'},
+                {id:'verbos', label:'⚡ Verbos'},
+                {id:'gramatica', label:'📐 Gramática'},
+                {id:'lexico', label:'📚 Léxico'},
+              ].map(cat => (
+                <button key={cat.id} onClick={() => setSheetFilter(cat.id)}
+                  className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${sheetFilter === cat.id ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300 hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {CHEAT_SHEETS.filter(s => sheetFilter === 'todos' || s.category === sheetFilter).map(sheet => (
               <button key={sheet.id} onClick={() => setSelectedSheet(sheet)} className="text-left">
                 <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
                   <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
@@ -6314,6 +6426,7 @@ function Chuletas({ onBack, dark, onSearch }) {
                 </Card>
               </button>
             ))}
+            </div>
           </div>
         )}
         {tab === 'errores' && (
