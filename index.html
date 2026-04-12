@@ -3383,7 +3383,7 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
 function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
   if (!onBack) return null;
   return (
-    <div className={`sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center gap-3 ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
+    <div className={`sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center gap-3 ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass-light border-b border-stone-200/60'}`}>
       <button onClick={onBack} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 ${dark ? 'bg-white/[0.08] text-white hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
         <span>←</span>
         <span className="hidden sm:inline">Volver</span>
@@ -8240,7 +8240,7 @@ function App() {
   return (
     <div className={`min-h-screen ${dark ? 'dark mesh-dark text-white' : 'mesh-light text-stone-900'}`}>
       {/* Desktop sidebar */}
-      <aside className={`hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 border-r ${dark ? 'glass-dark border-white/[0.08]' : 'glass border-stone-200/60'}`}>
+      <aside className={`hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 border-r ${dark ? 'glass-dark border-white/[0.08]' : 'glass-light border-stone-200/60'}`}>
         <div className="p-6 border-b border-inherit">
           <h1 className="font-serif font-bold text-xl text-orange-500 leading-tight">La Vida Español<br/><span className="text-base font-semibold text-stone-500">de Liam</span></h1>
         </div>
@@ -8269,7 +8269,7 @@ function App() {
       {/* Main content */}
       <main className="lg:ml-64 min-h-screen">
         {/* Mobile header — only on inicio (sub-sections use BackHeader instead) */}
-        <header className={`${section === 'inicio' ? 'flex' : 'hidden'} lg:hidden sticky top-0 z-30 px-4 py-3 items-center justify-between ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass border-b border-stone-200/60'}`}>
+        <header className={`${section === 'inicio' ? 'flex' : 'hidden'} lg:hidden sticky top-0 z-30 px-4 py-3 items-center justify-between ${dark ? 'glass-dark border-b border-white/[0.06]' : 'glass-light border-b border-stone-200/60'}`}>
           <h1 className="font-serif font-bold text-xl text-orange-500">La Vida Español</h1>
           <button onClick={() => setSearchOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 text-stone-600 text-base">🔍</button>
         </header>
@@ -8282,7 +8282,7 @@ function App() {
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s) => setSection(s)} />
 
       {/* Mobile bottom nav */}
-      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${dark ? 'glass-dark border-white/[0.08]' : 'glass border-stone-200/60'}`}>
+      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${dark ? 'glass-dark border-white/[0.08]' : 'glass-light border-stone-200/60'}`}>
         <div className="flex overflow-x-auto hide-scroll">
           {NAV_ITEMS.map(item => (
             <button key={item.id} onClick={() => setSection(item.id)}
