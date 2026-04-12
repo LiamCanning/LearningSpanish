@@ -3951,7 +3951,6 @@ function Tiempos({ onBack, dark, onSearch }) {
     {id:'presente', label:'Presente'},
     {id:'futuro', label:'Futuro'},
     {id:'subjuntivo', label:'Subjuntivo'},
-    {id:'conjugador', label:'Conjugador'}
   ];
 
   // When a tense is selected, show its full card
@@ -3971,16 +3970,14 @@ function Tiempos({ onBack, dark, onSearch }) {
   return (
     <div>
       <BackHeader title="Tiempos verbales" subtitle="Tenses reference" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className={`px-4 lg:px-8 py-6 mx-auto ${tab === 'conjugador' ? 'max-w-6xl' : 'max-w-3xl'}`}>
+      <div className="px-4 lg:px-8 py-6 mx-auto max-w-3xl">
         <div className="hidden lg:block mb-4">
           <h2 className="text-2xl font-serif font-bold">Tiempos verbales</h2>
         </div>
         <div className="mb-6">
           <TabBar dark={dark} tabs={tabs} active={tab} onChange={(t) => { setTab(t); setSelectedTense(null); }} />
         </div>
-        {tab === 'conjugador' ? (
-          <Conjugador dark={dark} />
-        ) : (
+        {(
           <div className="grid grid-cols-2 gap-4">
             {(TENSES[tab] || []).map(card => (
               <button key={card.id} onClick={() => setSelectedTense(card)}
@@ -4001,6 +3998,20 @@ function Tiempos({ onBack, dark, onSearch }) {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ConjugadorSection({ onBack, dark, onSearch }) {
+  return (
+    <div>
+      <BackHeader title="Conjugador" subtitle="Conjugate any verb" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
+        <div className="hidden lg:block mb-4">
+          <h2 className="text-2xl font-serif font-bold">Conjugador</h2>
+        </div>
+        <Conjugador dark={dark} />
       </div>
     </div>
   );
@@ -8494,6 +8505,7 @@ function App() {
   const NAV_ITEMS = [
     { id: 'inicio', label: 'Inicio', emoji: '🏠' },
     { id: 'tiempos', label: 'Tiempos', emoji: '🕐' },
+    { id: 'conjugador', label: 'Conjugador', emoji: '🔤' },
     { id: 'chuletas', label: 'Chuletas', emoji: '📋' },
     { id: 'vocabulario', label: 'Vocabulario', emoji: '📚' },
     { id: 'frases', label: 'Frases', emoji: '💬' },
@@ -8508,6 +8520,7 @@ function App() {
       case 'inicio': return <Inicio dark={dark} section={section} setSection={goTo} />;
       case 'hoy': return <Hoy {...props} />;
       case 'tiempos': return <Tiempos {...props} />;
+      case 'conjugador': return <ConjugadorSection {...props} />;
       case 'chuletas': return <Chuletas {...props} />;
       case 'vocabulario': return <Vocabulario {...props} />;
       case 'conectores': return <Frases {...props} initialTab="conectores" />;
