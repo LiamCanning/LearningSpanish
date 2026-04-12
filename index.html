@@ -5701,18 +5701,42 @@ function Conjugador({ dark }) {
   const [customInput, setCustomInput] = useState('');
   const [verb, setVerb] = useState('hablar');
   const [filter, setFilter] = useState('');
+  const [savedVerbs, setSavedVerbs] = useState(() => getStorage('aprende.saved_verbs', {}));
+  const [saveEnInput, setSaveEnInput] = useState('');
+  const [showSaveInput, setShowSaveInput] = useState(false);
 
-  // Resolve current verb data: from dictionary OR auto-conjugate
+  // Resolve current verb data: from dictionary OR saved OR auto-conjugate
   const dictData = CONJUGATOR_VERBS[verb];
-  const autoData = !dictData ? conjugateRegular(verb) : null;
-  const data = dictData || autoData;
-  const isAuto = !dictData && !!autoData;
-  const isUnknown = !dictData && !autoData;
+  const savedData = !dictData ? savedVerbs[verb] : null;
+  const autoData = !dictData && !savedData ? conjugateRegular(verb) : null;
+  const data = dictData || savedData || autoData;
+  const isAuto = !dictData && !savedData && !!autoData;
+  const isSaved = !dictData && !!savedData;
+  const isUnknown = !dictData && !savedData && !autoData;
 
-  const filtered = verbList.filter(v =>
-    v.includes(filter.toLowerCase()) ||
-    (CONJUGATOR_VERBS[v].en || '').toLowerCase().includes(filter.toLowerCase())
-  );
+  const saveVerb = () => {
+    const entry = { ...autoData, en: saveEnInput.trim() || autoData.en || verb, type: autoData.type.replace(' (auto)', '') };
+    const updated = { ...savedVerbs, [verb]: entry };
+    setSavedVerbs(updated);
+    setStorage('aprende.saved_verbs', updated);
+    setShowSaveInput(false);
+    setSaveEnInput('');
+  };
+
+  const unsaveVerb = () => {
+    const updated = { ...savedVerbs };
+    delete updated[verb];
+    setSavedVerbs(updated);
+    setStorage('aprende.saved_verbs', updated);
+  };
+
+  const savedVerbList = Object.keys(savedVerbs);
+  const allVerbs = [...verbList, ...savedVerbList.filter(v => !CONJUGATOR_VERBS[v])];
+  const filtered = allVerbs.filter(v => {
+    const entry = CONJUGATOR_VERBS[v] || savedVerbs[v];
+    return v.includes(filter.toLowerCase()) ||
+      ((entry && entry.en) || '').toLowerCase().includes(filter.toLowerCase());
+  });
   const persons = ['yo','tú','él/ella','nosotros','vosotros','ellos'];
 
   const tenseGroups = [
@@ -5751,12 +5775,15 @@ function Conjugador({ dark }) {
           placeholder="Buscar en el diccionario..."
           className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors mb-3 ${dark ? 'bg-white/[0.06] border-white/[0.12] text-white placeholder-stone-500 focus:border-orange-500' : 'border-stone-200 focus:border-orange-500'}`} />
         <div className="flex flex-wrap gap-2">
-          {filtered.map(v => (
-            <button key={v} onClick={() => setVerb(v)}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${verb === v ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300 hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-              {v}
-            </button>
-          ))}
+          {filtered.map(v => {
+            const isVSaved = !CONJUGATOR_VERBS[v] && !!savedVerbs[v];
+            return (
+              <button key={v} onClick={() => { setVerb(v); setShowSaveInput(false); setSaveEnInput(''); }}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${verb === v ? 'bg-orange-500 text-white' : isVSaved ? (dark ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200') : dark ? 'bg-white/[0.08] text-stone-300 hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                {isVSaved ? `⭐ ${v}` : v}
+              </button>
+            );
+          })}
         </div>
       </Card>
 
@@ -5776,14 +5803,51 @@ function Conjugador({ dark }) {
             <SpeakBtn text={verb} size="lg" />
           </div>
           {data.en && <p className={`text-sm mb-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{data.en}</p>}
-          <div className="flex items-center gap-2 mb-5">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{data.type}</p>
             {isAuto && (
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
                 conjugado como regular — las irregularidades no se aplican
               </span>
             )}
+            {isSaved && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                ⭐ guardado en tu lista
+              </span>
+            )}
           </div>
+
+          {/* Save / unsave actions */}
+          {isAuto && !showSaveInput && (
+            <div className="mb-5">
+              <button onClick={() => setShowSaveInput(true)}
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-colors">
+                💾 Guardar en mi lista
+              </button>
+            </div>
+          )}
+          {isAuto && showSaveInput && (
+            <div className={`rounded-xl p-4 mb-5 ${dark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
+              <p className={`text-xs font-bold mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>Guardar "{verb}" en tu lista</p>
+              <div className="flex gap-2">
+                <input value={saveEnInput} onChange={e => setSaveEnInput(e.target.value)}
+                  placeholder={`Traducción en inglés (ej. "to carry")`}
+                  className={`flex-1 rounded-lg px-3 py-1.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.12] text-white placeholder-stone-500 focus:border-emerald-500' : 'border-stone-200 focus:border-emerald-500'}`} />
+                <button onClick={saveVerb}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold flex-shrink-0">Guardar</button>
+                <button onClick={() => { setShowSaveInput(false); setSaveEnInput(''); }}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-semibold flex-shrink-0 ${dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>✕</button>
+              </div>
+            </div>
+          )}
+          {isSaved && (
+            <div className="mb-5">
+              <button onClick={unsaveVerb}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors ${dark ? 'bg-white/[0.08] text-stone-300 hover:bg-red-900/30 hover:text-red-300' : 'bg-stone-100 text-stone-600 hover:bg-red-50 hover:text-red-600'}`}>
+                🗑 Eliminar de mi lista
+              </button>
+            </div>
+          )}
 
           {/* ── Layer 1: uniform conjugation grid ── */}
           <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
