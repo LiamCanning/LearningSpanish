@@ -5697,16 +5697,15 @@ function Conjugador({ dark }) {
             )}
           </div>
 
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+          {/* ── Layer 1: uniform conjugation grid ── */}
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
             {tenseGroups.map(g => {
               const forms = data[g.key];
               if (!forms) return null;
-              const u = data.usage && data.usage[g.key];
               return (
-                <div key={g.key} className={`rounded-xl p-3 flex flex-col ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-3">{g.label}</p>
-                  {/* CSS grid: pronoun(fixed) | form(fill) | speak(fixed) — never wraps */}
-                  <div className="space-y-1.5 mb-3">
+                <div key={g.key} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-2.5">{g.label}</p>
+                  <div className="space-y-1.5">
                     {forms.map((form, i) => (
                       <div key={i} className="grid items-center gap-x-2 text-sm"
                            style={{gridTemplateColumns:'3rem 1fr 1.25rem'}}>
@@ -5716,14 +5715,28 @@ function Conjugador({ dark }) {
                       </div>
                     ))}
                   </div>
-                  {u && (
-                    <div className={`mt-auto pt-3 border-t ${dark ? 'border-white/[0.08]' : 'border-stone-200'}`}>
-                      <p className={`text-xs italic mb-2 leading-snug ${dark ? 'text-stone-400' : 'text-stone-600'}`}>{u.when}</p>
-                      <div className="space-y-2">
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Layer 2: usage & examples (only shown when verb has usage data) ── */}
+          {tenseGroups.some(g => data.usage && data.usage[g.key]) && (
+            <div>
+              <p className={`text-[10px] font-bold uppercase tracking-wider mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Ejemplos de uso</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {tenseGroups.map(g => {
+                  const u = data.usage && data.usage[g.key];
+                  if (!u) return null;
+                  return (
+                    <div key={g.key} className={`rounded-xl p-4 ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 mb-1.5">{g.label}</p>
+                      <p className={`text-xs italic mb-2.5 leading-snug ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{u.when}</p>
+                      <div className="space-y-3">
                         {u.examples.map((ex, i) => (
                           <div key={i}>
                             <div className="flex items-start gap-1.5">
-                              <span className={`text-sm font-medium flex-1 leading-snug ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{ex.es}</span>
+                              <span className={`text-sm font-semibold flex-1 leading-snug ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{ex.es}</span>
                               <SpeakBtn text={ex.es} size="sm" />
                             </div>
                             {ex.en && <p className={`text-xs leading-snug mt-0.5 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{ex.en}</p>}
@@ -5731,11 +5744,11 @@ function Conjugador({ dark }) {
                         ))}
                       </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </Card>
       )}
     </div>
