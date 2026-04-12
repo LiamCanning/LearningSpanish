@@ -5840,10 +5840,108 @@ function conjugateRegular(verb) {
   return { en: '', type, ...forms };
 }
 
+// ── Translation lookup for common verbs (auto-fills save dialog) ──
+const VERB_TRANSLATIONS = {
+  tirar:'to throw / to throw away', trabajar:'to work', llamar:'to call / to be called',
+  caminar:'to walk', comprar:'to buy', hablar:'to speak / to talk', escuchar:'to listen',
+  mirar:'to look / to watch', esperar:'to wait / to hope', llegar:'to arrive',
+  entrar:'to enter / to go in', dejar:'to leave / to let / to stop', pasar:'to pass / to happen',
+  ayudar:'to help', buscar:'to look for', cambiar:'to change', empezar:'to start',
+  terminar:'to finish', pensar:'to think', recordar:'to remember', olvidar:'to forget',
+  cocinar:'to cook', limpiar:'to clean', preparar:'to prepare', gastar:'to spend (money)',
+  ahorrar:'to save (money)', pagar:'to pay', cobrar:'to charge / to earn',
+  nadar:'to swim', correr:'to run', saltar:'to jump', gritar:'to shout',
+  reír:'to laugh', llorar:'to cry', cantar:'to sing', bailar:'to dance',
+  viajar:'to travel', visitar:'to visit', descansar:'to rest', dormir:'to sleep',
+  despertar:'to wake up', ducharse:'to shower', afeitarse:'to shave',
+  sentarse:'to sit down', levantarse:'to get up', acostarse:'to go to bed',
+  comer:'to eat', beber:'to drink', cocinar:'to cook', probar:'to try / to taste',
+  leer:'to read', escribir:'to write', estudiar:'to study', aprender:'to learn',
+  enseñar:'to teach', explicar:'to explain', preguntar:'to ask', contestar:'to answer',
+  abrir:'to open', cerrar:'to close', romper:'to break', arreglar:'to fix / to tidy',
+  construir:'to build', usar:'to use', necesitar:'to need', conseguir:'to get / to manage',
+  intentar:'to try', lograr:'to achieve / to manage', faltar:'to lack / to be missing',
+  sobrar:'to be left over / to have too much', importar:'to matter / to be important',
+  molestar:'to bother', asustar:'to scare', alegrar:'to make happy',
+  sorprender:'to surprise', preocupar:'to worry', cansar:'to tire / to bore',
+  funcionar:'to work / to function', existir:'to exist', ocurrir:'to happen / to occur',
+  subir:'to go up / to upload', bajar:'to go down / to download',
+  meter:'to put in', sacar:'to take out / to get', poner:'to put',
+  quitar:'to remove / to take off', guardar:'to keep / to save', perder:'to lose',
+  ganar:'to win / to earn', jugar:'to play', practicar:'to practise',
+  coger:'to grab / to take (bus/train)', llevar:'to carry / to wear / to take',
+  traer:'to bring', enviar:'to send', recibir:'to receive', compartir:'to share',
+  elegir:'to choose', decidir:'to decide', aceptar:'to accept', rechazar:'to refuse / to reject',
+  reservar:'to book / to reserve', confirmar:'to confirm', cancelar:'to cancel',
+  presentar:'to present / to introduce', conocer:'to know (person) / to meet',
+  reconocer:'to recognise', parecer:'to seem', resultar:'to turn out / to result',
+  quedar:'to arrange to meet / to remain', quedar:'to arrange to meet / to remain',
+  caer:'to fall', crecer:'to grow', nacer:'to be born', morir:'to die',
+  vivir:'to live', moverse:'to move', alejarse:'to move away', acercarse:'to approach',
+  entenderse:'to get on / to understand each other', discutir:'to argue / to discuss',
+  pelear:'to fight', quejarse:'to complain', disculparse:'to apologise',
+  agradecer:'to thank / to be grateful', felicitar:'to congratulate',
+};
+
+// ── Auto-generate usage examples for any verb ──
+function generateAutoUsage(verb, data) {
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+  const [yo_p, tu_p, el_p, nos_p] = data.presente || [];
+  const [yo_i, tu_i, el_i] = data.indefinido || [];
+  const [yo_imp, , el_imp] = data.imperfecto || [];
+  const [yo_f, tu_f] = data.futuro || [];
+  const [yo_c, tu_c] = data.condicional || [];
+  const [yo_s, , el_s, nos_s] = data.subjuntivo || [];
+  const [yo_is] = data.imperfectoSubj || [];
+  const [yo_per, tu_per] = data.perfecto || [];
+  return {
+    presente:{ when:'Habitual actions, current facts, near-future plans.',
+      examples:[
+        { es:`¿Con qué frecuencia ${tu_p}?`, en:`How often do you do it?` },
+        { es:`${cap(yo_p)} cuando tengo tiempo — es una buena costumbre.`, en:`I do it when I have time — it's a good habit.` }
+      ]},
+    indefinido:{ when:'Completed past action — clear start and end point.',
+      examples:[
+        { es:`Ayer ${yo_i} y fue bastante bien.`, en:`Yesterday I did it and it went pretty well.` },
+        { es:`¿${cap(tu_i)} el fin de semana pasado?`, en:`Did you do it last weekend?` }
+      ]},
+    imperfecto:{ when:'Past habit or ongoing background action — no fixed endpoint.',
+      examples:[
+        { es:`Antes ${yo_imp} mucho más que ahora.`, en:`I used to do it a lot more than I do now.` },
+        { es:`De pequeño, siempre ${yo_imp} — era algo normal.`, en:`As a kid, I always did it — it was normal.` }
+      ]},
+    perfecto:{ when:'Recently completed or experiential past. Common in Spain.',
+      examples:[
+        { es:`¿Ya ${tu_per}? Yo todavía no ${yo_per} hoy.`, en:`Have you done it already? I haven't yet today.` },
+        { es:`${cap(yo_per)} varias veces pero nunca lo he dominado del todo.`, en:`I've done it several times but never fully mastered it.` }
+      ]},
+    futuro:{ when:'Future plans, predictions, or conjectures.',
+      examples:[
+        { es:`${cap(yo_f)} mañana sin falta.`, en:`I'll do it tomorrow without fail.` },
+        { es:`¿${cap(tu_f)} esta semana o lo dejas para más tarde?`, en:`Will you do it this week or leave it for later?` }
+      ]},
+    condicional:{ when:'Hypothetical situations, polite requests, reported speech.',
+      examples:[
+        { es:`Si tuviera más tiempo, ${yo_c} todos los días.`, en:`If I had more time, I'd do it every day.` },
+        { es:`${cap(tu_c)} tú en mi lugar?`, en:`Would you do it if you were me?` }
+      ]},
+    subjuntivo:{ when:'After WEIRDO triggers: Wishes, Emotion, Impersonal, Recommendations, Doubt, Ojalá.',
+      examples:[
+        { es:`Espero que ${el_s} pronto — ya es hora.`, en:`I hope he does it soon — it's about time.` },
+        { es:`Quiero que ${nos_s} juntos — será más fácil.`, en:`I want us to do it together — it'll be easier.` }
+      ]},
+    imperfectoSubj:{ when:'Hypothetical si-clauses, after "como si", polished formal speech.',
+      examples:[
+        { es:`Si ${yo_is} más, los resultados serían mejores.`, en:`If I did it more, the results would be better.` },
+        { es:`Ojalá ${el_s} antes — habría sido más fácil.`, en:`I wish he'd done it sooner — it would have been easier.` }
+      ]},
+  };
+}
+
 function Conjugador({ dark }) {
   const verbList = Object.keys(CONJUGATOR_VERBS);
   const [customInput, setCustomInput] = useState('');
-  const [verb, setVerb] = useState('hablar');
+  const [verb, setVerb] = useState(() => getStorage('aprende.lastVerb', 'hablar'));
   const [filter, setFilter] = useState('');
   const [savedVerbs, setSavedVerbs] = useState(() => getStorage('aprende.saved_verbs', {}));
   const [saveEnInput, setSaveEnInput] = useState('');
@@ -5858,8 +5956,17 @@ function Conjugador({ dark }) {
   const isSaved = !dictData && !!savedData;
   const isUnknown = !dictData && !savedData && !autoData;
 
+  // Use real usage data, fall back to auto-generated for non-dictionary verbs
+  const resolvedUsage = data
+    ? (data.usage || (!dictData ? generateAutoUsage(verb, data) : null))
+    : null;
+
+  const selectVerb = (v) => { setVerb(v); setStorage('aprende.lastVerb', v); setShowSaveInput(false); setSaveEnInput(''); };
+
   const saveVerb = () => {
-    const entry = { ...autoData, en: saveEnInput.trim() || autoData.en || verb, type: autoData.type.replace(' (auto)', '') };
+    const suggested = VERB_TRANSLATIONS[verb] || '';
+    const en = saveEnInput.trim() || suggested || verb;
+    const entry = { ...autoData, en, type: autoData.type.replace(' (auto)', '') };
     const updated = { ...savedVerbs, [verb]: entry };
     setSavedVerbs(updated);
     setStorage('aprende.saved_verbs', updated);
@@ -5872,6 +5979,11 @@ function Conjugador({ dark }) {
     delete updated[verb];
     setSavedVerbs(updated);
     setStorage('aprende.saved_verbs', updated);
+  };
+
+  const openSaveInput = () => {
+    setSaveEnInput(VERB_TRANSLATIONS[verb] || '');
+    setShowSaveInput(true);
   };
 
   const savedVerbList = Object.keys(savedVerbs);
@@ -5898,7 +6010,7 @@ function Conjugador({ dark }) {
     e.preventDefault();
     const v = customInput.trim().toLowerCase();
     if (!v) return;
-    setVerb(v);
+    selectVerb(v);
     setFilter('');
     setCustomInput('');
   };
@@ -5922,7 +6034,7 @@ function Conjugador({ dark }) {
           {filtered.map(v => {
             const isVSaved = !CONJUGATOR_VERBS[v] && !!savedVerbs[v];
             return (
-              <button key={v} onClick={() => { setVerb(v); setShowSaveInput(false); setSaveEnInput(''); }}
+              <button key={v} onClick={() => selectVerb(v)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${verb === v ? 'bg-orange-500 text-white' : isVSaved ? (dark ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200') : dark ? 'bg-white/[0.08] text-stone-300 hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
                 {isVSaved ? `⭐ ${v}` : v}
               </button>
@@ -5964,7 +6076,7 @@ function Conjugador({ dark }) {
           {/* Save / unsave actions */}
           {isAuto && !showSaveInput && (
             <div className="mb-5">
-              <button onClick={() => setShowSaveInput(true)}
+              <button onClick={openSaveInput}
                 className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-colors">
                 💾 Guardar en mi lista
               </button>
@@ -6016,13 +6128,16 @@ function Conjugador({ dark }) {
             })}
           </div>
 
-          {/* ── Layer 2: usage & examples (only shown when verb has usage data) ── */}
-          {tenseGroups.some(g => data.usage && data.usage[g.key]) && (
+          {/* ── Layer 2: usage & examples ── */}
+          {resolvedUsage && tenseGroups.some(g => resolvedUsage[g.key]) && (
             <div>
-              <p className={`text-[10px] font-bold uppercase tracking-wider mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Ejemplos de uso</p>
+              <div className="flex items-center gap-2 mb-3">
+                <p className={`text-[10px] font-bold uppercase tracking-wider ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Ejemplos de uso</p>
+                {!dictData && <span className={`text-[10px] px-2 py-0.5 rounded-full ${dark ? 'bg-white/[0.06] text-stone-500' : 'bg-stone-100 text-stone-400'}`}>ejemplos generados — útiles para la estructura</span>}
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {tenseGroups.map(g => {
-                  const u = data.usage && data.usage[g.key];
+                  const u = resolvedUsage[g.key];
                   if (!u) return null;
                   return (
                     <div key={g.key} className={`rounded-xl p-4 ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
@@ -8366,7 +8481,14 @@ function GlobalSearch({ open, onClose, onJump }) {
 
 function App() {
   const dark = false;
-  const [section, setSection] = useState('inicio');
+  const [section, setSection] = useState(() => {
+    const saved = getStorage('aprende.lastSection', 'inicio');
+    // Don't restore sub-pages that need context — snap back to their parent
+    const snapToParent = { hoy:'inicio', conectores:'frases' };
+    return snapToParent[saved] || saved;
+  });
+
+  const goTo = (sec) => { setSection(sec); setStorage('aprende.lastSection', sec); };
   const [searchOpen, setSearchOpen] = useState(false);
 
   const NAV_ITEMS = [
@@ -8381,9 +8503,9 @@ function App() {
   ];
 
   const renderSection = () => {
-    const props = { dark, onBack: () => setSection('inicio'), onSearch: () => setSearchOpen(true) };
+    const props = { dark, onBack: () => goTo('inicio'), onSearch: () => setSearchOpen(true) };
     switch(section) {
-      case 'inicio': return <Inicio dark={dark} section={section} setSection={setSection} />;
+      case 'inicio': return <Inicio dark={dark} section={section} setSection={goTo} />;
       case 'hoy': return <Hoy {...props} />;
       case 'tiempos': return <Tiempos {...props} />;
       case 'chuletas': return <Chuletas {...props} />;
@@ -8394,7 +8516,7 @@ function App() {
       case 'conversaciones': return <Conversaciones {...props} />;
       case 'ejercicios': return <Ejercicios {...props} />;
       case 'glosario': return <Vocabulario {...props} initialTab="glosario" />;
-      default: return <Inicio dark={dark} section={section} setSection={setSection} />;
+      default: return <Inicio dark={dark} section={section} setSection={goTo} />;
     }
   };
 
@@ -8414,7 +8536,7 @@ function App() {
         </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {NAV_ITEMS.map(item => (
-            <button key={item.id} onClick={() => setSection(item.id)}
+            <button key={item.id} onClick={() => goTo(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all font-medium text-sm
                 ${section === item.id
                   ? 'bg-orange-500 text-white shadow-sm'
@@ -8440,13 +8562,13 @@ function App() {
         </div>
       </main>
 
-      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s) => setSection(s)} />
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s) => goTo(s)} />
 
       {/* Mobile bottom nav */}
       <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${dark ? 'glass-dark border-white/[0.08]' : 'glass-light border-stone-200/60'}`}>
         <div className="flex overflow-x-auto hide-scroll">
           {NAV_ITEMS.map(item => (
-            <button key={item.id} onClick={() => setSection(item.id)}
+            <button key={item.id} onClick={() => goTo(item.id)}
               className={`flex flex-col items-center gap-0.5 px-3 py-2 flex-shrink-0 min-w-[64px] transition-all
                 ${section === item.id ? 'text-orange-500' : dark ? 'text-stone-400' : 'text-stone-500'}`}>
               <span className="text-lg">{item.emoji}</span>
