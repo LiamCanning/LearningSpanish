@@ -37,6 +37,12 @@ tailwind.config = {
 .hide-scroll { scrollbar-width:none; -ms-overflow-style:none; }
 .hide-scroll::-webkit-scrollbar { display:none; }
 .sidebar-item { transition: background 0.15s, color 0.15s; }
+@media print {
+  nav, .sticky, [data-no-print], .no-print { display: none !important; }
+  body { background: white !important; color: black !important; }
+  * { box-shadow: none !important; border-radius: 0 !important; }
+  .print-content { padding: 0 !important; }
+}
 </style>
 </head>
 <body>
@@ -3821,6 +3827,26 @@ function Inicio({ dark, section, setSection }) {
   const [streak, setStreak] = useState(() => getStreak());
   useEffect(() => { setStreak(tickStreak()); }, []);
 
+  // Weak area computation
+  const weakAreas = React.useMemo(() => {
+    const history = getStorage('aprende.exercise_history', []);
+    if (!history.length) return [];
+    const cats = {};
+    history.forEach(h => {
+      if (!h.category) return;
+      if (!cats[h.category]) cats[h.category] = [];
+      cats[h.category].push(h);
+    });
+    const result = [];
+    Object.entries(cats).forEach(([cat, entries]) => {
+      const last10 = entries.slice(-10);
+      if (last10.length < 3) return;
+      const acc = last10.filter(h => h.correct).length / last10.length;
+      if (acc < 0.6) result.push({ category: cat, acc, count: last10.length });
+    });
+    return result.sort((a, b) => a.acc - b.acc);
+  }, []);
+
   const SECTION_TILES = [
     { id:'hoy', label:'Hoy', sublabel:'Today', emoji:'⭐', color:'orange' },
     { id:'tiempos', label:'Tiempos', sublabel:'Tenses', emoji:'🕐', color:'blue' },
@@ -3924,6 +3950,22 @@ function Inicio({ dark, section, setSection }) {
         <div className="space-y-4">
           <WordCard />
           <PhraseCard />
+          {weakAreas.length > 0 && (
+            <div>
+              <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>📊 Áreas de mejora</p>
+              <div className="space-y-2">
+                {weakAreas.map(w => (
+                  <div key={w.category} className={`flex items-center justify-between rounded-2xl px-4 py-3 ${dark ? 'bg-white/[0.05]' : 'bg-stone-100'}`}>
+                    <div>
+                      <p className="font-semibold text-sm">{w.category}</p>
+                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{Math.round(w.acc * 100)}% correcto (últimos {w.count})</p>
+                    </div>
+                    <button onClick={() => setSection('ejercicios')} className="text-xs px-3 py-1.5 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600">Practicar →</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div>
           <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Secciones</p>
@@ -3944,6 +3986,22 @@ function Inicio({ dark, section, setSection }) {
       <div className="lg:hidden px-4 space-y-4 pb-6">
         <WordCard />
         <PhraseCard />
+        {weakAreas.length > 0 && (
+          <div>
+            <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>📊 Áreas de mejora</p>
+            <div className="space-y-2">
+              {weakAreas.map(w => (
+                <div key={w.category} className={`flex items-center justify-between rounded-2xl px-4 py-3 ${dark ? 'bg-white/[0.05]' : 'bg-stone-100'}`}>
+                  <div>
+                    <p className="font-semibold text-sm">{w.category}</p>
+                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{Math.round(w.acc * 100)}% correcto (últimos {w.count})</p>
+                  </div>
+                  <button onClick={() => setSection('ejercicios')} className="text-xs px-3 py-1.5 bg-orange-500 text-white rounded-xl font-semibold">Practicar →</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div>
           <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Secciones</p>
           <div className="grid grid-cols-2 gap-3">
@@ -5965,6 +6023,51 @@ const CONJUGATOR_VERBS = {
       ]}
     }
   },
+  'poner': {
+    en:'to put / to place / to set', type:'-er irregular (yo-go, irregular pret/fut/pp)',
+    presente:['pongo','pones','pone','ponemos','ponéis','ponen'],
+    indefinido:['puse','pusiste','puso','pusimos','pusisteis','pusieron'],
+    imperfecto:['ponía','ponías','ponía','poníamos','poníais','ponían'],
+    futuro:['pondré','pondrás','pondrá','pondremos','pondréis','pondrán'],
+    condicional:['pondría','pondrías','pondría','pondríamos','pondríais','pondrían'],
+    subjuntivo:['ponga','pongas','ponga','pongamos','pongáis','pongan'],
+    imperfectoSubj:['pusiera','pusieras','pusiera','pusiéramos','pusierais','pusieran'],
+    perfecto:['he puesto','has puesto','ha puesto','hemos puesto','habéis puesto','han puesto'],
+    usage:{
+      presente:{ when:'Put, place, or set something. Irregular yo form: pongo. Very common in reflexive: ponerse (to put on clothing, to become + adj).', examples:[
+        {es:'¿Dónde pongo las llaves?',en:'Where do I put the keys?'},
+        {es:'Me pongo nervioso cuando tengo que hablar en público.',en:'I get nervous when I have to speak in public.'}
+      ]},
+      indefinido:{ when:'Put or placed — completed past action. Irregular stem: pus-.', examples:[
+        {es:'Puse el abrigo en la silla y me senté.',en:'I put my coat on the chair and sat down.'},
+        {es:'¿Dónde pusiste mi teléfono?',en:'Where did you put my phone?'}
+      ]},
+      imperfecto:{ when:'Was putting / used to put — habitual or background past.', examples:[
+        {es:'Siempre ponía música mientras cocinaba.',en:'I always used to put music on while I cooked.'},
+        {es:'Se ponía muy contento cuando llegaban visitas.',en:'He used to get really happy when guests arrived.'}
+      ]},
+      futuro:{ when:'Will put — irregular stem "pondr-". Also in set phrases: poner a prueba, poner en marcha.', examples:[
+        {es:'Pondré la mesa mientras tú acabas de cocinar.',en:'I\'ll set the table while you finish cooking.'},
+        {es:'¿Cuándo pondrán en marcha el proyecto?',en:'When will they set the project in motion?'}
+      ]},
+      condicional:{ when:'Would put — hypothetical. Stem: pondr-.', examples:[
+        {es:'Yo lo pondría aquí, si fuera tú.',en:'I\'d put it here, if I were you.'},
+        {es:'¿Dónde pondrías el sofá en un piso tan pequeño?',en:'Where would you put the sofa in such a small flat?'}
+      ]},
+      subjuntivo:{ when:'After subjunctive triggers. Derives from yo form (pongo → ponga). Common: "que lo pongas", "cuando pongas".', examples:[
+        {es:'Necesito que pongas más esfuerzo en el trabajo.',en:'I need you to put more effort into the work.'},
+        {es:'Cuando pongas la mesa, deja sitio para seis.',en:'When you set the table, leave room for six.'}
+      ]},
+      imperfectoSubj:{ when:'"Pusiera" — hypothetical past. Derives from preterite stem (pus-). "Si pusiera" = if I put/placed.', examples:[
+        {es:'Si pusiera más sal, estaría más rico.',en:'If you added more salt, it would taste better.'},
+        {es:'Quería que pusieras la música más baja.',en:'She wanted you to turn the music down.'}
+      ]},
+      perfecto:{ when:'Have put — irregular participle: puesto. One of the key irregular participles to memorise.', examples:[
+        {es:'¿Has puesto el coche en el garaje?',en:'Have you put the car in the garage?'},
+        {es:'Se han puesto de acuerdo al final.',en:'They\'ve come to an agreement in the end.'}
+      ]}
+    }
+  },
   'llevar': {
     en:'to carry / to take / to wear / to have been (+ time)', type:'regular -ar (+ reflexive: llevarse)',
     presente:['llevo','llevas','lleva','llevamos','lleváis','llevan'],
@@ -6060,20 +6163,85 @@ const CONJUGATOR_VERBS = {
   },
 };
 
+// ── Irregular patches for auto-conjugator ──
+// null = keep regular form; non-null = override with this value
+const VERB_PATCHES = {
+  // === Yo-go verbs ===
+  'poner':    { presente:['pongo','pones','pone','ponemos','ponéis','ponen'], indefinido:['puse','pusiste','puso','pusimos','pusisteis','pusieron'], futuro:['pondré','pondrás','pondrá','pondremos','pondréis','pondrán'], condicional:['pondría','pondrías','pondría','pondríamos','pondríais','pondrían'], subjuntivo:['ponga','pongas','ponga','pongamos','pongáis','pongan'], imperfectoSubj:['pusiera','pusieras','pusiera','pusiéramos','pusierais','pusieran'], perfecto:['he puesto','has puesto','ha puesto','hemos puesto','habéis puesto','han puesto'], _type:'irregular (yo-go, pus-, pondr-, puesto)' },
+  'traer':    { presente:['traigo',null,null,null,null,null], indefinido:['traje','trajiste','trajo','trajimos','trajisteis','trajeron'], subjuntivo:['traiga','traigas','traiga','traigamos','traigáis','traigan'], imperfectoSubj:['trajera','trajeras','trajera','trajéramos','trajerais','trajeran'], perfecto:['he traído','has traído','ha traído','hemos traído','habéis traído','han traído'], _type:'irregular (yo-go, irregular pret)' },
+  'caer':     { presente:['caigo',null,null,null,null,null], indefinido:['caí','caíste','cayó','caímos','caísteis','cayeron'], subjuntivo:['caiga','caigas','caiga','caigamos','caigáis','caigan'], imperfectoSubj:['cayera','cayeras','cayera','cayéramos','cayerais','cayeran'], _type:'irregular (yo-go, caí/cayó)' },
+  'valer':    { presente:['valgo',null,null,null,null,null], futuro:['valdré','valdrás','valdrá','valdremos','valdréis','valdrán'], condicional:['valdría','valdrías','valdría','valdríamos','valdríais','valdrían'], subjuntivo:['valga','valgas','valga','valgamos','valgáis','valgan'], _type:'irregular (yo-go, fut: valdr-)' },
+  // === Stem-changing e→ie ===
+  'pensar':   { presente:['pienso','piensas','piensa',null,null,'piensan'], subjuntivo:['piense','pienses','piense',null,null,'piensen'], _type:'stem-changing (e→ie)' },
+  'cerrar':   { presente:['cierro','cierras','cierra',null,null,'cierran'], subjuntivo:['cierre','cierres','cierre',null,null,'cierren'], _type:'stem-changing (e→ie)' },
+  'entender': { presente:['entiendo','entiendes','entiende',null,null,'entienden'], subjuntivo:['entienda','entiendas','entienda',null,null,'entiendan'], _type:'stem-changing (e→ie)' },
+  'perder':   { presente:['pierdo','pierdes','pierde',null,null,'pierden'], subjuntivo:['pierda','pierdas','pierda',null,null,'pierdan'], _type:'stem-changing (e→ie)' },
+  'empezar':  { presente:['empiezo','empiezas','empieza',null,null,'empiezan'], indefinido:['empecé',null,null,null,null,null], subjuntivo:['empiece','empieces','empiece',null,null,'empiecen'], _type:'stem-changing (e→ie) + orth (-zar)' },
+  'comenzar': { presente:['comienzo','comienzas','comienza',null,null,'comienzan'], indefinido:['comencé',null,null,null,null,null], subjuntivo:['comience','comiences','comience',null,null,'comiencen'], _type:'stem-changing (e→ie) + orth (-zar)' },
+  'despertar':{ presente:['despierto','despiertas','despierta',null,null,'despiertan'], subjuntivo:['despierte','despiertes','despierte',null,null,'despierten'], _type:'stem-changing (e→ie)' },
+  'mentir':   { presente:['miento','mientes','miente',null,null,'mienten'], indefinido:[null,null,'mintió',null,null,'mintieron'], subjuntivo:['mienta','mientas','mienta','mintamos','mintáis','mientan'], imperfectoSubj:['mintiera','mintieras','mintiera','mintiéramos','mintierais','mintieran'], _type:'stem-changing (e→ie/i)' },
+  'sentir':   { presente:['siento','sientes','siente',null,null,'sienten'], indefinido:[null,null,'sintió',null,null,'sintieron'], subjuntivo:['sienta','sientas','sienta','sintamos','sintáis','sientan'], imperfectoSubj:['sintiera','sintieras','sintiera','sintiéramos','sintierais','sintieran'], _type:'stem-changing (e→ie/i)' },
+  'preferir': { presente:['prefiero','prefieres','prefiere',null,null,'prefieren'], indefinido:[null,null,'prefirió',null,null,'prefirieron'], subjuntivo:['prefiera','prefieras','prefiera','prefiramos','prefiráis','prefieran'], imperfectoSubj:['prefiriera','prefirieras','prefiriera','prefiriéramos','prefirierais','prefirieran'], _type:'stem-changing (e→ie/i)' },
+  // === Stem-changing o→ue ===
+  'recordar': { presente:['recuerdo','recuerdas','recuerda',null,null,'recuerdan'], subjuntivo:['recuerde','recuerdes','recuerde',null,null,'recuerden'], _type:'stem-changing (o→ue)' },
+  'contar':   { presente:['cuento','cuentas','cuenta',null,null,'cuentan'], subjuntivo:['cuente','cuentes','cuente',null,null,'cuenten'], _type:'stem-changing (o→ue)' },
+  'costar':   { presente:['cuesto','cuestas','cuesta',null,null,'cuestan'], subjuntivo:['cueste','cuestes','cueste',null,null,'cuesten'], _type:'stem-changing (o→ue)' },
+  'volar':    { presente:['vuelo','vuelas','vuela',null,null,'vuelan'], subjuntivo:['vuele','vueles','vuele',null,null,'vuelen'], _type:'stem-changing (o→ue)' },
+  'encontrar':{ presente:['encuentro','encuentras','encuentra',null,null,'encuentran'], subjuntivo:['encuentre','encuentres','encuentre',null,null,'encuentren'], _type:'stem-changing (o→ue)' },
+  'mostrar':  { presente:['muestro','muestras','muestra',null,null,'muestran'], subjuntivo:['muestre','muestres','muestre',null,null,'muestren'], _type:'stem-changing (o→ue)' },
+  'probar':   { presente:['pruebo','pruebas','prueba',null,null,'prueban'], subjuntivo:['pruebe','pruebes','pruebe',null,null,'prueben'], _type:'stem-changing (o→ue)' },
+  'dormir':   { presente:['duermo','duermes','duerme',null,null,'duermen'], indefinido:[null,null,'durmió',null,null,'durmieron'], subjuntivo:['duerma','duermas','duerma','durmamos','durmáis','duerman'], imperfectoSubj:['durmiera','durmieras','durmiera','durmiéramos','durmierais','durmieran'], _type:'stem-changing (o→ue/u)' },
+  'morir':    { presente:['muero','mueres','muere',null,null,'mueren'], indefinido:[null,null,'murió',null,null,'murieron'], subjuntivo:['muera','mueras','muera','muramos','muráis','mueran'], imperfectoSubj:['muriera','murieras','muriera','muriéramos','murierais','murieran'], perfecto:['he muerto','has muerto','ha muerto','hemos muerto','habéis muerto','han muerto'], _type:'stem-changing (o→ue/u) + pp: muerto' },
+  'jugar':    { presente:['juego','juegas','juega',null,null,'juegan'], indefinido:['jugué',null,null,null,null,null], subjuntivo:['juegue','juegues','juegue',null,null,'jueguen'], _type:'stem-changing (u→ue) + orth (-gar)' },
+  // === Stem-changing e→i ===
+  'pedir':    { presente:['pido','pides','pide',null,null,'piden'], indefinido:[null,null,'pidió',null,null,'pidieron'], subjuntivo:['pida','pidas','pida',null,null,'pidan'], imperfectoSubj:['pidiera','pidieras','pidiera','pidiéramos','pidierais','pidieran'], _type:'stem-changing (e→i)' },
+  'servir':   { presente:['sirvo','sirves','sirve',null,null,'sirven'], indefinido:[null,null,'sirvió',null,null,'sirvieron'], subjuntivo:['sirva','sirvas','sirva',null,null,'sirvan'], imperfectoSubj:['sirviera','sirvieras','sirviera','sirvieramos','sirvierais','sirvieran'], _type:'stem-changing (e→i)' },
+  'seguir':   { presente:['sigo','sigues','sigue',null,null,'siguen'], indefinido:[null,null,'siguió',null,null,'siguieron'], subjuntivo:['siga','sigas','siga',null,null,'sigan'], imperfectoSubj:['siguiera','siguieras','siguiera','siguiéramos','siguierais','siguieran'], _type:'stem-changing (e→i) + gu→g' },
+  'conseguir':{ presente:['consigo','consigues','consigue',null,null,'consiguen'], indefinido:[null,null,'consiguió',null,null,'consiguieron'], subjuntivo:['consiga','consigas','consiga',null,null,'consigan'], imperfectoSubj:['consiguiera','consiguieras','consiguiera','consiguiéramos','consiguierais','consiguieran'], _type:'stem-changing (e→i) + gu→g' },
+  'elegir':   { presente:['elijo','eliges','elige',null,null,'eligen'], indefinido:[null,null,'eligió',null,null,'eligieron'], subjuntivo:['elija','elijas','elija',null,null,'elijan'], imperfectoSubj:['eligiera','eligieras','eligiera','eligiéramos','eligierais','eligieran'], _type:'stem-changing (e→i) + g→j' },
+  'reír':     { presente:['río','ríes','ríe',null,null,'ríen'], indefinido:[null,null,'rió',null,null,'rieron'], subjuntivo:['ría','rías','ría',null,null,'rían'], imperfectoSubj:['riera','rieras','riera','riéramos','rierais','rieran'], _type:'stem-changing (e→i)' },
+  'sonreír':  { presente:['sonrío','sonríes','sonríe',null,null,'sonríen'], indefinido:[null,null,'sonrió',null,null,'sonrieron'], subjuntivo:['sonría','sonrías','sonría',null,null,'sonrían'], _type:'stem-changing (e→i)' },
+  'repetir':  { presente:['repito','repites','repite',null,null,'repiten'], indefinido:[null,null,'repitió',null,null,'repitieron'], subjuntivo:['repita','repitas','repita',null,null,'repitan'], _type:'stem-changing (e→i)' },
+  // === -cer/-cir verbs (vowel+cer/cir → yo: stem+zco) ===
+  'conocer':  { presente:['conozco',null,null,null,null,null], subjuntivo:['conozca','conozcas','conozca','conozcamos','conozcáis','conozcan'], _type:'irregular (yo: conozco)' },
+  'parecer':  { presente:['parezco',null,null,null,null,null], subjuntivo:['parezca','parezcas','parezca','parezcamos','parezcáis','parezcan'], _type:'irregular (yo: parezco)' },
+  'ofrecer':  { presente:['ofrezco',null,null,null,null,null], subjuntivo:['ofrezca','ofrezcas','ofrezca','ofrezcamos','ofrezcáis','ofrezcan'], _type:'irregular (yo: ofrezco)' },
+  'agradecer':{ presente:['agradezco',null,null,null,null,null], subjuntivo:['agradezca','agradezcas','agradezca','agradezcamos','agradezcáis','agradezcan'], _type:'irregular (yo: agradezco)' },
+  'pertenecer':{ presente:['pertenezco',null,null,null,null,null], subjuntivo:['pertenezca','pertenezcas','pertenezca','pertenezcamos','pertenezcáis','pertenezcan'], _type:'irregular (yo: pertenezco)' },
+  'aparecer': { presente:['aparezco',null,null,null,null,null], subjuntivo:['aparezca','aparezcas','aparezca','aparezcamos','aparezcáis','aparezcan'], _type:'irregular (yo: aparezco)' },
+  'merecer':  { presente:['merezco',null,null,null,null,null], subjuntivo:['merezca','merezcas','merezca','merezcamos','merezcáis','merezcan'], _type:'irregular (yo: merezco)' },
+  'nacer':    { presente:['nazco',null,null,null,null,null], subjuntivo:['nazca','nazcas','nazca','nazcamos','nazcáis','nazcan'], _type:'irregular (yo: nazco)' },
+  'crecer':   { presente:['crezco',null,null,null,null,null], subjuntivo:['crezca','crezcas','crezca','crezcamos','crezcáis','crezcan'], _type:'irregular (yo: crezco)' },
+  'desaparecer':{ presente:['desaparezco',null,null,null,null,null], subjuntivo:['desaparezca','desaparezcas','desaparezca','desaparezcamos','desaparezcáis','desaparezcan'], _type:'irregular (yo: desaparezco)' },
+  'conducir': { presente:['conduzco',null,null,null,null,null], indefinido:['conduje','condujiste','condujo','condujimos','condujisteis','condujeron'], subjuntivo:['conduzca','conduzcas','conduzca','conduzcamos','conduzcáis','conduzcan'], imperfectoSubj:['condujera','condujeras','condujera','condujéramos','condujerais','condujeran'], _type:'irregular (yo: conduzco, pret: conduje)' },
+  'traducir': { presente:['traduzco',null,null,null,null,null], indefinido:['traduje','tradujiste','tradujo','tradujimos','tradujisteis','tradujeron'], subjuntivo:['traduzca','traduzcas','traduzca','traduzcamos','traduzcáis','traduzcan'], imperfectoSubj:['tradujera','tradujeras','tradujera','tradujéramos','tradujerais','tradujeran'], _type:'irregular (yo: traduzco, pret: traduje)' },
+  'producir': { presente:['produzco',null,null,null,null,null], indefinido:['produje','produjiste','produjo','produjimos','produjisteis','produjeron'], subjuntivo:['produzca','produzcas','produzca','produzcamos','produzcáis','produzcan'], imperfectoSubj:['produjera','produjeras','produjera','produjéramos','produjerais','produjeran'], _type:'irregular (yo: produzco, pret: produje)' },
+  // === -ger/-gir verbs (g→j in yo present) ===
+  'coger':    { presente:['cojo',null,null,null,null,null], subjuntivo:['coja','cojas','coja','cojamos','cojáis','cojan'], _type:'irregular (g→j in yo)' },
+  'recoger':  { presente:['recojo',null,null,null,null,null], subjuntivo:['recoja','recojas','recoja','recojamos','recojáis','recojan'], _type:'irregular (g→j in yo)' },
+  'escoger':  { presente:['escojo',null,null,null,null,null], subjuntivo:['escoja','escojas','escoja','escojamos','escojáis','escojan'], _type:'irregular (g→j in yo)' },
+  'exigir':   { presente:['exijo',null,null,null,null,null], subjuntivo:['exija','exijas','exija','exijamos','exijáis','exijan'], _type:'irregular (g→j in yo)' },
+  'dirigir':  { presente:['dirijo',null,null,null,null,null], subjuntivo:['dirija','dirijas','dirija','dirijamos','dirijáis','dirijan'], _type:'irregular (g→j in yo)' },
+  // === -uir verbs (add y before vowel endings) ===
+  'construir':{ presente:['construyo','construyes','construye',null,null,'construyen'], indefinido:[null,null,'construyó',null,null,'construyeron'], subjuntivo:['construya','construyas','construya',null,null,'construyan'], imperfectoSubj:['construyera','construyeras','construyera','construyéramos','construyerais','construyeran'], _type:'irregular (-uir: add y)' },
+  'incluir':  { presente:['incluyo','incluyes','incluye',null,null,'incluyen'], indefinido:[null,null,'incluyó',null,null,'incluyeron'], subjuntivo:['incluya','incluyas','incluya',null,null,'incluyan'], _type:'irregular (-uir: add y)' },
+  'huir':     { presente:['huyo','huyes','huye',null,null,'huyen'], indefinido:[null,null,'huyó',null,null,'huyeron'], subjuntivo:['huya','huyas','huya',null,null,'huyan'], imperfectoSubj:['huyera','huyeras','huyera','huyéramos','huyerais','huyeran'], _type:'irregular (-uir: add y)' },
+  'destruir': { presente:['destruyo','destruyes','destruye',null,null,'destruyen'], indefinido:[null,null,'destruyó',null,null,'destruyeron'], subjuntivo:['destruya','destruyas','destruya',null,null,'destruyan'], _type:'irregular (-uir: add y)' },
+};
+
 // ────────────────────────────────────────────────────────────
 // Auto-conjugation for any regular -ar/-er/-ir verb
 // ────────────────────────────────────────────────────────────
 function conjugateRegular(verb) {
   const v = verb.toLowerCase().trim();
   let stem, type;
-  if (v.endsWith('ar')) { stem = v.slice(0,-2); type = '-ar regular (auto)'; }
-  else if (v.endsWith('er')) { stem = v.slice(0,-2); type = '-er regular (auto)'; }
-  else if (v.endsWith('ir')) { stem = v.slice(0,-2); type = '-ir regular (auto)'; }
+  if (v.endsWith('ar')) { stem = v.slice(0,-2); type = '-ar'; }
+  else if (v.endsWith('er')) { stem = v.slice(0,-2); type = '-er'; }
+  else if (v.endsWith('ir')) { stem = v.slice(0,-2); type = '-ir'; }
   else return null;
 
   const isAr = v.endsWith('ar');
   const isEr = v.endsWith('er');
-  // Infinitive with accent for futuro/condicional (keep as-is — add to stem)
   const infinitive = v;
 
   const ar = {
@@ -6108,7 +6276,27 @@ function conjugateRegular(verb) {
   };
 
   const forms = isAr ? ar : (isEr ? er : ir);
-  return { en: '', type, ...forms };
+
+  // Automatic orthographic corrections for -ar verbs
+  if (isAr) {
+    if (v.endsWith('car')) forms.indefinido[0] = stem.slice(0,-1) + 'qué';
+    else if (v.endsWith('gar')) forms.indefinido[0] = stem + 'gué';
+    else if (v.endsWith('zar')) forms.indefinido[0] = stem.slice(0,-1) + 'cé';
+  }
+
+  // Apply VERB_PATCHES overrides
+  const patch = VERB_PATCHES[v];
+  if (patch) {
+    const tenseNames = ['presente','indefinido','imperfecto','futuro','condicional','subjuntivo','imperfectoSubj','perfecto'];
+    tenseNames.forEach(tense => {
+      if (patch[tense]) {
+        forms[tense] = forms[tense].map((reg, i) => (patch[tense][i] != null) ? patch[tense][i] : reg);
+      }
+    });
+    type = patch._type || type;
+  }
+
+  return { en: '', type: type + ' (auto)', ...forms };
 }
 
 // ── Translation lookup for common verbs (auto-fills save dialog) ──
@@ -6620,7 +6808,10 @@ function Chuletas({ onBack, dark, onSearch }) {
   if (selectedSheet) {
     return (
       <div>
-        <BackHeader title={selectedSheet.title} subtitle={selectedSheet.titleEn} onBack={() => setSelectedSheet(null)} dark={dark} />
+        <div className="flex items-center">
+          <div className="flex-1"><BackHeader title={selectedSheet.title} subtitle={selectedSheet.titleEn} onBack={() => setSelectedSheet(null)} dark={dark} /></div>
+          <button onClick={() => window.print()} className={`no-print mr-4 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>🖨️ Imprimir</button>
+        </div>
         <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
           <Card dark={dark} className="overflow-hidden">
             <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[selectedSheet.color] || tileColorMap.stone} text-white`}>
@@ -7454,7 +7645,7 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
 // SECTION: Ejercicios
 // ============================================================
 
-function ExerciseView({ exercise, dark, onComplete, onNext }) {
+function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
   const [userAnswer, setUserAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [correct, setCorrect] = useState(false);
@@ -7479,13 +7670,24 @@ function ExerciseView({ exercise, dark, onComplete, onNext }) {
     const isCorrect = userAnswer.trim().toLowerCase() === exercise.answer.toLowerCase();
     setCorrect(isCorrect);
     setSubmitted(true);
+    try {
+      const _hist = getStorage('aprende.exercise_history', []);
+      const _cat = category || '';
+      setStorage('aprende.exercise_history', [..._hist.slice(-300), { id: exercise.id || '', category: _cat, correct: isCorrect, date: Date.now() }]);
+    } catch(e) {}
   };
 
   const handleMCQSelect = (option) => {
     if (submitted) return;
     setSelectedOption(option);
-    setCorrect(option === exercise.answer);
+    const isCorrect = option === exercise.answer;
+    setCorrect(isCorrect);
     setSubmitted(true);
+    try {
+      const _hist = getStorage('aprende.exercise_history', []);
+      const _cat = category || '';
+      setStorage('aprende.exercise_history', [..._hist.slice(-300), { id: exercise.id || '', category: _cat, correct: isCorrect, date: Date.now() }]);
+    } catch(e) {}
   };
 
   const handleTranslationSubmit = () => {
@@ -7691,7 +7893,23 @@ function TimedQuiz({ onExit, dark }) {
         if (ex.type === 'mcq') all.push({ ...ex, category: cat.categoryEs });
       });
     });
-    return all.sort(() => Math.random() - 0.5).slice(0, 10);
+    // Compute per-category weakness from history
+    const history = getStorage('aprende.exercise_history', []);
+    const catStats = {};
+    history.forEach(h => {
+      if (!catStats[h.category]) catStats[h.category] = { correct: 0, total: 0 };
+      catStats[h.category].total++;
+      if (h.correct) catStats[h.category].correct++;
+    });
+    // Weight: weak categories (< 60% in last 10) get 3x representation
+    const weighted = [];
+    all.forEach(ex => {
+      const last10 = history.filter(h => h.category === ex.category).slice(-10);
+      const acc = last10.length >= 3 ? (last10.filter(h => h.correct).length / last10.length) : 1;
+      const weight = acc < 0.6 ? 3 : 1;
+      for (let i = 0; i < weight; i++) weighted.push(ex);
+    });
+    return weighted.sort(() => Math.random() - 0.5).slice(0, 10);
   }, []);
 
   const [idx, setIdx] = useState(0);
@@ -8148,6 +8366,7 @@ function Ejercicios({ onBack, dark, onSearch }) {
               key={ex.id}
               exercise={ex}
               dark={dark}
+              category={selectedCategory ? (selectedCategory.categoryEs || selectedCategory.category || '') : ''}
               onComplete={() => {}}
               onNext={() => {
                 if (currentExerciseIdx < total - 1) {
