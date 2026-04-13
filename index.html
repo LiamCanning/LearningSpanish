@@ -6161,6 +6161,28 @@ const CONJUGATOR_VERBS = {
       ]}
     }
   },
+  'traer': {
+    en:'to bring', type:'irregular (yo-go, irregular pret/pp)',
+    presente:['traigo','traes','trae','traemos','traéis','traen'],
+    indefinido:['traje','trajiste','trajo','trajimos','trajisteis','trajeron'],
+    imperfecto:['traía','traías','traía','traíamos','traíais','traían'],
+    futuro:['traeré','traerás','traerá','traeremos','traeréis','traerán'],
+    condicional:['traería','traerías','traería','traeríamos','traeríais','traerían'],
+    subjuntivo:['traiga','traigas','traiga','traigamos','traigáis','traigan'],
+    imperfectoSubj:['trajera','trajeras','trajera','trajéramos','trajerais','trajeran'],
+    perfecto:['he traído','has traído','ha traído','hemos traído','habéis traído','han traído'],
+  },
+  'caer': {
+    en:'to fall', type:'irregular (yo-go, caí/cayó)',
+    presente:['caigo','caes','cae','caemos','caéis','caen'],
+    indefinido:['caí','caíste','cayó','caímos','caísteis','cayeron'],
+    imperfecto:['caía','caías','caía','caíamos','caíais','caían'],
+    futuro:['caeré','caerás','caerá','caeremos','caeréis','caerán'],
+    condicional:['caería','caerías','caería','caeríamos','caeríais','caerían'],
+    subjuntivo:['caiga','caigas','caiga','caigamos','caigáis','caigan'],
+    imperfectoSubj:['cayera','cayeras','cayera','cayéramos','cayerais','cayeran'],
+    perfecto:['he caído','has caído','ha caído','hemos caído','habéis caído','han caído'],
+  },
 };
 
 // ── Irregular patches for auto-conjugator ──
@@ -6276,15 +6298,16 @@ function conjugateRegular(verb) {
   };
 
   const forms = isAr ? ar : (isEr ? er : ir);
+  let matched = false;
 
-  // Automatic orthographic corrections for -ar verbs
+  // ── 1. Orthographic corrections for -ar verbs ──
   if (isAr) {
-    if (v.endsWith('car')) forms.indefinido[0] = stem.slice(0,-1) + 'qué';
-    else if (v.endsWith('gar')) forms.indefinido[0] = stem + 'gué';
-    else if (v.endsWith('zar')) forms.indefinido[0] = stem.slice(0,-1) + 'cé';
+    if (v.endsWith('car')) { forms.indefinido[0] = stem.slice(0,-1) + 'qué'; }
+    else if (v.endsWith('gar')) { forms.indefinido[0] = stem + 'ué'; }
+    else if (v.endsWith('zar')) { forms.indefinido[0] = stem.slice(0,-1) + 'cé'; }
   }
 
-  // Apply VERB_PATCHES overrides
+  // ── 2. VERB_PATCHES overrides (explicitly listed verbs) ──
   const patch = VERB_PATCHES[v];
   if (patch) {
     const tenseNames = ['presente','indefinido','imperfecto','futuro','condicional','subjuntivo','imperfectoSubj','perfecto'];
@@ -6294,6 +6317,100 @@ function conjugateRegular(verb) {
       }
     });
     type = patch._type || type;
+    matched = true;
+  }
+
+  // ── 3. Compound verb detection (prefix + known irregular root) ──
+  // Handles: componer, suponer, mantener, obtener, devolver, atraer, etc.
+  if (!matched) {
+    const COMPOUND_ROOTS = ['poner','tener','venir','hacer','decir','volver','salir','traer','caer'];
+    for (const root of COMPOUND_ROOTS) {
+      if (v !== root && v.endsWith(root) && v.length > root.length) {
+        const prefix = v.slice(0, -root.length);
+        const rootData = CONJUGATOR_VERBS[root];
+        if (rootData) {
+          const tenses = ['presente','indefinido','imperfecto','futuro','condicional','subjuntivo','imperfectoSubj','perfecto'];
+          tenses.forEach(t => {
+            if (rootData[t]) {
+              forms[t] = rootData[t].map(f => {
+                if (t === 'perfecto') {
+                  const sp = f.indexOf(' ');
+                  return f.slice(0, sp + 1) + prefix + f.slice(sp + 1);
+                }
+                return prefix + f;
+              });
+            }
+          });
+          type = 'compound (' + prefix + '– + ' + root + ')';
+          matched = true;
+        }
+        break;
+      }
+    }
+  }
+
+  // ── 4. Auto-detect -ducir verbs (conducir, traducir, producir, etc.) ──
+  if (!matched && v.endsWith('ducir')) {
+    const d = v.slice(0, -5); // prefix before 'ducir'
+    forms.presente[0] = d + 'duzco';
+    forms.indefinido = [d+'duje',d+'dujiste',d+'dujo',d+'dujimos',d+'dujisteis',d+'dujeron'];
+    forms.subjuntivo = [d+'duzca',d+'duzcas',d+'duzca',d+'duzcamos',d+'duzcáis',d+'duzcan'];
+    forms.imperfectoSubj = [d+'dujera',d+'dujeras',d+'dujera',d+'dujéramos',d+'dujerais',d+'dujeran'];
+    type = 'irregular (-ducir: -zco, -uje)';
+    matched = true;
+  }
+
+  // ── 5. Auto-detect vowel + -cer/-cir → yo: -zco (conocer, parecer, etc.) ──
+  if (!matched && (v.endsWith('cer') || v.endsWith('cir')) && stem.length >= 2) {
+    const preC = stem[stem.length - 2];
+    if ('aeiouáéíóú'.includes(preC)) {
+      // vowel + cer/cir → -zco pattern
+      const zc = stem.slice(0, -1) + 'zc';
+      forms.presente[0] = zc + 'o';
+      const subjEnd = isEr ? ['a','as','a','amos','áis','an'] : ['a','as','a','amos','áis','an'];
+      forms.subjuntivo = subjEnd.map(e => zc + e);
+      type = 'irregular (yo: -zco)';
+      matched = true;
+    } else {
+      // consonant + cer/cir → c→z in yo (vencer→venzo, esparcir→esparzo)
+      const z = stem.slice(0, -1) + 'z';
+      forms.presente[0] = z + 'o';
+      const subjEnd = isEr ? ['a','as','a','amos','áis','an'] : ['a','as','a','amos','áis','an'];
+      forms.subjuntivo = subjEnd.map(e => z + e);
+      type = 'irregular (c→z in yo)';
+      matched = true;
+    }
+  }
+
+  // ── 6. Auto-detect -ger/-gir → g→j in yo (coger→cojo, dirigir→dirijo) ──
+  if (!matched && (v.endsWith('ger') || v.endsWith('gir'))) {
+    const j = stem.slice(0, -1) + 'j';
+    forms.presente[0] = j + 'o';
+    const subjEnd = isEr ? ['a','as','a','amos','áis','an'] : ['a','as','a','amos','áis','an'];
+    forms.subjuntivo = subjEnd.map(e => j + e);
+    type = 'irregular (g→j in yo)';
+    matched = true;
+  }
+
+  // ── 7. Auto-detect -guir → gu→g in yo (distinguir→distingo) ──
+  if (!matched && v.endsWith('guir')) {
+    const g = stem.slice(0, -2) + 'g';
+    forms.presente[0] = g + 'o';
+    forms.subjuntivo = ['a','as','a','amos','áis','an'].map(e => g + e);
+    type = 'irregular (gu→g in yo)';
+    matched = true;
+  }
+
+  // ── 8. Auto-detect -uir (not -guir) → add y (construir, incluir, huir) ──
+  if (!matched && v.endsWith('uir') && !v.endsWith('guir')) {
+    const u = stem; // e.g. 'constru'
+    forms.presente = [u+'yo',u+'yes',u+'ye',u+'imos',u+'ís',u+'yen'];
+    forms.indefinido[2] = u+'yó';
+    forms.indefinido[5] = u+'yeron';
+    forms.subjuntivo = [u+'ya',u+'yas',u+'ya',u+'yamos',u+'yáis',u+'yan'];
+    forms.imperfectoSubj = [u+'yera',u+'yeras',u+'yera',u+'yéramos',u+'yerais',u+'yeran'];
+    type = 'irregular (-uir: add y)';
+    matched = true;
   }
 
   return { en: '', type: type + ' (auto)', ...forms };
