@@ -3678,12 +3678,15 @@ function pickVoice(gender, dialect) {
 }
 
 // ============================================================
-// TTS SERVICE — ElevenLabs (free tier) with Web Speech fallback
+// TTS SERVICE — ElevenLabs → Azure Neural → Web Speech cascade
 // ============================================================
 //
-// Free tier: 10,000 characters/month. Cache aggressively so repeat
-// plays are free. On failure or missing API key, falls back to the
-// browser's built-in speechSynthesis so the app always has audio.
+// Tier 1: ElevenLabs (10k chars/month free) — best quality
+// Tier 2: Azure Neural TTS (500k chars/month free) — excellent backup
+// Tier 3: Browser Web Speech — unlimited, always works
+//
+// Audio is cached aggressively (session Map + localStorage base64)
+// so replays never cost chars from either API.
 // ============================================================
 
 // Curated multilingual voices from ElevenLabs' premade voice library.
@@ -3702,12 +3705,46 @@ const TTS_VOICES = [
 const TTS_DEFAULT_FEMALE = 'EXAVITQu4vr4xnSDxMaL'; // Sarah
 const TTS_DEFAULT_MALE   = 'CwhRBWXzGAHq8TQ4Fs17'; // Roger
 
+// ── Azure Neural TTS — Castilian Spanish voices ──
+const AZURE_VOICES_FEMALE = [
+  { name:'es-ES-ElviraNeural',   label:'Elvira',   desc:'Natural, cálida (recomendada)' },
+  { name:'es-ES-XimenaNeural',   label:'Ximena',   desc:'Clara, profesional' },
+  { name:'es-ES-AbrilNeural',    label:'Abril',    desc:'Joven, expresiva' },
+  { name:'es-ES-EstrellaNeural', label:'Estrella', desc:'Vivaz, amigable' },
+];
+const AZURE_VOICES_MALE = [
+  { name:'es-ES-AlvaroNeural',   label:'Álvaro',   desc:'Profesional, maduro (recomendado)' },
+  { name:'es-ES-ArnauNeural',    label:'Arnau',    desc:'Claro, moderno' },
+  { name:'es-ES-GerardoNeural',  label:'Gerardo',  desc:'Cálido, natural' },
+];
+const AZURE_REGIONS = [
+  { id:'westeurope',       label:'West Europe — Amsterdam (recomendado)' },
+  { id:'northeurope',      label:'North Europe — Irlanda' },
+  { id:'uksouth',          label:'UK South — Londres' },
+  { id:'francecentral',    label:'France Central — París' },
+  { id:'eastus',           label:'East US' },
+  { id:'eastus2',          label:'East US 2' },
+  { id:'germanywestcentral', label:'Germany West Central — Frankfurt' },
+];
+const AZURE_DEFAULT_FEMALE = 'es-ES-ElviraNeural';
+const AZURE_DEFAULT_MALE   = 'es-ES-AlvaroNeural';
+const AZURE_DEFAULT_REGION = 'westeurope';
+
 function ttsGetConfig() {
   return {
     provider:    getStorage('aprende.tts.provider', 'web'),
     apiKey:      getStorage('aprende.tts.apiKey', ''),
     voiceFemale: getStorage('aprende.tts.voiceFemale', TTS_DEFAULT_FEMALE),
     voiceMale:   getStorage('aprende.tts.voiceMale',   TTS_DEFAULT_MALE),
+  };
+}
+
+function ttsGetAzureConfig() {
+  return {
+    apiKey:      getStorage('aprende.tts.azureKey', ''),
+    region:      getStorage('aprende.tts.azureRegion', AZURE_DEFAULT_REGION),
+    voiceFemale: getStorage('aprende.tts.azureVoiceFemale', AZURE_DEFAULT_FEMALE),
+    voiceMale:   getStorage('aprende.tts.azureVoiceMale',   AZURE_DEFAULT_MALE),
   };
 }
 
@@ -3823,27 +3860,84 @@ async function ttsFetchElevenLabs(text, voiceId, apiKey) {
   return btoa(bin);
 }
 
-// ── Main entry point: returns playable URL (cached or fresh), or null ──
+// ── Azure Neural TTS fetch ──
+async function ttsFetchAzure(text, voiceName, apiKey, region) {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  const ssml = `<speak version='1.0' xml:lang='es-ES'><voice name='${voiceName}'>${escaped}</voice></speak>`;
+  const response = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+    method: 'POST',
+    headers: {
+      'Ocp-Apim-Subscription-Key': apiKey,
+      'Content-Type': 'application/ssml+xml',
+      'X-Microsoft-Azure-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3',
+    },
+    body: ssml,
+  });
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    throw new Error('Azure TTS ' + response.status + ': ' + errText.slice(0, 120));
+  }
+  const buf = await response.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin);
+}
+
+// ── Azure getAudioUrl (cache-first) ──
+async function ttsGetAudioUrlAzure(text, gender) {
+  const cfg = ttsGetAzureConfig();
+  if (!cfg.apiKey || !cfg.region) return null;
+  const voiceName = gender === 'male' ? cfg.voiceMale : cfg.voiceFemale;
+  const cached = ttsGetCached(text, voiceName);
+  if (cached) return cached;
+  try {
+    const base64 = await ttsFetchAzure(text, voiceName, cfg.apiKey, cfg.region);
+    return ttsSaveCached(text, voiceName, base64);
+  } catch(e) {
+    console.warn('Azure TTS failed:', e.message);
+    return null;
+  }
+}
+
+// ── Main entry point: ElevenLabs → Azure → null (Web Speech fallback) ──
 async function ttsGetAudioUrl(text, gender) {
   const cfg = ttsGetConfig();
-  if (cfg.provider !== 'elevenlabs' || !cfg.apiKey) return null;
-  const voiceId = gender === 'male' ? cfg.voiceMale : cfg.voiceFemale;
-  const cached = ttsGetCached(text, voiceId);
-  if (cached) return cached;
-  // Respect monthly cap so we don't blow past 10k chars silently
-  const usage = ttsGetUsage();
-  if (usage.count + text.length > 10000) {
-    console.warn('ElevenLabs monthly cap reached — falling back to Web Speech');
-    return null;
+
+  // Tier 1: ElevenLabs
+  if (cfg.provider === 'elevenlabs' && cfg.apiKey) {
+    const voiceId = gender === 'male' ? cfg.voiceMale : cfg.voiceFemale;
+    const cached = ttsGetCached(text, voiceId);
+    if (cached) return cached;
+    const usage = ttsGetUsage();
+    if (usage.count + text.length <= 10000) {
+      try {
+        const base64 = await ttsFetchElevenLabs(text, voiceId, cfg.apiKey);
+        ttsBumpUsage(text.length);
+        return ttsSaveCached(text, voiceId, base64);
+      } catch(e) {
+        console.warn('ElevenLabs TTS failed, trying Azure:', e.message);
+        // fall through to Tier 2
+      }
+    } else {
+      console.info('ElevenLabs cap reached — using Azure backup');
+      // fall through to Tier 2
+    }
   }
-  try {
-    const base64 = await ttsFetchElevenLabs(text, voiceId, cfg.apiKey);
-    ttsBumpUsage(text.length);
-    return ttsSaveCached(text, voiceId, base64);
-  } catch(e) {
-    console.warn('ElevenLabs TTS failed:', e.message);
-    return null;
-  }
+
+  // Tier 2: Azure Neural
+  const azureUrl = await ttsGetAudioUrlAzure(text, gender);
+  if (azureUrl) return azureUrl;
+
+  // Tier 3: Web Speech (caller handles)
+  return null;
 }
 
 // ── Current playback handle, so stopAll() can halt API audio ──
@@ -10356,66 +10450,105 @@ SEARCH_INDEX = buildSearchIndex();
 // ============================================================
 
 function Ajustes({ dark, onBack }) {
-  const [provider, setProvider] = useState(() => getStorage('aprende.tts.provider', 'web'));
-  const [apiKey, setApiKey]     = useState(() => getStorage('aprende.tts.apiKey', ''));
-  const [showKey, setShowKey]   = useState(false);
+  // ── ElevenLabs state ──
+  const [provider, setProvider]       = useState(() => getStorage('aprende.tts.provider', 'web'));
+  const [apiKey, setApiKey]           = useState(() => getStorage('aprende.tts.apiKey', ''));
+  const [showKey, setShowKey]         = useState(false);
   const [voiceFemale, setVoiceFemale] = useState(() => getStorage('aprende.tts.voiceFemale', TTS_DEFAULT_FEMALE));
   const [voiceMale, setVoiceMale]     = useState(() => getStorage('aprende.tts.voiceMale',   TTS_DEFAULT_MALE));
-  const [testStatus, setTestStatus] = useState(null); // null | 'testing' | 'ok' | 'err'
-  const [testMsg, setTestMsg] = useState('');
-  const [usage, setUsage] = useState(() => ttsGetUsage());
+  const [elTestStatus, setElTestStatus] = useState(null);
+  const [elTestMsg, setElTestMsg]       = useState('');
+  const [usage, setUsage]             = useState(() => ttsGetUsage());
+
+  // ── Azure state ──
+  const [azureKey, setAzureKey]               = useState(() => getStorage('aprende.tts.azureKey', ''));
+  const [showAzureKey, setShowAzureKey]       = useState(false);
+  const [azureRegion, setAzureRegion]         = useState(() => getStorage('aprende.tts.azureRegion', AZURE_DEFAULT_REGION));
+  const [azureVoiceFemale, setAzureVoiceFemale] = useState(() => getStorage('aprende.tts.azureVoiceFemale', AZURE_DEFAULT_FEMALE));
+  const [azureVoiceMale, setAzureVoiceMale]   = useState(() => getStorage('aprende.tts.azureVoiceMale',   AZURE_DEFAULT_MALE));
+  const [azTestStatus, setAzTestStatus]       = useState(null);
+  const [azTestMsg, setAzTestMsg]             = useState('');
+
+  // ── Shared ──
   const [cacheSize, setCacheSize] = useState(() => ttsCacheSize());
 
-  const save = () => {
+  // Auto-save all settings on change
+  useEffect(() => {
     setStorage('aprende.tts.provider',    provider);
     setStorage('aprende.tts.apiKey',      apiKey.trim());
     setStorage('aprende.tts.voiceFemale', voiceFemale);
     setStorage('aprende.tts.voiceMale',   voiceMale);
-  };
+  }, [provider, apiKey, voiceFemale, voiceMale]);
 
-  // Auto-save on any change (no separate save button friction)
-  useEffect(() => { save(); }, [provider, apiKey, voiceFemale, voiceMale]);
+  useEffect(() => {
+    setStorage('aprende.tts.azureKey',         azureKey.trim());
+    setStorage('aprende.tts.azureRegion',       azureRegion);
+    setStorage('aprende.tts.azureVoiceFemale',  azureVoiceFemale);
+    setStorage('aprende.tts.azureVoiceMale',    azureVoiceMale);
+  }, [azureKey, azureRegion, azureVoiceFemale, azureVoiceMale]);
 
-  const runTest = async (gender) => {
-    setTestStatus('testing');
-    setTestMsg(gender === 'female' ? 'Probando voz femenina...' : 'Probando voz masculina...');
-    // Force a fresh fetch bypassing cache for a more meaningful test
+  // ── ElevenLabs test ──
+  const runElTest = async (gender) => {
+    setElTestStatus('testing');
+    setElTestMsg(gender === 'female' ? 'Probando voz femenina...' : 'Probando voz masculina...');
     const voiceId = gender === 'female' ? voiceFemale : voiceMale;
     const testText = gender === 'female'
       ? 'Hola, soy tu tutora de español. Vamos a practicar juntos.'
       : 'Buenos días. Soy tu tutor. Hoy vamos a repasar el subjuntivo.';
     if (provider !== 'elevenlabs' || !apiKey.trim()) {
-      // Fall back to web speech immediately
       speakES(testText, { gender, dialect:'es-ES', rate:0.95 });
-      setTestStatus('ok');
-      setTestMsg('Reproduciendo con voz del navegador (sin ElevenLabs).');
+      setElTestStatus('ok');
+      setElTestMsg('Reproduciendo con voz del navegador (sin ElevenLabs configurado).');
       return;
     }
     try {
       const base64 = await ttsFetchElevenLabs(testText, voiceId, apiKey.trim());
       ttsBumpUsage(testText.length);
       const url = ttsSaveCached(testText, voiceId, base64);
-      const audio = new Audio(url);
-      ttsCurrentAudio = audio;
-      audio.play().catch(() => {});
-      setTestStatus('ok');
-      setTestMsg('¡Funciona! ElevenLabs conectado correctamente.');
+      const audio = new Audio(url); ttsCurrentAudio = audio; audio.play().catch(() => {});
+      setElTestStatus('ok');
+      setElTestMsg('¡Funciona! ElevenLabs conectado correctamente.');
       setUsage(ttsGetUsage());
       setCacheSize(ttsCacheSize());
     } catch(e) {
-      setTestStatus('err');
-      const msg = e.message || 'Error desconocido';
-      if (msg.includes('401')) setTestMsg('Error 401: API key inválida. Comprueba que la has copiado bien.');
-      else if (msg.includes('429')) setTestMsg('Error 429: Has superado el límite mensual (10.000 caracteres).');
-      else setTestMsg('Error: ' + msg);
+      setElTestStatus('err');
+      const msg = e.message || '';
+      if (msg.includes('401')) setElTestMsg('Error 401: API key inválida.');
+      else if (msg.includes('429')) setElTestMsg('Error 429: Límite mensual superado.');
+      else setElTestMsg('Error: ' + msg.slice(0, 100));
     }
   };
 
-  const clearCache = () => {
-    ttsClearCache();
-    setCacheSize(0);
+  // ── Azure test ──
+  const runAzTest = async (gender) => {
+    setAzTestStatus('testing');
+    setAzTestMsg(gender === 'female' ? 'Probando voz femenina Azure...' : 'Probando voz masculina Azure...');
+    const voiceName = gender === 'female' ? azureVoiceFemale : azureVoiceMale;
+    const testText = gender === 'female'
+      ? 'Hola, soy la voz de reserva. Azure Neural, encantada.'
+      : 'Buenos días. Soy la voz de reserva Azure. Aquí para cuando ElevenLabs llegue al límite.';
+    if (!azureKey.trim() || !azureRegion) {
+      setAzTestStatus('err');
+      setAzTestMsg('Introduce tu API key y región de Azure primero.');
+      return;
+    }
+    try {
+      const base64 = await ttsFetchAzure(testText, voiceName, azureKey.trim(), azureRegion);
+      const url = ttsSaveCached(testText, voiceName, base64);
+      const audio = new Audio(url); ttsCurrentAudio = audio; audio.play().catch(() => {});
+      setAzTestStatus('ok');
+      setAzTestMsg('¡Funciona! Azure Neural conectado como voz de reserva.');
+      setCacheSize(ttsCacheSize());
+    } catch(e) {
+      setAzTestStatus('err');
+      const msg = e.message || '';
+      if (msg.includes('401') || msg.includes('403')) setAzTestMsg('Error de autenticación: comprueba tu API key y región.');
+      else if (msg.includes('404')) setAzTestMsg('Error 404: región incorrecta. Prueba westeurope o northeurope.');
+      else setAzTestMsg('Error: ' + msg.slice(0, 120));
+    }
   };
 
+  const clearCache = () => { ttsClearCache(); setCacheSize(0); };
   const resetUsage = () => {
     setStorage('aprende.tts.usage', { month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1), count: 0 });
     setUsage(ttsGetUsage());
@@ -10423,179 +10556,221 @@ function Ajustes({ dark, onBack }) {
 
   const femaleVoices = TTS_VOICES.filter(v => v.gender === 'female');
   const maleVoices   = TTS_VOICES.filter(v => v.gender === 'male');
-
   const usagePct = Math.min(100, Math.round((usage.count / 10000) * 100));
   const usageColor = usagePct > 90 ? 'from-rose-500 to-red-500' : usagePct > 70 ? 'from-amber-500 to-orange-500' : 'from-emerald-500 to-teal-500';
 
+  const InputCard = ({ label, value, onChange, show, setShow, placeholder, confirmed }) => (
+    <Card dark={dark} className="p-5">
+      <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">{label}</p>
+      <div className="flex gap-2">
+        <input type={show ? 'text' : 'password'} value={value} onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-mono border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-stone-50 border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`} />
+        <button onClick={() => setShow(!show)}
+          className={`px-3 py-2 rounded-xl text-xs font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+          {show ? '🙈' : '👁️'}
+        </button>
+      </div>
+      {confirmed && <p className="text-[11px] mt-2 text-emerald-600 font-semibold">✓ Guardado localmente</p>}
+    </Card>
+  );
+
+  const TestBanner = ({ status, msg }) => status && msg ? (
+    <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${status === 'ok' ? 'bg-emerald-100 text-emerald-800' : status === 'err' ? 'bg-rose-100 text-rose-800' : 'bg-stone-100 text-stone-700'}`}>
+      {status === 'ok' ? '✓ ' : status === 'err' ? '✗ ' : ''}{msg}
+    </div>
+  ) : null;
+
+  const VoicePicker = ({ label, voices, selected, onSelect, onTest, testing, idKey }) => (
+    <Card dark={dark} className="p-5">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">{label}</p>
+        <button onClick={onTest} disabled={testing}
+          className="text-xs px-3 py-1.5 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 disabled:opacity-50">
+          {testing ? '...' : '▶ Probar'}
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {voices.map(v => (
+          <button key={v[idKey]} onClick={() => onSelect(v[idKey])}
+            className={`rounded-xl p-3 text-left border-2 transition-all ${selected === v[idKey] ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+            <p className="font-bold text-sm">{v.name || v.label}</p>
+            <p className={`text-[11px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{v.desc}</p>
+          </button>
+        ))}
+      </div>
+    </Card>
+  );
+
   return (
     <div>
-      <BackHeader title="Ajustes" subtitle="Settings" onBack={onBack} dark={dark} />
+      <BackHeader title="Ajustes" subtitle="Voz y audio" onBack={onBack} dark={dark} />
       <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto space-y-6">
 
-        {/* Header */}
         <div>
           <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-2">Voz y audio</h2>
           <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
-            Configura la voz para que tus lecciones suenen como un hablante nativo. ElevenLabs es gratis (10.000 caracteres al mes) y suena mucho mejor que la voz del navegador.
+            La app usa tres capas de audio en cascada: <strong>ElevenLabs</strong> (mejor calidad, 10k chars/mes gratis) → <strong>Azure Neural</strong> (excelente respaldo, 500k chars/mes gratis) → voz del navegador (siempre disponible).
           </p>
         </div>
 
-        {/* Provider toggle */}
+        {/* ── Cascade diagram ── */}
         <Card dark={dark} className="p-5">
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Proveedor de voz</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setProvider('web')}
-              className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'web' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
-              <p className="font-bold text-sm mb-1">🔊 Navegador</p>
-              <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Gratis, ilimitado, pero robótico.</p>
-            </button>
-            <button
-              onClick={() => setProvider('elevenlabs')}
-              className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'elevenlabs' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
-              <p className="font-bold text-sm mb-1">✨ ElevenLabs</p>
-              <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Voces naturales · 10.000 caracteres/mes gratis.</p>
-            </button>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Cascada activa</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${provider === 'elevenlabs' && apiKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
+              ✨ ElevenLabs {provider === 'elevenlabs' && apiKey ? '✓' : '—'}
+            </div>
+            <span className={`text-lg ${dark ? 'text-stone-600' : 'text-stone-400'}`}>→</span>
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${azureKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
+              ☁️ Azure Neural {azureKey ? '✓' : '—'}
+            </div>
+            <span className={`text-lg ${dark ? 'text-stone-600' : 'text-stone-400'}`}>→</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold bg-stone-100 text-stone-600">
+              🔊 Navegador ✓
+            </div>
           </div>
         </Card>
 
-        {/* ElevenLabs setup */}
-        {provider === 'elevenlabs' && (
-          <>
-            {/* Setup instructions */}
-            {!apiKey && (
-              <Card dark={dark} className="p-5 border-2 border-orange-300">
-                <p className="font-bold text-sm mb-3">📝 Cómo conseguir tu API key (2 minutos, gratis)</p>
+        {/* ══════════════════════════════════════
+            ELEVENLABS
+        ══════════════════════════════════════ */}
+        <div>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">✨ ElevenLabs — Nivel 1 (mejor calidad)</p>
+
+          <div className="space-y-4">
+            {/* Provider toggle */}
+            <Card dark={dark} className="p-5">
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setProvider('web')}
+                  className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'web' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+                  <p className="font-bold text-sm mb-1">🔊 Solo navegador</p>
+                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Desactiva ElevenLabs.</p>
+                </button>
+                <button onClick={() => setProvider('elevenlabs')}
+                  className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'elevenlabs' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+                  <p className="font-bold text-sm mb-1">✨ Activar ElevenLabs</p>
+                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>10.000 chars/mes · sin tarjeta.</p>
+                </button>
+              </div>
+            </Card>
+
+            {provider === 'elevenlabs' && (
+              <>
+                {!apiKey && (
+                  <Card dark={dark} className="p-5 border-2 border-orange-300">
+                    <p className="font-bold text-sm mb-3">📝 Cómo obtener tu API key (2 min, gratis)</p>
+                    <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
+                      <li>Ve a <a href="https://elevenlabs.io/sign-up" target="_blank" rel="noopener" className="text-orange-600 font-semibold underline">elevenlabs.io/sign-up</a> — sin tarjeta.</li>
+                      <li>Avatar → <strong>My Account</strong> → <strong>API Keys</strong>.</li>
+                      <li>Crea clave → copia la que empieza por <code>sk_</code>.</li>
+                      <li>Pégala aquí abajo 👇</li>
+                    </ol>
+                  </Card>
+                )}
+
+                <InputCard label="ElevenLabs API Key" value={apiKey} onChange={setApiKey}
+                  show={showKey} setShow={setShowKey} placeholder="sk_..." confirmed={!!apiKey} />
+
+                <VoicePicker label="Voz femenina · Hablante A" voices={femaleVoices} selected={voiceFemale}
+                  onSelect={setVoiceFemale} onTest={() => runElTest('female')}
+                  testing={elTestStatus === 'testing'} idKey="id" />
+
+                <VoicePicker label="Voz masculina · Hablante B" voices={maleVoices} selected={voiceMale}
+                  onSelect={setVoiceMale} onTest={() => runElTest('male')}
+                  testing={elTestStatus === 'testing'} idKey="id" />
+
+                <TestBanner status={elTestStatus} msg={elTestMsg} />
+
+                <Card dark={dark} className="p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Uso ElevenLabs este mes</p>
+                    <button onClick={() => setUsage(ttsGetUsage())} className="text-[11px] text-stone-500 hover:text-stone-700">↻</button>
+                  </div>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <p className="text-2xl font-bold">{usage.count.toLocaleString('es-ES')}</p>
+                    <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>/ 10.000 caracteres</p>
+                  </div>
+                  <div className={`h-2 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-stone-200'}`}>
+                    <div className={`h-full bg-gradient-to-r ${usageColor} transition-all`} style={{ width: usagePct + '%' }}></div>
+                  </div>
+                  <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
+                    Al llegar al límite, la app pasa a Azure Neural automáticamente (si está configurado).
+                  </p>
+                  <button onClick={resetUsage} className={`mt-2 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                    ↻ Reiniciar contador
+                  </button>
+                </Card>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════
+            AZURE NEURAL
+        ══════════════════════════════════════ */}
+        <div>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">☁️ Azure Neural — Nivel 2 (voz de reserva, 500k chars/mes gratis)</p>
+
+          <div className="space-y-4">
+            {!azureKey && (
+              <Card dark={dark} className="p-5 border-2 border-blue-200">
+                <p className="font-bold text-sm mb-3">📝 Cómo configurar Azure (5 min, gratis con tarjeta)</p>
                 <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
-                  <li>Ve a <a href="https://elevenlabs.io/sign-up" target="_blank" rel="noopener" className="text-orange-600 font-semibold underline">elevenlabs.io/sign-up</a> y crea una cuenta (correo + contraseña, sin tarjeta).</li>
-                  <li>Una vez dentro, haz clic en tu avatar (arriba a la derecha) → <strong>"My Account"</strong> → pestaña <strong>"API Keys"</strong>.</li>
-                  <li>Pulsa <strong>"Create API Key"</strong>, dale un nombre (ej: "Aprende"), y copia la clave que empieza por <code>sk_</code>.</li>
-                  <li>Pégala aquí abajo 👇 — ¡listo!</li>
+                  <li>Ve a <a href="https://azure.microsoft.com/free" target="_blank" rel="noopener" className="text-blue-600 font-semibold underline">azure.microsoft.com/free</a> → crea cuenta → pon tarjeta (verificación, no se cobra).</li>
+                  <li>Busca <strong>"Speech"</strong> en los servicios → <strong>Crear</strong>.</li>
+                  <li><strong>Importante:</strong> elige nivel <strong>F0 (gratis)</strong>, no S0. Selecciona región <strong>West Europe</strong>.</li>
+                  <li>Una vez creado: <strong>Claves y punto de conexión</strong> → copia la <strong>Clave 1</strong>.</li>
+                  <li>En Azure Portal → Suscripciones → <strong>Presupuestos</strong> → crea una alerta a 0€ para mayor tranquilidad.</li>
+                  <li>Pega la clave aquí abajo 👇</li>
                 </ol>
-                <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>Tu API key se guarda solo en este navegador (localStorage). Nunca se envía a ningún otro sitio aparte de ElevenLabs.</p>
+                <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>F0 = 500.000 caracteres/mes gratis de por vida. No expira.</p>
               </Card>
             )}
 
-            {/* API key input */}
-            <Card dark={dark} className="p-5">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">API Key</p>
-              <div className="flex gap-2">
-                <input
-                  type={showKey ? 'text' : 'password'}
-                  value={apiKey}
-                  onChange={e => setApiKey(e.target.value)}
-                  placeholder="sk_..."
-                  className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-mono border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-stone-50 border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}
-                />
-                <button
-                  onClick={() => setShowKey(!showKey)}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-                  {showKey ? '🙈' : '👁️'}
-                </button>
-              </div>
-              {apiKey && (
-                <p className="text-[11px] mt-2 text-emerald-600 font-semibold">✓ API key guardada localmente</p>
-              )}
-            </Card>
+            <InputCard label="Azure API Key (Clave 1)" value={azureKey} onChange={setAzureKey}
+              show={showAzureKey} setShow={setShowAzureKey} placeholder="Clave de 32 caracteres..." confirmed={!!azureKey} />
 
-            {/* Voice picker — Female */}
+            {/* Region picker */}
             <Card dark={dark} className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Voz femenina (Hablante A)</p>
-                <button
-                  onClick={() => runTest('female')}
-                  disabled={testStatus === 'testing'}
-                  className="text-xs px-3 py-1.5 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 disabled:opacity-50">
-                  {testStatus === 'testing' ? '...' : '▶ Probar'}
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {femaleVoices.map(v => (
-                  <button key={v.id} onClick={() => setVoiceFemale(v.id)}
-                    className={`rounded-xl p-3 text-left border-2 transition-all ${voiceFemale === v.id ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
-                    <p className="font-bold text-sm">{v.name}</p>
-                    <p className={`text-[11px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{v.desc}</p>
-                  </button>
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Región Azure</p>
+              <select value={azureRegion} onChange={e => setAzureRegion(e.target.value)}
+                className={`w-full px-4 py-2.5 rounded-xl text-sm border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-stone-50 border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
+                {AZURE_REGIONS.map(r => (
+                  <option key={r.id} value={r.id}>{r.label}</option>
                 ))}
-              </div>
+              </select>
+              <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Elige la misma región donde creaste el recurso Speech en Azure.</p>
             </Card>
 
-            {/* Voice picker — Male */}
-            <Card dark={dark} className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Voz masculina (Hablante B)</p>
-                <button
-                  onClick={() => runTest('male')}
-                  disabled={testStatus === 'testing'}
-                  className="text-xs px-3 py-1.5 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 disabled:opacity-50">
-                  {testStatus === 'testing' ? '...' : '▶ Probar'}
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {maleVoices.map(v => (
-                  <button key={v.id} onClick={() => setVoiceMale(v.id)}
-                    className={`rounded-xl p-3 text-left border-2 transition-all ${voiceMale === v.id ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
-                    <p className="font-bold text-sm">{v.name}</p>
-                    <p className={`text-[11px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{v.desc}</p>
-                  </button>
-                ))}
-              </div>
-            </Card>
+            <VoicePicker label="Voz femenina Azure · Hablante A" voices={AZURE_VOICES_FEMALE} selected={azureVoiceFemale}
+              onSelect={setAzureVoiceFemale} onTest={() => runAzTest('female')}
+              testing={azTestStatus === 'testing'} idKey="name" />
 
-            {/* Test result */}
-            {testStatus && testMsg && (
-              <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${testStatus === 'ok' ? 'bg-emerald-100 text-emerald-800' : testStatus === 'err' ? 'bg-rose-100 text-rose-800' : 'bg-stone-100 text-stone-700'}`}>
-                {testStatus === 'ok' ? '✓ ' : testStatus === 'err' ? '✗ ' : ''}{testMsg}
-              </div>
-            )}
+            <VoicePicker label="Voz masculina Azure · Hablante B" voices={AZURE_VOICES_MALE} selected={azureVoiceMale}
+              onSelect={setAzureVoiceMale} onTest={() => runAzTest('male')}
+              testing={azTestStatus === 'testing'} idKey="name" />
 
-            {/* Usage meter */}
-            <Card dark={dark} className="p-5">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Uso este mes</p>
-                <button onClick={() => setUsage(ttsGetUsage())} className="text-[11px] text-stone-500 hover:text-stone-700">↻ Actualizar</button>
-              </div>
-              <div className="flex items-baseline gap-2 mb-2">
-                <p className="text-2xl font-bold">{usage.count.toLocaleString('es-ES')}</p>
-                <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>/ 10.000 caracteres</p>
-              </div>
-              <div className={`h-2 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-stone-200'}`}>
-                <div className={`h-full bg-gradient-to-r ${usageColor} transition-all`} style={{ width: usagePct + '%' }}></div>
-              </div>
-              <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
-                Se reinicia cada mes. Cuando llegues al límite, la app usa automáticamente la voz del navegador hasta el mes siguiente.
-              </p>
-            </Card>
+            <TestBanner status={azTestStatus} msg={azTestMsg} />
+          </div>
+        </div>
 
-            {/* Cache info */}
-            <Card dark={dark} className="p-5">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-stone-500">Caché de audio</p>
-              <p className="text-sm mb-3">
-                <span className="font-bold text-2xl">{cacheSize}</span>
-                <span className={`ml-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>frases guardadas</span>
-              </p>
-              <p className={`text-[11px] mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
-                Las frases que ya has escuchado se guardan en tu navegador, así no gastas caracteres al repetirlas. Bórralas solo si cambias de voz o quieres liberar espacio.
-              </p>
-              <div className="flex gap-2">
-                <button onClick={clearCache} className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                  🗑️ Borrar caché
-                </button>
-                <button onClick={resetUsage} className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                  ↻ Reiniciar contador
-                </button>
-              </div>
-            </Card>
-          </>
-        )}
+        {/* ── Cache ── */}
+        <Card dark={dark} className="p-5">
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-stone-500">Caché de audio (compartida)</p>
+          <p className="text-sm mb-3">
+            <span className="font-bold text-2xl">{cacheSize}</span>
+            <span className={`ml-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>frases guardadas</span>
+          </p>
+          <p className={`text-[11px] mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
+            Tanto ElevenLabs como Azure cachean el audio. Las repeticiones no gastan caracteres de ningún proveedor. Borra la caché si cambias de voz.
+          </p>
+          <button onClick={clearCache}
+            className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+            🗑️ Borrar caché
+          </button>
+        </Card>
 
-        {provider === 'web' && (
-          <Card dark={dark} className="p-5">
-            <p className="text-sm leading-relaxed">
-              Estás usando la voz incorporada del navegador. Es gratis e ilimitada, pero suena claramente sintética. Cambia a <strong>ElevenLabs</strong> arriba para una voz mucho más natural y auténtica (10.000 caracteres gratis al mes, sin tarjeta).
-            </p>
-          </Card>
-        )}
       </div>
     </div>
   );
