@@ -3767,6 +3767,25 @@ function ttsGetUsage() {
   return used;
 }
 
+// ── Azure usage tracking (resets monthly, 500k F0 limit) ──
+function ttsBumpAzureUsage(chars) {
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+  const used = getStorage('aprende.tts.azureUsage', { month: monthKey, count: 0 });
+  if (used.month !== monthKey) { used.month = monthKey; used.count = 0; }
+  used.count += chars;
+  setStorage('aprende.tts.azureUsage', used);
+  return used;
+}
+
+function ttsGetAzureUsage() {
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+  const used = getStorage('aprende.tts.azureUsage', { month: monthKey, count: 0 });
+  if (used.month !== monthKey) return { month: monthKey, count: 0 };
+  return used;
+}
+
 // ── Cache layer: session (Map) + persistent (localStorage base64) ──
 const TTS_SESSION_CACHE = new Map(); // key → data URL
 
@@ -3916,6 +3935,7 @@ async function ttsGetAudioUrlAzure(text, gender) {
   if (cached) return cached;
   try {
     const base64 = await ttsFetchAzure(text, voiceName, cfg.apiKey, cfg.region);
+    ttsBumpAzureUsage(text.length);
     return ttsSaveCached(text, voiceName, base64);
   } catch(e) {
     console.warn('Azure TTS failed:', e.message);
@@ -10484,6 +10504,7 @@ function Ajustes({ dark, onBack }) {
   const [azureVoiceMale, setAzureVoiceMale]   = useState(() => getStorage('aprende.tts.azureVoiceMale',   AZURE_DEFAULT_MALE));
   const [azTestStatus, setAzTestStatus]       = useState(null);
   const [azTestMsg, setAzTestMsg]             = useState('');
+  const [azureUsage, setAzureUsage]           = useState(() => ttsGetAzureUsage());
 
   // ── Shared ──
   const [cacheSize, setCacheSize] = useState(() => ttsCacheSize());
@@ -10555,6 +10576,7 @@ function Ajustes({ dark, onBack }) {
       setAzTestStatus('ok');
       setAzTestMsg('¡Funciona! Azure Neural conectado como voz de reserva.');
       setCacheSize(ttsCacheSize());
+      setAzureUsage(ttsGetAzureUsage());
     } catch(e) {
       setAzTestStatus('err');
       const msg = e.message || '';
@@ -10768,6 +10790,34 @@ function Ajustes({ dark, onBack }) {
               testing={azTestStatus === 'testing'} idKey="name" />
 
             <TestBanner status={azTestStatus} msg={azTestMsg} />
+
+            {/* Azure usage meter */}
+            {azureKey && (() => {
+              const azPct = Math.min(100, Math.round((azureUsage.count / 500000) * 100));
+              const azColor = azPct > 90 ? 'from-rose-500 to-red-500' : azPct > 70 ? 'from-amber-500 to-orange-500' : 'from-blue-500 to-blue-600';
+              return (
+                <Card dark={dark} className="p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Uso Azure este mes</p>
+                    <button onClick={() => setAzureUsage(ttsGetAzureUsage())} className="text-[11px] text-stone-500 hover:text-stone-700">↻</button>
+                  </div>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <p className="text-2xl font-bold">{azureUsage.count.toLocaleString('es-ES')}</p>
+                    <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>/ 500.000 caracteres</p>
+                  </div>
+                  <div className={`h-2 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-stone-200'}`}>
+                    <div className={`h-full bg-gradient-to-r ${azColor} transition-all`} style={{ width: azPct + '%' }}></div>
+                  </div>
+                  <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
+                    Nivel F0 gratuito. Si llegas al límite Azure simplemente para — no carga nada. Se reinicia cada mes.
+                  </p>
+                  <button onClick={() => { setStorage('aprende.tts.azureUsage', { month: new Date().getFullYear() + '-' + (new Date().getMonth()+1), count: 0 }); setAzureUsage(ttsGetAzureUsage()); }}
+                    className={`mt-2 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                    ↻ Reiniciar contador
+                  </button>
+                </Card>
+              );
+            })()}
           </div>
         </div>
 
