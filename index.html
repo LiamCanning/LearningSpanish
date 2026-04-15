@@ -3677,11 +3677,197 @@ function pickVoice(gender, dialect) {
   return ranked[0] || null;
 }
 
-function speakES(text, opts) {
+// ============================================================
+// TTS SERVICE — ElevenLabs (free tier) with Web Speech fallback
+// ============================================================
+//
+// Free tier: 10,000 characters/month. Cache aggressively so repeat
+// plays are free. On failure or missing API key, falls back to the
+// browser's built-in speechSynthesis so the app always has audio.
+// ============================================================
+
+// Curated multilingual voices from ElevenLabs' premade voice library.
+// All support eleven_multilingual_v2 (Spanish, Castilian accent-friendly).
+const TTS_VOICES = [
+  { id:'EXAVITQu4vr4xnSDxMaL', name:'Sarah',   gender:'female', desc:'Joven, cálida' },
+  { id:'XrExE9yKIg1WjnnlVkGX', name:'Matilda', gender:'female', desc:'Amable, natural' },
+  { id:'pFZP5JQG7iQjIQuC4Bku', name:'Lily',    gender:'female', desc:'Suave, tranquila' },
+  { id:'Xb7hH8MSUJpSbSDYk0k2', name:'Alice',   gender:'female', desc:'Clara, profesional' },
+  { id:'JBFqnCBsd6RMkjVDRZzb', name:'George',  gender:'male',   desc:'Maduro, cálido' },
+  { id:'CwhRBWXzGAHq8TQ4Fs17', name:'Roger',   gender:'male',   desc:'Seguro, grave' },
+  { id:'TX3LPaxmHKxFdv7VOQHJ', name:'Liam',    gender:'male',   desc:'Claro, articulado' },
+  { id:'nPczCjzI2devNBz1zQrb', name:'Brian',   gender:'male',   desc:'Profesional, neutro' },
+];
+
+const TTS_DEFAULT_FEMALE = 'EXAVITQu4vr4xnSDxMaL'; // Sarah
+const TTS_DEFAULT_MALE   = 'CwhRBWXzGAHq8TQ4Fs17'; // Roger
+
+function ttsGetConfig() {
+  return {
+    provider:    getStorage('aprende.tts.provider', 'web'),
+    apiKey:      getStorage('aprende.tts.apiKey', ''),
+    voiceFemale: getStorage('aprende.tts.voiceFemale', TTS_DEFAULT_FEMALE),
+    voiceMale:   getStorage('aprende.tts.voiceMale',   TTS_DEFAULT_MALE),
+  };
+}
+
+// ── Character usage tracking (resets monthly) ──
+function ttsBumpUsage(chars) {
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+  const used = getStorage('aprende.tts.usage', { month: monthKey, count: 0 });
+  if (used.month !== monthKey) { used.month = monthKey; used.count = 0; }
+  used.count += chars;
+  setStorage('aprende.tts.usage', used);
+  return used;
+}
+
+function ttsGetUsage() {
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+  const used = getStorage('aprende.tts.usage', { month: monthKey, count: 0 });
+  if (used.month !== monthKey) return { month: monthKey, count: 0 };
+  return used;
+}
+
+// ── Cache layer: session (Map) + persistent (localStorage base64) ──
+const TTS_SESSION_CACHE = new Map(); // key → data URL
+
+function ttsCacheKey(text, voiceId) {
+  // djb2 hash — small, deterministic, collision-safe enough for <10k entries
+  let h = 5381;
+  for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) | 0;
+  return voiceId + ':' + (h >>> 0).toString(36);
+}
+
+function ttsGetCached(text, voiceId) {
+  const key = ttsCacheKey(text, voiceId);
+  if (TTS_SESSION_CACHE.has(key)) return TTS_SESSION_CACHE.get(key);
   try {
-    if (!('speechSynthesis' in window)) return;
+    const store = JSON.parse(localStorage.getItem('aprende.tts.cache') || '{}');
+    if (store[key]) {
+      const url = 'data:audio/mpeg;base64,' + store[key];
+      TTS_SESSION_CACHE.set(key, url);
+      return url;
+    }
+  } catch(e) {}
+  return null;
+}
+
+function ttsSaveCached(text, voiceId, base64) {
+  const key = ttsCacheKey(text, voiceId);
+  const url = 'data:audio/mpeg;base64,' + base64;
+  TTS_SESSION_CACHE.set(key, url);
+  try {
+    let store = JSON.parse(localStorage.getItem('aprende.tts.cache') || '{}');
+    store[key] = base64;
+    let str = JSON.stringify(store);
+    // Cap at ~3MB — evict oldest half if over
+    if (str.length > 3 * 1024 * 1024) {
+      const keys = Object.keys(store);
+      const drop = Math.floor(keys.length / 2);
+      for (let i = 0; i < drop; i++) delete store[keys[i]];
+      str = JSON.stringify(store);
+    }
+    localStorage.setItem('aprende.tts.cache', str);
+  } catch(e) {
+    // QuotaExceeded — nuke cache, save just this one entry
+    try {
+      const fresh = {};
+      fresh[key] = base64;
+      localStorage.setItem('aprende.tts.cache', JSON.stringify(fresh));
+    } catch(e2) {}
+  }
+  return url;
+}
+
+function ttsClearCache() {
+  TTS_SESSION_CACHE.clear();
+  try { localStorage.removeItem('aprende.tts.cache'); } catch(e) {}
+}
+
+function ttsCacheSize() {
+  try {
+    const store = JSON.parse(localStorage.getItem('aprende.tts.cache') || '{}');
+    return Object.keys(store).length;
+  } catch(e) { return 0; }
+}
+
+// ── ElevenLabs API call ──
+async function ttsFetchElevenLabs(text, voiceId, apiKey) {
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_64`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'xi-api-key': apiKey,
+      'Content-Type': 'application/json',
+      'Accept': 'audio/mpeg',
+    },
+    body: JSON.stringify({
+      text,
+      model_id: 'eleven_multilingual_v2',
+      voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.0, use_speaker_boost: true },
+    }),
+  });
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '');
+    throw new Error('ElevenLabs ' + response.status + ': ' + errText.slice(0, 120));
+  }
+  const buf = await response.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin);
+}
+
+// ── Main entry point: returns playable URL (cached or fresh), or null ──
+async function ttsGetAudioUrl(text, gender) {
+  const cfg = ttsGetConfig();
+  if (cfg.provider !== 'elevenlabs' || !cfg.apiKey) return null;
+  const voiceId = gender === 'male' ? cfg.voiceMale : cfg.voiceFemale;
+  const cached = ttsGetCached(text, voiceId);
+  if (cached) return cached;
+  // Respect monthly cap so we don't blow past 10k chars silently
+  const usage = ttsGetUsage();
+  if (usage.count + text.length > 10000) {
+    console.warn('ElevenLabs monthly cap reached — falling back to Web Speech');
+    return null;
+  }
+  try {
+    const base64 = await ttsFetchElevenLabs(text, voiceId, cfg.apiKey);
+    ttsBumpUsage(text.length);
+    return ttsSaveCached(text, voiceId, base64);
+  } catch(e) {
+    console.warn('ElevenLabs TTS failed:', e.message);
+    return null;
+  }
+}
+
+// ── Current playback handle, so stopAll() can halt API audio ──
+let ttsCurrentAudio = null;
+
+function ttsStop() {
+  try { if (ttsCurrentAudio) { ttsCurrentAudio.pause(); ttsCurrentAudio.currentTime = 0; ttsCurrentAudio = null; } } catch(e) {}
+  try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e) {}
+}
+
+// ── Fire-and-forget: speak and move on (used by 🔊 buttons) ──
+async function speakES(text, opts) {
+  try {
     const { gender=null, dialect='es-ES', rate=0.95, pitch=1.0 } = opts || {};
-    window.speechSynthesis.cancel();
+    ttsStop();
+    const url = await ttsGetAudioUrl(text, gender);
+    if (url) {
+      const audio = new Audio(url);
+      audio.playbackRate = Math.max(0.7, Math.min(1.3, rate));
+      ttsCurrentAudio = audio;
+      audio.play().catch(() => {});
+      return;
+    }
+    if (!('speechSynthesis' in window)) return;
     const u = new SpeechSynthesisUtterance(text);
     u.lang = dialect;
     u.rate = rate;
@@ -3692,8 +3878,37 @@ function speakES(text, opts) {
   } catch {}
 }
 
+// ── Promise-based: speak and resolve when finished (used by playAll) ──
+function playSpeakable(text, opts) {
+  return new Promise(async (resolve) => {
+    try {
+      const { gender=null, dialect='es-ES', rate=0.95, pitch=1.0 } = opts || {};
+      const url = await ttsGetAudioUrl(text, gender);
+      if (url) {
+        const audio = new Audio(url);
+        audio.playbackRate = Math.max(0.7, Math.min(1.3, rate));
+        ttsCurrentAudio = audio;
+        audio.onended = () => resolve();
+        audio.onerror = () => resolve();
+        audio.play().catch(() => resolve());
+        return;
+      }
+      if (!('speechSynthesis' in window)) { resolve(); return; }
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = dialect;
+      u.rate = rate;
+      u.pitch = pitch;
+      const v = pickVoice(gender, dialect);
+      if (v) u.voice = v;
+      u.onend = () => resolve();
+      u.onerror = () => resolve();
+      window.speechSynthesis.speak(u);
+    } catch { resolve(); }
+  });
+}
+
+// ── Legacy helper retained for any callers that still want a raw Web Speech utterance ──
 function makeSpeakUtterance(text, opts) {
-  // Creates but does NOT speak — used for queueing in Conversaciones
   if (!('speechSynthesis' in window)) return null;
   const { gender=null, dialect='es-ES', rate=0.95, pitch=1.0 } = opts || {};
   const u = new SpeechSynthesisUtterance(text);
@@ -3857,6 +4072,7 @@ function Inicio({ dark, section, setSection }) {
     { id:'conversaciones', label:'Conversaciones', sublabel:'Listening', emoji:'🎧', color:'violet' },
     { id:'negocios', label:'Negocios', sublabel:'Business Spanish', emoji:'💼', color:'teal' },
     { id:'ejercicios', label:'Ejercicios', sublabel:'Exercises', emoji:'✏️', color:'amber' },
+    { id:'ajustes', label:'Ajustes', sublabel:'Voz y audio', emoji:'⚙️', color:'stone' },
   ];
 
   const colorMap = {
@@ -3870,6 +4086,7 @@ function Inicio({ dark, section, setSection }) {
     amber: 'from-amber-400 to-amber-500',
     indigo: 'from-indigo-400 to-indigo-500',
     violet: 'from-violet-400 to-violet-500',
+    stone: 'from-stone-400 to-stone-500',
   };
 
   const WordCard = () => (
@@ -5125,18 +5342,18 @@ function Conversaciones({ onBack, dark, onSearch }) {
 
   useEffect(() => {
     return () => {
-      try { window.speechSynthesis.cancel(); } catch(e){}
+      ttsStop();
       if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     };
   }, []);
 
   const playAll = (lines, mode = 'normal') => {
-    try { window.speechSynthesis.cancel(); } catch(e){}
+    ttsStop();
     if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     stopRef.current = false;
     setPlayMode(mode);
     let i = 0;
-    const next = () => {
+    const next = async () => {
       if (stopRef.current || i >= lines.length) {
         setPlayingIdx(null);
         setPlayMode(null);
@@ -5148,25 +5365,21 @@ function Conversaciones({ onBack, dark, onSearch }) {
       const voiceOpts = line.who === 'A'
         ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
         : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
-      const u = makeSpeakUtterance(line.es, voiceOpts);
-      if (!u) { i++; shadowTimerRef.current = setTimeout(next, 400); return; }
-      u.onend = () => {
-        i++;
-        // Shadow mode leaves a longer gap (~1.2× line length) so the learner can repeat aloud
-        const gap = mode === 'shadow'
-          ? Math.max(1500, Math.round(line.es.length * 70))
-          : 420;
-        shadowTimerRef.current = setTimeout(next, gap);
-      };
-      u.onerror = () => { i++; shadowTimerRef.current = setTimeout(next, 420); };
-      window.speechSynthesis.speak(u);
+      await playSpeakable(line.es, voiceOpts);
+      if (stopRef.current) { setPlayingIdx(null); setPlayMode(null); return; }
+      i++;
+      // Shadow mode leaves a longer gap (~1.2× line length) so the learner can repeat aloud
+      const gap = mode === 'shadow'
+        ? Math.max(1500, Math.round(line.es.length * 70))
+        : 420;
+      shadowTimerRef.current = setTimeout(next, gap);
     };
     next();
   };
 
   const stopAll = () => {
     stopRef.current = true;
-    try { window.speechSynthesis.cancel(); } catch(e){}
+    ttsStop();
     if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
     setPlayingIdx(null);
     setPlayMode(null);
@@ -9782,18 +9995,18 @@ function Negocios({ onBack, dark, onSearch }) {
 
   useEffect(() => {
     return () => {
-      try { window.speechSynthesis.cancel(); } catch(e){}
+      ttsStop();
       if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     };
   }, []);
 
   const playAll = (lines, mode = 'normal') => {
-    try { window.speechSynthesis.cancel(); } catch(e){}
+    ttsStop();
     if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     stopRef.current = false;
     setPlayMode(mode);
     let i = 0;
-    const next = () => {
+    const next = async () => {
       if (stopRef.current || i >= lines.length) {
         setPlayingIdx(null);
         setPlayMode(null);
@@ -9804,24 +10017,20 @@ function Negocios({ onBack, dark, onSearch }) {
       const voiceOpts = line.who === 'A'
         ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
         : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
-      const u = makeSpeakUtterance(line.es, voiceOpts);
-      if (!u) { i++; shadowTimerRef.current = setTimeout(next, 400); return; }
-      u.onend = () => {
-        i++;
-        const gap = mode === 'shadow'
-          ? Math.max(1500, Math.round(line.es.length * 70))
-          : 420;
-        shadowTimerRef.current = setTimeout(next, gap);
-      };
-      u.onerror = () => { i++; shadowTimerRef.current = setTimeout(next, 420); };
-      window.speechSynthesis.speak(u);
+      await playSpeakable(line.es, voiceOpts);
+      if (stopRef.current) { setPlayingIdx(null); setPlayMode(null); return; }
+      i++;
+      const gap = mode === 'shadow'
+        ? Math.max(1500, Math.round(line.es.length * 70))
+        : 420;
+      shadowTimerRef.current = setTimeout(next, gap);
     };
     next();
   };
 
   const stopAll = () => {
     stopRef.current = true;
-    try { window.speechSynthesis.cancel(); } catch(e){}
+    ttsStop();
     if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
     setPlayingIdx(null);
     setPlayMode(null);
@@ -10143,6 +10352,256 @@ function Negocios({ onBack, dark, onSearch }) {
 SEARCH_INDEX = buildSearchIndex();
 
 // ============================================================
+// SECTION: Ajustes (Settings — TTS config)
+// ============================================================
+
+function Ajustes({ dark, onBack }) {
+  const [provider, setProvider] = useState(() => getStorage('aprende.tts.provider', 'web'));
+  const [apiKey, setApiKey]     = useState(() => getStorage('aprende.tts.apiKey', ''));
+  const [showKey, setShowKey]   = useState(false);
+  const [voiceFemale, setVoiceFemale] = useState(() => getStorage('aprende.tts.voiceFemale', TTS_DEFAULT_FEMALE));
+  const [voiceMale, setVoiceMale]     = useState(() => getStorage('aprende.tts.voiceMale',   TTS_DEFAULT_MALE));
+  const [testStatus, setTestStatus] = useState(null); // null | 'testing' | 'ok' | 'err'
+  const [testMsg, setTestMsg] = useState('');
+  const [usage, setUsage] = useState(() => ttsGetUsage());
+  const [cacheSize, setCacheSize] = useState(() => ttsCacheSize());
+
+  const save = () => {
+    setStorage('aprende.tts.provider',    provider);
+    setStorage('aprende.tts.apiKey',      apiKey.trim());
+    setStorage('aprende.tts.voiceFemale', voiceFemale);
+    setStorage('aprende.tts.voiceMale',   voiceMale);
+  };
+
+  // Auto-save on any change (no separate save button friction)
+  useEffect(() => { save(); }, [provider, apiKey, voiceFemale, voiceMale]);
+
+  const runTest = async (gender) => {
+    setTestStatus('testing');
+    setTestMsg(gender === 'female' ? 'Probando voz femenina...' : 'Probando voz masculina...');
+    // Force a fresh fetch bypassing cache for a more meaningful test
+    const voiceId = gender === 'female' ? voiceFemale : voiceMale;
+    const testText = gender === 'female'
+      ? 'Hola, soy tu tutora de español. Vamos a practicar juntos.'
+      : 'Buenos días. Soy tu tutor. Hoy vamos a repasar el subjuntivo.';
+    if (provider !== 'elevenlabs' || !apiKey.trim()) {
+      // Fall back to web speech immediately
+      speakES(testText, { gender, dialect:'es-ES', rate:0.95 });
+      setTestStatus('ok');
+      setTestMsg('Reproduciendo con voz del navegador (sin ElevenLabs).');
+      return;
+    }
+    try {
+      const base64 = await ttsFetchElevenLabs(testText, voiceId, apiKey.trim());
+      ttsBumpUsage(testText.length);
+      const url = ttsSaveCached(testText, voiceId, base64);
+      const audio = new Audio(url);
+      ttsCurrentAudio = audio;
+      audio.play().catch(() => {});
+      setTestStatus('ok');
+      setTestMsg('¡Funciona! ElevenLabs conectado correctamente.');
+      setUsage(ttsGetUsage());
+      setCacheSize(ttsCacheSize());
+    } catch(e) {
+      setTestStatus('err');
+      const msg = e.message || 'Error desconocido';
+      if (msg.includes('401')) setTestMsg('Error 401: API key inválida. Comprueba que la has copiado bien.');
+      else if (msg.includes('429')) setTestMsg('Error 429: Has superado el límite mensual (10.000 caracteres).');
+      else setTestMsg('Error: ' + msg);
+    }
+  };
+
+  const clearCache = () => {
+    ttsClearCache();
+    setCacheSize(0);
+  };
+
+  const resetUsage = () => {
+    setStorage('aprende.tts.usage', { month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1), count: 0 });
+    setUsage(ttsGetUsage());
+  };
+
+  const femaleVoices = TTS_VOICES.filter(v => v.gender === 'female');
+  const maleVoices   = TTS_VOICES.filter(v => v.gender === 'male');
+
+  const usagePct = Math.min(100, Math.round((usage.count / 10000) * 100));
+  const usageColor = usagePct > 90 ? 'from-rose-500 to-red-500' : usagePct > 70 ? 'from-amber-500 to-orange-500' : 'from-emerald-500 to-teal-500';
+
+  return (
+    <div>
+      <BackHeader title="Ajustes" subtitle="Settings" onBack={onBack} dark={dark} />
+      <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto space-y-6">
+
+        {/* Header */}
+        <div>
+          <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-2">Voz y audio</h2>
+          <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
+            Configura la voz para que tus lecciones suenen como un hablante nativo. ElevenLabs es gratis (10.000 caracteres al mes) y suena mucho mejor que la voz del navegador.
+          </p>
+        </div>
+
+        {/* Provider toggle */}
+        <Card dark={dark} className="p-5">
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Proveedor de voz</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setProvider('web')}
+              className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'web' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+              <p className="font-bold text-sm mb-1">🔊 Navegador</p>
+              <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Gratis, ilimitado, pero robótico.</p>
+            </button>
+            <button
+              onClick={() => setProvider('elevenlabs')}
+              className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'elevenlabs' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+              <p className="font-bold text-sm mb-1">✨ ElevenLabs</p>
+              <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Voces naturales · 10.000 caracteres/mes gratis.</p>
+            </button>
+          </div>
+        </Card>
+
+        {/* ElevenLabs setup */}
+        {provider === 'elevenlabs' && (
+          <>
+            {/* Setup instructions */}
+            {!apiKey && (
+              <Card dark={dark} className="p-5 border-2 border-orange-300">
+                <p className="font-bold text-sm mb-3">📝 Cómo conseguir tu API key (2 minutos, gratis)</p>
+                <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
+                  <li>Ve a <a href="https://elevenlabs.io/sign-up" target="_blank" rel="noopener" className="text-orange-600 font-semibold underline">elevenlabs.io/sign-up</a> y crea una cuenta (correo + contraseña, sin tarjeta).</li>
+                  <li>Una vez dentro, haz clic en tu avatar (arriba a la derecha) → <strong>"My Account"</strong> → pestaña <strong>"API Keys"</strong>.</li>
+                  <li>Pulsa <strong>"Create API Key"</strong>, dale un nombre (ej: "Aprende"), y copia la clave que empieza por <code>sk_</code>.</li>
+                  <li>Pégala aquí abajo 👇 — ¡listo!</li>
+                </ol>
+                <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>Tu API key se guarda solo en este navegador (localStorage). Nunca se envía a ningún otro sitio aparte de ElevenLabs.</p>
+              </Card>
+            )}
+
+            {/* API key input */}
+            <Card dark={dark} className="p-5">
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">API Key</p>
+              <div className="flex gap-2">
+                <input
+                  type={showKey ? 'text' : 'password'}
+                  value={apiKey}
+                  onChange={e => setApiKey(e.target.value)}
+                  placeholder="sk_..."
+                  className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-mono border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-stone-50 border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}
+                />
+                <button
+                  onClick={() => setShowKey(!showKey)}
+                  className={`px-3 py-2 rounded-xl text-xs font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+                  {showKey ? '🙈' : '👁️'}
+                </button>
+              </div>
+              {apiKey && (
+                <p className="text-[11px] mt-2 text-emerald-600 font-semibold">✓ API key guardada localmente</p>
+              )}
+            </Card>
+
+            {/* Voice picker — Female */}
+            <Card dark={dark} className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Voz femenina (Hablante A)</p>
+                <button
+                  onClick={() => runTest('female')}
+                  disabled={testStatus === 'testing'}
+                  className="text-xs px-3 py-1.5 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 disabled:opacity-50">
+                  {testStatus === 'testing' ? '...' : '▶ Probar'}
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {femaleVoices.map(v => (
+                  <button key={v.id} onClick={() => setVoiceFemale(v.id)}
+                    className={`rounded-xl p-3 text-left border-2 transition-all ${voiceFemale === v.id ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+                    <p className="font-bold text-sm">{v.name}</p>
+                    <p className={`text-[11px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{v.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
+            {/* Voice picker — Male */}
+            <Card dark={dark} className="p-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Voz masculina (Hablante B)</p>
+                <button
+                  onClick={() => runTest('male')}
+                  disabled={testStatus === 'testing'}
+                  className="text-xs px-3 py-1.5 rounded-xl bg-orange-500 text-white font-semibold hover:bg-orange-600 disabled:opacity-50">
+                  {testStatus === 'testing' ? '...' : '▶ Probar'}
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {maleVoices.map(v => (
+                  <button key={v.id} onClick={() => setVoiceMale(v.id)}
+                    className={`rounded-xl p-3 text-left border-2 transition-all ${voiceMale === v.id ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
+                    <p className="font-bold text-sm">{v.name}</p>
+                    <p className={`text-[11px] ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{v.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
+            {/* Test result */}
+            {testStatus && testMsg && (
+              <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${testStatus === 'ok' ? 'bg-emerald-100 text-emerald-800' : testStatus === 'err' ? 'bg-rose-100 text-rose-800' : 'bg-stone-100 text-stone-700'}`}>
+                {testStatus === 'ok' ? '✓ ' : testStatus === 'err' ? '✗ ' : ''}{testMsg}
+              </div>
+            )}
+
+            {/* Usage meter */}
+            <Card dark={dark} className="p-5">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Uso este mes</p>
+                <button onClick={() => setUsage(ttsGetUsage())} className="text-[11px] text-stone-500 hover:text-stone-700">↻ Actualizar</button>
+              </div>
+              <div className="flex items-baseline gap-2 mb-2">
+                <p className="text-2xl font-bold">{usage.count.toLocaleString('es-ES')}</p>
+                <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>/ 10.000 caracteres</p>
+              </div>
+              <div className={`h-2 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-stone-200'}`}>
+                <div className={`h-full bg-gradient-to-r ${usageColor} transition-all`} style={{ width: usagePct + '%' }}></div>
+              </div>
+              <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
+                Se reinicia cada mes. Cuando llegues al límite, la app usa automáticamente la voz del navegador hasta el mes siguiente.
+              </p>
+            </Card>
+
+            {/* Cache info */}
+            <Card dark={dark} className="p-5">
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-stone-500">Caché de audio</p>
+              <p className="text-sm mb-3">
+                <span className="font-bold text-2xl">{cacheSize}</span>
+                <span className={`ml-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>frases guardadas</span>
+              </p>
+              <p className={`text-[11px] mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
+                Las frases que ya has escuchado se guardan en tu navegador, así no gastas caracteres al repetirlas. Bórralas solo si cambias de voz o quieres liberar espacio.
+              </p>
+              <div className="flex gap-2">
+                <button onClick={clearCache} className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                  🗑️ Borrar caché
+                </button>
+                <button onClick={resetUsage} className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                  ↻ Reiniciar contador
+                </button>
+              </div>
+            </Card>
+          </>
+        )}
+
+        {provider === 'web' && (
+          <Card dark={dark} className="p-5">
+            <p className="text-sm leading-relaxed">
+              Estás usando la voz incorporada del navegador. Es gratis e ilimitada, pero suena claramente sintética. Cambia a <strong>ElevenLabs</strong> arriba para una voz mucho más natural y auténtica (10.000 caracteres gratis al mes, sin tarjeta).
+            </p>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // MAIN APP
 // ============================================================
 
@@ -10169,6 +10628,7 @@ function App() {
     { id: 'conversaciones', label: 'Conversaciones', emoji: '🎧' },
     { id: 'negocios', label: 'Negocios', emoji: '💼' },
     { id: 'ejercicios', label: 'Ejercicios', emoji: '✏️' },
+    { id: 'ajustes', label: 'Ajustes', emoji: '⚙️' },
   ];
 
   const renderSection = () => {
@@ -10186,6 +10646,7 @@ function App() {
       case 'conversaciones': return <Conversaciones {...props} />;
       case 'negocios': return <Negocios {...props} />;
       case 'ejercicios': return <Ejercicios {...props} />;
+      case 'ajustes': return <Ajustes {...props} />;
       case 'glosario': return <Vocabulario {...props} initialTab="glosario" />;
       default: return <Inicio dark={dark} section={section} setSection={goTo} />;
     }
