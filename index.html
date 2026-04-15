@@ -3678,15 +3678,16 @@ function pickVoice(gender, dialect) {
 }
 
 // ============================================================
-// TTS SERVICE — ElevenLabs → Azure Neural → Web Speech cascade
+// TTS SERVICE — ElevenLabs → Google → Azure Neural → Web Speech
 // ============================================================
 //
-// Tier 1: ElevenLabs (10k chars/month free) — best quality
-// Tier 2: Azure Neural TTS (500k chars/month free) — excellent backup
-// Tier 3: Browser Web Speech — unlimited, always works
+// Tier 1: ElevenLabs  (10k chars/month, requires paid credits for API)
+// Tier 2: Google TTS  (1M Neural2 chars/month free) — most natural
+// Tier 3: Azure Neural (500k chars/month free) — excellent backup
+// Tier 4: Browser Web Speech — unlimited, always works
 //
 // Audio is cached aggressively (session Map + localStorage base64)
-// so replays never cost chars from either API.
+// so replays never cost chars from any API.
 // ============================================================
 
 // Curated multilingual voices from ElevenLabs' premade voice library.
@@ -3705,17 +3706,25 @@ const TTS_VOICES = [
 const TTS_DEFAULT_FEMALE = 'EXAVITQu4vr4xnSDxMaL'; // Sarah
 const TTS_DEFAULT_MALE   = 'CwhRBWXzGAHq8TQ4Fs17'; // Roger
 
-// ── Azure Neural TTS — Castilian Spanish voices ──
+// ── Azure Neural TTS — Spanish voices (Spain + Latin America) ──
 const AZURE_VOICES_FEMALE = [
-  { name:'es-ES-ElviraNeural',   label:'Elvira',   desc:'Natural, cálida (recomendada)' },
-  { name:'es-ES-XimenaNeural',   label:'Ximena',   desc:'Clara, profesional' },
-  { name:'es-ES-AbrilNeural',    label:'Abril',    desc:'Joven, expresiva' },
-  { name:'es-ES-EstrellaNeural', label:'Estrella', desc:'Vivaz, amigable' },
+  { name:'es-ES-ElviraNeural',   label:'Elvira',      desc:'Natural, cálida ★ recomendada' },
+  { name:'es-ES-TrianaNeural',   label:'Triana',      desc:'Muy expresiva, moderna' },
+  { name:'es-ES-PaulaNeural',    label:'Paula',       desc:'Suave, cercana' },
+  { name:'es-ES-LiaNeural',      label:'Lía',         desc:'Expresiva, amigable' },
+  { name:'es-ES-IreneNeural',    label:'Irene',       desc:'Clara, profesional' },
+  { name:'es-ES-AbrilNeural',    label:'Abril',       desc:'Joven, vivaz' },
+  { name:'es-ES-EstrellaNeural', label:'Estrella',    desc:'Energética, amigable' },
+  { name:'es-MX-DaliaNeural',    label:'Dalia (MX)',  desc:'Latam · muy natural' },
+  { name:'es-MX-LarissaNeural',  label:'Larissa (MX)',desc:'Latam · cálida' },
 ];
 const AZURE_VOICES_MALE = [
-  { name:'es-ES-AlvaroNeural',   label:'Álvaro',   desc:'Profesional, maduro (recomendado)' },
-  { name:'es-ES-ArnauNeural',    label:'Arnau',    desc:'Claro, moderno' },
-  { name:'es-ES-GerardoNeural',  label:'Gerardo',  desc:'Cálido, natural' },
+  { name:'es-ES-AlvaroNeural',   label:'Álvaro',      desc:'Profesional, maduro ★ recomendado' },
+  { name:'es-ES-SaulNeural',     label:'Saúl',        desc:'Natural, conversacional' },
+  { name:'es-ES-DarioNeural',    label:'Darío',       desc:'Claro, energético' },
+  { name:'es-ES-TeoNeural',      label:'Teo',         desc:'Joven, cercano' },
+  { name:'es-ES-ArnauNeural',    label:'Arnau',       desc:'Moderno, neutro' },
+  { name:'es-MX-JorgeNeural',    label:'Jorge (MX)',  desc:'Latam · profesional' },
 ];
 const AZURE_REGIONS = [
   { id:'westeurope',       label:'West Europe — Amsterdam (recomendado)' },
@@ -3729,6 +3738,23 @@ const AZURE_REGIONS = [
 const AZURE_DEFAULT_FEMALE = 'es-ES-ElviraNeural';
 const AZURE_DEFAULT_MALE   = 'es-ES-AlvaroNeural';
 const AZURE_DEFAULT_REGION = 'westeurope';
+
+// ── Google Cloud TTS — Spanish voices ──
+const GOOGLE_VOICES_FEMALE = [
+  { name:'es-ES-Neural2-A', lang:'es-ES', label:'Neural2-A',       desc:'Natural, expresiva ★ recomendada' },
+  { name:'es-ES-Neural2-C', lang:'es-ES', label:'Neural2-C',       desc:'Clara, profesional' },
+  { name:'es-ES-Wavenet-C', lang:'es-ES', label:'WaveNet-C',       desc:'Cálida, clásica' },
+  { name:'es-ES-Wavenet-D', lang:'es-ES', label:'WaveNet-D',       desc:'Suave, amigable' },
+  { name:'es-US-Neural2-A', lang:'es-US', label:'Neural2-A (MX)',  desc:'Latam · muy natural' },
+];
+const GOOGLE_VOICES_MALE = [
+  { name:'es-ES-Neural2-B', lang:'es-ES', label:'Neural2-B',       desc:'Natural, maduro ★ recomendado' },
+  { name:'es-ES-Neural2-D', lang:'es-ES', label:'Neural2-D',       desc:'Claro, serio' },
+  { name:'es-ES-Wavenet-B', lang:'es-ES', label:'WaveNet-B',       desc:'Profundo, cálido' },
+  { name:'es-US-Neural2-B', lang:'es-US', label:'Neural2-B (MX)',  desc:'Latam · natural' },
+];
+const GOOGLE_DEFAULT_FEMALE = 'es-ES-Neural2-A';
+const GOOGLE_DEFAULT_MALE   = 'es-ES-Neural2-B';
 
 function ttsGetConfig() {
   return {
@@ -3784,6 +3810,33 @@ function ttsGetAzureUsage() {
   const used = getStorage('aprende.tts.azureUsage', { month: monthKey, count: 0 });
   if (used.month !== monthKey) return { month: monthKey, count: 0 };
   return used;
+}
+
+// ── Google usage tracking (resets monthly, 1M Neural2 chars free) ──
+function ttsBumpGoogleUsage(chars) {
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+  const used = getStorage('aprende.tts.googleUsage', { month: monthKey, count: 0 });
+  if (used.month !== monthKey) { used.month = monthKey; used.count = 0; }
+  used.count += chars;
+  setStorage('aprende.tts.googleUsage', used);
+  return used;
+}
+
+function ttsGetGoogleUsage() {
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + (now.getMonth() + 1);
+  const used = getStorage('aprende.tts.googleUsage', { month: monthKey, count: 0 });
+  if (used.month !== monthKey) return { month: monthKey, count: 0 };
+  return used;
+}
+
+function ttsGetGoogleConfig() {
+  return {
+    apiKey:      getStorage('aprende.tts.googleKey', ''),
+    voiceFemale: getStorage('aprende.tts.googleVoiceFemale', GOOGLE_DEFAULT_FEMALE),
+    voiceMale:   getStorage('aprende.tts.googleVoiceMale',   GOOGLE_DEFAULT_MALE),
+  };
 }
 
 // ── Cache layer: session (Map) + persistent (localStorage base64) ──
@@ -3867,7 +3920,13 @@ async function ttsFetchElevenLabs(text, voiceId, apiKey) {
   });
   if (!response.ok) {
     const errText = await response.text().catch(() => '');
-    throw new Error('ElevenLabs ' + response.status + ': ' + errText.slice(0, 120));
+    let detail = errText;
+    try {
+      const j = JSON.parse(errText);
+      detail = (j?.detail?.message) || (j?.detail?.status) || JSON.stringify(j);
+    } catch(_) {}
+    console.error('ElevenLabs error', response.status, errText);
+    throw new Error('ElevenLabs ' + response.status + ': ' + detail.slice(0, 200));
   }
   const buf = await response.arrayBuffer();
   const bytes = new Uint8Array(buf);
@@ -3897,16 +3956,22 @@ async function loadAzureSDK() {
   return _azureSDK;
 }
 
-async function ttsFetchAzure(text, voiceName, apiKey, region) {
+async function ttsFetchAzure(text, voiceName, apiKey, region, rate) {
+  const spRate = (rate != null ? rate : getStorage('aprende.tts.speechRate', 1.0));
   const SDK = await loadAzureSDK();
   const cfg = SDK.SpeechConfig.fromSubscription(apiKey, region);
-  cfg.speechSynthesisVoiceName = voiceName;
   cfg.speechSynthesisOutputFormat = SDK.SpeechSynthesisOutputFormat.Audio24Khz96KBitRateMonoMp3;
-  // null AudioConfig → synthesise to in-memory buffer (no speaker output yet)
   const synth = new SDK.SpeechSynthesizer(cfg, null);
+  // Use SSML so we can control rate; extract lang prefix from voice name
+  const langCode = voiceName.startsWith('es-MX') ? 'es-MX' : 'es-ES';
+  const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inner = Math.abs(spRate - 1.0) > 0.01
+    ? `<prosody rate="${spRate}">${esc}</prosody>`
+    : esc;
+  const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='${langCode}'><voice name='${voiceName}'>${inner}</voice></speak>`;
   return new Promise((resolve, reject) => {
-    synth.speakTextAsync(
-      text,
+    synth.speakSsmlAsync(
+      ssml,
       result => {
         synth.close();
         if (result.reason === SDK.ResultReason.SynthesizingAudioCompleted) {
@@ -3930,20 +3995,69 @@ async function ttsFetchAzure(text, voiceName, apiKey, region) {
 async function ttsGetAudioUrlAzure(text, gender) {
   const cfg = ttsGetAzureConfig();
   if (!cfg.apiKey || !cfg.region) return null;
+  const rate = getStorage('aprende.tts.speechRate', 1.0);
   const voiceName = gender === 'male' ? cfg.voiceMale : cfg.voiceFemale;
-  const cached = ttsGetCached(text, voiceName);
+  const cacheVoiceKey = voiceName + ':r' + rate;
+  const cached = ttsGetCached(text, cacheVoiceKey);
   if (cached) return cached;
   try {
-    const base64 = await ttsFetchAzure(text, voiceName, cfg.apiKey, cfg.region);
+    const base64 = await ttsFetchAzure(text, voiceName, cfg.apiKey, cfg.region, rate);
     ttsBumpAzureUsage(text.length);
-    return ttsSaveCached(text, voiceName, base64);
+    return ttsSaveCached(text, cacheVoiceKey, base64);
   } catch(e) {
     console.warn('Azure TTS failed:', e.message);
     return null;
   }
 }
 
-// ── Main entry point: ElevenLabs → Azure → null (Web Speech fallback) ──
+// ── Google Cloud TTS fetch ──
+async function ttsFetchGoogle(text, voiceObj, apiKey, rate) {
+  const spRate = rate != null ? rate : getStorage('aprende.tts.speechRate', 1.0);
+  const response = await fetch(
+    `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: { text },
+        voice: { languageCode: voiceObj.lang, name: voiceObj.name },
+        audioConfig: { audioEncoding: 'MP3', speakingRate: spRate }
+      })
+    }
+  );
+  if (!response.ok) {
+    const err = await response.text().catch(() => '');
+    let detail = '';
+    try { detail = JSON.parse(err)?.error?.message || ''; } catch(_) {}
+    console.error('Google TTS error', response.status, err);
+    throw new Error('Google TTS ' + response.status + ': ' + (detail || err).slice(0, 200));
+  }
+  const data = await response.json();
+  return data.audioContent; // already base64
+}
+
+// ── Google getAudioUrl (cache-first) ──
+async function ttsGetAudioUrlGoogle(text, gender) {
+  const cfg = ttsGetGoogleConfig();
+  if (!cfg.apiKey) return null;
+  const rate = getStorage('aprende.tts.speechRate', 1.0);
+  const allVoices = gender === 'male' ? GOOGLE_VOICES_MALE : GOOGLE_VOICES_FEMALE;
+  const voiceObj = allVoices.find(v => v.name === (gender === 'male' ? cfg.voiceMale : cfg.voiceFemale))
+                || allVoices[0];
+  const cacheVoiceKey = voiceObj.name + ':r' + rate;
+  const cached = ttsGetCached(text, cacheVoiceKey);
+  if (cached) return cached;
+  try {
+    const base64 = await ttsFetchGoogle(text, voiceObj, cfg.apiKey, rate);
+    ttsBumpGoogleUsage(text.length);
+    return ttsSaveCached(text, cacheVoiceKey, base64);
+  } catch(e) {
+    console.warn('Google TTS failed:', e.message);
+    return null;
+  }
+}
+
+// ── Main entry point: ElevenLabs → Google → Azure → null (Web Speech fallback) ──
 async function ttsGetAudioUrl(text, gender) {
   const cfg = ttsGetConfig();
 
@@ -3959,20 +4073,24 @@ async function ttsGetAudioUrl(text, gender) {
         ttsBumpUsage(text.length);
         return ttsSaveCached(text, voiceId, base64);
       } catch(e) {
-        console.warn('ElevenLabs TTS failed, trying Azure:', e.message);
+        console.warn('ElevenLabs TTS failed, trying Google/Azure:', e.message);
         // fall through to Tier 2
       }
     } else {
-      console.info('ElevenLabs cap reached — using Azure backup');
+      console.info('ElevenLabs cap reached — using Google/Azure backup');
       // fall through to Tier 2
     }
   }
 
-  // Tier 2: Azure Neural
+  // Tier 2: Google Cloud TTS
+  const googleUrl = await ttsGetAudioUrlGoogle(text, gender);
+  if (googleUrl) return googleUrl;
+
+  // Tier 3: Azure Neural
   const azureUrl = await ttsGetAudioUrlAzure(text, gender);
   if (azureUrl) return azureUrl;
 
-  // Tier 3: Web Speech (caller handles)
+  // Tier 4: Web Speech (caller handles)
   return null;
 }
 
@@ -10496,6 +10614,15 @@ function Ajustes({ dark, onBack }) {
   const [elTestMsg, setElTestMsg]       = useState('');
   const [usage, setUsage]             = useState(() => ttsGetUsage());
 
+  // ── Google state ──
+  const [googleKey, setGoogleKey]             = useState(() => getStorage('aprende.tts.googleKey', ''));
+  const [showGoogleKey, setShowGoogleKey]     = useState(false);
+  const [googleVoiceFemale, setGoogleVoiceFemale] = useState(() => getStorage('aprende.tts.googleVoiceFemale', GOOGLE_DEFAULT_FEMALE));
+  const [googleVoiceMale, setGoogleVoiceMale] = useState(() => getStorage('aprende.tts.googleVoiceMale', GOOGLE_DEFAULT_MALE));
+  const [gTestStatus, setGTestStatus]         = useState(null);
+  const [gTestMsg, setGTestMsg]               = useState('');
+  const [googleUsage, setGoogleUsage]         = useState(() => ttsGetGoogleUsage());
+
   // ── Azure state ──
   const [azureKey, setAzureKey]               = useState(() => getStorage('aprende.tts.azureKey', ''));
   const [showAzureKey, setShowAzureKey]       = useState(false);
@@ -10507,6 +10634,7 @@ function Ajustes({ dark, onBack }) {
   const [azureUsage, setAzureUsage]           = useState(() => ttsGetAzureUsage());
 
   // ── Shared ──
+  const [speechRate, setSpeechRate]           = useState(() => getStorage('aprende.tts.speechRate', 1.0));
   const [cacheSize, setCacheSize] = useState(() => ttsCacheSize());
 
   // Auto-save all settings on change
@@ -10518,11 +10646,21 @@ function Ajustes({ dark, onBack }) {
   }, [provider, apiKey, voiceFemale, voiceMale]);
 
   useEffect(() => {
+    setStorage('aprende.tts.googleKey',        googleKey.trim());
+    setStorage('aprende.tts.googleVoiceFemale', googleVoiceFemale);
+    setStorage('aprende.tts.googleVoiceMale',   googleVoiceMale);
+  }, [googleKey, googleVoiceFemale, googleVoiceMale]);
+
+  useEffect(() => {
     setStorage('aprende.tts.azureKey',         azureKey.trim());
     setStorage('aprende.tts.azureRegion',       azureRegion);
     setStorage('aprende.tts.azureVoiceFemale',  azureVoiceFemale);
     setStorage('aprende.tts.azureVoiceMale',    azureVoiceMale);
   }, [azureKey, azureRegion, azureVoiceFemale, azureVoiceMale]);
+
+  useEffect(() => {
+    setStorage('aprende.tts.speechRate', speechRate);
+  }, [speechRate]);
 
   // ── ElevenLabs test ──
   const runElTest = async (gender) => {
@@ -10539,20 +10677,70 @@ function Ajustes({ dark, onBack }) {
       return;
     }
     try {
+      // Step 1: validate key via /v1/user before attempting TTS
+      const userResp = await fetch('https://api.elevenlabs.io/v1/user', {
+        headers: { 'xi-api-key': apiKey.trim() }
+      });
+      if (!userResp.ok) {
+        const body = await userResp.text().catch(() => '');
+        let detail = '';
+        try { detail = JSON.parse(body)?.detail?.message || JSON.parse(body)?.detail?.status || ''; } catch(_) {}
+        if (userResp.status === 401) {
+          setElTestStatus('err');
+          setElTestMsg('ElevenLabs: acceso API no disponible en el plan gratuito (requiere saldo). Tu voz activa es Azure Neural — funciona perfectamente sin ElevenLabs.');
+          return;
+        }
+        throw new Error('ElevenLabs /v1/user ' + userResp.status + ': ' + (detail || body).slice(0, 100));
+      }
+      const userInfo = await userResp.json().catch(() => null);
+      const plan = userInfo?.subscription?.tier || '';
+      // Step 2: attempt TTS
       const base64 = await ttsFetchElevenLabs(testText, voiceId, apiKey.trim());
       ttsBumpUsage(testText.length);
       const url = ttsSaveCached(testText, voiceId, base64);
       const audio = new Audio(url); ttsCurrentAudio = audio; audio.play().catch(() => {});
       setElTestStatus('ok');
-      setElTestMsg('¡Funciona! ElevenLabs conectado correctamente.');
+      setElTestMsg('¡Funciona! ElevenLabs conectado.' + (plan ? ' Plan: ' + plan + '.' : ''));
       setUsage(ttsGetUsage());
       setCacheSize(ttsCacheSize());
     } catch(e) {
       setElTestStatus('err');
       const msg = e.message || '';
-      if (msg.includes('401')) setElTestMsg('Error 401: API key inválida.');
+      if (msg.includes('401')) setElTestMsg('Error 401: API key sin permiso de TTS. En ElevenLabs → API Keys → asegúrate de activar "Text to Speech".');
       else if (msg.includes('429')) setElTestMsg('Error 429: Límite mensual superado.');
-      else setElTestMsg('Error: ' + msg.slice(0, 100));
+      else setElTestMsg('Error: ' + msg.slice(0, 150));
+    }
+  };
+
+  // ── Google test ──
+  const runGTest = async (gender) => {
+    setGTestStatus('testing');
+    setGTestMsg(gender === 'female' ? 'Probando voz femenina Google...' : 'Probando voz masculina Google...');
+    const voiceName = gender === 'female' ? googleVoiceFemale : googleVoiceMale;
+    const allVoices = gender === 'female' ? GOOGLE_VOICES_FEMALE : GOOGLE_VOICES_MALE;
+    const voiceObj = allVoices.find(v => v.name === voiceName) || allVoices[0];
+    const testText = gender === 'female'
+      ? 'Hola, soy tu tutora de español. Google Neural, encantada de conocerte.'
+      : 'Buenos días. Soy tu tutor de español. Google Neural, a tu servicio.';
+    if (!googleKey.trim()) {
+      setGTestStatus('err');
+      setGTestMsg('Introduce tu API key de Google primero.');
+      return;
+    }
+    try {
+      const base64 = await ttsFetchGoogle(testText, voiceObj, googleKey.trim(), speechRate);
+      const url = ttsSaveCached(testText, voiceObj.name, base64);
+      const audio = new Audio(url); ttsCurrentAudio = audio; audio.play().catch(() => {});
+      setGTestStatus('ok');
+      setGTestMsg('¡Funciona! Google Cloud TTS conectado. Voz: ' + voiceObj.label);
+      setGoogleUsage(ttsGetGoogleUsage());
+      setCacheSize(ttsCacheSize());
+    } catch(e) {
+      setGTestStatus('err');
+      const msg = e.message || '';
+      if (msg.includes('400')) setGTestMsg('Error 400: API key inválida o API no habilitada. Activa "Cloud Text-to-Speech API" en tu proyecto.');
+      else if (msg.includes('403')) setGTestMsg('Error 403: API key sin permiso. Revisa las restricciones de la clave.');
+      else setGTestMsg('Error: ' + msg.slice(0, 150));
     }
   };
 
@@ -10648,7 +10836,7 @@ function Ajustes({ dark, onBack }) {
         <div>
           <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-2">Voz y audio</h2>
           <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
-            La app usa tres capas de audio en cascada: <strong>ElevenLabs</strong> (mejor calidad, 10k chars/mes gratis) → <strong>Azure Neural</strong> (excelente respaldo, 500k chars/mes gratis) → voz del navegador (siempre disponible).
+            La app usa tres capas en cascada: <strong>Google Neural2</strong> (mejor calidad, 1M chars/mes gratis) → <strong>Azure Neural</strong> (respaldo, 500k chars/mes gratis) → voz del navegador (siempre disponible).
           </p>
         </div>
 
@@ -10656,8 +10844,8 @@ function Ajustes({ dark, onBack }) {
         <Card dark={dark} className="p-5">
           <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Cascada activa</p>
           <div className="flex items-center gap-2 flex-wrap">
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${provider === 'elevenlabs' && apiKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
-              ✨ ElevenLabs {provider === 'elevenlabs' && apiKey ? '✓' : '—'}
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${googleKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
+              🎙️ Google Neural2 {googleKey ? '✓' : '—'}
             </div>
             <span className={`text-lg ${dark ? 'text-stone-600' : 'text-stone-400'}`}>→</span>
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${azureKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
@@ -10671,76 +10859,91 @@ function Ajustes({ dark, onBack }) {
         </Card>
 
         {/* ══════════════════════════════════════
-            ELEVENLABS
+            SPEED CONTROL
+        ══════════════════════════════════════ */}
+        <Card dark={dark} className="p-5">
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🎚️ Velocidad de habla (todos los proveedores)</p>
+          <div className="flex items-center gap-4">
+            <span className={`text-xs w-8 text-right ${dark ? 'text-stone-400' : 'text-stone-500'}`}>🐢</span>
+            <input type="range" min="0.75" max="1.3" step="0.05" value={speechRate}
+              onChange={e => setSpeechRate(parseFloat(e.target.value))}
+              className="flex-1 accent-orange-500" />
+            <span className={`text-xs w-8 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>🐇</span>
+            <span className={`text-sm font-bold w-10 text-right ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{speechRate.toFixed(2)}×</span>
+          </div>
+          <div className="flex justify-between mt-1">
+            {[0.75,0.85,1.0,1.1,1.2].map(r => (
+              <button key={r} onClick={() => setSpeechRate(r)}
+                className={`text-[11px] px-2 py-0.5 rounded-lg transition-all ${Math.abs(speechRate-r)<0.01 ? 'bg-orange-500 text-white font-bold' : (dark?'text-stone-400 hover:text-stone-200':'text-stone-400 hover:text-stone-700')}`}>
+                {r===1.0?'Normal':r+'×'}
+              </button>
+            ))}
+          </div>
+          <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>
+            Prueba 1.1× o 1.15× para un ritmo más natural. Los cambios de velocidad se aplican en tiempo real a Google y Azure.
+          </p>
+        </Card>
+
+        {/* ══════════════════════════════════════
+            GOOGLE CLOUD TTS
         ══════════════════════════════════════ */}
         <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">✨ ElevenLabs — Nivel 1 (mejor calidad)</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🎙️ Google Cloud TTS — Nivel 1 (1M chars/mes gratis, más natural)</p>
 
           <div className="space-y-4">
-            {/* Provider toggle */}
-            <Card dark={dark} className="p-5">
-              <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => setProvider('web')}
-                  className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'web' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
-                  <p className="font-bold text-sm mb-1">🔊 Solo navegador</p>
-                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Desactiva ElevenLabs.</p>
-                </button>
-                <button onClick={() => setProvider('elevenlabs')}
-                  className={`rounded-xl p-4 text-left border-2 transition-all ${provider === 'elevenlabs' ? 'border-orange-500 bg-orange-50' : (dark ? 'border-white/10 hover:border-white/20' : 'border-stone-200 hover:border-stone-300')}`}>
-                  <p className="font-bold text-sm mb-1">✨ Activar ElevenLabs</p>
-                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>10.000 chars/mes · sin tarjeta.</p>
-                </button>
-              </div>
-            </Card>
+            {!googleKey && (
+              <Card dark={dark} className="p-5 border-2 border-green-200">
+                <p className="font-bold text-sm mb-3">📝 Cómo configurar Google Cloud TTS (5 min, gratis)</p>
+                <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
+                  <li>Ve a <a href="https://console.cloud.google.com" target="_blank" rel="noopener" className="text-green-700 font-semibold underline">console.cloud.google.com</a> → inicia sesión con Google.</li>
+                  <li>Crea un proyecto nuevo (o usa uno existente).</li>
+                  <li>Barra lateral → <strong>APIs y servicios</strong> → <strong>Biblioteca</strong> → busca <strong>"Cloud Text-to-Speech"</strong> → Activar.</li>
+                  <li><strong>APIs y servicios</strong> → <strong>Credenciales</strong> → <strong>+ Crear credenciales</strong> → <strong>Clave de API</strong>.</li>
+                  <li>Copia la clave y pégala aquí abajo 👇</li>
+                </ol>
+                <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>1.000.000 chars/mes de voces Neural2 gratis de por vida. No requiere tarjeta si ya tienes cuenta Google.</p>
+              </Card>
+            )}
 
-            {provider === 'elevenlabs' && (
-              <>
-                {!apiKey && (
-                  <Card dark={dark} className="p-5 border-2 border-orange-300">
-                    <p className="font-bold text-sm mb-3">📝 Cómo obtener tu API key (2 min, gratis)</p>
-                    <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
-                      <li>Ve a <a href="https://elevenlabs.io/sign-up" target="_blank" rel="noopener" className="text-orange-600 font-semibold underline">elevenlabs.io/sign-up</a> — sin tarjeta.</li>
-                      <li>Avatar → <strong>My Account</strong> → <strong>API Keys</strong>.</li>
-                      <li>Crea clave → copia la que empieza por <code>sk_</code>.</li>
-                      <li>Pégala aquí abajo 👇</li>
-                    </ol>
-                  </Card>
-                )}
+            <InputCard label="Google Cloud API Key" value={googleKey} onChange={setGoogleKey}
+              show={showGoogleKey} setShow={setShowGoogleKey} placeholder="AIza..." confirmed={!!googleKey} />
 
-                <InputCard label="ElevenLabs API Key" value={apiKey} onChange={setApiKey}
-                  show={showKey} setShow={setShowKey} placeholder="sk_..." confirmed={!!apiKey} />
+            <VoicePicker label="Voz femenina Google · Hablante A" voices={GOOGLE_VOICES_FEMALE} selected={googleVoiceFemale}
+              onSelect={setGoogleVoiceFemale} onTest={() => runGTest('female')}
+              testing={gTestStatus === 'testing'} idKey="name" />
 
-                <VoicePicker label="Voz femenina · Hablante A" voices={femaleVoices} selected={voiceFemale}
-                  onSelect={setVoiceFemale} onTest={() => runElTest('female')}
-                  testing={elTestStatus === 'testing'} idKey="id" />
+            <VoicePicker label="Voz masculina Google · Hablante B" voices={GOOGLE_VOICES_MALE} selected={googleVoiceMale}
+              onSelect={setGoogleVoiceMale} onTest={() => runGTest('male')}
+              testing={gTestStatus === 'testing'} idKey="name" />
 
-                <VoicePicker label="Voz masculina · Hablante B" voices={maleVoices} selected={voiceMale}
-                  onSelect={setVoiceMale} onTest={() => runElTest('male')}
-                  testing={elTestStatus === 'testing'} idKey="id" />
+            <TestBanner status={gTestStatus} msg={gTestMsg} />
 
-                <TestBanner status={elTestStatus} msg={elTestMsg} />
-
+            {googleKey && (() => {
+              const gPct = Math.min(100, Math.round((googleUsage.count / 1000000) * 100));
+              const gColor = gPct > 90 ? 'from-rose-500 to-red-500' : gPct > 70 ? 'from-amber-500 to-orange-500' : 'from-green-500 to-emerald-600';
+              return (
                 <Card dark={dark} className="p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Uso ElevenLabs este mes</p>
-                    <button onClick={() => setUsage(ttsGetUsage())} className="text-[11px] text-stone-500 hover:text-stone-700">↻</button>
+                    <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Uso Google TTS este mes</p>
+                    <button onClick={() => setGoogleUsage(ttsGetGoogleUsage())} className="text-[11px] text-stone-500 hover:text-stone-700">↻</button>
                   </div>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <p className="text-2xl font-bold">{usage.count.toLocaleString('es-ES')}</p>
-                    <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>/ 10.000 caracteres</p>
+                    <p className="text-2xl font-bold">{googleUsage.count.toLocaleString('es-ES')}</p>
+                    <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>/ 1.000.000 caracteres</p>
                   </div>
                   <div className={`h-2 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-stone-200'}`}>
-                    <div className={`h-full bg-gradient-to-r ${usageColor} transition-all`} style={{ width: usagePct + '%' }}></div>
+                    <div className={`h-full bg-gradient-to-r ${gColor} transition-all`} style={{ width: gPct + '%' }}></div>
                   </div>
                   <p className={`text-[11px] mt-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
-                    Al llegar al límite, la app pasa a Azure Neural automáticamente (si está configurado).
+                    Neural2 gratis hasta 1M chars/mes. Si llegas al límite, la app pasa a Azure automáticamente.
                   </p>
-                  <button onClick={resetUsage} className={`mt-2 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                  <button onClick={() => { setStorage('aprende.tts.googleUsage', { month: new Date().getFullYear() + '-' + (new Date().getMonth()+1), count: 0 }); setGoogleUsage(ttsGetGoogleUsage()); }}
+                    className={`mt-2 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
                     ↻ Reiniciar contador
                   </button>
                 </Card>
-              </>
-            )}
+              );
+            })()}
           </div>
         </div>
 
@@ -10829,7 +11032,7 @@ function Ajustes({ dark, onBack }) {
             <span className={`ml-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>frases guardadas</span>
           </p>
           <p className={`text-[11px] mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
-            Tanto ElevenLabs como Azure cachean el audio. Las repeticiones no gastan caracteres de ningún proveedor. Borra la caché si cambias de voz.
+            Google, Azure y ElevenLabs cachean el audio. Las repeticiones no gastan caracteres de ningún proveedor. Borra la caché si cambias de voz o velocidad.
           </p>
           <button onClick={clearCache}
             className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
