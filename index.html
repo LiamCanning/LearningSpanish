@@ -3879,7 +3879,7 @@ async function ttsFetchAzure(text, voiceName, apiKey, region) {
   });
   if (!response.ok) {
     const errText = await response.text().catch(() => '');
-    throw new Error('Azure TTS ' + response.status + ': ' + errText.slice(0, 120));
+    throw new Error('Azure TTS ' + response.status + ': ' + (errText || '(no body)'));
   }
   const buf = await response.arrayBuffer();
   const bytes = new Uint8Array(buf);
@@ -10544,7 +10544,7 @@ function Ajustes({ dark, onBack }) {
       const msg = e.message || '';
       if (msg.includes('401') || msg.includes('403')) setAzTestMsg('Error de autenticación: comprueba tu API key y región.');
       else if (msg.includes('404')) setAzTestMsg('Error 404: región incorrecta. Prueba westeurope o northeurope.');
-      else setAzTestMsg('Error: ' + msg.slice(0, 120));
+      else setAzTestMsg('Error: ' + msg);
     }
   };
 
