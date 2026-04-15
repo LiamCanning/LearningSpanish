@@ -3869,7 +3869,7 @@ async function loadAzureSDK() {
   if (window.SpeechSDK) { _azureSDK = window.SpeechSDK; return _azureSDK; }
   await new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = 'https://aka.ms/csspeech/jsbrowserpackageraw';
+    s.src = 'https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js';
     s.onload = resolve;
     s.onerror = () => reject(new Error('Could not load Azure Speech SDK'));
     document.head.appendChild(s);
