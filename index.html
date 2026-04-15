@@ -3855,6 +3855,7 @@ function Inicio({ dark, section, setSection }) {
     { id:'frases', label:'Frases', sublabel:'Phrases + Idioms', emoji:'💬', color:'rose' },
     { id:'lecturas', label:'Lecturas', sublabel:'Reading', emoji:'📖', color:'sky' },
     { id:'conversaciones', label:'Conversaciones', sublabel:'Listening', emoji:'🎧', color:'violet' },
+    { id:'negocios', label:'Negocios', sublabel:'Business Spanish', emoji:'💼', color:'teal' },
     { id:'ejercicios', label:'Ejercicios', sublabel:'Exercises', emoji:'✏️', color:'amber' },
   ];
 
@@ -9024,10 +9025,28 @@ function buildSearchIndex() {
   });
   // Idioms
   (typeof IDIOMS !== 'undefined' ? IDIOMS : []).forEach(i => idx.push({ kind:'Modismo', section:'frases', es:i.es, en:i.meaning || i.en, hint:i.example }));
+  // Business vocab
+  (typeof BUSINESS_VOCAB !== 'undefined' ? BUSINESS_VOCAB : []).forEach(g => {
+    (g.items || []).forEach(it => idx.push({ kind:'Negocios · Vocab', section:'negocios', es:it.es, en:it.en, hint:it.example }));
+  });
+  // Business phrases
+  (typeof BUSINESS_PHRASES !== 'undefined' ? BUSINESS_PHRASES : []).forEach(g => {
+    (g.items || []).forEach(it => idx.push({ kind:'Negocios · Frase', section:'negocios', es:it.es, en:it.en, hint:it.when }));
+  });
+  // Business dialogs
+  (typeof BUSINESS_DIALOGS !== 'undefined' ? BUSINESS_DIALOGS : []).forEach(d => {
+    idx.push({ kind:'Negocios · Diálogo', section:'negocios', es:d.title, en:d.titleEn, hint:d.setting });
+  });
+  // Business cheat sheets
+  (typeof BUSINESS_SHEETS !== 'undefined' ? BUSINESS_SHEETS : []).forEach(s => {
+    idx.push({ kind:'Negocios · Chuleta', section:'negocios', es:s.title, en:s.titleEn, hint:s.intro });
+  });
   return idx;
 }
 
-const SEARCH_INDEX = buildSearchIndex();
+// NOTE: SEARCH_INDEX is built lower, after the BUSINESS_* constants are defined,
+// so that Negocios content can be indexed without hitting a const temporal dead zone.
+let SEARCH_INDEX = [];
 
 function GlobalSearch({ open, onClose, onJump }) {
   const [q, setQ] = useState('');
@@ -9089,6 +9108,998 @@ function GlobalSearch({ open, onClose, onJump }) {
 }
 
 // ============================================================
+// SECTION: Negocios (Business Spanish — sports finance / investment / player agency)
+// ============================================================
+
+const BUSINESS_VOCAB = [
+  {
+    id:'finanzas',
+    title:'Inversión y Finanzas',
+    titleEn:'Investment & Finance',
+    emoji:'💰',
+    color:'emerald',
+    items:[
+      { es:'la inversión', en:'investment', example:'Buscamos una inversión a largo plazo en el sector deportivo.', exampleEn:'We\'re looking for a long-term investment in the sports sector.' },
+      { es:'el inversor / la inversora', en:'investor', example:'Tenemos un grupo de inversores interesados en la plataforma.', exampleEn:'We have a group of investors interested in the platform.' },
+      { es:'la rentabilidad', en:'profitability / return', example:'La rentabilidad prevista supera el diez por ciento anual.', exampleEn:'The expected return exceeds ten percent per year.' },
+      { es:'el rendimiento', en:'yield / performance', example:'El rendimiento del primer trimestre ha sido muy positivo.', exampleEn:'The first-quarter performance has been very positive.' },
+      { es:'la ronda de financiación', en:'funding round', example:'Estamos cerrando una ronda de financiación de cinco millones.', exampleEn:'We\'re closing a five-million funding round.' },
+      { es:'el capital', en:'capital', example:'Hemos levantado capital de varios fondos europeos.', exampleEn:'We\'ve raised capital from several European funds.' },
+      { es:'el capital riesgo', en:'venture capital', example:'Trabajamos con fondos de capital riesgo especializados en deporte.', exampleEn:'We work with venture capital funds specialising in sport.' },
+      { es:'la valoración', en:'valuation', example:'Nuestra valoración actual es de veinte millones de euros.', exampleEn:'Our current valuation is twenty million euros.' },
+      { es:'el balance', en:'balance sheet', example:'El balance del último ejercicio muestra beneficios sólidos.', exampleEn:'The last financial year\'s balance sheet shows solid profits.' },
+      { es:'los ingresos', en:'revenue / income', example:'Los ingresos han crecido un treinta por ciento interanual.', exampleEn:'Revenue has grown thirty percent year-on-year.' },
+      { es:'los gastos', en:'expenses / costs', example:'Hemos reducido los gastos operativos considerablemente.', exampleEn:'We\'ve cut operating expenses considerably.' },
+      { es:'el flujo de caja', en:'cash flow', example:'Necesitamos mejorar el flujo de caja antes de fin de año.', exampleEn:'We need to improve cash flow before the end of the year.' },
+      { es:'el beneficio', en:'profit', example:'El beneficio neto ha superado las previsiones.', exampleEn:'Net profit has exceeded forecasts.' },
+      { es:'la deuda', en:'debt', example:'Preferimos financiarnos con capital que con deuda.', exampleEn:'We prefer equity financing over debt.' },
+      { es:'el apalancamiento', en:'leverage', example:'Usamos un apalancamiento moderado en las operaciones grandes.', exampleEn:'We use moderate leverage on larger deals.' },
+      { es:'la diversificación', en:'diversification', example:'La diversificación de la cartera reduce el riesgo.', exampleEn:'Portfolio diversification reduces risk.' },
+      { es:'la cartera', en:'portfolio', example:'Nuestra cartera incluye clubes, jugadores y derechos de imagen.', exampleEn:'Our portfolio includes clubs, players and image rights.' },
+      { es:'el riesgo', en:'risk', example:'Cada operación pasa por un análisis de riesgo detallado.', exampleEn:'Each deal goes through a detailed risk analysis.' },
+      { es:'la due diligence / diligencia debida', en:'due diligence', example:'La diligencia debida suele durar entre cuatro y seis semanas.', exampleEn:'Due diligence usually takes four to six weeks.' },
+      { es:'el accionista', en:'shareholder', example:'Los accionistas aprobarán la operación en la junta del martes.', exampleEn:'Shareholders will approve the deal at Tuesday\'s meeting.' },
+      { es:'la junta directiva', en:'board of directors', example:'Presentaré el plan ante la junta directiva la próxima semana.', exampleEn:'I\'ll present the plan to the board of directors next week.' },
+      { es:'regulado / regulada', en:'regulated', example:'Somos una plataforma regulada por la FCA británica.', exampleEn:'We\'re a platform regulated by the UK FCA.' }
+    ]
+  },
+  {
+    id:'deporte',
+    title:'Deporte Profesional',
+    titleEn:'Professional Sport',
+    emoji:'⚽',
+    color:'orange',
+    items:[
+      { es:'el club', en:'club', example:'El club está valorado en más de doscientos millones.', exampleEn:'The club is valued at over two hundred million.' },
+      { es:'la plantilla', en:'squad / roster', example:'La plantilla necesita refuerzos en el centro del campo.', exampleEn:'The squad needs reinforcements in midfield.' },
+      { es:'el / la futbolista', en:'footballer', example:'Es una futbolista con mucha proyección internacional.', exampleEn:'She\'s a footballer with huge international potential.' },
+      { es:'la temporada', en:'season', example:'Firmaremos contratos nuevos para la próxima temporada.', exampleEn:'We\'ll sign new contracts for next season.' },
+      { es:'el fichaje', en:'signing / transfer', example:'El fichaje del delantero ha sido el más caro del verano.', exampleEn:'The striker\'s signing has been the most expensive of the summer.' },
+      { es:'el traspaso', en:'transfer (fee / deal)', example:'El traspaso asciende a quince millones más variables.', exampleEn:'The transfer is fifteen million plus add-ons.' },
+      { es:'la cláusula de rescisión', en:'release clause', example:'La cláusula de rescisión está fijada en cuarenta millones.', exampleEn:'The release clause is set at forty million.' },
+      { es:'los derechos de imagen', en:'image rights', example:'Los derechos de imagen se negocian aparte del salario.', exampleEn:'Image rights are negotiated separately from salary.' },
+      { es:'los derechos federativos', en:'economic / federative rights', example:'El club es dueño del cien por cien de los derechos federativos.', exampleEn:'The club owns one hundred percent of the federative rights.' },
+      { es:'el patrocinio', en:'sponsorship', example:'El nuevo patrocinio principal supone diez millones por temporada.', exampleEn:'The new main sponsorship is worth ten million per season.' },
+      { es:'el patrocinador', en:'sponsor', example:'Estamos buscando un patrocinador a largo plazo.', exampleEn:'We\'re looking for a long-term sponsor.' },
+      { es:'la cantera', en:'youth academy', example:'La cantera es el principal activo a largo plazo del club.', exampleEn:'The academy is the club\'s main long-term asset.' },
+      { es:'la promesa', en:'prospect / up-and-coming player', example:'Es una de las grandes promesas del fútbol español.', exampleEn:'He\'s one of the biggest prospects in Spanish football.' },
+      { es:'el rendimiento deportivo', en:'sporting performance', example:'El rendimiento deportivo influye directamente en la valoración.', exampleEn:'Sporting performance directly affects the valuation.' },
+      { es:'las ligas europeas', en:'European leagues', example:'Operamos sobre todo en las grandes ligas europeas.', exampleEn:'We operate mainly in the big European leagues.' },
+      { es:'la Primera División / LaLiga', en:'top flight / LaLiga', example:'El club tiene como objetivo volver a Primera División esta temporada.', exampleEn:'The club\'s goal is to return to the top flight this season.' },
+      { es:'el ascenso', en:'promotion', example:'Un ascenso duplicaría los ingresos televisivos del club.', exampleEn:'Promotion would double the club\'s TV revenue.' },
+      { es:'el descenso', en:'relegation', example:'El descenso es el mayor riesgo financiero para el club.', exampleEn:'Relegation is the biggest financial risk for the club.' },
+      { es:'los ingresos televisivos', en:'broadcasting revenue', example:'Los ingresos televisivos representan más del cincuenta por ciento del total.', exampleEn:'Broadcasting revenue accounts for more than fifty percent of total income.' },
+      { es:'la taquilla', en:'ticketing / gate revenue', example:'La taquilla del clásico fue récord histórico.', exampleEn:'The clásico ticketing broke an all-time record.' }
+    ]
+  },
+  {
+    id:'fichajes',
+    title:'Fichajes y Agencia',
+    titleEn:'Transfers & Agency',
+    emoji:'✍️',
+    color:'rose',
+    items:[
+      { es:'el agente / la agente', en:'agent', example:'Soy el agente del jugador y llevo todas las negociaciones.', exampleEn:'I\'m the player\'s agent and I handle all negotiations.' },
+      { es:'la agencia de representación', en:'representation agency', example:'Nuestra agencia representa a más de cincuenta jugadores.', exampleEn:'Our agency represents over fifty players.' },
+      { es:'la representación', en:'representation', example:'He firmado la representación de un joven talento del filial.', exampleEn:'I\'ve signed the representation of a young talent from the reserve team.' },
+      { es:'la comisión', en:'commission / fee', example:'La comisión estándar del agente es un diez por ciento del contrato.', exampleEn:'The standard agent\'s commission is ten percent of the contract.' },
+      { es:'el salario / el sueldo', en:'salary / wage', example:'Estamos negociando un salario neto de un millón por temporada.', exampleEn:'We\'re negotiating a net salary of one million per season.' },
+      { es:'el contrato', en:'contract', example:'El contrato es por tres temporadas más una opcional.', exampleEn:'The contract is for three seasons plus one optional.' },
+      { es:'la oferta', en:'offer', example:'Hemos recibido una oferta concreta del club italiano.', exampleEn:'We\'ve received a firm offer from the Italian club.' },
+      { es:'la contraoferta', en:'counter-offer', example:'Nuestra contraoferta incluye un bonus por objetivos.', exampleEn:'Our counter-offer includes a performance bonus.' },
+      { es:'las variables', en:'add-ons / performance clauses', example:'El traspaso tiene cinco millones fijos y tres en variables.', exampleEn:'The transfer has five million fixed and three in add-ons.' },
+      { es:'las primas', en:'bonuses', example:'Las primas por clasificación a Europa están bien detalladas.', exampleEn:'The bonuses for qualifying for Europe are well detailed.' },
+      { es:'la cesión', en:'loan', example:'Proponemos una cesión con opción de compra obligatoria.', exampleEn:'We\'re proposing a loan with mandatory buy option.' },
+      { es:'la opción de compra', en:'purchase option', example:'La opción de compra está fijada en ocho millones.', exampleEn:'The purchase option is set at eight million.' },
+      { es:'el porcentaje de una futura venta', en:'sell-on percentage', example:'Queremos un veinte por ciento de una futura venta.', exampleEn:'We want a twenty percent sell-on.' },
+      { es:'la carta de libertad', en:'free transfer (free agent status)', example:'El jugador termina contrato y sale con la carta de libertad.', exampleEn:'The player\'s contract ends and he leaves on a free transfer.' },
+      { es:'el mercado de invierno', en:'winter (January) transfer window', example:'Planeamos reforzar la plantilla en el mercado de invierno.', exampleEn:'We plan to strengthen the squad in the winter window.' },
+      { es:'el periodo de traspasos', en:'transfer window', example:'El periodo de traspasos cierra el uno de septiembre.', exampleEn:'The transfer window closes on September first.' },
+      { es:'la cláusula de revalorización', en:'upgrade clause', example:'Hemos incluido una cláusula de revalorización tras quince partidos.', exampleEn:'We\'ve included an upgrade clause after fifteen matches.' },
+      { es:'el compromiso', en:'commitment', example:'Buscamos un compromiso real del club con el proyecto.', exampleEn:'We\'re looking for a real commitment from the club to the project.' },
+      { es:'la rescisión de contrato', en:'contract termination', example:'La rescisión de contrato costaría diez millones al club.', exampleEn:'Contract termination would cost the club ten million.' }
+    ]
+  },
+  {
+    id:'reuniones',
+    title:'Reuniones y Negociación',
+    titleEn:'Meetings & Negotiation',
+    emoji:'🤝',
+    color:'blue',
+    items:[
+      { es:'la reunión', en:'meeting', example:'La reunión está convocada para las diez de la mañana.', exampleEn:'The meeting is called for ten in the morning.' },
+      { es:'el orden del día', en:'agenda', example:'Os paso el orden del día por correo esta tarde.', exampleEn:'I\'ll send the agenda by email this afternoon.' },
+      { es:'convocar una reunión', en:'to call a meeting', example:'Voy a convocar una reunión urgente con la directiva.', exampleEn:'I\'m going to call an urgent meeting with the board.' },
+      { es:'la propuesta', en:'proposal', example:'Os quería presentar una propuesta concreta.', exampleEn:'I wanted to present a concrete proposal to you.' },
+      { es:'plantear', en:'to put forward / raise (an idea)', example:'Me gustaría plantear otra opción.', exampleEn:'I\'d like to put forward another option.' },
+      { es:'el punto clave', en:'key point', example:'El punto clave para nosotros es la exclusividad.', exampleEn:'The key point for us is exclusivity.' },
+      { es:'llegar a un acuerdo', en:'to reach an agreement', example:'Estoy seguro de que podemos llegar a un acuerdo.', exampleEn:'I\'m sure we can reach an agreement.' },
+      { es:'cerrar un trato', en:'to close a deal', example:'Esperamos cerrar el trato antes de fin de mes.', exampleEn:'We hope to close the deal by the end of the month.' },
+      { es:'firmar', en:'to sign', example:'Firmaremos el acuerdo el viernes en el despacho del notario.', exampleEn:'We\'ll sign the agreement on Friday at the notary\'s office.' },
+      { es:'estar de acuerdo', en:'to agree', example:'Estamos de acuerdo en los puntos principales.', exampleEn:'We agree on the main points.' },
+      { es:'discrepar', en:'to disagree', example:'Discrepamos en la cuestión de los derechos de imagen.', exampleEn:'We disagree on the image rights issue.' },
+      { es:'tener en cuenta', en:'to take into account', example:'Hay que tener en cuenta las implicaciones fiscales.', exampleEn:'We have to take the tax implications into account.' },
+      { es:'ceder', en:'to concede / give ground', example:'No podemos ceder en el precio base.', exampleEn:'We can\'t give ground on the base price.' },
+      { es:'la concesión', en:'concession', example:'Hemos hecho una concesión importante en los plazos.', exampleEn:'We\'ve made a significant concession on the timeline.' },
+      { es:'el acta de la reunión', en:'minutes of the meeting', example:'Os enviaré el acta de la reunión antes del lunes.', exampleEn:'I\'ll send you the minutes before Monday.' },
+      { es:'los próximos pasos', en:'next steps', example:'Vamos a definir los próximos pasos con claridad.', exampleEn:'Let\'s define the next steps clearly.' },
+      { es:'la hoja de ruta', en:'roadmap', example:'Necesitamos una hoja de ruta para los próximos seis meses.', exampleEn:'We need a roadmap for the next six months.' },
+      { es:'el plazo', en:'deadline / timeframe', example:'El plazo para responder es el quince de octubre.', exampleEn:'The deadline to respond is October fifteenth.' },
+      { es:'dar luz verde', en:'to give the green light', example:'La junta nos ha dado luz verde para avanzar.', exampleEn:'The board has given us the green light to proceed.' },
+      { es:'estar sobre la mesa', en:'to be on the table', example:'Esa opción sigue estando sobre la mesa.', exampleEn:'That option is still on the table.' }
+    ]
+  },
+  {
+    id:'legal',
+    title:'Legal y Contratos',
+    titleEn:'Legal & Contracts',
+    emoji:'⚖️',
+    color:'purple',
+    items:[
+      { es:'el contrato', en:'contract', example:'El contrato tiene una duración de cuatro años.', exampleEn:'The contract has a four-year term.' },
+      { es:'las cláusulas', en:'clauses', example:'Hay que revisar todas las cláusulas con el departamento legal.', exampleEn:'All clauses have to be reviewed with the legal department.' },
+      { es:'la cláusula de confidencialidad', en:'confidentiality clause', example:'La cláusula de confidencialidad es innegociable.', exampleEn:'The confidentiality clause is non-negotiable.' },
+      { es:'la exclusividad', en:'exclusivity', example:'Exigimos exclusividad durante los tres primeros años.', exampleEn:'We require exclusivity during the first three years.' },
+      { es:'la no competencia', en:'non-compete', example:'El acuerdo incluye una no competencia de doce meses.', exampleEn:'The agreement includes a twelve-month non-compete.' },
+      { es:'el incumplimiento', en:'breach (of contract)', example:'En caso de incumplimiento se aplicará una sanción.', exampleEn:'In case of breach a penalty will apply.' },
+      { es:'la rescisión', en:'termination', example:'Cualquiera de las partes puede pedir la rescisión.', exampleEn:'Either party may request termination.' },
+      { es:'el litigio', en:'litigation / dispute', example:'Queremos resolver esto sin llegar a un litigio.', exampleEn:'We want to resolve this without going to litigation.' },
+      { es:'la jurisdicción', en:'jurisdiction', example:'La jurisdicción aplicable será la inglesa.', exampleEn:'The applicable jurisdiction will be English.' },
+      { es:'el arbitraje', en:'arbitration', example:'Cualquier disputa se resolverá mediante arbitraje en Lausana.', exampleEn:'Any dispute will be settled by arbitration in Lausanne.' },
+      { es:'el marco regulatorio', en:'regulatory framework', example:'El marco regulatorio ha cambiado mucho en los últimos años.', exampleEn:'The regulatory framework has changed a lot in recent years.' },
+      { es:'la normativa FIFA', en:'FIFA regulations', example:'Todo el proceso cumple con la normativa FIFA vigente.', exampleEn:'The whole process complies with current FIFA regulations.' },
+      { es:'el fair play financiero', en:'financial fair play', example:'El club vigila mucho el fair play financiero.', exampleEn:'The club is very mindful of financial fair play.' },
+      { es:'la licencia deportiva', en:'sporting licence', example:'Sin licencia deportiva el club no puede competir.', exampleEn:'Without a sporting licence the club can\'t compete.' },
+      { es:'el cumplimiento normativo', en:'compliance', example:'Nuestro departamento de cumplimiento normativo revisa cada operación.', exampleEn:'Our compliance department reviews every deal.' },
+      { es:'firmar ante notario', en:'to sign before a notary', example:'El acuerdo se firmará ante notario el martes.', exampleEn:'The agreement will be signed before a notary on Tuesday.' },
+      { es:'el poder notarial', en:'power of attorney', example:'Le daré un poder notarial para que firme en mi nombre.', exampleEn:'I\'ll give him a power of attorney to sign on my behalf.' },
+      { es:'la responsabilidad', en:'liability', example:'La responsabilidad del club queda limitada en este punto.', exampleEn:'The club\'s liability is limited on this point.' },
+      { es:'los impuestos', en:'taxes', example:'Todo lo fiscal lo gestionamos con un despacho de Madrid.', exampleEn:'We handle everything tax-related with a Madrid firm.' },
+      { es:'el IVA', en:'VAT', example:'Las cifras son sin IVA; el IVA se añade aparte.', exampleEn:'The figures are excluding VAT; VAT is added separately.' }
+    ]
+  }
+];
+
+const BUSINESS_PHRASES = [
+  {
+    id:'apertura',
+    title:'Apertura de reunión',
+    titleEn:'Opening a meeting',
+    emoji:'👋',
+    color:'orange',
+    items:[
+      { es:'Muchas gracias por recibirme.', en:'Thank you very much for seeing me.', when:'Formal opening to a first meeting.' },
+      { es:'Encantado de conocerle. / Encantado de conocerte.', en:'Pleased to meet you (usted / tú).', when:'First introduction — match the register of your host.' },
+      { es:'Le / Te agradezco mucho el tiempo que nos dedica.', en:'I really appreciate the time you\'re giving us.', when:'Polite acknowledgement at the start.' },
+      { es:'Permítame presentarme — soy Liam Canning, de Keeps.', en:'Allow me to introduce myself — I\'m Liam Canning, from Keeps.', when:'Formal self-introduction.' },
+      { es:'Venimos a presentarles nuestra plataforma de inversión deportiva.', en:'We\'re here to present our sports investment platform to you.', when:'Stating the purpose up front.' },
+      { es:'Si les parece bien, empiezo con una breve presentación.', en:'If that works for you, I\'ll start with a brief presentation.', when:'Setting the flow of the meeting.' },
+      { es:'Antes de empezar, ¿hay algo concreto que quieran comentar?', en:'Before we start, is there anything specific you\'d like to discuss?', when:'Letting them set priorities early.' },
+      { es:'Como sabrán, llevamos varios años en el sector del deporte profesional.', en:'As you\'ll know, we\'ve been in the professional sports sector for several years.', when:'Context setter without sounding arrogant.' }
+    ]
+  },
+  {
+    id:'presentar-keeps',
+    title:'Presentando Keeps',
+    titleEn:'Pitching Keeps',
+    emoji:'🎯',
+    color:'emerald',
+    items:[
+      { es:'Keeps es una plataforma regulada de inversión deportiva.', en:'Keeps is a regulated sports investment platform.', when:'One-line positioning.' },
+      { es:'Nuestra misión es democratizar la inversión en el deporte profesional.', en:'Our mission is to democratise investment in professional sport.', when:'Mission statement.' },
+      { es:'Conectamos clubes y jugadores con inversores minoristas y profesionales.', en:'We connect clubs and players with retail and professional investors.', when:'Explaining what Keeps actually does.' },
+      { es:'Estamos regulados por la FCA en el Reino Unido.', en:'We\'re regulated by the FCA in the UK.', when:'Credibility — mention the regulator.' },
+      { es:'Contamos con un equipo con experiencia en banca, derecho deportivo y gestión de clubes.', en:'We have a team with experience in banking, sports law and club management.', when:'Team credibility.' },
+      { es:'Hasta la fecha hemos estructurado operaciones por más de X millones.', en:'To date we\'ve structured deals for over X million.', when:'Traction in one sentence.' },
+      { es:'Nuestro enfoque es a largo plazo — no buscamos operaciones especulativas.', en:'Our approach is long-term — we\'re not looking for speculative deals.', when:'Reassurance for risk-averse clubs.' },
+      { es:'Lo que nos diferencia es la transparencia y el cumplimiento normativo.', en:'What sets us apart is transparency and regulatory compliance.', when:'Differentiator statement.' }
+    ]
+  },
+  {
+    id:'cifras',
+    title:'Hablando de cifras',
+    titleEn:'Talking numbers',
+    emoji:'📊',
+    color:'blue',
+    items:[
+      { es:'Estamos hablando de una operación de quince millones de euros.', en:'We\'re talking about a fifteen-million-euro deal.', when:'Anchoring the conversation around a figure.' },
+      { es:'La cifra exacta dependerá del resultado de la diligencia debida.', en:'The exact figure will depend on the outcome of due diligence.', when:'Caveating a number before DD.' },
+      { es:'Prevemos una rentabilidad del ocho por ciento anual.', en:'We\'re projecting an eight percent annual return.', when:'Explaining expected return.' },
+      { es:'El ticket mínimo es de cincuenta mil euros.', en:'The minimum ticket is fifty thousand euros.', when:'Setting an investment floor.' },
+      { es:'Les puedo enviar el modelo financiero completo tras la reunión.', en:'I can send you the full financial model after the meeting.', when:'Offering follow-up materials.' },
+      { es:'Las cifras incluyen comisiones y gastos.', en:'The figures include fees and expenses.', when:'Clarifying what a number includes.' },
+      { es:'En términos netos, estamos hablando de aproximadamente diez millones.', en:'In net terms, we\'re talking about roughly ten million.', when:'Giving a net figure.' },
+      { es:'Estas proyecciones son conservadoras, no optimistas.', en:'These projections are conservative, not optimistic.', when:'Defending the model.' },
+      { es:'El horizonte de inversión es de tres a cinco años.', en:'The investment horizon is three to five years.', when:'Setting expectations on timing.' }
+    ]
+  },
+  {
+    id:'negociar',
+    title:'Negociando',
+    titleEn:'Negotiating',
+    emoji:'⚖️',
+    color:'purple',
+    items:[
+      { es:'Entiendo su posición, pero desde nuestro lado es complicado.', en:'I understand your position, but from our side it\'s tricky.', when:'Pushing back without burning the bridge.' },
+      { es:'Creo que podemos encontrar un punto intermedio.', en:'I think we can find a middle ground.', when:'Inviting compromise.' },
+      { es:'Si flexibilizan ese punto, nosotros podemos mejorar en otros.', en:'If you flex on that point, we can improve on others.', when:'Classic trade-off phrasing.' },
+      { es:'Eso tendría que consultarlo con mi equipo.', en:'I\'d have to check that with my team.', when:'Buying time without saying no.' },
+      { es:'Preferiría no comprometerme con una cifra en este momento.', en:'I\'d rather not commit to a figure right now.', when:'Polite deflection.' },
+      { es:'En ese precio, sinceramente, no veo la operación.', en:'At that price, honestly, I don\'t see the deal happening.', when:'Clear but respectful red line.' },
+      { es:'Lo que sí puedo ofrecerles es lo siguiente…', en:'What I can offer you is the following…', when:'Transitioning to a concrete proposal.' },
+      { es:'¿Qué os parece si lo dejamos así y lo retomamos el jueves?', en:'How about we leave it there and pick it up again on Thursday?', when:'Parking a discussion productively.' },
+      { es:'Me gustaría que llegáramos a un acuerdo que beneficie a las dos partes.', en:'I\'d like us to reach an agreement that works for both sides.', when:'Framing around mutual benefit.' }
+    ]
+  },
+  {
+    id:'preguntas',
+    title:'Haciendo preguntas',
+    titleEn:'Asking questions',
+    emoji:'❓',
+    color:'rose',
+    items:[
+      { es:'¿Podría explicarme un poco más ese punto?', en:'Could you explain that point a bit more?', when:'Asking for clarification politely.' },
+      { es:'¿Cuál es su prioridad principal en esta operación?', en:'What\'s your main priority in this deal?', when:'Getting to the real driver behind the position.' },
+      { es:'¿Qué timing manejan ustedes?', en:'What timing are you working with?', when:'Understanding their internal deadlines.' },
+      { es:'¿Tienen ya alguna oferta encima de la mesa?', en:'Do you already have another offer on the table?', when:'Understanding the competitive landscape.' },
+      { es:'¿Cómo encajaría esto con su estrategia a largo plazo?', en:'How would this fit with your long-term strategy?', when:'Framing around their strategy.' },
+      { es:'¿Quién tendría que dar el visto bueno final?', en:'Who would need to give the final sign-off?', when:'Mapping decision-makers.' },
+      { es:'¿Hay algo que le preocupe especialmente del planteamiento?', en:'Is there anything that particularly concerns you about the approach?', when:'Surfacing objections early.' },
+      { es:'¿Podríamos ver los números del último ejercicio?', en:'Could we see the numbers from the last financial year?', when:'Requesting due diligence materials.' }
+    ]
+  },
+  {
+    id:'cierre',
+    title:'Cierre de reunión',
+    titleEn:'Closing a meeting',
+    emoji:'✅',
+    color:'teal',
+    items:[
+      { es:'Les resumo lo que hemos acordado.', en:'Let me summarise what we\'ve agreed.', when:'Clean close — always summarise.' },
+      { es:'Por mi parte, creo que hemos avanzado mucho hoy.', en:'From my side, I think we\'ve made a lot of progress today.', when:'Positive framing on the way out.' },
+      { es:'Los próximos pasos serían los siguientes…', en:'The next steps would be the following…', when:'Introducing a clear action list.' },
+      { es:'Les envío un correo esta tarde con el resumen y los documentos.', en:'I\'ll send you an email this afternoon with the summary and documents.', when:'Committing to a concrete follow-up.' },
+      { es:'Quedamos en hablar la semana que viene.', en:'Let\'s plan to speak next week.', when:'Setting the next touchpoint.' },
+      { es:'Muchísimas gracias por su tiempo, ha sido muy productivo.', en:'Thank you so much for your time, this has been very productive.', when:'Formal sign-off.' },
+      { es:'Cualquier cosa que necesiten, me tienen a su disposición.', en:'Anything you need, I\'m at your disposal.', when:'Warm but professional close.' },
+      { es:'Un placer, como siempre.', en:'A pleasure, as always.', when:'Close with an existing contact.' }
+    ]
+  }
+];
+
+const BUSINESS_DIALOGS = [
+  {
+    id:'director-deportivo',
+    level:'B1',
+    emoji:'🏟️',
+    title:'Reunión con el director deportivo',
+    titleEn:'Meeting with the sporting director',
+    setting:'Liam, fundador de Keeps, se reúne con el director deportivo de un club de Segunda División española para presentar una propuesta de inversión en la plantilla.',
+    speakers:[
+      { id:'A', name:'Director', color:'bg-indigo-100 text-indigo-700' },
+      { id:'B', name:'Liam', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Bienvenido, Liam. Gracias por desplazarse hasta aquí.', en:'Welcome, Liam. Thanks for making the trip.' },
+      { who:'B', es:'Al contrario, muchas gracias por recibirme. Para nosotros es una prioridad hablar con clubes como el suyo.', en:'Not at all — thank you for seeing me. Speaking with clubs like yours is a priority for us.' },
+      { who:'A', es:'Cuénteme en qué están trabajando exactamente.', en:'Tell me what exactly you\'re working on.' },
+      { who:'B', es:'Keeps es una plataforma regulada de inversión deportiva. Conectamos clubes con inversores que quieren exposición al rendimiento deportivo y a los derechos económicos.', en:'Keeps is a regulated sports investment platform. We connect clubs with investors who want exposure to sporting performance and economic rights.' },
+      { who:'A', es:'Lo que me preocupa con estos modelos es la injerencia externa en las decisiones deportivas.', en:'What concerns me with these models is outside interference in sporting decisions.' },
+      { who:'B', es:'Le entiendo perfectamente. Nuestro modelo está pensado justo para evitar eso — el club mantiene el control deportivo al cien por cien.', en:'I completely understand. Our model is designed precisely to avoid that — the club keeps one hundred percent of the sporting control.' },
+      { who:'A', es:'¿Y entonces dónde está la rentabilidad para el inversor?', en:'So where\'s the return for the investor then?' },
+      { who:'B', es:'En una participación transparente sobre los derechos económicos futuros de jugadores concretos que el club elija. Nada de derechos federativos, solo económicos.', en:'In a transparent share of the future economic rights of specific players the club chooses. No federative rights, just economic.' },
+      { who:'A', es:'¿Qué cifras manejan normalmente?', en:'What kind of numbers do you usually work with?' },
+      { who:'B', es:'Operaciones a partir de dos millones y hasta quince. El ticket medio ronda los cinco.', en:'Deals from two million up to fifteen. The average ticket is around five.' },
+      { who:'A', es:'¿Y los plazos?', en:'And the timelines?' },
+      { who:'B', es:'Desde la primera reunión hasta la firma, entre diez y doce semanas. La diligencia debida nos lleva cuatro o cinco.', en:'From first meeting to signing, ten to twelve weeks. Due diligence takes us four or five.' },
+      { who:'A', es:'Me interesa. Pero antes de seguir tendría que hablarlo con el presidente y con el consejo.', en:'I\'m interested. But before going further I\'d need to discuss it with the president and the board.' },
+      { who:'B', es:'Por supuesto. Si le parece, le mando un resumen de dos páginas que puede presentar internamente.', en:'Of course. If it works for you, I\'ll send you a two-page summary you can present internally.' },
+      { who:'A', es:'Perfecto. Si hay interés por parte del consejo, le escribo la semana que viene.', en:'Perfect. If the board is interested, I\'ll write to you next week.' },
+      { who:'B', es:'Estupendo. Muchísimas gracias por su tiempo, ha sido muy útil.', en:'Great. Thank you so much for your time, this has been very helpful.' }
+    ],
+    vocab:[
+      { es:'la injerencia', en:'interference, meddling' },
+      { es:'los derechos económicos', en:'economic rights (vs federative)' },
+      { es:'el ticket medio', en:'average ticket size' },
+      { es:'el visto bueno del consejo', en:'board sign-off' }
+    ],
+    notes:'The director uses usted throughout — this is the default for first business meetings in Spain, even when someone is clearly younger. Match their register. Note "le mando" (not "te mando") — staying formal until invited to switch.'
+  },
+  {
+    id:'agencia-comision',
+    level:'B1',
+    emoji:'💶',
+    title:'Negociando la comisión con una agencia',
+    titleEn:'Negotiating commission with an agency',
+    setting:'Una agente española propone a Liam representar conjuntamente a un joven jugador valenciano que Keeps está estructurando como operación de inversión.',
+    speakers:[
+      { id:'A', name:'Agente', color:'bg-rose-100 text-rose-700' },
+      { id:'B', name:'Liam', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Liam, para hacerlo operativo necesitamos cerrar los términos de la comisión cuanto antes.', en:'Liam, to make this work we need to close the commission terms as soon as possible.' },
+      { who:'B', es:'De acuerdo. Dime qué planteas y vemos cómo encajarlo.', en:'OK. Tell me what you\'re proposing and we\'ll see how to make it fit.' },
+      { who:'A', es:'Lo habitual en el mercado es un diez por ciento sobre el bruto del contrato del jugador más un cinco sobre cualquier traspaso futuro.', en:'The market standard is ten percent on the player\'s gross contract plus five on any future transfer.' },
+      { who:'B', es:'Entiendo el planteamiento, pero para nosotros un diez en bruto es complicado. Preferiríamos hablar en neto.', en:'I understand the approach, but ten percent gross is tricky for us. We\'d rather talk in net terms.' },
+      { who:'A', es:'En neto perdemos valor por el tema fiscal. Si vamos a neto tendríamos que subir el porcentaje.', en:'In net terms we lose value because of tax. If we go net we\'d have to raise the percentage.' },
+      { who:'B', es:'Eso es justo. ¿Qué cifra tienes en mente?', en:'That\'s fair. What figure do you have in mind?' },
+      { who:'A', es:'Doce por ciento sobre neto y mantenemos el cinco sobre traspasos.', en:'Twelve percent on net and we keep five percent on transfers.' },
+      { who:'B', es:'Puedo aceptar el doce sobre neto si el cinco sobre traspasos se aplica solo a partir del segundo año.', en:'I can accept twelve on net if the five on transfers only applies from year two onwards.' },
+      { who:'A', es:'El primer año el jugador prácticamente no se mueve, así que eso para nosotros es asumible.', en:'In the first year the player barely moves, so that\'s manageable for us.' },
+      { who:'B', es:'Perfecto. También necesito que la exclusividad sea por dos temporadas, no por tres.', en:'Perfect. I also need the exclusivity to be for two seasons, not three.' },
+      { who:'A', es:'Hecho, siempre que incluyamos una prórroga automática si superamos ciertos objetivos deportivos.', en:'Done, as long as we include an automatic extension if we hit certain sporting targets.' },
+      { who:'B', es:'Me parece razonable. Le paso la propuesta a nuestro abogado esta misma tarde.', en:'That seems reasonable. I\'ll pass the proposal to our lawyer this afternoon.' },
+      { who:'A', es:'Muy bien. En cuanto tengas el borrador, lo revisamos y lo firmamos la semana que viene.', en:'Great. As soon as you have the draft, we\'ll review it and sign next week.' },
+      { who:'B', es:'Perfecto, me encanta trabajar así de directo. Un placer.', en:'Perfect — I love working this directly. A pleasure.' }
+    ],
+    vocab:[
+      { es:'en bruto / en neto', en:'gross / net' },
+      { es:'el tema fiscal', en:'the tax angle / tax side' },
+      { es:'la prórroga automática', en:'automatic extension' },
+      { es:'asumible', en:'manageable, acceptable' }
+    ],
+    notes:'The agent switches to tú quickly — typical among agents, who tend to be direct and first-name basis fast. Note "me parece razonable" = "that seems reasonable to me", one of the most useful negotiation phrases in Spanish business.'
+  },
+  {
+    id:'due-diligence',
+    level:'B2',
+    emoji:'🔍',
+    title:'Llamada de diligencia debida',
+    titleEn:'Due diligence call',
+    setting:'Un abogado español del despacho que lleva la diligencia debida pregunta a Liam por aspectos regulatorios y financieros de Keeps antes del cierre de una operación.',
+    speakers:[
+      { id:'A', name:'Abogado', color:'bg-amber-100 text-amber-700' },
+      { id:'B', name:'Liam', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Liam, le llamo para cerrar algunas dudas del cuaderno de diligencia que nos enviaron.', en:'Liam, I\'m calling to clear up a few questions from the due diligence pack you sent us.' },
+      { who:'B', es:'Por supuesto, dígame. ¿Qué puntos tiene abiertos?', en:'Of course, go ahead. What points are still open?' },
+      { who:'A', es:'Primero, necesitamos confirmar el marco regulatorio exacto en el que operan.', en:'First, we need to confirm the exact regulatory framework you operate under.' },
+      { who:'B', es:'Estamos autorizados por la FCA del Reino Unido como plataforma de inversión alternativa.', en:'We\'re authorised by the UK FCA as an alternative investment platform.' },
+      { who:'A', es:'¿Y esa autorización cubre operaciones con clubes dentro de la Unión Europea?', en:'And does that authorisation cover deals with clubs inside the European Union?' },
+      { who:'B', es:'Sí, a través de un acuerdo de pasaporte con una entidad colaboradora en Luxemburgo. Les puedo mandar el certificado.', en:'Yes, via a passporting arrangement with a partner entity in Luxembourg. I can send you the certificate.' },
+      { who:'A', es:'Perfecto. Segundo punto — quería preguntarle por la estructura del vehículo que usan para invertir.', en:'Perfect. Second point — I wanted to ask you about the investment vehicle structure.' },
+      { who:'B', es:'Cada operación se canaliza a través de un vehículo individual, un SPV, para aislar el riesgo de cada club.', en:'Each deal is channelled through its own vehicle, an SPV, to isolate the risk of each club.' },
+      { who:'A', es:'¿Quién asume la responsabilidad en caso de incumplimiento del club?', en:'Who bears liability in case of breach by the club?' },
+      { who:'B', es:'La responsabilidad queda limitada al capital invertido en ese vehículo. Los inversores nunca responden por encima de su aportación.', en:'Liability is limited to the capital invested in that vehicle. Investors never answer for more than their contribution.' },
+      { who:'A', es:'¿Y qué garantías ofrece el club en esta operación en concreto?', en:'And what guarantees is the club offering in this specific deal?' },
+      { who:'B', es:'Un aval bancario del cincuenta por ciento más una prenda sobre los ingresos televisivos.', en:'A bank guarantee for fifty percent plus a charge over the broadcasting revenue.' },
+      { who:'A', es:'Con eso creo que podemos cerrar el informe. Le mandaré un par de preguntas más por escrito.', en:'With that I think we can close the report. I\'ll send you a couple more questions in writing.' },
+      { who:'B', es:'Perfecto. Cualquier cosa que necesite, me escribe y le contesto el mismo día.', en:'Perfect. Anything you need, write to me and I\'ll reply the same day.' },
+      { who:'A', es:'Muchas gracias, Liam. Hablamos pronto.', en:'Thank you very much, Liam. Speak soon.' }
+    ],
+    vocab:[
+      { es:'el cuaderno de diligencia', en:'DD pack / information memorandum' },
+      { es:'el acuerdo de pasaporte', en:'passporting arrangement' },
+      { es:'el vehículo / SPV', en:'investment vehicle / special purpose vehicle' },
+      { es:'el aval bancario', en:'bank guarantee' },
+      { es:'la prenda', en:'charge / pledge (legal)' }
+    ],
+    notes:'Technical financial Spanish is mostly Latin-rooted and surprisingly close to English: "vehículo", "regulatorio", "autorización", "estructura". The key is confidence with the core verbs: "asumir responsabilidad", "canalizar", "cubrir", "limitar". Notice the abogado stays in usted — legal settings are strictly formal in Spain.'
+  },
+  {
+    id:'pitch-inversor',
+    level:'B1',
+    emoji:'💼',
+    title:'Presentación a un inversor',
+    titleEn:'Pitching to an investor',
+    setting:'Liam presenta Keeps a un inversor privado valenciano que ha expresado interés en entrar en el sector deportivo.',
+    speakers:[
+      { id:'A', name:'Inversor', color:'bg-emerald-100 text-emerald-700' },
+      { id:'B', name:'Liam', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Gracias por venir, Liam. Tengo quince minutos, así que si le parece vamos directo al grano.', en:'Thanks for coming, Liam. I\'ve got fifteen minutes, so if you don\'t mind let\'s get straight to the point.' },
+      { who:'B', es:'Perfecto, me adapto. En tres frases — Keeps estructura inversiones reguladas en clubes y jugadores, con rentabilidades proyectadas de entre ocho y doce por ciento anual, y tickets desde cincuenta mil euros.', en:'Perfect, I\'ll adapt. In three sentences — Keeps structures regulated investments in clubs and players, with projected returns of eight to twelve percent per year, and tickets from fifty thousand euros.' },
+      { who:'A', es:'¿Regulados por quién, exactamente?', en:'Regulated by whom, exactly?' },
+      { who:'B', es:'Por la FCA británica, con pasaporte europeo vía Luxemburgo. Todo el cumplimiento normativo está auditado por PwC.', en:'By the UK FCA, with European passporting via Luxembourg. All compliance is audited by PwC.' },
+      { who:'A', es:'Bien. ¿Y cómo genero yo la rentabilidad? ¿De dónde sale el retorno?', en:'Good. And how do I generate the return? Where does the yield come from?' },
+      { who:'B', es:'De tres fuentes: revalorización de derechos económicos de jugadores, comisiones sobre futuros traspasos y primas por rendimiento deportivo del club.', en:'From three sources: appreciation of players\' economic rights, commissions on future transfers, and bonuses for sporting performance of the club.' },
+      { who:'A', es:'¿Cuál es el principal riesgo?', en:'What\'s the main risk?' },
+      { who:'B', es:'Honestamente, el rendimiento deportivo. Si el club desciende o el jugador se lesiona, el retorno cae. Por eso diversificamos entre varios activos en cada cartera.', en:'Honestly, sporting performance. If the club goes down or the player gets injured, the return drops. That\'s why we diversify across several assets in each portfolio.' },
+      { who:'A', es:'Me gusta que lo diga así, sin vender humo. ¿Qué horizonte temporal tiene una cartera tipo?', en:'I like that you say it straight, without selling hot air. What\'s the typical time horizon of a portfolio?' },
+      { who:'B', es:'De tres a cinco años, con posibilidad de salida anticipada a partir del segundo.', en:'Three to five years, with early exit possible from year two.' },
+      { who:'A', es:'¿Y la liquidez?', en:'And liquidity?' },
+      { who:'B', es:'Limitada, como en cualquier producto alternativo. Pero tenemos un mercado secundario interno donde otros inversores pueden comprar sus participaciones.', en:'Limited, like any alternative product. But we have an internal secondary market where other investors can buy your units.' },
+      { who:'A', es:'Me interesa. Mándeme el folleto completo y el modelo financiero. Si cuadra, podemos hablar de una primera entrada de doscientos mil.', en:'I\'m interested. Send me the full brochure and the financial model. If it adds up, we can talk about a first entry of two hundred thousand.' },
+      { who:'B', es:'Perfecto. Se lo envío esta misma tarde. Un placer.', en:'Perfect. I\'ll send it to you this afternoon. A pleasure.' }
+    ],
+    vocab:[
+      { es:'ir al grano', en:'to get straight to the point' },
+      { es:'vender humo', en:'to sell hype / hot air (very common)' },
+      { es:'la salida anticipada', en:'early exit' },
+      { es:'el mercado secundario', en:'secondary market' },
+      { es:'cuadrar', en:'to add up, check out' }
+    ],
+    notes:'"Ir al grano" and "vender humo" are two of the most useful business expressions in Spanish — investors respect directness. Note the investor\'s "sin vender humo" is a huge compliment. Also: "si cuadra" = if it checks out / if the numbers work.'
+  },
+  {
+    id:'reunion-jugador',
+    level:'B1',
+    emoji:'🧑‍💼',
+    title:'Reunión con un jugador',
+    titleEn:'Meeting with a player',
+    setting:'Liam se reúne con un joven jugador español y su representante para explicarle cómo funciona la representación a través de Keeps.',
+    speakers:[
+      { id:'A', name:'Jugador', color:'bg-violet-100 text-violet-700' },
+      { id:'B', name:'Liam', color:'bg-sky-100 text-sky-700' }
+    ],
+    lines:[
+      { who:'A', es:'Hola, Liam, un placer. Mi agente me ha hablado muy bien de vosotros.', en:'Hi Liam, pleasure. My agent has spoken very highly of you.' },
+      { who:'B', es:'Un placer también. Antes de nada, quiero dejarte claro que tu carrera deportiva es lo primero. Todo lo demás va después.', en:'Pleasure too. Before anything, I want to make it clear that your sporting career comes first. Everything else comes after.' },
+      { who:'A', es:'Eso es lo que más me importa. ¿Cómo funciona exactamente lo que hacéis?', en:'That\'s what matters most to me. How does what you do work exactly?' },
+      { who:'B', es:'Nosotros estructuramos acuerdos con tu club y con inversores que confían en tu proyección. A cambio, recibes una parte del capital por adelantado.', en:'We structure agreements with your club and with investors who believe in your potential. In exchange, you receive a share of the capital up front.' },
+      { who:'A', es:'¿Y eso significa que alguien es dueño de un porcentaje de mí?', en:'Does that mean someone owns a percentage of me?' },
+      { who:'B', es:'No. Nadie es dueño de ti. Lo que se cede es un porcentaje de los derechos económicos sobre un futuro traspaso, y siempre con un tope claro.', en:'No. No one owns you. What\'s ceded is a percentage of the economic rights on a future transfer, and always with a clear cap.' },
+      { who:'A', es:'¿Eso no lo prohíbe la FIFA?', en:'Doesn\'t FIFA ban that?' },
+      { who:'B', es:'La FIFA prohíbe la propiedad de terceros sobre derechos federativos. Los derechos económicos son otra cosa, y se estructuran dentro de la normativa vigente.', en:'FIFA bans third-party ownership of federative rights. Economic rights are a different thing, and they\'re structured within current regulations.' },
+      { who:'A', es:'¿Y qué pasa si me lesiono o no rindo?', en:'And what happens if I get injured or don\'t perform?' },
+      { who:'B', es:'No pasa nada por tu parte. El riesgo lo asumen los inversores. Tú no devuelves nada.', en:'Nothing happens on your side. The risk is borne by the investors. You don\'t pay anything back.' },
+      { who:'A', es:'¿Y el porcentaje de comisión que os lleváis?', en:'And the commission percentage you take?' },
+      { who:'B', es:'Nuestra comisión sale del beneficio del inversor, no de tu bolsillo. Tú nunca pagas comisión a Keeps.', en:'Our commission comes out of the investor\'s profit, not your pocket. You never pay commission to Keeps.' },
+      { who:'A', es:'Me gusta cómo lo explicas. Me lo pensaré con mi agente.', en:'I like the way you explain it. I\'ll think it through with my agent.' },
+      { who:'B', es:'Claro que sí. Tómate el tiempo que necesites. Cualquier duda, me llamas directamente.', en:'Of course. Take as much time as you need. Any questions, call me directly.' }
+    ],
+    vocab:[
+      { es:'la proyección', en:'potential, upside (of a player)' },
+      { es:'la propiedad de terceros (TPO)', en:'third-party ownership' },
+      { es:'la normativa vigente', en:'current regulations' },
+      { es:'no pasa nada', en:'it\'s fine / no worries' },
+      { es:'no devuelves nada', en:'you don\'t pay anything back' }
+    ],
+    notes:'Note the switch to tú — with young players it\'s natural and builds trust. The key psychological phrases here are "tu carrera deportiva es lo primero" (puts the player at ease) and "no pasa nada por tu parte" (reassurance about downside). TPO is a sensitive topic — always distinguish federative vs economic rights explicitly.'
+  }
+];
+
+const BUSINESS_SHEETS = [
+  {
+    id:'tu-usted',
+    title:'Tú vs Usted en negocios',
+    titleEn:'Formal vs informal register in business',
+    intro:'Spanish business etiquette is still more formal than English — but it\'s loosening fast. The rule of thumb: start in usted, let the other person switch first, and follow their lead. Using tú too early with a director deportivo or a lawyer reads as cocky; staying in usted with an agent half your age reads as distant.',
+    color:'blue',
+    content:[
+      { heading:'Start with usted', rows:[
+        ['Situation','Example','Why'],
+        ['First meeting with anyone senior','¿Cómo le va? ¿Qué le parece?','Default — always safe.'],
+        ['Lawyers, notaries, accountants','Le agradezco su tiempo.','Legal/financial settings are strictly usted.'],
+        ['Club presidents, board members','Me gustaría plantearle una propuesta.','Seniority defaults to usted.'],
+        ['Older generation (50+)','¿Puedo llamarle mañana?','Age still carries weight in Spain.']
+      ]},
+      { heading:'You can start with tú', rows:[
+        ['Situation','Example','Why'],
+        ['Younger agents, tech-adjacent','¿Qué te parece el planteamiento?','Industries that skew young drop usted fast.'],
+        ['Players (even in pro sport)','Tu carrera es lo primero.','Players are almost always tuteados.'],
+        ['Anyone who opens with tú','[Match their register]','Never be more formal than your counterpart.']
+      ]},
+      { heading:'The switch — "nos tuteamos"', text:'Once rapport is built, the senior person usually says "podemos tutearnos" ("we can use tú with each other") or just switches mid-meeting. When they do, switch immediately — staying in usted past that point feels cold. You can invite it yourself with: "Si te parece, nos tuteamos" — but only after a clear signal of warmth.' },
+      { heading:'Email register', rows:[
+        ['Situation','Opening','Closing'],
+        ['First cold email','Estimado Sr. / Sra.','Un cordial saludo'],
+        ['Active negotiation (usted)','Buenos días','Quedo a su disposición'],
+        ['Active negotiation (tú)','Hola [nombre]','Un abrazo / Saludos'],
+        ['Internal team','Buenas','Saludos']
+      ]},
+      { heading:'Traps to avoid', examples:[
+        { es:'❌ Soy Liam, encantado, ¿qué tal estás? [first meeting with director deportivo]', en:'Too casual. Use ¿qué tal está? or ¿cómo le va?' },
+        { es:'❌ Señor Rodríguez, ¿podrías enviarme los papeles?', en:'Mixing Sr. with tú forms — pick a lane.' },
+        { es:'✅ Encantado de conocerle, señor. ¿Cómo le va?', en:'Clean formal opening.' },
+        { es:'✅ Si te parece bien, nos tuteamos — así hablamos más cómodos.', en:'Natural way to invite the switch.' }
+      ]}
+    ]
+  },
+  {
+    id:'numeros-dinero',
+    title:'Números, dinero y porcentajes',
+    titleEn:'Numbers, money and percentages in business',
+    intro:'The single biggest source of live mistakes in Spanish business meetings is misreading a number. Spanish uses comma as the decimal separator and dot as the thousands separator — the opposite of English. Get fluent in hearing and saying big figures before any meeting where money is mentioned.',
+    color:'emerald',
+    content:[
+      { heading:'Decimal vs thousands', rows:[
+        ['Written','Spoken','English equivalent'],
+        ['1.500.000 €','un millón quinientos mil euros','€1,500,000'],
+        ['12,5 %','doce coma cinco por ciento','12.5%'],
+        ['3,75','tres coma setenta y cinco','3.75'],
+        ['2.000','dos mil','2,000']
+      ]},
+      { heading:'Millions and billions — watch out', text:'A Spanish "billón" is an English TRILLION (10¹²). An English "billion" (10⁹) is "mil millones" in Spanish. Using "billón" in a meeting for anything under a trillion is a classic mistake.', examples:[
+        { es:'Hemos cerrado una ronda de cinco mil millones.', en:'We\'ve closed a five-billion round. (5,000,000,000)' },
+        { es:'El PIB del país es de dos billones.', en:'The country\'s GDP is two trillion. (2,000,000,000,000)' }
+      ]},
+      { heading:'Saying money naturally', rows:[
+        ['Figure','How to say it','Context'],
+        ['15 M€','quince millones de euros','Formal presentation.'],
+        ['€15M','quince kilos','Slang — only with agents you know well.'],
+        ['2,5 M€','dos millones y medio','Informal meeting.'],
+        ['€500K','quinientos mil','Neutral, widely used.'],
+        ['50K','cincuenta mil','Natural in speech.']
+      ]},
+      { heading:'Percentages and rates', rows:[
+        ['Figure','Spoken','Usage'],
+        ['8 %','el ocho por ciento','Rentabilidad del ocho por ciento.'],
+        ['10 % anual','el diez por ciento anual','Rendimiento anual.'],
+        ['0,5 %','el cero coma cinco por ciento','Margen fino.'],
+        ['x3','multiplicar por tres / tres veces más','Crecimiento.']
+      ]},
+      { heading:'Key verbs for numbers', examples:[
+        { es:'La cifra asciende a doce millones.', en:'The figure amounts to twelve million.' },
+        { es:'Los ingresos alcanzaron los ocho millones.', en:'Revenue reached eight million.' },
+        { es:'El coste supera los dos millones.', en:'The cost exceeds two million.' },
+        { es:'La rentabilidad ronda el diez por ciento.', en:'The return is around ten percent.' },
+        { es:'La valoración se sitúa en torno a los veinte millones.', en:'The valuation is somewhere around twenty million.' }
+      ]}
+    ]
+  },
+  {
+    id:'pitch-estructura',
+    title:'Estructura de un pitch',
+    titleEn:'Pitch framework in Spanish',
+    intro:'A clean Spanish business pitch follows the same bones as in English but with a few key phrasings that sound natural and confident. Memorise the five blocks below and you can structure any first meeting on the fly.',
+    color:'orange',
+    content:[
+      { heading:'1. El gancho (the hook)', text:'One sentence. What you do, for whom, at what scale. No fluff.', examples:[
+        { es:'Keeps es una plataforma regulada de inversión deportiva que conecta clubes europeos con inversores profesionales.', en:'Keeps is a regulated sports investment platform connecting European clubs with professional investors.' },
+        { es:'Ayudamos a los clubes a monetizar derechos económicos sin perder el control deportivo.', en:'We help clubs monetise economic rights without losing sporting control.' }
+      ]},
+      { heading:'2. El problema', text:'Name the pain. Keep it concrete — a club\'s pain, an investor\'s pain, a player\'s pain.', examples:[
+        { es:'Muchos clubes tienen jugadores con proyección pero necesitan liquidez antes de poder venderlos.', en:'Many clubs have players with upside but need liquidity before they can sell them.' },
+        { es:'El problema es que los inversores minoristas no han tenido nunca acceso real al deporte profesional.', en:'The problem is that retail investors have never had real access to professional sport.' }
+      ]},
+      { heading:'3. La solución', text:'How you solve it, in plain terms. Avoid jargon here — save the technical stuff for later.', examples:[
+        { es:'Estructuramos vehículos regulados donde los inversores financian clubes a cambio de una participación sobre derechos económicos.', en:'We structure regulated vehicles where investors finance clubs in exchange for a share of economic rights.' }
+      ]},
+      { heading:'4. La tracción', text:'Prove it works. One or two numbers — not a wall of stats.', examples:[
+        { es:'Hasta la fecha hemos estructurado operaciones por más de cincuenta millones de euros.', en:'To date we\'ve structured over fifty million euros in deals.' },
+        { es:'Trabajamos con cinco clubes de Primera y Segunda División española.', en:'We work with five clubs in the top two Spanish divisions.' }
+      ]},
+      { heading:'5. El cierre (the ask)', text:'Never end without a clear ask. A follow-up meeting, a document shared, a specific next step.', examples:[
+        { es:'Lo que te propondría es que le echéis un ojo al modelo y retomemos la semana que viene.', en:'What I\'d suggest is that you take a look at the model and we pick it up again next week.' },
+        { es:'Si os encaja, podemos agendar una segunda reunión con vuestro director financiero.', en:'If it fits for you, we can set up a second meeting with your CFO.' }
+      ]}
+    ]
+  },
+  {
+    id:'expresiones-idiomaticas',
+    title:'Expresiones útiles de negocios',
+    titleEn:'Essential business idioms',
+    intro:'These are the phrases that separate textbook Spanish from fluent business Spanish. They won\'t appear in any formal grammar book but you\'ll hear every one of them in a Valencian boardroom or a Madrid despacho within a week. Memorise them and you sound local.',
+    color:'purple',
+    content:[
+      { heading:'Getting things done', examples:[
+        { es:'Ir al grano.', en:'To get straight to the point.' },
+        { es:'Poner las cartas sobre la mesa.', en:'To put all the cards on the table.' },
+        { es:'No andarse con rodeos.', en:'Not to beat around the bush.' },
+        { es:'A ver cómo lo enfocamos.', en:'Let\'s see how we approach it.' },
+        { es:'Lo tengo sobre la mesa.', en:'It\'s on my desk / I\'m looking at it.' }
+      ]},
+      { heading:'Buying time', examples:[
+        { es:'Déjame darle una vuelta.', en:'Let me think it over (lit. give it a turn).' },
+        { es:'Tengo que consultarlo internamente.', en:'I need to check it internally.' },
+        { es:'Eso habría que estudiarlo con calma.', en:'We\'d have to look at that carefully.' },
+        { es:'No quiero precipitarme.', en:'I don\'t want to rush into it.' }
+      ]},
+      { heading:'Red flags (what to watch for)', examples:[
+        { es:'Vender humo.', en:'To sell hot air / hype.' },
+        { es:'Marear la perdiz.', en:'To go round and round without getting anywhere.' },
+        { es:'Eso son castillos en el aire.', en:'That\'s castles in the sky.' },
+        { es:'No me termina de cuadrar.', en:'It doesn\'t quite add up for me.' },
+        { es:'Me escama un poco.', en:'Something\'s a bit off / it smells wrong.' }
+      ]},
+      { heading:'Agreeing and closing', examples:[
+        { es:'Cerramos así.', en:'Let\'s close on that.' },
+        { es:'Lo damos por bueno.', en:'Let\'s call that done / agreed.' },
+        { es:'Trato hecho.', en:'Deal done.' },
+        { es:'Por mi parte, adelante.', en:'From my side, go ahead.' },
+        { es:'Me parece razonable.', en:'That seems reasonable.' }
+      ]},
+      { heading:'Politely disagreeing', examples:[
+        { es:'Ahí no te puedo seguir.', en:'I can\'t agree with you there.' },
+        { es:'Entiendo tu punto, pero…', en:'I see your point, but…' },
+        { es:'Desde nuestro lado lo vemos diferente.', en:'From our side we see it differently.' },
+        { es:'Con todos los respetos, no lo veo así.', en:'With all due respect, I don\'t see it that way.' }
+      ]},
+      { heading:'Handy fillers', examples:[
+        { es:'A ver…', en:'Let\'s see…' },
+        { es:'Pues mira…', en:'Well look…' },
+        { es:'O sea…', en:'I mean / in other words…' },
+        { es:'En plan…', en:'Like… (informal, very common)' },
+        { es:'Al final del día…', en:'At the end of the day…' }
+      ]}
+    ]
+  },
+  {
+    id:'deporte-finanzas',
+    title:'Glosario deporte + finanzas',
+    titleEn:'Sports finance quick reference',
+    intro:'The tight overlap between football business and investment vocabulary — the terms that come up constantly in player agency and sports investment conversations. Treat this as the words you should never have to hesitate on.',
+    color:'rose',
+    content:[
+      { heading:'Player economics', rows:[
+        ['Español','English','Nota'],
+        ['derechos económicos','economic rights','Share of a future transfer fee. NOT third-party ownership.'],
+        ['derechos federativos','federative rights','Who the player is registered with — one club at a time, FIFA-regulated.'],
+        ['cláusula de rescisión','release clause','Mandatory in Spain: any club can pay this and sign the player.'],
+        ['cláusula de revalorización','upgrade clause','Auto-increase in salary if the player hits milestones.'],
+        ['porcentaje de venta futura','sell-on clause','Selling club keeps a cut of the next transfer.'],
+        ['primas por objetivos','performance bonuses','Bonuses tied to appearances / goals / titles.'],
+        ['derechos de imagen','image rights','Often structured through a separate company for tax.'],
+        ['carta de libertad','free agent status','Player out of contract — no transfer fee.']
+      ]},
+      { heading:'Deal structures', rows:[
+        ['Español','English','Uso'],
+        ['traspaso definitivo','permanent transfer','Fee paid, full registration moves.'],
+        ['cesión con opción de compra','loan with option to buy','Temporary move, optional purchase trigger.'],
+        ['cesión obligatoria','loan with obligation to buy','Temporary move, mandatory purchase on trigger.'],
+        ['intercambio de jugadores','player swap','Two-way deal, usually with fee balancing.'],
+        ['operación con variables','deal with add-ons','Fixed fee + performance-based top-ups.'],
+        ['pago aplazado','deferred payment','Fee paid in instalments over years.']
+      ]},
+      { heading:'Club finance', rows:[
+        ['Español','English','Contexto'],
+        ['ingresos televisivos','broadcasting revenue','Usually 40–60% of a club\'s top line.'],
+        ['ingresos por matchday','matchday revenue','Ticketing, hospitality, stadium sales.'],
+        ['ingresos comerciales','commercial revenue','Sponsorship, merchandising, tours.'],
+        ['fair play financiero','financial fair play','UEFA + LaLiga spending caps.'],
+        ['tope salarial','salary cap','LaLiga-specific — each club has an annual limit.'],
+        ['límite de coste de plantilla','squad cost limit','Spanish version of FFP.'],
+        ['déficit estructural','structural deficit','Long-term operating loss.']
+      ]},
+      { heading:'Agency language', rows:[
+        ['Español','English','Cuándo'],
+        ['representante','representative / agent','Formal term.'],
+        ['agente FIFA','FIFA agent','Officially certified.'],
+        ['intermediario','intermediary','Deal-specific broker (less common now).'],
+        ['mandato de representación','representation mandate','Written agreement, FIFA-required.'],
+        ['comisión del agente','agent commission','Usually 5–10% on gross contract.'],
+        ['exclusividad','exclusivity','Key clause — how tight is the lock-in?']
+      ]}
+    ]
+  }
+];
+
+function Negocios({ onBack, dark, onSearch }) {
+  const [tab, setTab] = useState('vocabulario');
+  const [selectedDialog, setSelectedDialog] = useState(null);
+  const [selectedSheet, setSelectedSheet] = useState(null);
+  const [showTranslation, setShowTranslation] = useState(true);
+  const [playingIdx, setPlayingIdx] = useState(null);
+  const [playMode, setPlayMode] = useState(null);
+  const stopRef = useRef(false);
+  const shadowTimerRef = useRef(null);
+
+  const tileColorMap = {
+    orange:'from-orange-400 to-orange-500',
+    blue:'from-blue-400 to-blue-500',
+    purple:'from-purple-400 to-purple-500',
+    emerald:'from-emerald-400 to-emerald-500',
+    teal:'from-teal-400 to-teal-500',
+    rose:'from-rose-400 to-rose-500',
+    amber:'from-amber-400 to-amber-500',
+    stone:'from-stone-400 to-stone-500'
+  };
+
+  useEffect(() => {
+    return () => {
+      try { window.speechSynthesis.cancel(); } catch(e){}
+      if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
+    };
+  }, []);
+
+  const playAll = (lines, mode = 'normal') => {
+    try { window.speechSynthesis.cancel(); } catch(e){}
+    if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
+    stopRef.current = false;
+    setPlayMode(mode);
+    let i = 0;
+    const next = () => {
+      if (stopRef.current || i >= lines.length) {
+        setPlayingIdx(null);
+        setPlayMode(null);
+        return;
+      }
+      setPlayingIdx(i);
+      const line = lines[i];
+      const voiceOpts = line.who === 'A'
+        ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
+        : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
+      const u = makeSpeakUtterance(line.es, voiceOpts);
+      if (!u) { i++; shadowTimerRef.current = setTimeout(next, 400); return; }
+      u.onend = () => {
+        i++;
+        const gap = mode === 'shadow'
+          ? Math.max(1500, Math.round(line.es.length * 70))
+          : 420;
+        shadowTimerRef.current = setTimeout(next, gap);
+      };
+      u.onerror = () => { i++; shadowTimerRef.current = setTimeout(next, 420); };
+      window.speechSynthesis.speak(u);
+    };
+    next();
+  };
+
+  const stopAll = () => {
+    stopRef.current = true;
+    try { window.speechSynthesis.cancel(); } catch(e){}
+    if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
+    setPlayingIdx(null);
+    setPlayMode(null);
+  };
+
+  // ---- DIALOG DETAIL VIEW ----
+  if (selectedDialog) {
+    return (
+      <div>
+        <BackHeader title={selectedDialog.title} subtitle={selectedDialog.titleEn} onBack={() => { stopAll(); setSelectedDialog(null); }} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{selectedDialog.level}</span>
+            <span className="text-xs text-stone-400">{selectedDialog.lines.length} líneas</span>
+            <div className="flex-1"></div>
+            <button onClick={() => setShowTranslation(!showTranslation)}
+              className="text-[11px] font-bold px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700">
+              {showTranslation ? 'Ocultar traducción' : 'Mostrar traducción'}
+            </button>
+          </div>
+
+          <Card dark={dark} className="p-5 mb-5">
+            <p className="text-sm italic text-stone-500 mb-4">{selectedDialog.setting}</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {playingIdx === null ? (
+                <>
+                  <button onClick={() => playAll(selectedDialog.lines, 'normal')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+                    <span>▶</span> Reproducir todo
+                  </button>
+                  <button onClick={() => playAll(selectedDialog.lines, 'shadow')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500 hover:bg-violet-600 text-white text-sm font-bold">
+                    <span>🎭</span> Modo sombra
+                  </button>
+                </>
+              ) : (
+                <button onClick={stopAll}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-800 hover:bg-stone-900 text-white text-sm font-bold">
+                  <span>⏹</span> Parar {playMode === 'shadow' ? '(sombra)' : ''}
+                </button>
+              )}
+            </div>
+            {playMode === 'shadow' && (
+              <p className={`text-xs italic mb-3 ${dark ? 'text-violet-300' : 'text-violet-600'}`}>🎭 Modo sombra: repite cada línea en voz alta durante la pausa.</p>
+            )}
+
+            <div className="space-y-4">
+              {selectedDialog.lines.map((line, i) => {
+                const speaker = selectedDialog.speakers.find(s => s.id === line.who) || selectedDialog.speakers[0];
+                const isPlaying = playingIdx === i;
+                return (
+                  <div key={i} className={`rounded-xl p-3 transition-colors ${isPlaying ? 'bg-amber-50 ring-2 ring-amber-300' : 'bg-stone-50'}`}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${speaker.color}`}>{speaker.name}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <p className="text-base leading-relaxed flex-1">{line.es}</p>
+                      <SpeakBtn text={line.es} size="sm" gender={line.who === 'A' ? 'female' : 'male'} dialect="es-ES" />
+                    </div>
+                    {showTranslation && (
+                      <p className="text-xs text-stone-500 mt-1">{line.en}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+
+          {selectedDialog.vocab && selectedDialog.vocab.length > 0 && (
+            <Card dark={dark} className="p-5 mb-5">
+              <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Vocabulario clave</p>
+              <div className="space-y-2">
+                {selectedDialog.vocab.map((v, i) => (
+                  <div key={i} className="flex items-baseline gap-3 text-sm">
+                    <span className="font-serif font-bold flex-shrink-0">{v.es}</span>
+                    <span className="text-stone-300">·</span>
+                    <span className="text-stone-600 flex-1">{v.en}</span>
+                    <button onClick={() => speakES(v.es)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {selectedDialog.notes && (
+            <Card dark={dark} className="p-5">
+              <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-2">Notas culturales</p>
+              <p className="text-sm text-stone-700 leading-relaxed">{selectedDialog.notes}</p>
+            </Card>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ---- SHEET DETAIL VIEW ----
+  if (selectedSheet) {
+    return (
+      <div>
+        <div className="flex items-center">
+          <div className="flex-1"><BackHeader title={selectedSheet.title} subtitle={selectedSheet.titleEn} onBack={() => setSelectedSheet(null)} dark={dark} /></div>
+          <button onClick={() => window.print()} className={`no-print mr-4 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>🖨️ Imprimir</button>
+        </div>
+        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+          <Card dark={dark} className="overflow-hidden">
+            <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[selectedSheet.color] || tileColorMap.stone} text-white`}>
+              <p className="font-serif font-bold text-2xl lg:text-3xl">{selectedSheet.title}</p>
+              <p className="text-sm opacity-90 mt-1">{selectedSheet.titleEn}</p>
+            </div>
+            {selectedSheet.intro && (
+              <div className={`px-6 py-4 border-b ${dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-stone-50 border-stone-100'}`}>
+                <p className={`text-sm leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{selectedSheet.intro}</p>
+              </div>
+            )}
+            <div className="px-6 pb-6 pt-5 space-y-6">
+              {selectedSheet.content.map((section, si) => (
+                <div key={si}>
+                  {section.heading && (
+                    <p className={`text-sm font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.heading}</p>
+                  )}
+                  {section.rows && Array.isArray(section.rows) && (
+                    <DataTable data={section.rows} dark={dark} />
+                  )}
+                  {section.text && (
+                    <p className={`text-base leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.text}</p>
+                  )}
+                  {section.examples && Array.isArray(section.examples) && (
+                    <div className={`mt-3 rounded-xl p-4 ${dark ? 'bg-white/[0.04]' : 'bg-orange-50/50'}`}>
+                      <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Ejemplos reales</p>
+                      <div className="space-y-2.5">
+                        {section.examples.map((ex, ei) => (
+                          <div key={ei}>
+                            <div className="flex items-start gap-2">
+                              <p className="font-serif italic text-base flex-1">"{ex.es}"</p>
+                              <SpeakBtn text={ex.es} size="sm" />
+                            </div>
+                            <p className={`text-xs mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{ex.en}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- MAIN TAB VIEW ----
+  return (
+    <div>
+      <BackHeader title="Negocios" subtitle="Business Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+        <div className="hidden lg:block mb-6">
+          <h2 className="text-2xl font-serif font-bold">Negocios</h2>
+          <p className="text-sm text-stone-500 mt-1">Español para reuniones, inversión deportiva y agencia de jugadores</p>
+        </div>
+        <div className="mb-6">
+          <TabBar dark={dark} tabs={[
+            {id:'vocabulario',label:'Vocabulario'},
+            {id:'frases',label:'Frases'},
+            {id:'conversaciones',label:'Conversaciones'},
+            {id:'chuletas',label:'Chuletas'}
+          ]} active={tab} onChange={setTab} />
+        </div>
+
+        {tab === 'vocabulario' && (
+          <div className="space-y-6">
+            {BUSINESS_VOCAB.map(group => (
+              <Card key={group.id} dark={dark} className="overflow-hidden">
+                <div className={`px-5 py-4 bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} text-white flex items-center gap-3`}>
+                  <span className="text-2xl">{group.emoji}</span>
+                  <div>
+                    <p className="font-serif font-bold text-lg leading-tight">{group.title}</p>
+                    <p className="text-xs opacity-90">{group.titleEn}</p>
+                  </div>
+                </div>
+                <div className="p-5 space-y-3">
+                  {group.items.map((it, i) => (
+                    <div key={i} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.03]' : 'bg-stone-50'}`}>
+                      <div className="flex items-start gap-2">
+                        <p className="font-serif font-bold text-base flex-1">{it.es}</p>
+                        <SpeakBtn text={it.es} size="sm" />
+                      </div>
+                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{it.en}</p>
+                      {it.example && (
+                        <div className="mt-2">
+                          <div className="flex items-start gap-2">
+                            <p className="text-sm italic flex-1">"{it.example}"</p>
+                            <SpeakBtn text={it.example} size="sm" />
+                          </div>
+                          {it.exampleEn && <p className={`text-xs mt-0.5 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{it.exampleEn}</p>}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {tab === 'frases' && (
+          <div className="space-y-6">
+            {BUSINESS_PHRASES.map(group => (
+              <Card key={group.id} dark={dark} className="overflow-hidden">
+                <div className={`px-5 py-4 bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} text-white flex items-center gap-3`}>
+                  <span className="text-2xl">{group.emoji}</span>
+                  <div>
+                    <p className="font-serif font-bold text-lg leading-tight">{group.title}</p>
+                    <p className="text-xs opacity-90">{group.titleEn}</p>
+                  </div>
+                </div>
+                <div className="p-5 space-y-3">
+                  {group.items.map((it, i) => (
+                    <div key={i} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.03]' : 'bg-stone-50'}`}>
+                      <div className="flex items-start gap-2">
+                        <p className="font-serif text-base flex-1">"{it.es}"</p>
+                        <SpeakBtn text={it.es} size="sm" />
+                      </div>
+                      <p className={`text-xs mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{it.en}</p>
+                      {it.when && (
+                        <p className={`text-[11px] mt-1.5 italic ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Cuándo: {it.when}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {tab === 'conversaciones' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {BUSINESS_DIALOGS.map(c => (
+              <button key={c.id} onClick={() => setSelectedDialog(c)} className="text-left">
+                <Card dark={dark} className="p-5 hover:shadow-md transition-shadow h-full">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">{c.emoji}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{c.level}</span>
+                    <span className="text-xs text-stone-400 ml-auto">{c.lines.length} líneas</span>
+                  </div>
+                  <p className="font-serif font-bold text-lg mb-1">{c.title}</p>
+                  <p className="text-xs text-stone-500 mb-2">{c.titleEn}</p>
+                  <p className="text-xs italic text-stone-600 line-clamp-3">{c.setting}</p>
+                </Card>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === 'chuletas' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {BUSINESS_SHEETS.map(sheet => (
+              <button key={sheet.id} onClick={() => setSelectedSheet(sheet)} className="text-left">
+                <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
+                  <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
+                  <div className="p-5">
+                    <p className="font-serif font-bold text-lg leading-tight">{sheet.title}</p>
+                    <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sheet.titleEn}</p>
+                    {sheet.intro && <p className={`text-xs mt-2 line-clamp-2 leading-relaxed ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{sheet.intro}</p>}
+                    <p className={`text-xs mt-2 ${dark ? 'text-stone-600' : 'text-stone-400'}`}>{sheet.content.length} secciones · Toca para abrir →</p>
+                  </div>
+                </Card>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Build the global search index now that ALL data constants (including BUSINESS_*) are defined.
+SEARCH_INDEX = buildSearchIndex();
+
+// ============================================================
 // MAIN APP
 // ============================================================
 
@@ -9113,6 +10124,7 @@ function App() {
     { id: 'frases', label: 'Frases', emoji: '💬' },
     { id: 'lecturas', label: 'Lecturas', emoji: '📖' },
     { id: 'conversaciones', label: 'Conversaciones', emoji: '🎧' },
+    { id: 'negocios', label: 'Negocios', emoji: '💼' },
     { id: 'ejercicios', label: 'Ejercicios', emoji: '✏️' },
   ];
 
@@ -9129,6 +10141,7 @@ function App() {
       case 'frases': return <Frases {...props} />;
       case 'lecturas': return <Lecturas {...props} />;
       case 'conversaciones': return <Conversaciones {...props} />;
+      case 'negocios': return <Negocios {...props} />;
       case 'ejercicios': return <Ejercicios {...props} />;
       case 'glosario': return <Vocabulario {...props} initialTab="glosario" />;
       default: return <Inicio dark={dark} section={section} setSection={goTo} />;
