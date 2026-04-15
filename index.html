@@ -9759,6 +9759,8 @@ const BUSINESS_SHEETS = [
 
 function Negocios({ onBack, dark, onSearch }) {
   const [tab, setTab] = useState('vocabulario');
+  const [selectedVocab, setSelectedVocab] = useState(null);
+  const [selectedPhrases, setSelectedPhrases] = useState(null);
   const [selectedDialog, setSelectedDialog] = useState(null);
   const [selectedSheet, setSelectedSheet] = useState(null);
   const [showTranslation, setShowTranslation] = useState(true);
@@ -9824,6 +9826,80 @@ function Negocios({ onBack, dark, onSearch }) {
     setPlayingIdx(null);
     setPlayMode(null);
   };
+
+  // ---- VOCAB CATEGORY DETAIL VIEW (cards grid, no scrolling list) ----
+  if (selectedVocab) {
+    return (
+      <div>
+        <BackHeader title={selectedVocab.title} subtitle={selectedVocab.titleEn} onBack={() => setSelectedVocab(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-5">
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[selectedVocab.color] || tileColorMap.stone} flex items-center justify-center text-3xl shadow-sm`}>
+              {selectedVocab.emoji}
+            </div>
+            <div>
+              <p className="font-serif font-bold text-2xl leading-tight">{selectedVocab.title}</p>
+              <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedVocab.titleEn} · {selectedVocab.items.length} términos</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {selectedVocab.items.map((it, i) => (
+              <Card key={i} dark={dark} className="p-5 flex flex-col min-h-[160px]">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-serif font-bold text-lg leading-tight flex-1">{it.es}</p>
+                  <SpeakBtn text={it.es} size="sm" />
+                </div>
+                <p className={`text-sm font-medium mb-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{it.en}</p>
+                {it.example && (
+                  <div className="mt-auto pt-2 border-t border-stone-100">
+                    <div className="flex items-start gap-2">
+                      <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>"{it.example}"</p>
+                      <SpeakBtn text={it.example} size="sm" />
+                    </div>
+                    {it.exampleEn && <p className={`text-xs mt-1 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{it.exampleEn}</p>}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- PHRASES GROUP DETAIL VIEW (cards grid) ----
+  if (selectedPhrases) {
+    return (
+      <div>
+        <BackHeader title={selectedPhrases.title} subtitle={selectedPhrases.titleEn} onBack={() => setSelectedPhrases(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-5">
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[selectedPhrases.color] || tileColorMap.stone} flex items-center justify-center text-3xl shadow-sm`}>
+              {selectedPhrases.emoji}
+            </div>
+            <div>
+              <p className="font-serif font-bold text-2xl leading-tight">{selectedPhrases.title}</p>
+              <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedPhrases.titleEn} · {selectedPhrases.items.length} frases</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {selectedPhrases.items.map((it, i) => (
+              <Card key={i} dark={dark} className="p-5 flex flex-col min-h-[180px]">
+                <div className="flex items-start gap-2 mb-2">
+                  <p className="font-serif text-base leading-snug flex-1">"{it.es}"</p>
+                  <SpeakBtn text={it.es} size="sm" />
+                </div>
+                <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{it.en}</p>
+                {it.when && (
+                  <p className={`text-[11px] italic mt-auto pt-3 ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Cuándo: {it.when}</p>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ---- DIALOG DETAIL VIEW ----
   if (selectedDialog) {
@@ -9990,84 +10066,51 @@ function Negocios({ onBack, dark, onSearch }) {
         </div>
 
         {tab === 'vocabulario' && (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {BUSINESS_VOCAB.map(group => (
-              <Card key={group.id} dark={dark} className="overflow-hidden">
-                <div className={`px-5 py-4 bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} text-white flex items-center gap-3`}>
-                  <span className="text-2xl">{group.emoji}</span>
-                  <div>
-                    <p className="font-serif font-bold text-lg leading-tight">{group.title}</p>
-                    <p className="text-xs opacity-90">{group.titleEn}</p>
+              <button key={group.id} onClick={() => setSelectedVocab(group)} className="text-left">
+                <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[180px] flex flex-col">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} flex items-center justify-center text-3xl mb-4 shadow-sm`}>
+                    {group.emoji}
                   </div>
-                </div>
-                <div className="p-5 space-y-3">
-                  {group.items.map((it, i) => (
-                    <div key={i} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.03]' : 'bg-stone-50'}`}>
-                      <div className="flex items-start gap-2">
-                        <p className="font-serif font-bold text-base flex-1">{it.es}</p>
-                        <SpeakBtn text={it.es} size="sm" />
-                      </div>
-                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{it.en}</p>
-                      {it.example && (
-                        <div className="mt-2">
-                          <div className="flex items-start gap-2">
-                            <p className="text-sm italic flex-1">"{it.example}"</p>
-                            <SpeakBtn text={it.example} size="sm" />
-                          </div>
-                          {it.exampleEn && <p className={`text-xs mt-0.5 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{it.exampleEn}</p>}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </Card>
+                  <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
+                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
+                  <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{group.items.length} términos →</p>
+                </Card>
+              </button>
             ))}
           </div>
         )}
 
         {tab === 'frases' && (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {BUSINESS_PHRASES.map(group => (
-              <Card key={group.id} dark={dark} className="overflow-hidden">
-                <div className={`px-5 py-4 bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} text-white flex items-center gap-3`}>
-                  <span className="text-2xl">{group.emoji}</span>
-                  <div>
-                    <p className="font-serif font-bold text-lg leading-tight">{group.title}</p>
-                    <p className="text-xs opacity-90">{group.titleEn}</p>
+              <button key={group.id} onClick={() => setSelectedPhrases(group)} className="text-left">
+                <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[180px] flex flex-col">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} flex items-center justify-center text-3xl mb-4 shadow-sm`}>
+                    {group.emoji}
                   </div>
-                </div>
-                <div className="p-5 space-y-3">
-                  {group.items.map((it, i) => (
-                    <div key={i} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.03]' : 'bg-stone-50'}`}>
-                      <div className="flex items-start gap-2">
-                        <p className="font-serif text-base flex-1">"{it.es}"</p>
-                        <SpeakBtn text={it.es} size="sm" />
-                      </div>
-                      <p className={`text-xs mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{it.en}</p>
-                      {it.when && (
-                        <p className={`text-[11px] mt-1.5 italic ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Cuándo: {it.when}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </Card>
+                  <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
+                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
+                  <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{group.items.length} frases →</p>
+                </Card>
+              </button>
             ))}
           </div>
         )}
 
         {tab === 'conversaciones' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {BUSINESS_DIALOGS.map(c => (
               <button key={c.id} onClick={() => setSelectedDialog(c)} className="text-left">
-                <Card dark={dark} className="p-5 hover:shadow-md transition-shadow h-full">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{c.emoji}</span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{c.level}</span>
-                    <span className="text-xs text-stone-400 ml-auto">{c.lines.length} líneas</span>
+                <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[180px] flex flex-col">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-3xl">{c.emoji}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700 ml-auto">{c.level}</span>
                   </div>
-                  <p className="font-serif font-bold text-lg mb-1">{c.title}</p>
-                  <p className="text-xs text-stone-500 mb-2">{c.titleEn}</p>
-                  <p className="text-xs italic text-stone-600 line-clamp-3">{c.setting}</p>
+                  <p className="font-bold text-base lg:text-lg leading-tight mb-1">{c.title}</p>
+                  <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{c.titleEn}</p>
+                  <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{c.lines.length} líneas →</p>
                 </Card>
               </button>
             ))}
