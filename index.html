@@ -3860,55 +3860,51 @@ async function ttsFetchElevenLabs(text, voiceId, apiKey) {
   return btoa(bin);
 }
 
-// ── Azure Neural TTS fetch (token-based auth) ──
-// Azure requires a short-lived Bearer token rather than the raw key for TTS calls.
-// Step 1: exchange the API key for a 10-min token via the STS endpoint.
-// Step 2: POST SSML to the TTS endpoint using that token.
-async function ttsFetchAzure(text, voiceName, apiKey, region) {
-  // Step 1 — get token
-  const tokenRes = await fetch(
-    `https://${region}.api.cognitive.microsoft.com/sts/v1.0/issueToken`,
-    { method: 'POST', headers: { 'Ocp-Apim-Subscription-Key': apiKey, 'Content-Length': '0' } }
-  );
-  if (!tokenRes.ok) {
-    const err = await tokenRes.text().catch(() => '');
-    throw new Error('Azure auth ' + tokenRes.status + ': ' + (err || '(check API key and region)'));
-  }
-  const token = (await tokenRes.text()).trim();
-  if (!token) throw new Error('Azure auth: empty token (CORS may be blocking token endpoint)');
+// ── Azure Neural TTS via official Speech SDK (browser-safe) ──
+// The REST endpoint has CORS quirks; the SDK uses WebSockets and works reliably.
+// Loaded lazily from CDN on first call (~2 MB, cached after that).
+let _azureSDK = null;
+async function loadAzureSDK() {
+  if (_azureSDK) return _azureSDK;
+  if (window.SpeechSDK) { _azureSDK = window.SpeechSDK; return _azureSDK; }
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://aka.ms/csspeech/jsbrowserpackageraw';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Could not load Azure Speech SDK'));
+    document.head.appendChild(s);
+  });
+  _azureSDK = window.SpeechSDK;
+  return _azureSDK;
+}
 
-  // Step 2 — synthesise
-  const escaped = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/'/g, '&apos;');
-  // Minimal SSML matching Azure REST docs exactly — no xmlns, plain voice element
-  const ssml = `<speak version='1.0' xml:lang='es-ES'><voice xml:lang='es-ES' name='${voiceName}'>${escaped}</voice></speak>`;
-  const response = await fetch(
-    `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/ssml+xml',
-        'X-Microsoft-Azure-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
+async function ttsFetchAzure(text, voiceName, apiKey, region) {
+  const SDK = await loadAzureSDK();
+  const cfg = SDK.SpeechConfig.fromSubscription(apiKey, region);
+  cfg.speechSynthesisVoiceName = voiceName;
+  cfg.speechSynthesisOutputFormat = SDK.SpeechSynthesisOutputFormat.Audio24Khz96KBitRateMonoMp3;
+  // null AudioConfig → synthesise to in-memory buffer (no speaker output yet)
+  const synth = new SDK.SpeechSynthesizer(cfg, null);
+  return new Promise((resolve, reject) => {
+    synth.speakTextAsync(
+      text,
+      result => {
+        synth.close();
+        if (result.reason === SDK.ResultReason.SynthesizingAudioCompleted) {
+          const bytes = new Uint8Array(result.audioData);
+          let bin = '';
+          const CHUNK = 0x8000;
+          for (let i = 0; i < bytes.length; i += CHUNK) {
+            bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+          }
+          resolve(btoa(bin));
+        } else {
+          reject(new Error('Azure synthesis failed: ' + (result.errorDetails || result.reason)));
+        }
       },
-      body: ssml,
-    }
-  );
-  if (!response.ok) {
-    const errText = await response.text().catch(() => '');
-    throw new Error('Azure TTS ' + response.status + ': ' + (errText || '(no body)'));
-  }
-  const buf = await response.arrayBuffer();
-  const bytes = new Uint8Array(buf);
-  let bin = '';
-  const CHUNK = 0x8000;
-  for (let i = 0; i < bytes.length; i += CHUNK) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
-  }
-  return btoa(bin);
+      err => { synth.close(); reject(new Error('Azure SDK: ' + err)); }
+    );
+  });
 }
 
 // ── Azure getAudioUrl (cache-first) ──
