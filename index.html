@@ -3590,6 +3590,7 @@ function tickStreak() {
   s.best = Math.max(s.best || 0, s.count);
   s.lastDate = today;
   setStorage('aprende.streak', s);
+  achievementCheck({ streak: s.count });
   return s;
 }
 
@@ -3708,23 +3709,23 @@ const TTS_DEFAULT_MALE   = 'CwhRBWXzGAHq8TQ4Fs17'; // Roger
 
 // ── Azure Neural TTS — Spanish voices (Spain + Latin America) ──
 const AZURE_VOICES_FEMALE = [
-  { name:'es-ES-ElviraNeural',   label:'Elena',       desc:'Madrid · cálida, natural ★' },
-  { name:'es-ES-TrianaNeural',   label:'Triana',      desc:'Sevilla · expresiva, flamenca' },
-  { name:'es-ES-PaulaNeural',    label:'Paula',       desc:'Valencia · suave, cercana' },
-  { name:'es-ES-LiaNeural',      label:'Lía',         desc:'Barcelona · moderna, urbana' },
-  { name:'es-ES-IreneNeural',    label:'Irene',       desc:'Bilbao · clara, norteña' },
-  { name:'es-ES-AbrilNeural',    label:'Abril',       desc:'Sevilla · joven, vivaz' },
-  { name:'es-ES-EstrellaNeural', label:'Estrella',    desc:'Galicia · amigable, atlántica' },
-  { name:'es-MX-DaliaNeural',    label:'Dalia',       desc:'Ciudad de México · natural ★' },
-  { name:'es-MX-LarissaNeural',  label:'Larissa',     desc:'Monterrey · cálida, regiomontana' },
+  { name:'es-ES-ElviraNeural',   label:'Elena',       desc:'cálida, pausada ★' },
+  { name:'es-ES-TrianaNeural',   label:'Triana',      desc:'expresiva, con carácter' },
+  { name:'es-ES-PaulaNeural',    label:'Paula',       desc:'suave, amigable' },
+  { name:'es-ES-LiaNeural',      label:'Lía',         desc:'moderna, clara' },
+  { name:'es-ES-IreneNeural',    label:'Irene',       desc:'limpia, directa' },
+  { name:'es-ES-AbrilNeural',    label:'Abril',       desc:'joven, energética' },
+  { name:'es-ES-EstrellaNeural', label:'Estrella',    desc:'viva, cercana' },
+  { name:'es-MX-DaliaNeural',    label:'Dalia',       desc:'natural · latam ★' },
+  { name:'es-MX-LarissaNeural',  label:'Larissa',     desc:'cálida · latam' },
 ];
 const AZURE_VOICES_MALE = [
-  { name:'es-ES-AlvaroNeural',   label:'Álvaro',      desc:'Madrid · profesional ★' },
-  { name:'es-ES-SaulNeural',     label:'Saúl',        desc:'Sevilla · conversacional, cálido' },
-  { name:'es-ES-DarioNeural',    label:'Darío',       desc:'Barcelona · claro, cosmopolita' },
-  { name:'es-ES-TeoNeural',      label:'Teo',         desc:'Valencia · joven, cercano' },
-  { name:'es-ES-ArnauNeural',    label:'Arnau',       desc:'Bilbao · moderno, directo' },
-  { name:'es-MX-JorgeNeural',    label:'Jorge',       desc:'Ciudad de México · profesional' },
+  { name:'es-ES-AlvaroNeural',   label:'Álvaro',      desc:'formal, seguro ★' },
+  { name:'es-ES-SaulNeural',     label:'Saúl',        desc:'conversacional, cálido' },
+  { name:'es-ES-DarioNeural',    label:'Darío',       desc:'claro, dinámico' },
+  { name:'es-ES-TeoNeural',      label:'Teo',         desc:'joven, informal' },
+  { name:'es-ES-ArnauNeural',    label:'Arnau',       desc:'neutro, directo' },
+  { name:'es-MX-JorgeNeural',    label:'Jorge',       desc:'profesional · latam' },
 ];
 const AZURE_REGIONS = [
   { id:'westeurope',       label:'West Europe — Amsterdam (recomendado)' },
@@ -3741,17 +3742,17 @@ const AZURE_DEFAULT_REGION = 'westeurope';
 
 // ── Google Cloud TTS — Spanish voices ──
 const GOOGLE_VOICES_FEMALE = [
-  { name:'es-ES-Neural2-A', lang:'es-ES', label:'Sofía',           desc:'Madrid · Neural2 ★ recomendada' },
-  { name:'es-ES-Neural2-C', lang:'es-ES', label:'Carmen',          desc:'Sevilla · Neural2, expresiva' },
-  { name:'es-ES-Wavenet-C', lang:'es-ES', label:'Nuria',           desc:'Barcelona · WaveNet, clara' },
-  { name:'es-ES-Wavenet-D', lang:'es-ES', label:'Pilar',           desc:'Zaragoza · WaveNet, cálida' },
-  { name:'es-US-Neural2-A', lang:'es-US', label:'Valentina',       desc:'Ciudad de México · Neural2' },
+  { name:'es-ES-Neural2-A', lang:'es-ES', label:'Sofía',           desc:'Neural2 · natural ★' },
+  { name:'es-ES-Neural2-C', lang:'es-ES', label:'Carmen',          desc:'Neural2 · expresiva' },
+  { name:'es-ES-Wavenet-C', lang:'es-ES', label:'Nuria',           desc:'WaveNet · suave' },
+  { name:'es-ES-Wavenet-D', lang:'es-ES', label:'Pilar',           desc:'WaveNet · reposada' },
+  { name:'es-US-Neural2-A', lang:'es-US', label:'Valentina',       desc:'Neural2 · latam' },
 ];
 const GOOGLE_VOICES_MALE = [
-  { name:'es-ES-Neural2-B', lang:'es-ES', label:'Alejandro',       desc:'Madrid · Neural2 ★ recomendado' },
-  { name:'es-ES-Neural2-D', lang:'es-ES', label:'Pablo',           desc:'Bilbao · Neural2, serio' },
-  { name:'es-ES-Wavenet-B', lang:'es-ES', label:'Antonio',         desc:'Sevilla · WaveNet, profundo' },
-  { name:'es-US-Neural2-B', lang:'es-US', label:'Diego',           desc:'Ciudad de México · Neural2' },
+  { name:'es-ES-Neural2-B', lang:'es-ES', label:'Alejandro',       desc:'Neural2 · claro ★' },
+  { name:'es-ES-Neural2-D', lang:'es-ES', label:'Pablo',           desc:'Neural2 · serio' },
+  { name:'es-ES-Wavenet-B', lang:'es-ES', label:'Antonio',         desc:'WaveNet · grave' },
+  { name:'es-US-Neural2-B', lang:'es-US', label:'Diego',           desc:'Neural2 · latam' },
 ];
 const GOOGLE_DEFAULT_FEMALE = 'es-ES-Neural2-A';
 const GOOGLE_DEFAULT_MALE   = 'es-ES-Neural2-B';
@@ -4289,6 +4290,8 @@ function Inicio({ dark, section, setSection }) {
   const phrase = getPhraseOfDay();
   const [streak, setStreak] = useState(() => getStreak());
   useEffect(() => { setStreak(tickStreak()); }, []);
+  const [xpState, setXpState] = React.useState(() => xpGetState());
+  const level = xpGetLevel(xpState.total);
 
   // Weak area computation
   const weakAreas = React.useMemo(() => {
@@ -4435,6 +4438,31 @@ function Inicio({ dark, section, setSection }) {
               </div>
             </div>
           )}
+          {/* XP + Level bar */}
+          <Card dark={dark} className="p-5">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{level.emoji}</span>
+                <div>
+                  <p className="font-bold text-sm">{level.label}</p>
+                  <p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>{level.total} XP total · +{xpState.todayXP||0} hoy</p>
+                </div>
+              </div>
+              {level.next && <p className={`text-xs font-semibold ${dark?'text-stone-400':'text-stone-500'}`}>{level.next.min - level.total} XP para {level.next.label}</p>}
+            </div>
+            <div className={`h-2.5 rounded-full overflow-hidden ${dark?'bg-white/10':'bg-stone-100'}`}>
+              <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-700 rounded-full" style={{width: level.pct+'%'}} />
+            </div>
+            {achievementGet().length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {achievementGet().slice(-6).map(id => {
+                  const a = ACHIEVEMENTS_DEF.find(x=>x.id===id);
+                  return a ? <span key={id} title={a.title+': '+a.desc} className={`text-lg cursor-default`}>{a.emoji}</span> : null;
+                })}
+                <span className={`text-xs self-center ${dark?'text-stone-500':'text-stone-400'}`}>{achievementGet().length} logros</span>
+              </div>
+            )}
+          </Card>
         </div>
         <div>
           <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Secciones</p>
@@ -4471,6 +4499,31 @@ function Inicio({ dark, section, setSection }) {
             </div>
           </div>
         )}
+        {/* XP + Level bar */}
+        <Card dark={dark} className="p-5">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{level.emoji}</span>
+              <div>
+                <p className="font-bold text-sm">{level.label}</p>
+                <p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>{level.total} XP total · +{xpState.todayXP||0} hoy</p>
+              </div>
+            </div>
+            {level.next && <p className={`text-xs font-semibold ${dark?'text-stone-400':'text-stone-500'}`}>{level.next.min - level.total} XP para {level.next.label}</p>}
+          </div>
+          <div className={`h-2.5 rounded-full overflow-hidden ${dark?'bg-white/10':'bg-stone-100'}`}>
+            <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-700 rounded-full" style={{width: level.pct+'%'}} />
+          </div>
+          {achievementGet().length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {achievementGet().slice(-6).map(id => {
+                const a = ACHIEVEMENTS_DEF.find(x=>x.id===id);
+                return a ? <span key={id} title={a.title+': '+a.desc} className={`text-lg cursor-default`}>{a.emoji}</span> : null;
+              })}
+              <span className={`text-xs self-center ${dark?'text-stone-500':'text-stone-400'}`}>{achievementGet().length} logros</span>
+            </div>
+          )}
+        </Card>
         <div>
           <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Secciones</p>
           <div className="grid grid-cols-2 gap-3">
@@ -11171,119 +11224,205 @@ const DICTADO_SENTENCES = {
 
 function Dictado({ onBack, dark }) {
   const [level, setLevel] = React.useState(null);
-  const [index, setIndex] = React.useState(0);
+  const [pool, setPool] = React.useState([]);
+  const [poolIdx, setPoolIdx] = React.useState(0);
   const [input, setInput] = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
   const [replayCount, setReplayCount] = React.useState(0);
-  const [score, setScore] = React.useState({ correct: 0, total: 0 });
+  const [sessionScore, setSessionScore] = React.useState({ correct:0, total:0, sentences:0 });
+  const [xpToast, setXpToast] = React.useState(null);
+  const [weakMode, setWeakMode] = React.useState(false);
   const inputRef = React.useRef(null);
 
-  const sentences = level ? DICTADO_SENTENCES[level] : [];
-  const current = sentences[index] || '';
+  const current = pool[poolIdx] || '';
 
-  const handlePlay = () => {
-    speakES(current, { gender: 'female' });
-    setReplayCount(c => c + 1);
-  };
+  // Build a weighted pool: unseen first, then low-accuracy
+  const buildPool = React.useCallback((lvl, weakOnly) => {
+    const sentences = DICTADO_SENTENCES[lvl] || [];
+    const stats = dictadoStatsGet();
+    const scored = sentences.map(s => {
+      const key = s.slice(0,30);
+      const st = stats[key];
+      if (!st) return { s, weight: 10 }; // never seen — high priority
+      const acc = st.totalWords > 0 ? st.correctWords / st.totalWords : 0;
+      if (weakOnly && acc >= 0.85) return null;
+      return { s, weight: acc < 0.6 ? 8 : acc < 0.85 ? 4 : 1 };
+    }).filter(Boolean);
+    // Weighted shuffle
+    const shuffled = [];
+    const items = [...scored];
+    while (items.length) {
+      const totalW = items.reduce((a,b) => a+b.weight, 0);
+      let r = Math.random() * totalW;
+      for (let i = 0; i < items.length; i++) {
+        r -= items[i].weight;
+        if (r <= 0) { shuffled.push(items[i].s); items.splice(i,1); break; }
+      }
+    }
+    return shuffled.length ? shuffled : sentences;
+  }, []);
 
-  const handleNext = () => {
-    const nextIndex = (index + 1) % sentences.length;
-    setIndex(nextIndex);
+  const startLevel = (lvl, weak=false) => {
+    setLevel(lvl);
+    setWeakMode(weak);
+    const p = buildPool(lvl, weak);
+    setPool(p);
+    setPoolIdx(0);
     setInput('');
     setSubmitted(false);
     setReplayCount(0);
+    setSessionScore({ correct:0, total:0, sentences:0 });
+  };
+
+  const handlePlay = () => {
+    speakES(current, { gender:'female' });
+    setReplayCount(c => c+1);
   };
 
   const handleCheck = () => {
     if (!input.trim()) return;
-    const correctWords = normalizeForScoring(current).split(/\s+/);
-    const userWords = normalizeForScoring(input).split(/\s+/);
+    const normCorrect = normalizeForScoring(current).split(/\s+/);
+    const normUser    = normalizeForScoring(input).split(/\s+/);
     let correct = 0;
-    correctWords.forEach((w, i) => { if (w === (userWords[i] || '')) correct++; });
-    setScore(s => ({ correct: s.correct + correct, total: s.total + correctWords.length }));
+    normCorrect.forEach((w,i) => { if (w === (normUser[i]||'')) correct++; });
+    const total = normCorrect.length;
+    const isPerfect = correct === total;
+    const xpEarned = Math.max(1, Math.round((correct/total)*10)) + (isPerfect ? 5 : 0);
+    dictadoStatsUpdate(current, correct, total);
+    xpAdd(xpEarned);
+    tickStreak();
+    setSessionScore(s => ({ correct:s.correct+correct, total:s.total+total, sentences:s.sentences+1 }));
     setSubmitted(true);
+    setXpToast(xpEarned);
+  };
+
+  const handleNext = () => {
+    const next = poolIdx + 1;
+    if (next >= pool.length) {
+      setLevel(null);
+    } else {
+      setPoolIdx(next);
+      setInput('');
+      setSubmitted(false);
+      setReplayCount(0);
+    }
   };
 
   const insertAccent = (char) => {
     const el = inputRef.current;
     if (!el) return;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    const newVal = input.slice(0, start) + char + input.slice(end);
+    const start = el.selectionStart, end = el.selectionEnd;
+    const newVal = input.slice(0,start) + char + input.slice(end);
     setInput(newVal);
-    requestAnimationFrame(() => {
-      el.setSelectionRange(start + 1, start + 1);
-      el.focus();
-    });
+    requestAnimationFrame(() => { el.setSelectionRange(start+1,start+1); el.focus(); });
   };
 
   const renderDiff = () => {
-    const correctWords = current.replace(/[¿¡]/g, '').replace(/[.,;:!?]/g, '').trim().split(/\s+/);
-    const normCorrect = normalizeForScoring(current).split(/\s+/);
-    const normUser = normalizeForScoring(input).split(/\s+/);
-    return correctWords.map((word, i) => {
-      const cw = normCorrect[i] || '';
-      const uw = normUser[i] || '';
-      const isCorrect = cw === uw;
-      const userAttempt = normUser[i] || '';
+    const displayWords = current.replace(/[¿¡]/g,'').replace(/[.,;:!?]/g,'').trim().split(/\s+/);
+    const normC = normalizeForScoring(current).split(/\s+/);
+    const normU = normalizeForScoring(input).split(/\s+/);
+    return displayWords.map((word,i) => {
+      const cw = normC[i]||'', uw = normU[i]||'';
+      const ok = cw===uw;
       return (
-        <span key={i} className="inline-flex flex-col items-center mr-2 mb-1">
-          {!isCorrect && (
-            <span className="text-[10px] text-red-400 font-mono">{userAttempt || '—'}</span>
-          )}
-          <span className={`text-sm font-semibold px-1 py-0.5 rounded ${isCorrect ? 'bg-emerald-100 text-emerald-800' : (userAttempt ? 'bg-red-100 text-red-800' : 'bg-stone-100 text-stone-400')}`}>
-            {word}
-          </span>
+        <span key={i} className="inline-flex flex-col items-center mr-2 mb-2">
+          {!ok && <span className="text-[10px] text-red-400 font-mono mb-0.5">{uw||'—'}</span>}
+          <span className={`text-sm font-semibold px-1.5 py-0.5 rounded ${ok?'bg-emerald-100 text-emerald-800':'bg-red-100 text-red-800'}`}>{word}</span>
         </span>
       );
     });
   };
 
+  // Stats for level select screen
+  const getLevelStats = (lvl) => {
+    const sentences = DICTADO_SENTENCES[lvl]||[];
+    const stats = dictadoStatsGet();
+    let mastered=0, weak=0;
+    sentences.forEach(s => {
+      const st = stats[s.slice(0,30)];
+      if (!st) return;
+      const acc = st.totalWords>0 ? st.correctWords/st.totalWords : 0;
+      if (acc >= 0.85) mastered++;
+      else weak++;
+    });
+    return { mastered, weak, total: sentences.length };
+  };
+
   if (!level) {
+    const totalDone = dictadoGetCount();
     return (
       <div>
         <BackHeader title="Dictado" subtitle="Escucha y escribe" onBack={onBack} dark={dark} />
         <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto space-y-6">
           <div>
             <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-2">Dictado</h2>
-            <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Escucha la frase y escribe lo que oyes. Elige un nivel para empezar.</p>
+            <p className={`text-sm ${dark?'text-stone-400':'text-stone-500'}`}>Escucha y escribe lo que oyes. Las frases difíciles vuelven más a menudo.</p>
           </div>
-          {score.total > 0 && (
+          {(sessionScore.sentences > 0 || totalDone > 0) && (
             <Card dark={dark} className="p-5">
-              <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-1">Puntuación total</p>
-              <p className="text-3xl font-serif font-bold text-orange-500">{score.correct} <span className="text-lg text-stone-400">/ {score.total}</span></p>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div><p className="text-2xl font-bold text-orange-500">{totalDone}</p><p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>completadas</p></div>
+                <div><p className="text-2xl font-bold">{sessionScore.correct}</p><p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>palabras hoy</p></div>
+                <div><p className="text-2xl font-bold">{sessionScore.sentences}</p><p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>frases hoy</p></div>
+              </div>
             </Card>
           )}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             {[
-              { id:'facil', label:'Fácil', sub:'A1–A2 · 15 frases', color:'bg-emerald-100 text-emerald-800' },
-              { id:'medio', label:'Medio', sub:'B1–B2 · 15 frases', color:'bg-amber-100 text-amber-800' },
-              { id:'dificil', label:'Difícil', sub:'C1 · 15 frases', color:'bg-red-100 text-red-800' },
-            ].map(l => (
-              <button key={l.id} onClick={() => { setLevel(l.id); setIndex(0); setInput(''); setSubmitted(false); setReplayCount(0); }}
-                className={`rounded-2xl p-4 text-left border-2 transition-all hover:shadow-md ${dark ? 'border-white/10 hover:border-white/20 bg-white/[0.04]' : 'border-stone-200 hover:border-orange-300 bg-white'}`}>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${l.color}`}>{l.label}</span>
-                <p className="font-serif font-bold text-base mt-2">{l.label}</p>
-                <p className={`text-xs mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{l.sub}</p>
-              </button>
-            ))}
+              { id:'facil',   label:'Fácil',   sub:'A1–A2 · frases cortas',     badge:'bg-emerald-100 text-emerald-800' },
+              { id:'medio',   label:'Medio',   sub:'B1–B2 · frases completas',   badge:'bg-amber-100 text-amber-800'    },
+              { id:'dificil', label:'Difícil', sub:'C1 · subjuntivo y más',      badge:'bg-red-100 text-red-800'        },
+            ].map(l => {
+              const st = getLevelStats(l.id);
+              return (
+                <Card dark={dark} key={l.id} className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider ${l.badge}`}>{l.label}</span>
+                      <p className={`text-sm ${dark?'text-stone-400':'text-stone-500'}`}>{l.sub}</p>
+                    </div>
+                    <div className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>
+                      ✅ {st.mastered}/{st.total}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => startLevel(l.id)}
+                      className="flex-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 text-sm transition-colors">
+                      ▶ Practicar
+                    </button>
+                    {st.weak > 0 && (
+                      <button onClick={() => startLevel(l.id, true)}
+                        className={`rounded-xl px-4 py-2.5 font-semibold text-sm border-2 transition-colors ${dark?'border-red-400/40 text-red-400 hover:bg-red-400/10':'border-red-300 text-red-600 hover:bg-red-50'}`}>
+                        🔁 {st.weak} pendientes
+                      </button>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>
     );
   }
 
+  const levelLabel = level==='facil'?'Fácil':level==='medio'?'Medio':'Difícil';
+  const progress = pool.length > 0 ? Math.round((poolIdx/pool.length)*100) : 0;
+
   return (
     <div>
-      <BackHeader title="Dictado" subtitle={`${level === 'facil' ? 'Fácil' : level === 'medio' ? 'Medio' : 'Difícil'} · ${index + 1}/${sentences.length}`} onBack={() => setLevel(null)} dark={dark} />
+      <BackHeader title="Dictado" subtitle={`${levelLabel}${weakMode?' · Pendientes':''} · ${poolIdx+1}/${pool.length}`} onBack={() => setLevel(null)} dark={dark} />
+      {xpToast && <XPToast xp={xpToast} onDone={() => setXpToast(null)} />}
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-5">
+        {/* Progress bar */}
+        <div className={`h-1.5 rounded-full overflow-hidden ${dark?'bg-white/10':'bg-stone-100'}`}>
+          <div className="h-full bg-orange-400 transition-all duration-500 rounded-full" style={{width:progress+'%'}} />
+        </div>
 
-        {score.total > 0 && (
-          <div className={`flex items-center gap-2 text-sm font-semibold ${dark ? 'text-stone-300' : 'text-stone-600'}`}>
-            <span className="text-orange-500">✓ {score.correct}</span>
-            <span className="text-stone-400">/</span>
-            <span>{score.total} palabras correctas</span>
-          </div>
+        {sessionScore.sentences > 0 && (
+          <p className={`text-sm font-semibold ${dark?'text-stone-400':'text-stone-500'}`}>
+            ✓ {sessionScore.correct}/{sessionScore.total} palabras correctas esta sesión
+          </p>
         )}
 
         <Card dark={dark} className="p-5">
@@ -11291,12 +11430,12 @@ function Dictado({ onBack, dark }) {
           <button onClick={handlePlay}
             className="w-full rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 flex items-center justify-center gap-2 text-sm transition-colors">
             <span>▶</span>
-            <span>Reproducir {replayCount > 0 ? `(×${replayCount + 1})` : ''}</span>
+            <span>Reproducir{replayCount>0?` (×${replayCount+1})`:''}</span>
           </button>
           {submitted && (
-            <div className="mt-4 pt-4 border-t border-stone-200">
+            <div className="mt-4 pt-4 border-t border-stone-100">
               <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-2">Respuesta correcta</p>
-              <p className="text-base font-serif font-semibold text-stone-700 mb-3">{current}</p>
+              <p className="font-serif font-semibold mb-3">{current}</p>
               <div className="flex flex-wrap">{renderDiff()}</div>
             </div>
           )}
@@ -11304,19 +11443,15 @@ function Dictado({ onBack, dark }) {
 
         <Card dark={dark} className="p-5">
           <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Tu respuesta</p>
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            disabled={submitted}
-            placeholder="Escribe lo que escuchas..."
-            rows={3}
-            className={`w-full rounded-xl px-4 py-3 text-sm border-2 resize-none outline-none transition-colors font-medium ${submitted ? 'opacity-60 cursor-not-allowed' : ''} ${dark ? 'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500 focus:border-orange-400' : 'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-orange-400'}`}
+          <textarea ref={inputRef} value={input} onChange={e=>setInput(e.target.value)} disabled={submitted}
+            onKeyDown={e=>{ if(e.key==='Enter'&&!e.shiftKey&&!submitted){e.preventDefault();handleCheck();} }}
+            placeholder="Escribe lo que escuchas..." rows={3}
+            className={`w-full rounded-xl px-4 py-3 text-sm border-2 resize-none outline-none transition-colors font-medium ${submitted?'opacity-60 cursor-not-allowed':''} ${dark?'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500 focus:border-orange-400':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-orange-400'}`}
           />
           <div className="flex flex-wrap gap-1.5 mt-2">
             {['á','é','í','ó','ú','ñ','ü'].map(ch => (
-              <button key={ch} onMouseDown={e => e.preventDefault()} onClick={() => insertAccent(ch)}
-                className={`rounded-lg px-2.5 py-1 text-sm font-semibold border transition-colors ${dark ? 'border-white/10 hover:bg-white/[0.1] text-stone-200' : 'border-stone-200 hover:bg-orange-50 hover:border-orange-300 text-stone-700'}`}>
+              <button key={ch} onMouseDown={e=>e.preventDefault()} onClick={()=>insertAccent(ch)}
+                className={`rounded-lg px-2.5 py-1 text-sm font-semibold border transition-colors ${dark?'border-white/10 hover:bg-white/10 text-stone-200':'border-stone-200 hover:bg-orange-50 hover:border-orange-300 text-stone-700'}`}>
                 {ch}
               </button>
             ))}
@@ -11330,12 +11465,11 @@ function Dictado({ onBack, dark }) {
             ) : (
               <button onClick={handleNext}
                 className="flex-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 text-sm transition-colors">
-                Siguiente →
+                {poolIdx+1 >= pool.length ? 'Terminar ronda' : 'Siguiente →'}
               </button>
             )}
           </div>
         </Card>
-
       </div>
     </div>
   );
@@ -11382,106 +11516,125 @@ function Pronunciacion({ onBack, dark }) {
   const [index, setIndex] = React.useState(0);
   const [recording, setRecording] = React.useState(false);
   const [transcript, setTranscript] = React.useState(null);
+  const [error, setError] = React.useState(null);
   const [history, setHistory] = React.useState([]);
+  const [xpToast, setXpToast] = React.useState(null);
   const recognitionRef = React.useRef(null);
 
-  const hasSpeechRecognition = typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
+  const SR = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
   const current = PRONUNCIACION_SENTENCES[index];
 
-  const handleListen = () => {
-    speakES(current, { gender: 'female' });
-  };
+  const handleListen = () => speakES(current, { gender:'female' });
 
   const handleRecord = () => {
-    if (!hasSpeechRecognition) return;
+    setError(null);
     if (recording) {
-      recognitionRef.current && recognitionRef.current.stop();
+      try { recognitionRef.current && recognitionRef.current.stop(); } catch(e){}
       setRecording(false);
       return;
     }
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setError('no_support'); return; }
     const recognition = new SR();
     recognition.lang = 'es-ES';
+    recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.maxAlternatives = 3;
     recognitionRef.current = recognition;
-    setRecording(true);
-    setTranscript(null);
+
+    recognition.onstart = () => setRecording(true);
     recognition.onresult = (e) => {
-      const result = e.results[0][0].transcript;
-      setTranscript(result);
+      // Pick the alternative closest to the target sentence
+      const alts = Array.from(e.results[0]).map(r => r.transcript);
+      const best = alts.reduce((best, t) => {
+        const acc = computeAccuracy(current, t);
+        return acc > computeAccuracy(current, best) ? t : best;
+      }, alts[0]);
+      const acc = computeAccuracy(current, best);
+      const xpEarned = acc >= 100 ? 15 : acc >= 80 ? 10 : acc >= 50 ? 5 : 2;
+      xpAdd(xpEarned);
+      tickStreak();
+      achievementCheck({ pronunciacionPct: acc });
+      setTranscript(best);
       setRecording(false);
-      const acc = computeAccuracy(current, result);
-      setHistory(h => [{ sentence: current, transcript: result, accuracy: acc }, ...h].slice(0, 5));
+      setXpToast(xpEarned);
+      setHistory(h => [{ sentence:current, transcript:best, accuracy:acc }, ...h].slice(0,5));
     };
-    recognition.onerror = () => { setRecording(false); };
-    recognition.onend = () => { setRecording(false); };
-    recognition.start();
+    recognition.onerror = (e) => {
+      setRecording(false);
+      if (e.error === 'not-allowed') setError('permission');
+      else if (e.error === 'no-speech') setError('no_speech');
+      else setError('generic');
+    };
+    recognition.onend = () => setRecording(false);
+    try { recognition.start(); } catch(e) { setRecording(false); setError('generic'); }
   };
 
   const handleNext = () => {
-    setIndex(i => (i + 1) % PRONUNCIACION_SENTENCES.length);
+    setIndex(i => (i+1) % PRONUNCIACION_SENTENCES.length);
     setTranscript(null);
+    setError(null);
     setRecording(false);
   };
 
   const computeAccuracy = (correct, spoken) => {
-    const cWords = normalizeForScoring(correct).split(/\s+/);
-    const sWords = normalizeForScoring(spoken).split(/\s+/);
+    const cw = normalizeForScoring(correct).split(/\s+/);
+    const sw = normalizeForScoring(spoken||'').split(/\s+/);
     let score = 0;
-    cWords.forEach((w, i) => {
-      const sw = sWords[i] || '';
-      if (w === sw) score += 1;
-      else if (levenshtein(w, sw) <= 1) score += 0.5;
+    cw.forEach((w,i) => {
+      const s = sw[i]||'';
+      if (w===s) score+=1;
+      else if (levenshtein(w,s)<=1) score+=0.5;
     });
-    return Math.round((score / cWords.length) * 100);
+    return Math.round((score/cw.length)*100);
   };
 
-  const renderWordResult = (correct, spoken) => {
-    const cWords = current.replace(/[¿¡]/g, '').split(/\s+/);
-    const normCorrect = normalizeForScoring(correct).split(/\s+/);
-    const normSpoken = normalizeForScoring(spoken).split(/\s+/);
-    return cWords.map((word, i) => {
-      const cw = normCorrect[i] || '';
-      const sw = normSpoken[i] || '';
-      let cls;
-      if (cw === sw) cls = 'bg-emerald-100 text-emerald-800';
-      else if (levenshtein(cw, sw) <= 1) cls = 'bg-amber-100 text-amber-800';
-      else cls = 'bg-red-100 text-red-800';
-      return (
-        <span key={i} className={`inline-block text-sm font-semibold px-1.5 py-0.5 rounded mr-1.5 mb-1 ${cls}`}>{word}</span>
-      );
+  const renderWordResult = () => {
+    const words = current.replace(/[¿¡.,;:!?]/g,'').split(/\s+/);
+    const nc = normalizeForScoring(current).split(/\s+/);
+    const ns = normalizeForScoring(transcript||'').split(/\s+/);
+    return words.map((w,i) => {
+      const cw=nc[i]||'', sw=ns[i]||'';
+      const cls = cw===sw ? 'bg-emerald-100 text-emerald-800' : levenshtein(cw,sw)<=1 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
+      return <span key={i} className={`inline-block text-sm font-semibold px-1.5 py-0.5 rounded mr-1.5 mb-1 ${cls}`}>{w}</span>;
     });
   };
 
   const accuracy = transcript != null ? computeAccuracy(current, transcript) : null;
 
+  const errorMessages = {
+    no_support: { title:'Navegador no compatible', msg:'El reconocimiento de voz requiere Chrome o Edge en escritorio. Abre esta página en Chrome.' },
+    permission:  { title:'Micrófono bloqueado', msg:'Haz clic en el icono 🔒 en la barra de dirección y permite el acceso al micrófono.' },
+    no_speech:   { title:'No se detectó voz', msg:'No se escuchó nada. Habla más alto o acércate al micrófono y vuelve a intentarlo.' },
+    generic:     { title:'Error de reconocimiento', msg:'No se pudo procesar el audio. Comprueba que el micrófono funciona e inténtalo de nuevo.' },
+  };
+
   return (
     <div>
       <BackHeader title="Pronunciación" subtitle="Habla y mejora" onBack={onBack} dark={dark} />
+      {xpToast && <XPToast xp={xpToast} onDone={() => setXpToast(null)} />}
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-5">
 
-        {!hasSpeechRecognition && (
+        {error && (
           <Card dark={dark} className="p-5 border-2 border-amber-300">
-            <p className="font-semibold text-amber-700 mb-1">Navegador no compatible</p>
-            <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>El reconocimiento de voz requiere Chrome o Edge. Abre esta página en Chrome para usar esta sección.</p>
+            <p className="font-semibold text-amber-700 mb-1">{errorMessages[error]?.title}</p>
+            <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>{errorMessages[error]?.msg}</p>
           </Card>
         )}
 
         <Card dark={dark} className="p-6 text-center">
-          <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">{index + 1} / {PRONUNCIACION_SENTENCES.length}</p>
-          <p className="text-xl font-serif font-bold leading-relaxed mb-5">{current}</p>
+          <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark?'text-stone-500':'text-stone-400'}`}>{index+1} / {PRONUNCIACION_SENTENCES.length}</p>
+          <p className="text-xl font-serif font-bold leading-relaxed mb-6">{current}</p>
           <div className="flex gap-3 justify-center flex-wrap">
             <button onClick={handleListen}
-              className="rounded-xl px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-sm transition-colors flex items-center gap-2">
-              <span>🔊</span> Escuchar
+              className={`rounded-xl px-5 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${dark?'bg-white/10 hover:bg-white/20 text-stone-200':'bg-stone-100 hover:bg-stone-200 text-stone-700'}`}>
+              🔊 Escuchar
             </button>
-            <button onClick={handleRecord} disabled={!hasSpeechRecognition}
-              className={`rounded-xl px-5 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${recording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'} disabled:opacity-40`}>
-              {recording ? <><span>🔴</span> Escuchando...</> : <><span>🎤</span> Hablar</>}
+            <button onClick={handleRecord}
+              className={`rounded-xl px-6 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${recording?'bg-red-500 hover:bg-red-600 text-white animate-pulse':'bg-orange-500 hover:bg-orange-600 text-white'}`}>
+              {recording ? '🔴 Escuchando...' : '🎤 Hablar'}
             </button>
             <button onClick={handleNext}
-              className="rounded-xl px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-sm transition-colors">
+              className={`rounded-xl px-5 py-2.5 font-semibold text-sm transition-colors ${dark?'bg-white/10 hover:bg-white/20 text-stone-200':'bg-stone-100 hover:bg-stone-200 text-stone-700'}`}>
               Siguiente →
             </button>
           </div>
@@ -11491,17 +11644,17 @@ function Pronunciacion({ onBack, dark }) {
           <Card dark={dark} className="p-5">
             <div className="flex items-center justify-between mb-3">
               <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500">Resultado</p>
-              <span className={`text-3xl font-serif font-bold ${accuracy >= 80 ? 'text-emerald-600' : accuracy >= 50 ? 'text-amber-600' : 'text-red-500'}`}>{accuracy}%</span>
+              <span className={`text-3xl font-bold ${accuracy>=80?'text-emerald-600':accuracy>=50?'text-amber-600':'text-red-500'}`}>{accuracy}%</span>
             </div>
-            <div className="flex flex-wrap mb-4">{renderWordResult(current, transcript)}</div>
-            <div className={`text-xs rounded-lg p-2 ${dark ? 'bg-white/[0.06]' : 'bg-stone-50'}`}>
-              <span className={`font-semibold ${dark ? 'text-stone-300' : 'text-stone-600'}`}>Tú dijiste: </span>
-              <span className={dark ? 'text-stone-400' : 'text-stone-500'}>{transcript}</span>
+            <div className="flex flex-wrap mb-4">{renderWordResult()}</div>
+            <div className={`text-xs rounded-xl p-3 ${dark?'bg-white/[0.06]':'bg-stone-50'}`}>
+              <span className={`font-semibold ${dark?'text-stone-300':'text-stone-600'}`}>Tú dijiste: </span>
+              <span className={dark?'text-stone-400':'text-stone-500'}>{transcript}</span>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2 text-xs">
-              <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-medium">Verde = correcto</span>
-              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">Naranja = casi (dist. ≤1)</span>
-              <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-medium">Rojo = diferente</span>
+            <div className="flex flex-wrap gap-1.5 mt-2 text-xs">
+              <span className="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-700 font-medium">🟢 correcto</span>
+              <span className="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-700 font-medium">🟡 casi</span>
+              <span className="px-2 py-0.5 rounded-lg bg-red-100 text-red-700 font-medium">🔴 diferente</span>
             </div>
           </Card>
         )}
@@ -11510,16 +11663,136 @@ function Pronunciacion({ onBack, dark }) {
           <Card dark={dark} className="p-5">
             <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-3">Últimos intentos</p>
             <div className="space-y-2">
-              {history.map((h, i) => (
-                <div key={i} className={`flex items-center gap-3 text-sm ${dark ? 'text-stone-300' : 'text-stone-600'}`}>
-                  <span className={`font-bold w-10 text-right flex-shrink-0 ${h.accuracy >= 80 ? 'text-emerald-600' : h.accuracy >= 50 ? 'text-amber-600' : 'text-red-500'}`}>{h.accuracy}%</span>
-                  <span className="truncate flex-1">{h.sentence}</span>
+              {history.map((h,i) => (
+                <div key={i} className={`flex items-center gap-3 text-sm ${dark?'text-stone-300':'text-stone-600'}`}>
+                  <span className={`font-bold w-10 text-right flex-shrink-0 ${h.accuracy>=80?'text-emerald-600':h.accuracy>=50?'text-amber-600':'text-red-500'}`}>{h.accuracy}%</span>
+                  <span className="truncate flex-1 text-xs">{h.sentence}</span>
                 </div>
               ))}
             </div>
           </Card>
         )}
 
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// XP & Level system
+// ============================================================
+
+const XP_LEVELS = [
+  { min:0,    label:'Principiante', emoji:'🌱', color:'stone'   },
+  { min:50,   label:'Aprendiz',     emoji:'📖', color:'blue'    },
+  { min:150,  label:'Intermedio',   emoji:'💬', color:'emerald' },
+  { min:400,  label:'Avanzado',     emoji:'🎯', color:'orange'  },
+  { min:800,  label:'Experto',      emoji:'🏆', color:'purple'  },
+  { min:1500, label:'Maestro',      emoji:'⭐', color:'amber'   },
+];
+
+function xpGetState() {
+  const today = todayStr();
+  const s = getStorage('aprende.xp', { total:0, todayDate:today, todayXP:0 });
+  if (s.todayDate !== today) { s.todayXP = 0; s.todayDate = today; }
+  return s;
+}
+
+function xpAdd(amount) {
+  const s = xpGetState();
+  s.total += amount;
+  s.todayXP = (s.todayXP||0) + amount;
+  setStorage('aprende.xp', s);
+  // check achievement unlocks
+  achievementCheck({ xp: s.total });
+  return s;
+}
+
+function xpGetLevel(total) {
+  let lvl = XP_LEVELS[0];
+  for (const l of XP_LEVELS) { if (total >= l.min) lvl = l; else break; }
+  const idx = XP_LEVELS.indexOf(lvl);
+  const next = XP_LEVELS[idx+1] || null;
+  const pct = next ? Math.min(100, Math.round(((total - lvl.min)/(next.min - lvl.min))*100)) : 100;
+  return { ...lvl, next, pct, total };
+}
+
+// ── Achievements ──
+const ACHIEVEMENTS_DEF = [
+  { id:'first_dictado',      emoji:'✍️', title:'Primera dictación',    desc:'Completa tu primera frase de dictado' },
+  { id:'dictado_perfect',    emoji:'🎯', title:'Oído perfecto',         desc:'Dictado sin un solo error' },
+  { id:'dictado_25',         emoji:'📝', title:'Escribano',             desc:'25 frases de dictado completadas' },
+  { id:'dictado_100',        emoji:'🏅', title:'Maestro del dictado',   desc:'100 frases completadas' },
+  { id:'pronunciacion_80',   emoji:'🎤', title:'Buen acento',           desc:'Pronunciación al 80% o más' },
+  { id:'pronunciacion_100',  emoji:'💯', title:'Perfecto',              desc:'Pronunciación al 100%' },
+  { id:'streak_7',           emoji:'🔥', title:'Semana de fuego',       desc:'Racha de 7 días seguidos' },
+  { id:'streak_30',          emoji:'🌟', title:'Mes dedicado',          desc:'Racha de 30 días seguidos' },
+  { id:'xp_100',             emoji:'⭐', title:'Cien puntos',           desc:'Alcanzar 100 XP' },
+  { id:'xp_500',             emoji:'🚀', title:'En órbita',             desc:'Alcanzar 500 XP' },
+  { id:'xp_1000',            emoji:'🏆', title:'Mil puntos',            desc:'Alcanzar 1000 XP' },
+];
+
+function achievementGet() { return getStorage('aprende.achievements', []); }
+
+function achievementUnlock(id) {
+  const current = achievementGet();
+  if (current.includes(id)) return null;
+  current.push(id);
+  setStorage('aprende.achievements', current);
+  return ACHIEVEMENTS_DEF.find(a => a.id === id) || null;
+}
+
+function achievementCheck({ xp, streak, dictadoTotal, dictadoPerfect, pronunciacionPct }) {
+  if (xp !== undefined) {
+    if (xp >= 100)  achievementUnlock('xp_100');
+    if (xp >= 500)  achievementUnlock('xp_500');
+    if (xp >= 1000) achievementUnlock('xp_1000');
+  }
+  if (streak !== undefined) {
+    if (streak >= 7)  achievementUnlock('streak_7');
+    if (streak >= 30) achievementUnlock('streak_30');
+  }
+  if (dictadoTotal !== undefined) {
+    if (dictadoTotal >= 1)   achievementUnlock('first_dictado');
+    if (dictadoTotal >= 25)  achievementUnlock('dictado_25');
+    if (dictadoTotal >= 100) achievementUnlock('dictado_100');
+  }
+  if (dictadoPerfect) achievementUnlock('dictado_perfect');
+  if (pronunciacionPct !== undefined) {
+    if (pronunciacionPct >= 80)  achievementUnlock('pronunciacion_80');
+    if (pronunciacionPct >= 100) achievementUnlock('pronunciacion_100');
+  }
+}
+
+// ── Dictado stats (per-sentence accuracy tracking) ──
+function dictadoStatsGet() { return getStorage('aprende.dictado.stats', {}); }
+function dictadoStatsUpdate(sentence, correct, total) {
+  const stats = dictadoStatsGet();
+  const key = sentence.slice(0,30);
+  const prev = stats[key] || { attempts:0, correctWords:0, totalWords:0 };
+  prev.attempts += 1;
+  prev.correctWords += correct;
+  prev.totalWords += total;
+  stats[key] = prev;
+  setStorage('aprende.dictado.stats', stats);
+  // update global dictado count
+  const count = getStorage('aprende.dictado.count', 0) + 1;
+  setStorage('aprende.dictado.count', count);
+  achievementCheck({ dictadoTotal: count, dictadoPerfect: correct === total && total > 0 });
+  return prev;
+}
+function dictadoGetCount() { return getStorage('aprende.dictado.count', 0); }
+
+// ── XP Toast ──
+function XPToast({ xp, onDone }) {
+  React.useEffect(() => {
+    const t = setTimeout(onDone, 1800);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div className="fixed bottom-24 lg:bottom-8 right-4 z-50 animate-bounce">
+      <div className="bg-orange-500 text-white px-4 py-2.5 rounded-2xl shadow-lg font-bold text-sm flex items-center gap-2">
+        <span>⭐</span> +{xp} XP
       </div>
     </div>
   );
