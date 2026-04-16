@@ -11184,6 +11184,82 @@ function Ajustes({ dark, onBack }) {
           </button>
         </Card>
 
+        {/* ── Transfer settings ── */}
+        {(() => {
+          const TRANSFER_KEYS = [
+            'aprende.tts.provider','aprende.tts.apiKey','aprende.tts.voiceFemale','aprende.tts.voiceMale',
+            'aprende.tts.googleKey','aprende.tts.googleVoiceFemale','aprende.tts.googleVoiceMale',
+            'aprende.tts.azureKey','aprende.tts.azureRegion','aprende.tts.azureVoiceFemale','aprende.tts.azureVoiceMale',
+            'aprende.tts.speechRate',
+          ];
+          const [copied, setCopied] = React.useState(false);
+          const [importVal, setImportVal] = React.useState('');
+          const [importMsg, setImportMsg] = React.useState('');
+
+          const handleExport = () => {
+            const data = {};
+            TRANSFER_KEYS.forEach(k => {
+              const v = localStorage.getItem(k);
+              if (v) data[k] = v;
+            });
+            const str = btoa(JSON.stringify(data));
+            navigator.clipboard.writeText(str).then(() => {
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2500);
+            }).catch(() => {
+              // fallback: show in a prompt
+              window.prompt('Copia este código:', str);
+            });
+          };
+
+          const handleImport = () => {
+            try {
+              const data = JSON.parse(atob(importVal.trim()));
+              let count = 0;
+              TRANSFER_KEYS.forEach(k => {
+                if (data[k] !== undefined) { localStorage.setItem(k, data[k]); count++; }
+              });
+              setImportMsg(`✅ ${count} ajustes importados. Recarga la página para aplicarlos.`);
+              setImportVal('');
+            } catch(e) {
+              setImportMsg('❌ Código inválido. Cópialo de nuevo desde el otro dispositivo.');
+            }
+          };
+
+          return (
+            <Card dark={dark} className="p-5">
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">📲 Transferir ajustes entre dispositivos</p>
+              <p className={`text-xs mb-4 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
+                Exporta tus API keys y configuración de voz a otro navegador o dispositivo — sin volver a escribirlas.
+              </p>
+              <div className="grid grid-cols-1 gap-3">
+                {/* Export */}
+                <div>
+                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>1. En este dispositivo → Copiar código</p>
+                  <button onClick={handleExport}
+                    className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}>
+                    {copied ? '✅ Copiado al portapapeles' : '📋 Copiar código de ajustes'}
+                  </button>
+                </div>
+                {/* Import */}
+                <div>
+                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>2. En el otro dispositivo → Pegar código</p>
+                  <div className="flex gap-2">
+                    <input value={importVal} onChange={e => setImportVal(e.target.value)}
+                      placeholder="Pega el código aquí..."
+                      className={`flex-1 rounded-xl px-3 py-2.5 text-sm border font-mono ${dark ? 'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500' : 'bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-orange-400`} />
+                    <button onClick={handleImport} disabled={!importVal.trim()}
+                      className="rounded-xl px-4 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
+                      Importar
+                    </button>
+                  </div>
+                  {importMsg && <p className={`text-xs mt-2 font-medium ${importMsg.startsWith('✅') ? 'text-emerald-600' : 'text-red-500'}`}>{importMsg}</p>}
+                </div>
+              </div>
+            </Card>
+          );
+        })()}
+
       </div>
     </div>
   );
