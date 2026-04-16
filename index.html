@@ -12019,19 +12019,76 @@ function App() {
 
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s) => goTo(s)} />
 
-      {/* Mobile bottom nav */}
-      <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${dark ? 'glass-dark border-white/[0.08]' : 'glass-light border-stone-200/60'}`}>
-        <div className="flex overflow-x-auto hide-scroll">
-          {NAV_ITEMS.map(item => (
-            <button key={item.id} onClick={() => goTo(item.id)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-2 flex-shrink-0 min-w-[64px] transition-all
-                ${section === item.id ? 'text-orange-500' : dark ? 'text-stone-400' : 'text-stone-500'}`}>
-              <span className="text-lg">{item.emoji}</span>
-              <span className="text-[9px] font-medium">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      {/* ── Mobile bottom nav ── */}
+      {/* 4 pinned items + ⋯ More — no scrolling, always fits */}
+      {(() => {
+        const PINNED = ['inicio','conversaciones','dictado','pronunciacion'];
+        const [moreOpen, setMoreOpen] = React.useState(false);
+        const activeIsPinned = PINNED.includes(section);
+
+        const NavBtn = ({ item, onClick }) => (
+          <button onClick={onClick}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 transition-all
+              ${section === item.id ? 'text-orange-500' : dark ? 'text-stone-400' : 'text-stone-500'}`}>
+            <span className="text-xl leading-none">{item.emoji}</span>
+            <span className="text-[9px] font-semibold leading-none mt-0.5 truncate max-w-[52px] text-center">{item.label}</span>
+          </button>
+        );
+
+        return (
+          <>
+            <nav className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t ${dark ? 'glass-dark border-white/[0.08]' : 'glass-light border-stone-200/60'}`}
+              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+              <div className="flex">
+                {PINNED.map(id => {
+                  const item = NAV_ITEMS.find(n => n.id === id);
+                  return item ? <NavBtn key={id} item={item} onClick={() => { goTo(id); setMoreOpen(false); }} /> : null;
+                })}
+                {/* If current section isn't pinned, show it instead of the last pinned */}
+                {!activeIsPinned && (() => {
+                  const active = NAV_ITEMS.find(n => n.id === section);
+                  return active ? (
+                    <button className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 text-orange-500">
+                      <span className="text-xl leading-none">{active.emoji}</span>
+                      <span className="text-[9px] font-semibold leading-none mt-0.5 truncate max-w-[52px] text-center">{active.label}</span>
+                    </button>
+                  ) : null;
+                })()}
+                {/* ⋯ More button */}
+                <button onClick={() => setMoreOpen(o => !o)}
+                  className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 transition-all ${moreOpen ? 'text-orange-500' : dark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  <span className="text-xl leading-none">⋯</span>
+                  <span className="text-[9px] font-semibold leading-none mt-0.5">Más</span>
+                </button>
+              </div>
+            </nav>
+
+            {/* More drawer — slides up over content */}
+            {moreOpen && (
+              <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setMoreOpen(false)}>
+                <div className={`rounded-t-3xl border-t shadow-2xl p-5 pb-8 ${dark ? 'glass-dark border-white/[0.08]' : 'glass-light border-stone-200/60'}`}
+                  style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
+                  onClick={e => e.stopPropagation()}>
+                  <div className={`w-10 h-1 rounded-full mx-auto mb-5 ${dark ? 'bg-white/20' : 'bg-stone-300'}`} />
+                  <div className="grid grid-cols-4 gap-2">
+                    {NAV_ITEMS.map(item => (
+                      <button key={item.id} onClick={() => { goTo(item.id); setMoreOpen(false); }}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all
+                          ${section === item.id
+                            ? 'bg-orange-500 text-white'
+                            : dark ? 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.10]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                          }`}>
+                        <span className="text-2xl leading-none">{item.emoji}</span>
+                        <span className="text-[10px] font-semibold leading-tight text-center">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }
