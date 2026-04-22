@@ -31,6 +31,7 @@ tailwind.config = {
 };
 </script>
 <style>
+html { font-size: 106.25%; } /* +1 px on base 16 px → scales all rem-based Tailwind text sizes uniformly */
 .mesh-light { background: radial-gradient(ellipse at 20% 50%, #fae8d8 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, #fce7eb 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, #f5f0eb 0%, transparent 60%), #fdf6f0; }
 .mesh-dark  { background: radial-gradient(ellipse at 20% 50%, #3b1a0e 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, #2d0f1a 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, #1a1208 0%, transparent 60%), #0f0a06; }
 .glass-light { background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
@@ -2259,6 +2260,138 @@ const CHEAT_SHEETS = [
       ], examples:[
         {es:'Perdona, se me olvidó llamarte. (not: me se olvidó)', en:'Sorry, I forgot to call you.'},
         {es:'¿Puedes levantarte? / ¿Te puedes levantar? Ambas son correctas.', en:'Can you get up? Both word orders are correct.'}
+      ]}
+    ]
+  },
+  {
+    id:'verbos-cotidianos',
+    category:'verbos',
+    title:'Verbos Cotidianos',
+    titleEn:'Everyday verbs — don\'t translate literally',
+    intro:'These are the verbs that trip up English speakers most in real conversation. The problem isn\'t grammar — it\'s that English uses one verb where Spanish uses three, or vice versa. "Toma tiempo" is understood in Spain but sounds Latin American — the natural Castilian is "lleva tiempo". This sheet covers the gaps that no textbook explains clearly enough.',
+    color:'teal',
+    content:[
+      { heading:'"It takes" — llevar / tardar (NOT tomar)', rows:[
+        ['llevar','takes (duration, effort, wearing)','Lleva mucho tiempo. / Me llevó tres horas. / Lleva gafas.'],
+        ['tardar','to take time / to be slow / to delay','¿Cuánto tarda el tren? / No tardo nada. / Tardó en contestar.'],
+        ['costar','to cost / to take effort','Me cuesta levantarme temprano. / Esto va a costar trabajo.'],
+        ['tomar ⚠️','natural in Latin America, formal in Spain','Tomar el sol ✓ · Tomar una decisión ✓ · "Toma tiempo" → sounds Latin American in Spain']
+      ], examples:[
+        {es:'Lleva tiempo aprender español bien — no hay atajos.', en:'Learning Spanish well takes time — there are no shortcuts.'},
+        {es:'¿Cuánto tardas normalmente en llegar al trabajo?', en:'How long does it usually take you to get to work?'},
+        {es:'Me cuesta mucho madrugar, pero lo intento.', en:'It\'s hard for me to get up early, but I try.'}
+      ]},
+      { heading:'"To take" — multiple verbs, precise meanings', rows:[
+        ['llevar','carry / take somewhere / wear / duration','Llevo las bolsas. / Te llevo al aeropuerto. / Lleva sombrero.'],
+        ['coger (Spain)','take/catch/grab','Coge el autobús. / Coge ese boli. / Cogió un resfriado.'],
+        ['tomar','take medicine, transport, decisions','Toma dos pastillas. / Tomé el metro. / Tomar una decisión.'],
+        ['sacar','take out (from somewhere)','Sacar dinero del cajero. / Sacar fotos. / Sacar el perro.'],
+        ['quitar','take away / remove','Quítate los zapatos. / Le quitaron el móvil.'],
+        ['llevarse','take away with you (it moves with you)','Me llevo este. / ¿Se lo llevo? — Shall I take it?']
+      ], examples:[
+        {es:'Coge el 13 y baja en la segunda parada — yo te llevo las maletas.', en:'Take the 13 and get off at the second stop — I\'ll carry your bags.'},
+        {es:'Saca el dinero antes de salir, que por aquí no hay cajeros.', en:'Take money out before you leave, there are no cash machines around here.'},
+        {es:'Me llevo las sobras, si no te importa.', en:'I\'ll take the leftovers, if you don\'t mind.'}
+      ]},
+      { heading:'"To miss" — echar de menos / perder / faltar', rows:[
+        ['echar de menos (Spain)','to miss a person / place','Te echo de menos. / Echamos de menos la playa.'],
+        ['extrañar (Latin Am.)','to miss — also used in Spain now','Te extraño mucho. / Extraño ese sabor.'],
+        ['perder','to miss a bus, train, opportunity','Perdí el tren. / No te pierdas este restaurante.'],
+        ['faltar','to be missing / to be absent / to lack','Me falta práctica. / Falta Juan. / Falta una semana.']
+      ], examples:[
+        {es:'Echo mucho de menos el desayuno inglés, la verdad.', en:'I really miss a full English breakfast, honestly.'},
+        {es:'Date prisa o vamos a perder el último tren.', en:'Hurry up or we\'re going to miss the last train.'},
+        {es:'Me falta vocabulario para expresar lo que siento.', en:'I lack the vocabulary to express what I feel.'}
+      ]},
+      { heading:'"To be" with feelings — use TENER, not ESTAR', rows:[
+        ['tener hambre / sed','to be hungry / thirsty','Tengo mucha hambre. / ¿Tienes sed?'],
+        ['tener frío / calor','to be cold / hot (person)','Tengo frío. / No tengo calor.'],
+        ['tener sueño','to be sleepy','Tengo un sueño horrible hoy.'],
+        ['tener miedo (de)','to be afraid (of)','Tengo miedo a volar.'],
+        ['tener prisa','to be in a hurry','Tengo mucha prisa — luego hablamos.'],
+        ['tener razón','to be right','Tienes razón, lo admito.'],
+        ['tener cuidado','to be careful','Ten cuidado con las escaleras.'],
+        ['tener ganas (de)','to feel like / be keen to','Tengo muchas ganas de verte.']
+      ], examples:[
+        {es:'Tengo mucho sueño y además tengo hambre — fatal combinación.', en:'I\'m really sleepy and also hungry — terrible combination.'},
+        {es:'Tienes razón, pero ten cuidado con cómo lo dices.', en:'You\'re right, but be careful how you say it.'},
+        {es:'No tengo ganas de salir esta noche, la verdad.', en:'I don\'t feel like going out tonight, to be honest.'}
+      ]},
+      { heading:'"To become" — ponerse / volverse / hacerse / quedarse', rows:[
+        ['ponerse + adj','sudden change, emotional/physical','Se puso rojo. / Me puse nervioso. / Se pone de mal humor.'],
+        ['volverse + adj','gradual personality change','Se ha vuelto muy serio. / Se volvió loco.'],
+        ['hacerse + noun/adj','becoming through effort or time','Se hizo famoso. / Me hice autónomo. / Se hace tarde.'],
+        ['llegar a ser','to reach a position after a long process','Llegó a ser directora. / Llegó a ser campeón.'],
+        ['convertirse en','to transform into something different','Se convirtió en un experto. / El agua se convierte en hielo.'],
+        ['quedarse + adj','to be left in a state (often loss)','Se quedó sin trabajo. / Me quedé sin palabras. / Se quedó viuda.']
+      ], examples:[
+        {es:'Al oír la noticia, se puso blanco — creo que se ha vuelto muy sensible.', en:'When he heard the news he went white — I think he\'s become very sensitive.'},
+        {es:'Con el tiempo, se convirtió en el mejor cocinero de la ciudad.', en:'Over time, he became the best cook in the city.'},
+        {es:'Me quedé sin batería justo cuando más la necesitaba.', en:'I ran out of battery just when I needed it most.'}
+      ]},
+      { heading:'"To know" — saber vs conocer', rows:[
+        ['saber','to know a fact / know how to do something','Sé la respuesta. / Sé cocinar. / No sé su nombre.'],
+        ['conocer','to know a person, place, or thing (familiarity)','Conozco Valencia. / ¿Conoces a María? / Conozco ese libro.'],
+        ['enterarse de','to find out / hear about','¿Te has enterado de lo de Juan? / Me enteré por casualidad.'],
+        ['darse cuenta de','to realize / to notice','No me di cuenta de que era tan tarde. / ¡Fíjate!']
+      ], examples:[
+        {es:'Sé que existe ese bar, pero no lo conozco.', en:'I know that bar exists, but I\'ve never been.'},
+        {es:'Me enteré de la noticia por Instagram — me quedé de piedra.', en:'I found out the news through Instagram — I was stunned.'},
+        {es:'No me di cuenta de que habías llegado — ¡qué sorpresa!', en:'I didn\'t realize you\'d arrived — what a surprise!'}
+      ]},
+      { heading:'"To leave" — salir / dejar / irse / marcharse', rows:[
+        ['salir (de)','to leave a place, go out','Salgo del trabajo a las seis. / Salimos esta noche.'],
+        ['dejar','to leave something / someone behind','Dejé las llaves en casa. / Déjame en paz. / Déjalo aquí.'],
+        ['irse','to go away, leave (going somewhere)','Me voy. / Se fue sin decir nada.'],
+        ['marcharse','to leave, depart (more final or formal)','Se marchó a Londres el año pasado.'],
+        ['dejar de + inf','to stop doing something','Dejé de fumar. / No dejes de intentarlo.']
+      ], examples:[
+        {es:'Me voy ya — se me hace tarde. Deja las llaves encima de la mesa.', en:'I\'m going now — I\'m running late. Leave the keys on the table.'},
+        {es:'Salgo a las ocho pero si quieres te dejo en la estación.', en:'I\'m leaving at eight but if you want I\'ll drop you at the station.'},
+        {es:'No dejes de visitarnos cuando vuelvas a Valencia.', en:'Don\'t fail to visit us when you\'re back in Valencia.'}
+      ]},
+      { heading:'"To meet" — conocer / quedar / encontrarse', rows:[
+        ['conocer','to meet for the first time','Encantado de conocerte. / Os presento a mi amigo Tom.'],
+        ['quedar (con)','to arrange to meet (social plans)','¿Quedamos el viernes? / He quedado con Ana a las ocho.'],
+        ['encontrarse (con)','to run into / meet by chance or by plan','Me encontré con Luis en el mercado. / Nos encontramos allí.'],
+        ['reunirse (con)','to meet formally, have a meeting','El equipo se reúne los lunes. / Me reúno con el jefe mañana.']
+      ], examples:[
+        {es:'Quedamos a las ocho — quedamos en la puerta del Mercado Central.', en:'We\'ll meet at eight — let\'s meet at the door of the Central Market.'},
+        {es:'Me encontré con mi ex en el supermercado — muy incómodo.', en:'I ran into my ex at the supermarket — very awkward.'}
+      ]},
+      { heading:'"Have left / missing / too much" — quedar / faltar / sobrar', rows:[
+        ['quedar','to have remaining, to have left','Me quedan diez euros. / ¿Cuánto queda? / Queda leche.'],
+        ['faltar','to be missing, to lack, time remaining','Me falta dinero. / Faltan cinco minutos. / Falta pan.'],
+        ['sobrar','to have too much, to be left over','Sobra comida — nos llevamos las sobras. / Te sobra tiempo.']
+      ], examples:[
+        {es:'— ¿Cuánto queda para llegar? — Faltan unos veinte minutos.', en:'— How much further? — About twenty minutes left.'},
+        {es:'Sobra vino pero faltan vasos — típico.', en:'There\'s too much wine but not enough glasses — typical.'},
+        {es:'Me quedan dos semanas de vacaciones y no sé qué hacer.', en:'I have two weeks of holiday left and I don\'t know what to do.'}
+      ]},
+      { heading:'"To like / love / fancy" — gustar / encantar / apetecer', rows:[
+        ['gustar','to like (literally: it pleases me)','Me gusta el café. / ¿Te gustan las aceitunas?'],
+        ['encantar','to love, to be delighted by','Me encanta Valencia. / Les encantan los niños.'],
+        ['apetecer','to fancy, feel like (right now)','¿Te apetece un café? / No me apetece salir.'],
+        ['molar (colloquial)','to be cool / to like something','Mola mucho ese sitio. / ¿Te mola venir?'],
+        ['flipar (colloquial)','to be blown away / to love','Me flipa este restaurante. / Flipé con la peli.']
+      ], examples:[
+        {es:'Me encanta la ciudad, pero hay días que no me apetece salir para nada.', en:'I love the city, but some days I don\'t feel like going out at all.'},
+        {es:'¿Te apetece una cerveza? — Venga, me mola la idea.', en:'Fancy a beer? — Go on then, sounds good to me.'}
+      ]},
+      { heading:'Essential fixed phrases — hacer, dar, quedar', rows:[
+        ['hacer falta','to be needed, to need','Me hace falta más tiempo. / No hace falta reservar.'],
+        ['hacer caso','to pay attention, to listen','No me hace caso nadie. / Hazme caso.'],
+        ['dar igual','to not matter / to be indifferent','Me da igual. / ¿Cuál prefieres? — Me da lo mismo.'],
+        ['dar asco','to be disgusting / to hate','Me da asco el hígado. / Eso me da un asco tremendo.'],
+        ['dar miedo','to be scary','Me da miedo conducir de noche.'],
+        ['dar vergüenza','to be embarrassing','Me da vergüenza hablar en público.'],
+        ['dar pena','to feel sorry / to be sad','Me da pena ese perro. / ¡Qué pena!'],
+        ['quedar bien/mal','to suit / not suit; to make a good impression','¿Cómo me queda? / Eso no queda bien en ese sitio.'],
+        ['valer la pena','to be worth it','Vale la pena intentarlo. / No vale la pena enfadarse.']
+      ], examples:[
+        {es:'Me da igual qué restaurante — tú eliges. Lo que me hace falta es comer ya.', en:'I don\'t mind which restaurant — you choose. What I need is to eat now.'},
+        {es:'Vamos, que vale la pena — y si no te gusta, me dices y nos vamos.', en:'Come on, it\'s worth it — and if you don\'t like it, tell me and we\'ll leave.'},
+        {es:'Me da vergüenza admitirlo, pero no sé nadar.', en:'I\'m embarrassed to admit it, but I can\'t swim.'}
       ]}
     ]
   },
