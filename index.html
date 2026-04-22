@@ -8151,14 +8151,12 @@ function VocabTemas({ onBack, dark }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((word, i) => (
               <Card key={i} dark={dark} className="p-5 flex flex-col min-h-[140px]">
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="font-serif font-bold text-xl leading-tight">{word.es}</p>
-                  <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
-                    <SpeakBtn text={word.es} size="sm" />
-                    <TypeBadge type={word.type} />
-                  </div>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <TypeBadge type={word.type} />
+                  <SpeakBtn text={word.es} size="sm" />
                 </div>
-                <p className={`text-base font-medium mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{word.en}</p>
+                <p className="font-serif font-bold text-xl leading-tight mb-1">{word.es}</p>
+                <p className={`text-sm font-medium mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{word.en}</p>
                 {word.example && (
                   <p className={`text-sm italic mt-auto pt-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>"{word.example}"</p>
                 )}
