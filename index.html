@@ -4261,8 +4261,8 @@ function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
         <span className="hidden sm:inline">Volver</span>
       </button>
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-sm leading-tight truncate">{title}</p>
-        {subtitle && <p className="text-xs text-stone-500 truncate">{subtitle}</p>}
+        <p className="font-bold text-sm leading-tight break-words">{title}</p>
+        {subtitle && <p className="text-xs text-stone-500 break-words">{subtitle}</p>}
       </div>
       {onSearch && (
         <button onClick={onSearch} className={`lg:hidden flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm ${dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>🔍</button>
@@ -7300,7 +7300,7 @@ function Conjugador({ dark }) {
                       <div key={i} className="grid items-center gap-x-2 text-sm"
                            style={{gridTemplateColumns:'3rem 1fr 1.25rem'}}>
                         <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{persons[i]}</span>
-                        <span className={`font-bold whitespace-nowrap overflow-hidden text-ellipsis ${dark ? 'text-stone-100' : 'text-stone-900'}`}>{form}</span>
+                        <span className={`font-bold break-words ${dark ? 'text-stone-100' : 'text-stone-900'}`}>{form}</span>
                         <button onClick={() => speakES(form)} className="text-stone-400 hover:text-orange-500 text-xs leading-none">🔊</button>
                       </div>
                     ))}
@@ -9703,7 +9703,7 @@ function GlobalSearch({ open, onClose, onJump }) {
                 <p className="font-serif font-bold text-base flex-1">{r.es}</p>
               </div>
               {r.en && <p className="text-xs text-stone-500">{r.en}</p>}
-              {r.hint && <p className="text-xs text-stone-400 italic mt-0.5 truncate">{r.hint}</p>}
+              {r.hint && <p className="text-xs text-stone-400 italic mt-0.5 break-words">{r.hint}</p>}
             </button>
           ))}
         </div>
@@ -11788,7 +11788,7 @@ function Pronunciacion({ onBack, dark }) {
               {history.map((h,i) => (
                 <div key={i} className={`flex items-center gap-3 text-sm ${dark?'text-stone-300':'text-stone-600'}`}>
                   <span className={`font-bold w-10 text-right flex-shrink-0 ${h.accuracy>=80?'text-emerald-600':h.accuracy>=50?'text-amber-600':'text-red-500'}`}>{h.accuracy}%</span>
-                  <span className="truncate flex-1 text-xs">{h.sentence}</span>
+                  <span className="break-words flex-1 text-xs">{h.sentence}</span>
                 </div>
               ))}
             </div>
