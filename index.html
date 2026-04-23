@@ -6,8 +6,43 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>La Vida Español de Liam</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23c60b1e'/><rect y='8' width='32' height='16' fill='%23f1bf00'/></svg>">
+<title>Aprende</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Aprende" />
+<meta name="theme-color" content="#f97316" />
+<link id="apple-touch-icon-link" rel="apple-touch-icon" />
+<link id="favicon-link" rel="icon" type="image/png" />
+<script>
+// Generate 180×180 PNG app icon via Canvas — works with no external files
+(function(){
+  try {
+    var c = document.createElement('canvas');
+    c.width = c.height = 180;
+    var ctx = c.getContext('2d');
+    // Background: Spanish red top/bottom, yellow band
+    ctx.fillStyle = '#c60b1e'; ctx.fillRect(0,0,180,180);
+    ctx.fillStyle = '#f1bf00'; ctx.fillRect(0,45,180,90);
+    // Rounded mask
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.beginPath();
+    var r=36;
+    ctx.moveTo(r,0); ctx.lineTo(180-r,0); ctx.quadraticCurveTo(180,0,180,r);
+    ctx.lineTo(180,180-r); ctx.quadraticCurveTo(180,180,180-r,180);
+    ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
+    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0); ctx.closePath(); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    // "A" letter
+    ctx.fillStyle = '#7a0012';
+    ctx.font = 'bold 112px Georgia,serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('A', 90, 96);
+    var url = c.toDataURL('image/png');
+    document.getElementById('apple-touch-icon-link').href = url;
+    document.getElementById('favicon-link').href = url;
+  } catch(e){}
+})();
+</script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -11470,6 +11505,7 @@ function Ajustes({ dark, onBack }) {
             'aprende.tts.speechRate',
           ];
           const [copied, setCopied] = React.useState(false);
+          const [exportCode, setExportCode] = React.useState('');
           const [importVal, setImportVal] = React.useState('');
           const [importMsg, setImportMsg] = React.useState('');
 
@@ -11480,13 +11516,14 @@ function Ajustes({ dark, onBack }) {
               if (v) data[k] = v;
             });
             const str = btoa(JSON.stringify(data));
-            navigator.clipboard.writeText(str).then(() => {
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2500);
-            }).catch(() => {
-              // fallback: show in a prompt
-              window.prompt('Copia este código:', str);
-            });
+            setExportCode(str);
+            // Try clipboard API first; on mobile it often fails so we show the textarea regardless
+            try {
+              navigator.clipboard.writeText(str).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 3000);
+              }).catch(() => {});
+            } catch(e) {}
           };
 
           const handleImport = () => {
@@ -11513,11 +11550,21 @@ function Ajustes({ dark, onBack }) {
               <div className="grid grid-cols-1 gap-3">
                 {/* Export */}
                 <div>
-                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>1. En este dispositivo → Copiar código</p>
+                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>1. En este dispositivo → Generar código</p>
                   <button onClick={handleExport}
                     className={`w-full rounded-xl py-2.5 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}>
-                    {copied ? '✅ Copiado al portapapeles' : '📋 Copiar código de ajustes'}
+                    {copied ? '✅ También copiado al portapapeles' : '📋 Generar código de ajustes'}
                   </button>
+                  {exportCode ? (
+                    <div className="mt-3">
+                      <p className={`text-[11px] mb-1.5 font-semibold ${dark ? 'text-stone-400' : 'text-stone-600'}`}>
+                        📱 En móvil: mantén pulsado el texto → Seleccionar todo → Copiar
+                      </p>
+                      <textarea readOnly value={exportCode} rows={3}
+                        onFocus={e => e.target.select()}
+                        className={`w-full rounded-xl px-3 py-2.5 text-xs border font-mono break-all resize-none ${dark ? 'bg-white/[0.06] border-white/10 text-stone-300' : 'bg-stone-50 border-stone-200 text-stone-700'} focus:outline-none focus:border-orange-400`} />
+                    </div>
+                  ) : null}
                 </div>
                 {/* Import */}
                 <div>
@@ -12001,11 +12048,22 @@ function Pronunciacion({ onBack, dark }) {
 
   const accuracy = transcript != null ? computeAccuracy(current, transcript) : null;
 
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const errorMessages = {
-    no_support: { title:'Navegador no compatible', msg:'El reconocimiento de voz requiere Chrome o Edge en escritorio. Abre esta página en Chrome.' },
-    permission:  { title:'Micrófono bloqueado', msg:'Haz clic en el icono 🔒 en la barra de dirección y permite el acceso al micrófono.' },
-    no_speech:   { title:'No se detectó voz', msg:'No se escuchó nada. Habla más alto o acércate al micrófono y vuelve a intentarlo.' },
-    generic:     { title:'Error de reconocimiento', msg:'No se pudo procesar el audio. Comprueba que el micrófono funciona e inténtalo de nuevo.' },
+    no_support: {
+      title: 'Reconocimiento de voz no disponible',
+      msg: isIOS
+        ? 'En iPhone/iPad, el reconocimiento de voz solo funciona en Safari (no en Arc ni Chrome). Abre esta página directamente en Safari e inténtalo de nuevo.'
+        : 'Tu navegador no soporta reconocimiento de voz. Abre esta página en Chrome o Edge en el escritorio.'
+    },
+    permission: {
+      title: 'Micrófono bloqueado',
+      msg: isIOS
+        ? 'Ve a Ajustes del iPhone → Safari → Micrófono → Permitir. Luego recarga la página.'
+        : 'Haz clic en el icono 🔒 en la barra de dirección y permite el acceso al micrófono.'
+    },
+    no_speech:  { title:'No se detectó voz', msg:'No se escuchó nada. Habla más claro, más alto, y vuelve a intentarlo.' },
+    generic:    { title:'Error de reconocimiento', msg:'No se pudo procesar el audio. Asegúrate de que el micrófono funciona e inténtalo de nuevo.' },
   };
 
   return (
@@ -12014,6 +12072,18 @@ function Pronunciacion({ onBack, dark }) {
       {xpToast && <XPToast xp={xpToast} onDone={() => setXpToast(null)} />}
       <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-5">
 
+        {!SR && (
+          <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
+            <p className="font-bold text-amber-800 text-sm mb-1">
+              {isIOS ? '📱 Abre esta página en Safari' : '💻 Requiere Chrome o Edge'}
+            </p>
+            <p className="text-amber-700 text-xs">
+              {isIOS
+                ? 'El reconocimiento de voz no funciona en Arc ni Chrome para iOS. Abre liamcanning.github.io/LearningSpanish en Safari y añádelo a la pantalla de inicio desde ahí.'
+                : 'El reconocimiento de voz requiere Chrome o Edge. Abre esta página en uno de esos navegadores.'}
+            </p>
+          </div>
+        )}
         {error && (
           <Card dark={dark} className="p-5 border-2 border-amber-300">
             <p className="font-semibold text-amber-700 mb-1">{errorMessages[error]?.title}</p>
