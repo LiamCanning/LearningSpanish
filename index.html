@@ -12008,12 +12008,10 @@ function Pronunciacion({ onBack, dark }) {
     };
     recognition.onerror = (e) => {
       setRecording(false);
-      if (e.error === 'not-allowed') setError('permission');
-      else if (e.error === 'no-speech') setError('no_speech');
-      else setError('generic');
+      setError(e.error || 'generic');
     };
     recognition.onend = () => setRecording(false);
-    try { recognition.start(); } catch(e) { setRecording(false); setError('generic'); }
+    try { recognition.start(); } catch(e) { setRecording(false); setError('start-failed'); }
   };
 
   const handleNext = () => {
@@ -12049,22 +12047,60 @@ function Pronunciacion({ onBack, dark }) {
   const accuracy = transcript != null ? computeAccuracy(current, transcript) : null;
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isMac = /Macintosh|MacIntel/.test(navigator.userAgent);
   const errorMessages = {
+    // Browser doesn't expose SR at all
     no_support: {
       title: 'Reconocimiento de voz no disponible',
       msg: isIOS
-        ? 'En iPhone/iPad, el reconocimiento de voz solo funciona en Safari (no en Arc ni Chrome). Abre esta página directamente en Safari e inténtalo de nuevo.'
-        : 'Tu navegador no soporta reconocimiento de voz. Abre esta página en Chrome o Edge en el escritorio.'
+        ? 'En iPhone/iPad, el reconocimiento de voz solo funciona en Safari. Abre esta página en Safari y añádela a la pantalla de inicio desde ahí.'
+        : 'Tu navegador no soporta reconocimiento de voz. Prueba con Chrome o Edge.'
     },
-    permission: {
-      title: 'Micrófono bloqueado',
-      msg: isIOS
-        ? 'Ve a Ajustes del iPhone → Safari → Micrófono → Permitir. Luego recarga la página.'
-        : 'Haz clic en el icono 🔒 en la barra de dirección y permite el acceso al micrófono.'
+    // User/browser denied microphone permission
+    'not-allowed': {
+      title: 'Permiso de micrófono denegado',
+      msg: isMac
+        ? 'Arc necesita acceso al micrófono. Ve a Ajustes del Mac → Privacidad y Seguridad → Micrófono → activa Arc. Luego recarga la página.'
+        : 'Haz clic en el icono 🔒 en la barra de dirección → Permisos del sitio → Micrófono → Permitir. Luego recarga.'
     },
-    no_speech:  { title:'No se detectó voz', msg:'No se escuchó nada. Habla más claro, más alto, y vuelve a intentarlo.' },
-    generic:    { title:'Error de reconocimiento', msg:'No se pudo procesar el audio. Asegúrate de que el micrófono funciona e inténtalo de nuevo.' },
+    // OS-level mic blocked or no mic hardware
+    'audio-capture': {
+      title: 'No se puede acceder al micrófono',
+      msg: isMac
+        ? 'macOS está bloqueando el micrófono para Arc. Ve a Ajustes del Mac → Privacidad y Seguridad → Micrófono → activa Arc. Luego recarga la página.'
+        : 'No se detectó micrófono o el sistema operativo está bloqueando el acceso. Comprueba los permisos del sistema.'
+    },
+    // Google speech API unreachable (network/privacy filter)
+    'network': {
+      title: 'Error de red',
+      msg: 'No se pudo conectar al servicio de reconocimiento de voz. Comprueba tu conexión a internet. Si usas un bloqueador de rastreo agresivo en Arc, puede estar bloqueando el servicio de Google.'
+    },
+    // Browser policy blocks speech API on this origin
+    'service-not-allowed': {
+      title: 'Servicio bloqueado por el navegador',
+      msg: 'Arc está bloqueando el servicio de reconocimiento de voz. Prueba a abrir la página en Chrome directamente, o desactiva los escudos de privacidad para este sitio en Arc.'
+    },
+    'no-speech': {
+      title: 'No se detectó voz',
+      msg: 'No se escuchó nada. Habla más claro y alto, acércate al micrófono, y vuelve a intentarlo.'
+    },
+    'aborted': {
+      title: 'Reconocimiento cancelado',
+      msg: 'El reconocimiento se canceló. Pulsa Hablar para intentarlo de nuevo.'
+    },
+    'start-failed': {
+      title: 'No se pudo iniciar',
+      msg: isMac
+        ? 'No se pudo iniciar el micrófono. Comprueba que Arc tiene permiso en Ajustes del Mac → Privacidad y Seguridad → Micrófono.'
+        : 'No se pudo iniciar el reconocimiento. Comprueba los permisos del micrófono.'
+    },
+    // Fallback for any other code — show the raw code
+    generic: {
+      title: 'Error de reconocimiento',
+      msg: 'No se pudo procesar el audio. Comprueba que el micrófono funciona e inténtalo de nuevo.'
+    },
   };
+  const getError = (code) => errorMessages[code] || { title: `Error: ${code}`, msg: 'Código de error desconocido. Comprueba los permisos del micrófono e inténtalo de nuevo.' };
 
   return (
     <div>
@@ -12086,8 +12122,8 @@ function Pronunciacion({ onBack, dark }) {
         )}
         {error && (
           <Card dark={dark} className="p-5 border-2 border-amber-300">
-            <p className="font-semibold text-amber-700 mb-1">{errorMessages[error]?.title}</p>
-            <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>{errorMessages[error]?.msg}</p>
+            <p className="font-semibold text-amber-700 mb-1">{getError(error).title}</p>
+            <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>{getError(error).msg}</p>
           </Card>
         )}
 
