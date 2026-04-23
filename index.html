@@ -12065,25 +12065,44 @@ function Pronunciacion({ onBack, dark }) {
     setRecording(false);
   };
 
-  const computeAccuracy = (correct, spoken) => {
+  // Align target words to spoken words using a sliding ±2 window.
+  // Returns per-word similarity scores (0–1) instead of position-locked comparison,
+  // so a dropped article doesn't cascade-fail every word after it.
+  const alignWords = (correct, spoken) => {
     const cw = normalizeForScoring(correct).split(/\s+/);
-    const sw = normalizeForScoring(spoken||'').split(/\s+/);
-    let score = 0;
-    cw.forEach((w,i) => {
-      const s = sw[i]||'';
-      if (w===s) score+=1;
-      else if (levenshtein(w,s)<=1) score+=0.5;
+    const sw = normalizeForScoring(spoken || '').split(/\s+/);
+    const used = new Set();
+    return cw.map((tw, i) => {
+      const lo = Math.max(0, i - 2);
+      const hi = Math.min(sw.length - 1, i + 2);
+      let best = { j: -1, score: 0 };
+      for (let j = lo; j <= hi; j++) {
+        if (used.has(j)) continue;
+        const maxL = Math.max(tw.length, sw[j].length);
+        const sim = maxL === 0 ? 1 : 1 - levenshtein(tw, sw[j]) / maxL;
+        if (sim > best.score) best = { j, score: sim };
+      }
+      if (best.j >= 0 && best.score >= 0.5) used.add(best.j);
+      return best.score;
     });
-    return Math.round((score/cw.length)*100);
+  };
+
+  const computeAccuracy = (correct, spoken) => {
+    const scores = alignWords(correct, spoken);
+    const total = scores.reduce((sum, s) => sum + Math.min(1, Math.max(0, s)), 0);
+    return Math.round((total / scores.length) * 100);
   };
 
   const renderWordResult = () => {
-    const words = current.replace(/[¿¡.,;:!?]/g,'').split(/\s+/);
-    const nc = normalizeForScoring(current).split(/\s+/);
-    const ns = normalizeForScoring(transcript||'').split(/\s+/);
-    return words.map((w,i) => {
-      const cw=nc[i]||'', sw=ns[i]||'';
-      const cls = cw===sw ? 'bg-emerald-100 text-emerald-800' : levenshtein(cw,sw)<=1 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
+    const words = current.replace(/[¿¡.,;:!?]/g, '').split(/\s+/);
+    const scores = alignWords(current, transcript || '');
+    return words.map((w, i) => {
+      const s = scores[i] ?? 0;
+      const cls = s >= 0.8
+        ? 'bg-emerald-100 text-emerald-800'
+        : s >= 0.5
+        ? 'bg-amber-100 text-amber-800'
+        : 'bg-red-100 text-red-800';
       return <span key={i} className={`inline-block text-sm font-semibold px-1.5 py-0.5 rounded mr-1.5 mb-1 ${cls}`}>{w}</span>;
     });
   };
