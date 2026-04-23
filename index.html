@@ -11957,7 +11957,9 @@ function Dictado({ onBack, dark }) {
 // SECTION: Pronunciación – speech recognition practice
 // ============================================================
 
-const PRONUNCIACION_SENTENCES = [
+// Base pronunciation sentences (handcrafted, varying difficulty)
+const PRONUNCIACION_EXTRA = [
+  // Beginner
   "Me llamo Liam y soy de Irlanda.",
   "Hoy hace mucho calor en Madrid.",
   "El tren sale a las tres de la tarde.",
@@ -11968,6 +11970,17 @@ const PRONUNCIACION_SENTENCES = [
   "Tengo dos hermanos y una hermana.",
   "¿Dónde está la estación de metro?",
   "Ayer fui al mercado y compré fruta fresca.",
+  "Mi madre vive en una casa pequeña.",
+  "Esta semana tengo mucho trabajo.",
+  "La reunión se ha cancelado por el mal tiempo.",
+  "El médico me dijo que tenía que descansar más.",
+  "¿Puedo pagar con tarjeta de crédito?",
+  "Necesito un billete de ida y vuelta.",
+  "¿Hay aparcamiento cerca del centro?",
+  "El autobús número diez va al centro.",
+  "Comprueba la fecha de caducidad antes de comprarlo.",
+  "Gira a la derecha en el semáforo.",
+  // Intermediate
   "Me alegra que hayas venido a visitarme.",
   "Cuando era pequeño, vivía cerca del mar.",
   "He estado estudiando español durante tres años.",
@@ -11976,22 +11989,110 @@ const PRONUNCIACION_SENTENCES = [
   "Se me olvidó el paraguas y me mojé mucho.",
   "¿Qué te parece si quedamos el sábado por la tarde?",
   "Nunca he probado la paella valenciana de verdad.",
+  "¿Te apetece salir a tomar algo después del trabajo?",
+  "Llevo tres años viviendo en Valencia y me encanta.",
+  "Acabo de llegar del trabajo, dame un momento.",
+  "Suelo desayunar a las ocho antes de salir de casa.",
+  "Echo de menos a mi familia cuando estoy lejos.",
+  "Hay que aprovechar el buen tiempo mientras dure.",
+  "Me quedé en casa todo el fin de semana descansando.",
+  "El tren tarda veinte minutos en llegar a la ciudad.",
+  "¿Te has enterado de la noticia sobre el partido de ayer?",
+  "Me di cuenta de que había cogido el tren equivocado.",
+  "Vale la pena visitar el museo aunque cueste un poco.",
+  "Tengo muchas ganas de verte la próxima semana.",
+  "Estaba a punto de salir cuando empezó a llover.",
+  "¿Sabe usted si hay farmacia por aquí cerca?",
+  "El ascensor lleva tres semanas estropeado y tengo que subir a pie.",
+  "La especialidad de la casa es el cocido madrileño.",
+  "Soy de Irlanda pero llevo varios años viviendo en España.",
+  "¿A qué hora empieza el partido? Creo que a las nueve.",
+  "Hoy me toca fregar los platos porque ayer no lo hice.",
+  "Hace falta más práctica para mejorar el nivel de español.",
+  "Si tienes tiempo, podríamos repasar el vocabulario juntos.",
+  // Advanced
   "Es una lástima que no puedas quedarte más tiempo con nosotros.",
   "Lo que más me gusta de vivir aquí es la tranquilidad del barrio.",
   "Aunque no lo creas, llevan diez años sin haberse visto.",
   "Había tanta gente en la plaza que apenas podíamos movernos.",
   "No es que no quiera ayudarte, es que no tengo tiempo esta semana.",
   "Fue entonces cuando me di cuenta de que había cometido un error grave.",
-  "Mi madre vive en una casa pequeña.",
-  "Esta semana tengo mucho trabajo.",
-  "La reunión se ha cancelado por el mal tiempo.",
-  "El médico me dijo que tenía que descansar más.",
   "Te lo digo para que no te lleves una sorpresa desagradable luego.",
   "Por mucho que lo intente, no consigo entender su forma de pensar.",
+  "Si hubiera sabido que iba a llover, me habría traído el paraguas.",
+  "Cuanto más practico, más me doy cuenta de lo mucho que me queda.",
+  "Hace falta mucha paciencia para hablar bien un segundo idioma.",
+  "A veces me pongo nervioso cuando tengo que hablar con desconocidos.",
+  "Solía pensar que el español era fácil, pero tiene muchas reglas.",
+  "¿Dónde estás? Estoy en el mercado comprando fruta para la cena.",
+  "El partido de ayer fue increíble, el equipo jugó de maravilla.",
+  "No me di cuenta de lo importante que era practicar hasta que mejoré.",
+  "Lo que más cuesta al aprender un idioma no es la gramática sino el vocabulario.",
+  "Aunque el camino sea difícil, lo importante es no rendirse nunca.",
+  "Resulta que tenía razón desde el principio, pero nadie me hizo caso.",
+  "Si me lo hubieras dicho antes, habría podido ayudarte sin problema.",
 ];
 
+// Fisher-Yates shuffle – returns a new shuffled array
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Build the full pool by combining handcrafted sentences with examples
+// harvested from VOCAB_THEMES, WORDS_OF_DAY, and CHEAT_SHEETS
+function buildPronunciacionPool() {
+  const seen = new Set();
+  const pool = [];
+  const add = (s) => {
+    if (!s) return;
+    const t = s.trim();
+    // Skip very short items or ones with no Spanish content
+    if (t.split(/\s+/).length < 4) return;
+    if (seen.has(t)) return;
+    seen.add(t);
+    pool.push(t);
+  };
+
+  PRONUNCIACION_EXTRA.forEach(add);
+
+  (typeof WORDS_OF_DAY !== 'undefined' ? WORDS_OF_DAY : []).forEach(w => {
+    add(w.example);
+  });
+
+  (typeof VOCAB_THEMES !== 'undefined' ? VOCAB_THEMES : []).forEach(theme => {
+    (theme.words || []).forEach(word => add(word.example));
+  });
+
+  (typeof CHEAT_SHEETS !== 'undefined' ? CHEAT_SHEETS : []).forEach(sheet => {
+    (sheet.content || []).forEach(section => {
+      (section.examples || []).forEach(ex => add(ex.es));
+    });
+  });
+
+  return pool;
+}
+
+// Eagerly built once at module load (all data constants already defined above)
+const _PRONUNCIACION_POOL = buildPronunciacionPool();
+
 function Pronunciacion({ onBack, dark }) {
-  const [index, setIndex] = React.useState(0);
+  // Persistent shuffle queue – survives refreshes; reshuffles when exhausted
+  const [queue, setQueue] = React.useState(() => {
+    const stored = getStorage('aprende.pronunciacion.queue', null);
+    if (Array.isArray(stored) && stored.length >= Math.floor(_PRONUNCIACION_POOL.length * 0.8)) return stored;
+    const q = shuffleArray(_PRONUNCIACION_POOL);
+    setStorage('aprende.pronunciacion.queue', q);
+    return q;
+  });
+  const [pos, setPos] = React.useState(() => {
+    const p = getStorage('aprende.pronunciacion.pos', 0);
+    return (Number.isInteger(p) && p >= 0) ? p : 0;
+  });
   const [recording, setRecording] = React.useState(false);
   const [transcript, setTranscript] = React.useState(null);
   const [error, setError] = React.useState(null);
@@ -12001,7 +12102,7 @@ function Pronunciacion({ onBack, dark }) {
   const azureRecogRef = React.useRef(null);
 
   const SR = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
-  const current = PRONUNCIACION_SENTENCES[index];
+  const current = queue[Math.min(pos, queue.length - 1)] || _PRONUNCIACION_POOL[0];
   const azCfg = ttsGetAzureConfig();
   const hasAzure = !!(azCfg.apiKey && azCfg.region);
 
@@ -12059,7 +12160,18 @@ function Pronunciacion({ onBack, dark }) {
   };
 
   const handleNext = () => {
-    setIndex(i => (i+1) % PRONUNCIACION_SENTENCES.length);
+    const nextPos = pos + 1;
+    if (nextPos >= queue.length) {
+      // Exhausted the whole pool – reshuffle for a fresh round
+      const newQueue = shuffleArray(_PRONUNCIACION_POOL);
+      setQueue(newQueue);
+      setStorage('aprende.pronunciacion.queue', newQueue);
+      setPos(0);
+      setStorage('aprende.pronunciacion.pos', 0);
+    } else {
+      setPos(nextPos);
+      setStorage('aprende.pronunciacion.pos', nextPos);
+    }
     setTranscript(null);
     setError(null);
     setRecording(false);
@@ -12196,7 +12308,7 @@ function Pronunciacion({ onBack, dark }) {
         )}
 
         <Card dark={dark} className="p-6 text-center">
-          <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark?'text-stone-500':'text-stone-400'}`}>{index+1} / {PRONUNCIACION_SENTENCES.length}</p>
+          <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark?'text-stone-500':'text-stone-400'}`}>{pos+1} / {queue.length}</p>
           <p className="text-xl font-serif font-bold leading-relaxed mb-6">{current}</p>
           <div className="flex gap-3 justify-center flex-wrap">
             <button onClick={handleListen}
