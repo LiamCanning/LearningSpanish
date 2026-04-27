@@ -9977,7 +9977,7 @@ function Equivalentes({ onBack, dark, onSearch }) {
             const isExp = expandedIdx === i;
             const hasDetail = (entry.esAlts && entry.esAlts.length > 0) || entry.example || entry.explain;
             return (
-              <div key={i} className={`rounded-2xl overflow-hidden border transition-all duration-200 ${dark?'bg-white/[0.04] border-white/10':'bg-white border-stone-200/70 shadow-sm'} ${entry.isCustom?'ring-2 ring-amber-400/50':''} ${isExp?(dark?'sm:col-span-2 bg-white/[0.07]':'sm:col-span-2 bg-stone-50/60'):''}`}>
+              <div key={i} style={isExp ? {gridColumn:'1 / -1'} : {}} className={`rounded-2xl overflow-hidden border transition-all duration-200 ${dark?'bg-white/[0.04] border-white/10':'bg-white border-stone-200/70 shadow-sm'} ${entry.isCustom?'ring-2 ring-amber-400/50':''} ${isExp?(dark?'bg-white/[0.07]':'bg-stone-50/60'):''}`}>
                 {/* Always-visible row */}
                 <button onClick={() => setExpandedIdx(isExp ? null : i)}
                   className={`w-full text-left p-4 transition-colors ${dark?'hover:bg-white/[0.04]':'hover:bg-stone-50/80'}`}>
