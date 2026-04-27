@@ -3468,6 +3468,118 @@ const SITUATIONAL_PHRASES = [
   }
 ];
 
+const MANDATOS_DATA = [
+  {
+    id:'en-casa', title:'En casa', titleEn:'At home', emoji:'🏠', color:'from-amber-400 to-orange-500',
+    phrases:[
+      {es:'¡Ven!', en:'Come!', nota:'tú', when:'Calling someone to you.'},
+      {es:'¡Ven aquí!', en:'Come here!', nota:'tú', when:'More specific – pointing to a spot.'},
+      {es:'¡Siéntate!', en:'Sit down!', nota:'tú', when:'Inviting or telling someone to sit.'},
+      {es:'¡Levántate!', en:'Get up!', nota:'tú', when:'Morning wake-up or urgent call.'},
+      {es:'¡Cállate!', en:'Be quiet! / Shut up!', nota:'tú', when:'To stop someone making noise.'},
+      {es:'¡Escúchame!', en:'Listen to me!', nota:'tú', when:'Getting someone\'s attention.'},
+      {es:'¡Apaga la luz!', en:'Turn off the light!', nota:'tú', when:''},
+      {es:'¡Pon la mesa!', en:'Set the table!', nota:'tú', when:''},
+      {es:'¡Recoge eso!', en:'Pick that up!', nota:'tú', when:''},
+      {es:'¡Cierra la puerta!', en:'Close the door!', nota:'tú', when:''},
+      {es:'¡Dame eso!', en:'Give me that!', nota:'tú', when:''},
+      {es:'¡Deja de molestar!', en:'Stop bothering me!', nota:'tú', when:''},
+    ]
+  },
+  {
+    id:'con-ninos', title:'Con niños', titleEn:'With children', emoji:'👶', color:'from-pink-400 to-rose-500',
+    phrases:[
+      {es:'¡Compórtate!', en:'Behave yourself!', nota:'tú', when:''},
+      {es:'¡Come!', en:'Eat!', nota:'tú', when:'At meal time.'},
+      {es:'¡A la cama!', en:'To bed!', nota:'', when:'Bedtime. Not strictly an imperative verb form, but used as a command.'},
+      {es:'¡No toques eso!', en:"Don't touch that!", nota:'neg. tú', when:''},
+      {es:'¡Deja eso!', en:'Leave that! / Put that down!', nota:'tú', when:''},
+      {es:'¡Para ya!', en:'Stop it now!', nota:'tú', when:''},
+      {es:'¡Suelta eso!', en:'Let go of that!', nota:'tú', when:''},
+      {es:'¡Sé bueno/a!', en:'Be good!', nota:'tú', when:'Irregular: sé (ser).'},
+      {es:'¡No corras!', en:"Don't run!", nota:'neg. tú', when:''},
+      {es:'¡Quieto/a!', en:'Stay still!', nota:'', when:'Also used with pets. Quieto (m) / quieta (f).'},
+      {es:'¡Ven con mamá!', en:'Come to mummy!', nota:'tú', when:''},
+      {es:'¡A comer!', en:'Come and eat!', nota:'', when:'A call to the table, not a direct command.'},
+    ]
+  },
+  {
+    id:'en-la-calle', title:'En la calle', titleEn:'Out and about', emoji:'🚶', color:'from-sky-400 to-blue-500',
+    phrases:[
+      {es:'¡Para!', en:'Stop!', nota:'tú', when:''},
+      {es:'¡Espera!', en:'Wait!', nota:'tú', when:''},
+      {es:'¡Corre!', en:'Run!', nota:'tú', when:''},
+      {es:'¡Gira a la izquierda!', en:'Turn left!', nota:'tú', when:'Giving directions.'},
+      {es:'¡Gira a la derecha!', en:'Turn right!', nota:'tú', when:''},
+      {es:'¡Sigue todo recto!', en:'Go straight on!', nota:'tú', when:''},
+      {es:'¡Cruza aquí!', en:'Cross here!', nota:'tú', when:''},
+      {es:'¡Mira por donde vas!', en:"Watch where you're going!", nota:'tú', when:'Irritated.'},
+      {es:'¡Cuidado!', en:'Watch out! / Careful!', nota:'', when:'Universal warning. Extremely common.'},
+      {es:'¡Apártate!', en:'Get out of the way!', nota:'tú', when:''},
+      {es:'¡Déjame pasar!', en:'Let me through!', nota:'tú', when:'In a crowd.'},
+    ]
+  },
+  {
+    id:'en-el-trabajo', title:'En el trabajo', titleEn:'At work', emoji:'💼', color:'from-stone-400 to-stone-600',
+    phrases:[
+      {es:'¡Dime!', en:'Tell me! / Go ahead!', nota:'tú', when:'Inviting someone to speak – very natural.'},
+      {es:'¡Hazlo ya!', en:'Do it now!', nota:'tú', when:'Irregular: haz (hacer).'},
+      {es:'¡Mándame el archivo!', en:'Send me the file!', nota:'tú', when:''},
+      {es:'¡Llámame!', en:'Call me!', nota:'tú', when:''},
+      {es:'¡Explícame eso!', en:'Explain that to me!', nota:'tú', when:''},
+      {es:'¡Dígame!', en:'Tell me! / Go ahead! (formal)', nota:'usted', when:'Answering the phone or greeting someone formally. Very common.'},
+      {es:'¡Siéntese, por favor!', en:'Please take a seat! (formal)', nota:'usted', when:''},
+      {es:'¡Espere un momento!', en:'Wait a moment! (formal)', nota:'usted', when:''},
+      {es:'¡Pase, pase!', en:'Come in, come in!', nota:'usted', when:'Welcoming someone into a room.'},
+      {es:'¡Habla más despacio!', en:'Speak more slowly!', nota:'tú', when:''},
+      {es:'¡Repite eso!', en:'Repeat that!', nota:'tú', when:''},
+    ]
+  },
+  {
+    id:'en-el-restaurante', title:'En el restaurante', titleEn:'At the restaurant', emoji:'🍽️', color:'from-orange-400 to-rose-500',
+    phrases:[
+      {es:'¡Ponme una caña!', en:'Get me a draft beer!', nota:'tú', when:'"Ponme" = put/give me. Very natural in a bar.'},
+      {es:'¡Tráeme la cuenta!', en:'Bring me the bill!', nota:'tú', when:''},
+      {es:'¡Déjame ver la carta!', en:'Let me see the menu!', nota:'tú', when:''},
+      {es:'¡Quítame esto!', en:'Take this away from me!', nota:'tú', when:''},
+      {es:'¡Oye, perdona!', en:'Hey, excuse me!', nota:'', when:"Getting a waiter's attention. Literally 'hear me, sorry'."},
+      {es:'¡Tráigame la carta, por favor!', en:'Please bring me the menu! (formal)', nota:'usted', when:''},
+      {es:'¡Póngame un café con leche!', en:'Get me a white coffee! (formal)', nota:'usted', when:'Very common at a bar counter.'},
+      {es:'¡Cóbreme cuando pueda!', en:'Charge me when you can! (formal)', nota:'usted', when:'A polite way to ask for the bill.'},
+      {es:'¡Déjenos un momento!', en:'Leave us a moment! (formal)', nota:'ustedes', when:'Asking the waiter to give you time to decide.'},
+    ]
+  },
+  {
+    id:'urgentes', title:'Urgencias', titleEn:'Emergency & urgent', emoji:'🚨', color:'from-red-500 to-rose-600',
+    phrases:[
+      {es:'¡Socorro!', en:'Help!', nota:'', when:'Emergency cry for help. More urgent than "ayuda".'},
+      {es:'¡Ayuda!', en:'Help!', nota:'', when:'Slightly less urgent than "socorro" – both work.'},
+      {es:'¡Llama a una ambulancia!', en:'Call an ambulance!', nota:'tú', when:''},
+      {es:'¡Llama a la policía!', en:'Call the police!', nota:'tú', when:'Emergency number in Spain: 112.'},
+      {es:'¡Fuego!', en:'Fire!', nota:'', when:'Warning of fire.'},
+      {es:'¡Para el coche!', en:'Stop the car!', nota:'tú', when:''},
+      {es:'¡No te muevas!', en:"Don't move!", nota:'neg. tú', when:''},
+      {es:'¡Suéltame!', en:'Let go of me!', nota:'tú', when:''},
+      {es:'¡Atrás!', en:'Get back! / Stand back!', nota:'', when:''},
+      {es:'¡Cuidado con el escalón!', en:'Mind the step!', nota:'', when:''},
+    ]
+  },
+  {
+    id:'animo', title:'Ánimo y aliento', titleEn:'Encouragement', emoji:'🙌', color:'from-emerald-400 to-green-500',
+    phrases:[
+      {es:'¡Venga!', en:"Come on! / Let's go! / Okay!", nota:'', when:"Spain's most versatile exclamation. Can mean encouragement, agreement, farewell, or 'get on with it'."},
+      {es:'¡Vamos!', en:"Let's go!", nota:'nosotros', when:'Nosotros imperative of ir. Also used as general encouragement.'},
+      {es:'¡Dale!', en:'Go for it! / Go on!', nota:'tú', when:'Encouragement. Also used in Andalucía as a goodbye.'},
+      {es:'¡Ánimo!', en:'Come on! / Cheer up! / You\'ve got this!', nota:'', when:'Versatile encouragement.'},
+      {es:'¡Échale ganas!', en:'Put some effort in! / Give it your all!', nota:'tú', when:'"Echar ganas" = to put in effort, literally "to throw energy at it".'},
+      {es:'¡No te rindas!', en:"Don't give up!", nota:'neg. tú', when:''},
+      {es:'¡Sigue así!', en:'Keep it up!', nota:'tú', when:''},
+      {es:'¡Tú puedes!', en:'You can do it!', nota:'', when:''},
+      {es:'¡Adelante!', en:'Go ahead! / Forward!', nota:'', when:'Can also mean "come in" when someone knocks.'},
+    ]
+  },
+];
+
 const IDIOMS = [
   {es:'No tener pelos en la lengua',literal:'Not to have hairs on the tongue',meaning:'To speak your mind / to be very direct',example:'Mi abuela no tiene pelos en la lengua – te dice exactamente lo que piensa.',exampleEn:'My grandmother doesn\'t mince her words – she tells you exactly what she thinks.',category:'cuerpo'},
   {es:'Costar un ojo de la cara',literal:'To cost an eye from the face',meaning:'To cost a fortune / to be very expensive',example:'Ese coche cuesta un ojo de la cara.',exampleEn:'That car costs a fortune.',category:'cuerpo'},
@@ -9202,8 +9314,9 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
   const [selectedValGroup, setSelectedValGroup] = useState(null);
   const [idiomsCategory, setIdiomsCategory] = useState('all');
   const [selectedIdiom, setSelectedIdiom] = useState(null);
+  const [selectedMandato, setSelectedMandato] = useState(null);
 
-  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'},{id:'conectores',label:'Conectores'}];
+  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'mandatos',label:'Mandatos'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'},{id:'conectores',label:'Conectores'}];
 
   const idiomCategories = ['all','comida','animales','cuerpo','general'];
   const filteredIdioms = idiomsCategory === 'all' ? IDIOMS : IDIOMS.filter(i => i.category === idiomsCategory);
@@ -9246,6 +9359,7 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
 
   // Container widens to max-w-5xl for tile-grid tabs and stays max-w-3xl for reading-style tabs
   const gridTab = (tab === 'situaciones' && !selectedSit)
+               || (tab === 'mandatos' && !selectedMandato)
                || (tab === 'valencia' && !selectedValGroup)
                || tab === 'modismos'
                || tab === 'conectores';
@@ -9259,7 +9373,7 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
           <h2 className="text-2xl font-serif font-bold">Frases</h2>
         </div>
         <div className="mb-6">
-          <TabBar dark={dark} tabs={tabs} active={tab} onChange={(t) => { setTab(t); setSelectedSit(null); setSelectedValGroup(null); setSelectedIdiom(null); }} />
+          <TabBar dark={dark} tabs={tabs} active={tab} onChange={(t) => { setTab(t); setSelectedSit(null); setSelectedValGroup(null); setSelectedIdiom(null); setSelectedMandato(null); }} />
         </div>
 
         {tab === 'situaciones' && !selectedSit && (
@@ -9445,6 +9559,74 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
             </div>
           </div>
         )}
+
+        {tab === 'mandatos' && !selectedMandato && (
+          <div>
+            <Card dark={dark} className="p-4 mb-5" style={{background:'#fff7ed',borderColor:'#fed7aa'}}>
+              <p className="text-sm font-semibold text-orange-900 mb-1">📢 Mandatos — imperativo en contexto</p>
+              <p className="text-xs text-orange-800">Commands are one of the most natural parts of spoken Spanish. Each group below shows you the phrases you'd actually hear and use — tú (informal), usted (formal), or nosotros (let's). The grammar is in Chuletas → El Imperativo.</p>
+            </Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {MANDATOS_DATA.map((group) => (
+                <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left">
+                  <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${group.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>
+                      {group.emoji}
+                    </div>
+                    <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
+                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
+                    <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{group.phrases.length} mandatos →</p>
+                  </Card>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tab === 'mandatos' && selectedMandato && (() => {
+          const notaBadge = (nota) => {
+            if (!nota) return null;
+            const map = {
+              'tú':'bg-orange-100 text-orange-700',
+              'neg. tú':'bg-rose-100 text-rose-700',
+              'usted':'bg-blue-100 text-blue-700',
+              'ustedes':'bg-indigo-100 text-indigo-700',
+              'nosotros':'bg-emerald-100 text-emerald-700',
+            };
+            return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${map[nota] || 'bg-stone-100 text-stone-600'}`}>{nota}</span>;
+          };
+          return (
+            <div className="max-w-2xl mx-auto">
+              <button onClick={() => setSelectedMandato(null)} className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
+                <span>←</span> Todos los grupos
+              </button>
+              <div className="flex items-center gap-3 mb-5">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${selectedMandato.color} flex items-center justify-center text-3xl shadow-sm`}>
+                  {selectedMandato.emoji}
+                </div>
+                <div>
+                  <p className="font-serif font-bold text-2xl leading-tight">{selectedMandato.title}</p>
+                  <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedMandato.titleEn}</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {selectedMandato.phrases.map((phrase, pi) => (
+                  <Card key={pi} dark={dark} className="p-5">
+                    <div className="flex items-start gap-2 mb-1">
+                      <p className="font-serif font-bold text-lg lg:text-xl flex-1">{phrase.es}</p>
+                      <SpeakBtn text={phrase.es} size="sm" />
+                      {notaBadge(phrase.nota)}
+                    </div>
+                    <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-600'}`}>{phrase.en}</p>
+                    {phrase.when && (
+                      <p className={`text-xs italic ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{phrase.when}</p>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {tab === 'conectores' && (
           <ConectoresPanel dark={dark} />
