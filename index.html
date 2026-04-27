@@ -9724,14 +9724,18 @@ function EscrituraView({ prompt, dark, onBack }) {
 // =============================================================================
 function Equivalentes({ onBack, dark, onSearch }) {
   const [query, setQuery] = useState('');
-  const [selectedCat, setSelectedCat] = useState(null); // null = home grid
+  const [selectedCat, setSelectedCat] = useState(null);
+  const [expandedIdx, setExpandedIdx] = useState(null);
   const [recording, setRecording] = useState(false);
   const [recError, setRecError] = useState(null);
-  // AI translation state
-  const [aiResult, setAiResult] = useState(null);   // { spanish, alternatives, ... }
+  const [aiResult, setAiResult] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState(null);
-  const [aiQuery, setAiQuery] = useState(null);     // the query the AI result corresponds to
+  const [aiQuery, setAiQuery] = useState(null);
+  const [customEquivs, setCustomEquivs] = useState(() => getStorage('aprende.custom_equiv', []));
+  const [showSaveForm, setShowSaveForm] = useState(false);
+  const [saveCat, setSaveCat] = useState('');
+  const [saveFlash, setSaveFlash] = useState(false);
   const azureRecogRef = React.useRef(null);
   const inputRef = React.useRef(null);
 
@@ -9740,21 +9744,55 @@ function Equivalentes({ onBack, dark, onSearch }) {
   const aiKey = aiGetAnthropicKey();
   const hasAi = !!aiKey;
 
-  const matches = React.useMemo(() => findEquivalents(query, 6), [query]);
+  // All equivalents = curated + user-saved
+  const allEquivalents = React.useMemo(() => [...EQUIVALENTS, ...customEquivs], [customEquivs]);
+
+  // Search over allEquivalents (inline to include custom entries)
+  const matches = React.useMemo(() => {
+    if (!query || query.trim().length < 2) return [];
+    const norm = normalizeEn(query);
+    const normWords = norm.split(/\s+/).filter(Boolean);
+    const results = [];
+    for (const entry of allEquivalents) {
+      let bestScore = 0, bestVariant = entry.en;
+      const variants = [entry.en, ...(entry.enAlts || [])];
+      for (const variant of variants) {
+        const v = normalizeEn(variant);
+        let score = 0;
+        if (v === norm) { score = 1.0; }
+        else if (v && norm && (v.includes(norm) || norm.includes(v))) {
+          score = 0.55 + 0.4 * Math.min(v.length, norm.length) / Math.max(v.length, norm.length);
+        } else {
+          const vw = v.split(/\s+/).filter(Boolean);
+          const inter = normWords.filter(w => new Set(vw).has(w)).length;
+          const overlap = inter / Math.max(vw.length, normWords.length, 1);
+          if (overlap >= 0.5) score = Math.max(score, 0.45 + 0.4 * overlap);
+          const maxL = Math.max(v.length, norm.length);
+          if (maxL > 0) { const sim = 1 - levenshtein(v, norm) / maxL; if (sim > 0.7) score = Math.max(score, sim * 0.85); }
+        }
+        if (score > bestScore) { bestScore = score; bestVariant = variant; }
+      }
+      if (bestScore >= 0.45) results.push({ entry, score: bestScore, variant: bestVariant });
+    }
+    return results.sort((a, b) => b.score - a.score).slice(0, 6);
+  }, [query, allEquivalents]);
+
   const trimmedQuery = query.trim();
   const isSearching = trimmedQuery.length >= 2;
   const hasExactMatch = matches.length > 0 && matches[0].score >= 0.95;
 
-  // Categories present in dataset, sorted by entry count desc
   const categories = React.useMemo(() => {
     const counts = {};
-    EQUIVALENTS.forEach(e => { counts[e.cat] = (counts[e.cat] || 0) + 1; });
+    allEquivalents.forEach(e => { counts[e.cat] = (counts[e.cat] || 0) + 1; });
     return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-  }, []);
+  }, [allEquivalents]);
 
-  // Get up to 2 sample English phrases per category for the tile preview
-  const samplesForCat = (cat) => {
-    return EQUIVALENTS.filter(e => e.cat === cat).slice(0, 2).map(e => e.en);
+  const samplesForCat = (cat) => allEquivalents.filter(e => e.cat === cat).slice(0, 2).map(e => e.en);
+
+  // Back: in a category → go to grid. At grid → exit to nav.
+  const handleBack = () => {
+    if (selectedCat) { setSelectedCat(null); setExpandedIdx(null); }
+    else onBack();
   };
 
   const handleSpeak = async () => {
@@ -9763,19 +9801,14 @@ function Equivalentes({ onBack, dark, onSearch }) {
       try { if (azureRecogRef.current) { azureRecogRef.current.close(); azureRecogRef.current = null; } } catch(e) {}
       setRecording(false); return;
     }
-    if (!hasAzure) {
-      setRecError("Voice input needs the Azure key (Ajustes → API). You can still type.");
-      return;
-    }
+    if (!hasAzure) { setRecError("Voice input needs the Azure key (Ajustes → API). You can still type."); return; }
     setRecording(true);
     try {
       const text = await azureRecognizeOnce(azCfg.apiKey, azCfg.region, r => { azureRecogRef.current = r; }, 'en-US');
-      azureRecogRef.current = null;
-      setRecording(false);
+      azureRecogRef.current = null; setRecording(false);
       if (text) setQuery(text);
     } catch(e) {
-      azureRecogRef.current = null;
-      setRecording(false);
+      azureRecogRef.current = null; setRecording(false);
       if (e.srCode === 'no-speech') setRecError("Didn't catch that – try again.");
       else setRecError("Voice input failed. Try typing instead.");
     }
@@ -9784,14 +9817,13 @@ function Equivalentes({ onBack, dark, onSearch }) {
   const handleAITranslate = async () => {
     if (!hasAi) { setAiError('no-key'); return; }
     if (!trimmedQuery) return;
-    setAiError(null); setAiLoading(true); setAiResult(null);
+    setAiError(null); setAiLoading(true); setAiResult(null); setShowSaveForm(false);
     setAiQuery(trimmedQuery);
     try {
       const result = await aiTranslate(trimmedQuery, aiKey);
-      if (result.error === 'no_match') {
-        setAiError('no-match'); setAiLoading(false); return;
-      }
+      if (result.error === 'no_match') { setAiError('no-match'); setAiLoading(false); return; }
       setAiResult(result); setAiLoading(false);
+      setSaveCat(result.category && EQUIV_CAT_META[result.category] ? result.category : (categories[0] || ''));
     } catch(e) {
       setAiLoading(false);
       const msg = e.message || '';
@@ -9802,45 +9834,41 @@ function Equivalentes({ onBack, dark, onSearch }) {
     }
   };
 
-  // Clear AI result if query changes
   React.useEffect(() => {
-    if (aiQuery && trimmedQuery !== aiQuery) {
-      setAiResult(null); setAiError(null); setAiQuery(null);
-    }
+    if (aiQuery && trimmedQuery !== aiQuery) { setAiResult(null); setAiError(null); setAiQuery(null); setShowSaveForm(false); }
   }, [trimmedQuery, aiQuery]);
 
-  // Single result card – shows English → Spanish prominently with context
+  const handleSaveEntry = () => {
+    if (!aiResult || !saveCat) return;
+    const entry = { en: aiQuery, enAlts: [], es: aiResult.spanish, esAlts: aiResult.alternatives || [],
+      example: aiResult.example, exampleEn: aiResult.exampleEn, explain: aiResult.explanation,
+      register: aiResult.register, cat: saveCat, isCustom: true };
+    const updated = [...customEquivs, entry];
+    setCustomEquivs(updated); setStorage('aprende.custom_equiv', updated);
+    setShowSaveForm(false); setSaveFlash(true); setTimeout(() => setSaveFlash(false), 2500);
+  };
+
+  const handleDeleteCustom = (entry) => {
+    const updated = customEquivs.filter(e => !(e.en === entry.en && e.es === entry.es));
+    setCustomEquivs(updated); setStorage('aprende.custom_equiv', updated); setExpandedIdx(null);
+  };
+
+  // ── Full result card (search results + AI) ───────────────────────────────
   const ResultCard = ({ entry, score, variant, isAi }) => {
-    const meta = EQUIV_CAT_META[entry.cat] || { label:entry.cat || 'general', emoji:'💬', color:'from-stone-400 to-stone-500' };
+    const meta = EQUIV_CAT_META[entry.cat] || { label: entry.cat || 'general', emoji: '💬', color: 'from-stone-400 to-stone-500' };
     const confidence = score == null ? null : score >= 0.95 ? 'exacta' : score >= 0.75 ? 'alta' : 'parcial';
-    const confColor = confidence === 'exacta' ? 'bg-emerald-100 text-emerald-700'
-                    : confidence === 'alta' ? 'bg-sky-100 text-sky-700'
-                    : 'bg-amber-100 text-amber-700';
+    const confColor = confidence === 'exacta' ? 'bg-emerald-100 text-emerald-700' : confidence === 'alta' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700';
     return (
       <Card dark={dark} className={`p-5 ${isAi ? 'border-2 border-violet-300' : ''}`}>
         <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${meta.color} text-white`}>
-              {meta.emoji} {meta.label}
-            </span>
-            {entry.register && (
-              <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-600'}`}>
-                {entry.register}
-              </span>
-            )}
-            {isAi && (
-              <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-100 text-violet-700">
-                🤖 IA
-              </span>
-            )}
+            <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${meta.color} text-white`}>{meta.emoji} {meta.label}</span>
+            {entry.register && <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-600'}`}>{entry.register}</span>}
+            {isAi && <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-100 text-violet-700">🤖 IA</span>}
+            {entry.isCustom && <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">⭐ Guardado</span>}
           </div>
-          {confidence && !isAi && (
-            <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${confColor}`}>
-              coincidencia {confidence}
-            </span>
-          )}
+          {confidence && !isAi && <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${confColor}`}>coincidencia {confidence}</span>}
         </div>
-
         <p className={`text-xs font-semibold mb-1 ${dark?'text-stone-400':'text-stone-500'}`}>
           {variant ? `"${variant}"` : `"${entry.en}"`}
         </p>
@@ -9848,21 +9876,16 @@ function Equivalentes({ onBack, dark, onSearch }) {
           <p className="font-serif font-bold text-2xl leading-tight flex-1 min-w-0 break-words">{entry.es}</p>
           <SpeakBtn text={entry.es} size="sm" />
         </div>
-
         {entry.esAlts && entry.esAlts.length > 0 && (
           <div className={`mb-3 pb-3 border-b ${dark?'border-white/10':'border-stone-200'}`}>
             <p className={`text-[10px] font-bold tracking-widest uppercase mb-1.5 ${dark?'text-stone-500':'text-stone-400'}`}>También</p>
             <div className="flex flex-wrap gap-1.5">
               {entry.esAlts.map((alt, i) => (
-                <span key={i} className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-lg ${dark?'bg-white/[0.06] text-stone-200':'bg-stone-100 text-stone-700'}`}>
-                  {alt}
-                  <SpeakBtn text={alt} size="sm" />
-                </span>
+                <span key={i} className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-lg ${dark?'bg-white/[0.06] text-stone-200':'bg-stone-100 text-stone-700'}`}>{alt}<SpeakBtn text={alt} size="sm" /></span>
               ))}
             </div>
           </div>
         )}
-
         {entry.example && (
           <div className="mb-2">
             <div className="flex items-start gap-2">
@@ -9872,7 +9895,6 @@ function Equivalentes({ onBack, dark, onSearch }) {
             {entry.exampleEn && <p className={`text-xs mt-1 ${dark?'text-stone-500':'text-stone-500'}`}>{entry.exampleEn}</p>}
           </div>
         )}
-
         {entry.explain && (
           <div className={`mt-3 text-xs rounded-xl p-3 ${dark?'bg-amber-500/10 text-amber-200':'bg-amber-50 text-amber-900'}`}>
             <span className="font-bold">💡 </span>{entry.explain}
@@ -9882,194 +9904,266 @@ function Equivalentes({ onBack, dark, onSearch }) {
     );
   };
 
-  // Compact preview card on Spanish, used for the "ver más" mini-strip
-  const PhrasePreviewCard = ({ entry, onClick }) => (
-    <button onClick={onClick}
-      className={`text-left rounded-2xl p-4 transition-all hover:scale-[1.02] active:scale-[0.99] ${dark?'bg-white/[0.04] hover:bg-white/[0.08]':'bg-white hover:bg-stone-50 shadow-sm border border-stone-200/60'}`}>
-      <p className={`text-[11px] font-semibold mb-1 ${dark?'text-stone-400':'text-stone-500'}`}>"{entry.en}"</p>
-      <p className="font-serif font-bold text-base leading-tight">{entry.es}</p>
-    </button>
-  );
+  // ── AI result + save affordance ──────────────────────────────────────────
+  const AiResultSection = () => {
+    if (!aiResult) return null;
+    return (
+      <div className="space-y-3">
+        <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+          Traducción IA {aiResult._cached ? '(caché)' : ''}
+        </p>
+        <ResultCard
+          entry={{ en: aiQuery, es: aiResult.spanish, esAlts: aiResult.alternatives||[], example: aiResult.example,
+            exampleEn: aiResult.exampleEn, explain: aiResult.explanation, register: aiResult.register, cat: aiResult.category }}
+          isAi={true} />
+        {/* Save button / form */}
+        {saveFlash ? (
+          <div className={`rounded-2xl py-3 px-4 text-center font-bold text-sm ${dark?'bg-emerald-500/20 text-emerald-300':'bg-emerald-50 text-emerald-700'}`}>
+            ✅ Guardado en {EQUIV_CAT_META[saveCat]?.label || saveCat}
+          </div>
+        ) : !showSaveForm ? (
+          <button onClick={() => setShowSaveForm(true)}
+            className={`w-full rounded-2xl py-3 font-bold text-sm border-2 border-dashed transition-colors ${dark?'border-amber-500/40 text-amber-400 hover:bg-amber-500/10':'border-amber-400 text-amber-700 hover:bg-amber-50'}`}>
+            💾 Guardar en mis frases
+          </button>
+        ) : (
+          <Card dark={dark} className="p-4">
+            <p className={`text-sm font-bold mb-3 ${dark?'text-stone-200':'text-stone-800'}`}>Guardar en categoría</p>
+            <select value={saveCat} onChange={e => setSaveCat(e.target.value)}
+              className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-white border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
+              {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.emoji} {m.label}</option>; })}
+              <option value="general">💬 General</option>
+            </select>
+            <div className="flex gap-2">
+              <button onClick={handleSaveEntry} disabled={!saveCat}
+                className="flex-1 rounded-xl py-2.5 font-bold text-sm bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50">
+                ✓ Guardar
+              </button>
+              <button onClick={() => setShowSaveForm(false)}
+                className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}>
+                Cancelar
+              </button>
+            </div>
+          </Card>
+        )}
+      </div>
+    );
+  };
 
-  // Render the AI result as a result card
-  const aiResultCard = aiResult ? (
-    <ResultCard
-      entry={{
-        en: aiQuery,
-        es: aiResult.spanish,
-        esAlts: aiResult.alternatives || [],
-        example: aiResult.example,
-        exampleEn: aiResult.exampleEn,
-        explain: aiResult.explanation,
-        register: aiResult.register,
-        cat: aiResult.category,
-      }}
-      isAi={true}
-    />
-  ) : null;
+  // ── Category drilldown: 2-col expandable grid ────────────────────────────
+  const CategoryDrilldown = () => {
+    const meta = EQUIV_CAT_META[selectedCat] || { label: selectedCat, emoji: '💬', color: 'from-stone-400 to-stone-500' };
+    const items = allEquivalents.filter(e => e.cat === selectedCat);
+    const customInCat = items.filter(e => e.isCustom).length;
+    return (
+      <div>
+        {/* Hero header */}
+        <div className={`rounded-3xl p-6 mb-6 bg-gradient-to-br ${meta.color} text-white shadow-md`}>
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-5xl mb-3">{meta.emoji}</p>
+              <p className="font-serif font-bold text-2xl leading-tight">{meta.label}</p>
+              <p className="text-sm opacity-90 mt-1">{items.length} frases naturales
+                {customInCat > 0 && <span className="ml-2 font-bold">· ⭐ {customInCat} tuyas</span>}
+              </p>
+            </div>
+            <p className="text-6xl font-black opacity-20 leading-none">{items.length}</p>
+          </div>
+        </div>
+
+        {/* 2-col expandable card grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {items.map((entry, i) => {
+            const isExp = expandedIdx === i;
+            const hasDetail = (entry.esAlts && entry.esAlts.length > 0) || entry.example || entry.explain;
+            return (
+              <div key={i} className={`rounded-2xl overflow-hidden border transition-all duration-200 ${dark?'bg-white/[0.04] border-white/10':'bg-white border-stone-200/70 shadow-sm'} ${entry.isCustom?'ring-2 ring-amber-400/50':''} ${isExp?(dark?'bg-white/[0.07]':'bg-stone-50/60'):''}`}>
+                {/* Always-visible row */}
+                <button onClick={() => setExpandedIdx(isExp ? null : i)}
+                  className={`w-full text-left p-4 transition-colors ${dark?'hover:bg-white/[0.04]':'hover:bg-stone-50/80'}`}>
+                  <div className="flex items-start gap-3">
+                    {/* Category accent bar */}
+                    <div className={`flex-shrink-0 w-1 self-stretch rounded-full bg-gradient-to-b ${meta.color} opacity-80`}></div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-[11px] font-medium mb-0.5 ${dark?'text-stone-400':'text-stone-500'}`}>
+                        "{entry.en}"
+                        {entry.isCustom && <span className="ml-1 text-amber-500 text-xs">⭐</span>}
+                      </p>
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <p className="font-serif font-bold text-xl leading-tight">{entry.es}</p>
+                        {entry.register && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-500'}`}>{entry.register}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+                      <span onClick={e => e.stopPropagation()}><SpeakBtn text={entry.es} size="sm" /></span>
+                      {hasDetail && <span className={`text-stone-400 text-[10px] transition-transform duration-200 ${isExp?'rotate-180':''}`}>▾</span>}
+                    </div>
+                  </div>
+                </button>
+
+                {/* Expanded detail panel */}
+                {isExp && hasDetail && (
+                  <div className={`px-5 pb-4 space-y-3 border-t ${dark?'border-white/10':'border-stone-100'}`}>
+                    {entry.esAlts && entry.esAlts.length > 0 && (
+                      <div className="pt-3">
+                        <p className={`text-[9px] font-bold tracking-widest uppercase mb-1.5 ${dark?'text-stone-500':'text-stone-400'}`}>También se dice</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {entry.esAlts.map((alt, ai) => (
+                            <span key={ai} className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-lg ${dark?'bg-white/[0.06] text-stone-200':'bg-stone-100 text-stone-700'}`}>
+                              {alt}<span onClick={e => e.stopPropagation()}><SpeakBtn text={alt} size="sm" /></span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {entry.example && (
+                      <div className={`rounded-xl p-3 ${dark?'bg-white/[0.04]':'bg-stone-50'}`}>
+                        <div className="flex items-start gap-2">
+                          <p className={`flex-1 text-sm italic font-medium ${dark?'text-stone-200':'text-stone-700'}`}>"{entry.example}"</p>
+                          <span onClick={e => e.stopPropagation()}><SpeakBtn text={entry.example} size="sm" /></span>
+                        </div>
+                        {entry.exampleEn && <p className={`text-[11px] mt-1 ${dark?'text-stone-500':'text-stone-400'}`}>{entry.exampleEn}</p>}
+                      </div>
+                    )}
+                    {entry.explain && (
+                      <div className={`text-[11px] rounded-xl p-2.5 ${dark?'bg-amber-500/10 text-amber-200':'bg-amber-50 text-amber-900'}`}>
+                        <span className="font-bold">💡 </span>{entry.explain}
+                      </div>
+                    )}
+                    {entry.isCustom && (
+                      <button onClick={() => handleDeleteCustom(entry)}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium pt-0.5">
+                        🗑️ Eliminar frase guardada
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div>
-      <BackHeader title="Cómo se dice" subtitle="Type English → get real Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Cómo se dice" subtitle="Type English → get real Spanish" onBack={handleBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
 
-        {/* ── Search bar (always visible) ─────────────────────────────────── */}
+        {/* ── Search bar ────────────────────────────────────────────────── */}
         <Card dark={dark} className="p-4 mb-5">
           <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
             ¿Cómo se dice esto en español?
           </p>
           <div className="flex gap-2">
-            <input ref={inputRef} type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+            <input ref={inputRef} type="text" value={query} onChange={e => setQuery(e.target.value)}
               placeholder="e.g. I can't be bothered, no way, take it easy..."
               className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-orange-500 transition-colors`} />
             <button onClick={handleSpeak}
-              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-orange-500 hover:bg-orange-600 text-white'}`}
-              title={recording ? 'Stop' : 'Speak in English'}>
+              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-orange-500 hover:bg-orange-600 text-white'}`}>
               {recording ? '🔴' : '🎤'}
             </button>
             {query && (
-              <button onClick={() => { setQuery(''); setAiResult(null); setAiError(null); inputRef.current && inputRef.current.focus(); }}
-                className={`rounded-xl px-3 py-3 text-sm flex-shrink-0 ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}
-                title="Clear">✕</button>
+              <button onClick={() => { setQuery(''); setAiResult(null); setAiError(null); setShowSaveForm(false); inputRef.current?.focus(); }}
+                className={`rounded-xl px-3 py-3 text-sm flex-shrink-0 ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}>✕</button>
             )}
           </div>
           {recError && <p className="text-xs text-amber-600 mt-2 font-medium">{recError}</p>}
         </Card>
 
-        {/* ── Search mode ─────────────────────────────────────────────────── */}
+        {/* ── Search results ─────────────────────────────────────────────── */}
         {isSearching ? (
           <div className="space-y-3">
-            {/* Curated matches */}
             {matches.length > 0 && (
               <>
                 <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
-                  {matches.length === 1 ? '1 coincidencia verificada' : `${matches.length} coincidencias verificadas`}
+                  {matches.length === 1 ? '1 coincidencia' : `${matches.length} coincidencias`}
                 </p>
-                {matches.map((m, i) => (
-                  <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />
-                ))}
+                {matches.map((m, i) => <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />)}
               </>
             )}
-
-            {/* No exact match → AI fallback prompt */}
             {!hasExactMatch && (
-              <Card dark={dark} className={`p-5 ${matches.length === 0 ? '' : 'mt-2'}`}>
+              <Card dark={dark} className="p-5">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-2xl">🤖</span>
                   <p className="font-bold text-base">Traducción con IA</p>
                 </div>
                 <p className={`text-sm mb-4 ${dark?'text-stone-400':'text-stone-600'}`}>
-                  {matches.length === 0
-                    ? 'No tenemos esta frase en el diccionario. Pídele a Claude la traducción natural en español de España.'
-                    : 'Si las coincidencias no encajan, pídele a Claude una traducción natural específica para tu frase.'}
+                  {matches.length === 0 ? 'No tenemos esta frase en el diccionario. Pídele a Claude la traducción natural.' : 'Si las coincidencias no encajan, pídele a Claude una más específica para tu frase.'}
                 </p>
                 {hasAi ? (
                   <>
-                    <button onClick={handleAITranslate}
-                      disabled={aiLoading}
+                    <button onClick={handleAITranslate} disabled={aiLoading}
                       className={`w-full sm:w-auto rounded-xl px-5 py-3 font-bold text-sm transition-colors ${aiLoading?'bg-violet-300 text-white cursor-wait':'bg-violet-500 hover:bg-violet-600 text-white'}`}>
                       {aiLoading ? '⏳ Traduciendo…' : `🤖 Traducir "${trimmedQuery.length > 40 ? trimmedQuery.slice(0,40)+'…' : trimmedQuery}"`}
                     </button>
                     {aiError === 'invalid-key' && <p className="text-xs text-red-600 mt-2 font-medium">Clave de Anthropic inválida — revísala en Ajustes.</p>}
                     {aiError === 'rate-limit' && <p className="text-xs text-amber-600 mt-2 font-medium">Has excedido el límite de uso. Espera un momento.</p>}
-                    {aiError === 'parse-failed' && <p className="text-xs text-amber-600 mt-2 font-medium">Respuesta del modelo malformada. Inténtalo otra vez.</p>}
+                    {aiError === 'parse-failed' && <p className="text-xs text-amber-600 mt-2 font-medium">Respuesta malformada. Inténtalo otra vez.</p>}
                     {aiError === 'api-error' && <p className="text-xs text-red-600 mt-2 font-medium">Fallo de red. Comprueba tu conexión.</p>}
-                    {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">El modelo no encontró traducción natural — prueba a reformular en inglés.</p>}
+                    {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">No encontró traducción natural — prueba a reformular en inglés.</p>}
                   </>
                 ) : (
                   <div className={`text-xs rounded-xl p-3 ${dark?'bg-violet-500/10 text-violet-200':'bg-violet-50 text-violet-900'}`}>
                     <p className="font-bold mb-1">🔑 Configura una clave de Anthropic</p>
-                    <p>Ve a <strong>Ajustes → IA Traducción</strong> y pega tu clave de Anthropic (api.anthropic.com). Solo se usa para esta función — tus claves quedan guardadas localmente en este dispositivo.</p>
+                    <p>Ve a <strong>Ajustes → IA Traducción</strong> y pega tu clave de Anthropic. Se guarda localmente en este dispositivo.</p>
                   </div>
                 )}
               </Card>
             )}
+            <AiResultSection />
+          </div>
 
-            {/* AI result card */}
-            {aiResultCard && (
-              <>
-                <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
-                  Traducción IA {aiResult._cached ? '(caché)' : ''}
-                </p>
-                {aiResultCard}
-              </>
-            )}
-          </div>
         ) : selectedCat ? (
-          /* ── Category drilldown ──────────────────────────────────────────── */
-          <div>
-            <button onClick={() => setSelectedCat(null)}
-              className={`mb-4 text-sm font-semibold flex items-center gap-1.5 ${dark?'text-stone-300 hover:text-white':'text-stone-600 hover:text-stone-900'}`}>
-              ← Volver a categorías
-            </button>
-            {(() => {
-              const meta = EQUIV_CAT_META[selectedCat] || { label:selectedCat, emoji:'💬', color:'from-stone-400 to-stone-500' };
-              const items = EQUIVALENTS.filter(e => e.cat === selectedCat);
-              return (
-                <>
-                  <div className={`rounded-3xl p-6 mb-5 bg-gradient-to-br ${meta.color} text-white shadow-sm`}>
-                    <p className="text-4xl mb-2">{meta.emoji}</p>
-                    <p className="font-serif font-bold text-2xl leading-tight">{meta.label}</p>
-                    <p className="text-sm opacity-90">{items.length} {items.length === 1 ? 'frase' : 'frases'} naturales en español</p>
-                  </div>
-                  <div className="space-y-3">
-                    {items.map((entry, i) => <ResultCard key={i} entry={entry} />)}
-                  </div>
-                </>
-              );
-            })()}
-          </div>
+          /* ── Category drilldown ──────────────────────────────────────── */
+          <CategoryDrilldown />
+
         ) : (
-          /* ── Home grid: category tiles ─────────────────────────────────── */
+          /* ── Home grid ───────────────────────────────────────────────── */
           <>
             <div className="mb-5">
-              <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
-                Explora por tema
-              </p>
+              <p className={`text-[10px] font-bold tracking-widest uppercase mb-1.5 ${dark?'text-stone-500':'text-stone-400'}`}>Explora por tema</p>
               <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
-                {EQUIVALENTS.length} expresiones nativas organizadas por situación. O escribe arriba para buscar la tuya.
+                {allEquivalents.length} expresiones nativas por situación.
+                {customEquivs.length > 0 && <span className="text-amber-600 font-semibold ml-1">⭐ {customEquivs.length} guardadas.</span>}
               </p>
             </div>
-
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {categories.map(cat => {
-                const meta = EQUIV_CAT_META[cat] || { label:cat, emoji:'💬', color:'from-stone-400 to-stone-500' };
-                const count = EQUIVALENTS.filter(e => e.cat === cat).length;
+                const meta = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬', color: 'from-stone-400 to-stone-500' };
+                const count = allEquivalents.filter(e => e.cat === cat).length;
+                const customCount = customEquivs.filter(e => e.cat === cat).length;
                 const samples = samplesForCat(cat);
                 return (
-                  <button key={cat} onClick={() => setSelectedCat(cat)}
+                  <button key={cat} onClick={() => { setSelectedCat(cat); setExpandedIdx(null); }}
                     className={`relative overflow-hidden rounded-3xl p-5 text-left transition-all hover:scale-[1.02] active:scale-[0.99] bg-gradient-to-br ${meta.color} text-white shadow-sm min-h-[150px] flex flex-col`}>
                     <div className="flex items-start justify-between mb-2">
                       <span className="text-3xl">{meta.emoji}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 bg-white/20 px-2 py-0.5 rounded-full">{count}</span>
+                      <div className="flex items-center gap-1">
+                        {customCount > 0 && <span className="text-[10px] font-bold bg-amber-400/30 px-1.5 py-0.5 rounded-full">⭐{customCount}</span>}
+                        <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 bg-white/20 px-2 py-0.5 rounded-full">{count}</span>
+                      </div>
                     </div>
                     <p className="font-serif font-bold text-lg leading-tight mb-2">{meta.label}</p>
                     <div className="mt-auto space-y-0.5">
-                      {samples.map((s, i) => (
-                        <p key={i} className="text-[11px] opacity-85 font-medium truncate">"{s}"</p>
-                      ))}
+                      {samples.map((s, i) => <p key={i} className="text-[11px] opacity-85 font-medium truncate">"{s}"</p>)}
                     </div>
                   </button>
                 );
               })}
             </div>
-
-            {/* AI hint at bottom */}
             <Card dark={dark} className="p-5 mt-6">
               <div className="flex items-start gap-3">
                 <span className="text-2xl flex-shrink-0">🤖</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold mb-1">¿Falta una frase?</p>
                   <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
-                    Escribe lo que quieras decir arriba. Si no está en el diccionario, puedes pedirle una traducción natural a Claude (necesita clave Anthropic en Ajustes).
+                    Escribe lo que quieras decir arriba. Si no está en el diccionario, tradúcelo con Claude y guárdalo en tu colección.
                   </p>
-                  {!hasAi && (
-                    <p className={`text-[11px] mt-2 ${dark?'text-violet-300':'text-violet-700'}`}>
-                      Sin clave configurada — solo el diccionario verificado funcionará por ahora.
-                    </p>
-                  )}
+                  {!hasAi && <p className={`text-[11px] mt-2 ${dark?'text-violet-300':'text-violet-700'}`}>Sin clave configurada — solo el diccionario verificado por ahora.</p>}
                 </div>
               </div>
             </Card>
@@ -12358,6 +12452,7 @@ function Ajustes({ dark, onBack }) {
             'aprende.tts.azureKey','aprende.tts.azureRegion','aprende.tts.azureVoiceFemale','aprende.tts.azureVoiceMale',
             'aprende.tts.speechRate',
             'aprende.ai.anthropicKey',
+            'aprende.custom_equiv',
           ];
           const [copied, setCopied] = React.useState(false);
           const [exportCode, setExportCode] = React.useState('');
