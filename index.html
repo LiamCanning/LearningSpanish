@@ -5426,256 +5426,254 @@ function Inicio({ dark, section, setSection }) {
   const phrase = getPhraseOfDay();
   const [streak, setStreak] = useState(() => getStreak());
   useEffect(() => { setStreak(tickStreak()); }, []);
-  const [xpState, setXpState] = React.useState(() => xpGetState());
+  const [xpState] = useState(() => xpGetState());
   const level = xpGetLevel(xpState.total);
 
-  // Weak area computation
+  // Continue-where-you-left-off
+  const NAV_LABELS = {
+    tiempos:'Tiempos verbales', conjugador:'Conjugador', chuletas:'Chuletas',
+    vocabulario:'Vocabulario', frases:'Frases', equivalentes:'Cómo se dice',
+    lecturas:'Lecturas', conversaciones:'Conversaciones', negocios:'Negocios',
+    ejercicios:'Ejercicios', dictado:'Dictado', pronunciacion:'Pronunciación',
+    ajustes:'Ajustes', hoy:'Palabra del día'
+  };
+  const lastNonInicio = getStorage('aprende.lastNonInicio', null);
+  const continueLabel = lastNonInicio ? NAV_LABELS[lastNonInicio] : 'Pronunciación';
+  const continueId = lastNonInicio || 'pronunciacion';
+
+  // Weak areas
   const weakAreas = React.useMemo(() => {
     const history = getStorage('aprende.exercise_history', []);
     if (!history.length) return [];
     const cats = {};
-    history.forEach(h => {
-      if (!h.category) return;
-      if (!cats[h.category]) cats[h.category] = [];
-      cats[h.category].push(h);
-    });
-    const result = [];
-    Object.entries(cats).forEach(([cat, entries]) => {
+    history.forEach(h => { if (h.category) (cats[h.category] = cats[h.category] || []).push(h); });
+    return Object.entries(cats).reduce((acc, [cat, entries]) => {
       const last10 = entries.slice(-10);
-      if (last10.length < 3) return;
-      const acc = last10.filter(h => h.correct).length / last10.length;
-      if (acc < 0.6) result.push({ category: cat, acc, count: last10.length });
-    });
-    return result.sort((a, b) => a.acc - b.acc);
+      if (last10.length < 3) return acc;
+      const accuracy = last10.filter(h => h.correct).length / last10.length;
+      if (accuracy < 0.6) acc.push({ category: cat, acc: accuracy, count: last10.length });
+      return acc;
+    }, []).sort((a, b) => a.acc - b.acc);
   }, []);
 
-  const SECTION_TILES = [
-    { id:'hoy', label:'Hoy', sublabel:'Today', emoji:'⭐', color:'orange' },
-    { id:'tiempos', label:'Tiempos', sublabel:'Tenses', emoji:'🕐', color:'blue' },
-    { id:'chuletas', label:'Chuletas', sublabel:'Cheat Sheets', emoji:'📋', color:'purple' },
-    { id:'vocabulario', label:'Vocabulario', sublabel:'Vocab + Glosario', emoji:'📚', color:'emerald' },
-    { id:'frases', label:'Frases', sublabel:'Phrases + Idioms', emoji:'💬', color:'rose' },
-    { id:'equivalentes', label:'Cómo se dice', sublabel:'EN → ES natural', emoji:'🗣️', color:'fuchsia' },
-    { id:'lecturas', label:'Lecturas', sublabel:'Reading', emoji:'📖', color:'sky' },
-    { id:'conversaciones', label:'Conversaciones', sublabel:'Listening', emoji:'🎧', color:'violet' },
-    { id:'negocios', label:'Negocios', sublabel:'Business Spanish', emoji:'💼', color:'teal' },
-    { id:'ejercicios', label:'Ejercicios', sublabel:'Exercises', emoji:'✏️', color:'amber' },
-    { id:'dictado', label:'Dictado', sublabel:'Escucha y escribe', emoji:'✍️', color:'indigo' },
-    { id:'pronunciacion', label:'Pronunciación', sublabel:'Habla y mejora', emoji:'🎤', color:'pink' },
-    { id:'ajustes', label:'Ajustes', sublabel:'Voz y audio', emoji:'⚙️', color:'stone' },
+  // Tarjetas due today
+  const dueCards = React.useMemo(() => {
+    const cards = getStorage('aprende.glosario', []);
+    const now = Date.now();
+    return cards.filter(c => c.srs && c.srs.due && c.srs.due <= now).length;
+  }, []);
+
+  // Streak dot strip — last 7 days. Approximation: today is filled if practiced;
+  // previous (count-1) days are filled (this is what a streak guarantees).
+  const dotStrip = React.useMemo(() => {
+    const arr = [];
+    const days = ['L','M','X','J','V','S','D'];
+    const today = new Date();
+    const dow = (today.getDay() + 6) % 7; // Mon=0
+    for (let i = 6; i >= 0; i--) {
+      const idx = (dow - i + 7) % 7;
+      arr.push({ label: days[idx], filled: i < (streak.count || 0), today: i === 0 });
+    }
+    return arr;
+  }, [streak.count]);
+
+  const dateStr = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+
+  // ── Editorial section groups (no flat tile grid) ──
+  const GROUPS = [
+    { title: 'Referencia',  items: [
+      {id:'tiempos', label:'Tiempos verbales', sub:'Verb tenses'},
+      {id:'conjugador', label:'Conjugador', sub:'Any verb, any tense'},
+      {id:'frases', label:'Conectores', sub:'Linking words', _alt:'frases'},
+      {id:'chuletas', label:'Chuletas', sub:'Cheat sheets'},
+    ]},
+    { title: 'Vocabulario', items: [
+      {id:'vocabulario', label:'Vocabulario', sub:'Themes & glossary'},
+      {id:'frases', label:'Frases', sub:'Idioms & expressions'},
+      {id:'equivalentes', label:'Cómo se dice', sub:'EN → ES natural'},
+      {id:'hoy', label:'Palabra del día', sub:"Today's archive"},
+    ]},
+    { title: 'Práctica',    items: [
+      {id:'ejercicios', label:'Ejercicios', sub:'Quizzes & drills'},
+      {id:'pronunciacion', label:'Pronunciación', sub:'Speak & improve'},
+      {id:'dictado', label:'Dictado', sub:'Listen & write'},
+      {id:'vocabulario', label:'Tarjetas', sub:'Spaced repetition', _alt:'glosario'},
+    ]},
+    { title: 'Lectura y escucha', items: [
+      {id:'lecturas', label:'Lecturas', sub:'Reading passages'},
+      {id:'conversaciones', label:'Conversaciones', sub:'Dialogues'},
+      {id:'negocios', label:'Negocios', sub:'Business Spanish'},
+    ]},
   ];
 
-  const colorMap = {
-    orange: 'from-orange-400 to-orange-500',
-    blue: 'from-blue-400 to-blue-500',
-    purple: 'from-purple-400 to-purple-500',
-    emerald: 'from-emerald-400 to-emerald-500',
-    teal: 'from-teal-400 to-teal-500',
-    rose: 'from-rose-400 to-rose-500',
-    sky: 'from-sky-400 to-sky-500',
-    amber: 'from-amber-400 to-amber-500',
-    indigo: 'from-indigo-400 to-indigo-500',
-    violet: 'from-violet-400 to-violet-500',
-    pink: 'from-pink-400 to-pink-500',
-    fuchsia: 'from-fuchsia-400 to-fuchsia-500',
-    stone: 'from-stone-400 to-stone-500',
-  };
-
-  const WordCard = () => (
-    <Card dark={dark} className="p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-[10px] font-bold tracking-widest text-orange-500 uppercase">Palabra del Día</span>
-      </div>
-      <div className="flex items-center gap-3 mb-1">
-        <p className="text-4xl font-serif font-bold">{word.es}</p>
-        <SpeakBtn text={word.es} size="lg" />
-      </div>
-      <p className={`text-sm font-medium mb-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{word.en}</p>
-      <div className="flex items-start gap-2 mb-1">
-        <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{word.example}"</p>
-        <SpeakBtn text={word.example} size="sm" />
-      </div>
-      <p className={`text-xs mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{word.exampleEn}</p>
-      {word.tip && (
-        <div className={`rounded-xl p-3 text-xs ${dark ? 'bg-orange-900/20 text-orange-300' : 'bg-orange-50 text-orange-800'}`}>
-          💡 {word.tip}
-        </div>
-      )}
-    </Card>
-  );
-
-  const PhraseCard = () => (
-    <Card dark={dark} className="p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-[10px] font-bold tracking-widest text-rose-500 uppercase">Frase del Día</span>
-      </div>
-      <div className="flex items-start gap-3 mb-1">
-        <p className="text-2xl font-serif font-bold flex-1">{phrase.es}</p>
-        <SpeakBtn text={phrase.es} size="lg" />
-      </div>
-      <p className={`text-sm font-medium mb-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{phrase.en}</p>
-      <div className="flex items-start gap-2 mb-1">
-        <p className={`text-sm italic flex-1 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>"{phrase.example}"</p>
-        <SpeakBtn text={phrase.example} size="sm" />
-      </div>
-      <p className={`text-xs mb-2 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{phrase.exampleEn}</p>
-      {phrase.when && (
-        <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
-          <span className="font-semibold">Cuándo:</span> {phrase.when}
-        </p>
-      )}
-    </Card>
-  );
-
   return (
-    <div>
-      {/* Desktop greeting header */}
-      <div className="hidden lg:flex items-start justify-between px-8 pt-8 pb-4">
+    <div className="min-h-screen">
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* COVER — word of the day as the hero                            */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="px-5 lg:px-12 pt-6 lg:pt-12 pb-10 lg:pb-16 max-w-4xl mx-auto fade-stagger">
+
+        {/* Eyebrow: date + streak */}
         <div>
-          <h2 className="text-3xl font-serif font-bold">Buenos días, Liam 👋</h2>
-          <p className="text-sm mt-1 text-stone-500">{new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})}</p>
+          <p className="eyebrow flex items-center flex-wrap gap-x-3 gap-y-1">
+            <span>{dateStr}</span>
+            <span className="text-ink/20">·</span>
+            <span className="text-orange-600">Día {streak.count || 1} de tu racha</span>
+            <span className="text-ink/20">·</span>
+            <span className="text-dust">Liam</span>
+          </p>
         </div>
-        <div className="flex items-center gap-2 bg-gradient-to-br from-orange-500 to-rose-500 text-white px-4 py-2 rounded-2xl shadow-sm">
-          <span className="text-2xl">🔥</span>
-          <div className="leading-tight">
-            <p className="text-xl font-bold">{streak.count}</p>
-            <p className="text-[10px] uppercase tracking-wider opacity-90">Racha</p>
+
+        {/* Massive serif word-of-day */}
+        <div className="mt-8 lg:mt-10">
+          <h1 className="display text-[3.5rem] sm:text-[5rem] lg:text-[7.5rem]" style={{wordBreak:'break-word', hyphens:'auto'}} lang="es">
+            {word.es}
+          </h1>
+          <div className="flex items-baseline gap-3 mt-4">
+            <SpeakBtn text={word.es} size="lg" />
+            <p className="font-sans text-sm uppercase tracking-[0.2em] text-dust">{word.en}</p>
           </div>
         </div>
-      </div>
-      {/* Mobile greeting */}
-      <div className="lg:hidden px-4 pt-5 pb-2 flex items-start justify-between">
-        <div>
-          <h2 className="text-2xl font-serif font-bold">Buenos días, Liam 👋</h2>
-          <p className="text-xs mt-1 text-stone-500">{new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'})}</p>
-        </div>
-        <div className="flex items-center gap-1.5 bg-gradient-to-br from-orange-500 to-rose-500 text-white px-3 py-1.5 rounded-xl shadow-sm">
-          <span className="text-lg">🔥</span>
-          <p className="text-base font-bold">{streak.count}</p>
-        </div>
-      </div>
 
-      {/* Desktop 2-col layout */}
-      <div className="hidden lg:grid lg:grid-cols-2 gap-6 px-8 pb-8">
-        <div className="space-y-4">
-          <WordCard />
-          <PhraseCard />
-          {weakAreas.length > 0 && (
-            <div>
-              <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>📊 Áreas de mejora</p>
-              <div className="space-y-2">
-                {weakAreas.map(w => (
-                  <div key={w.category} className={`flex items-center justify-between rounded-2xl px-4 py-3 ${dark ? 'bg-white/[0.05]' : 'bg-stone-100'}`}>
-                    <div>
-                      <p className="font-semibold text-sm">{w.category}</p>
-                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{Math.round(w.acc * 100)}% correcto (últimos {w.count})</p>
-                    </div>
-                    <button onClick={() => setSection('ejercicios')} className="text-xs px-3 py-1.5 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600">Practicar →</button>
-                  </div>
+        {/* Example */}
+        <div className="mt-8 lg:mt-10 max-w-xl">
+          <div className="rule-thin mb-4" />
+          <p className="font-serif text-lg lg:text-xl italic text-ink/80 leading-snug">
+            <span className="text-orange-500 mr-1">—</span>{word.example}
+          </p>
+          {word.exampleEn && <p className="text-xs text-dust mt-2 ml-3">{word.exampleEn}</p>}
+          {word.tip && (
+            <p className="mt-5 text-sm text-sienna-700 leading-relaxed">
+              <span className="font-bold text-ochre-600 mr-1">✱</span>{word.tip}
+            </p>
+          )}
+        </div>
+
+        {/* Continúa CTA */}
+        <div className="mt-10 lg:mt-12">
+          <button onClick={() => setSection(continueId)}
+            className="group inline-flex items-center gap-3 px-6 py-3.5 min-h-12 rounded-full bg-orange-500 text-paper font-semibold text-sm hover:bg-orange-600 active:scale-[0.98] transition-all shadow-md hover:shadow-lg">
+            <span className="font-serif text-base">Continúa con</span>
+            <span className="font-bold tracking-tight">{continueLabel}</span>
+            <span className="text-base transition-transform group-hover:translate-x-0.5">→</span>
+          </button>
+          <button onClick={() => setSection('hoy')}
+            className="ml-3 sm:ml-5 inline-flex items-center gap-1.5 text-sm font-medium text-sienna-700 hover:text-orange-600 transition-colors py-2">
+            <span>o explora la palabra del día</span>
+          </button>
+        </div>
+      </section>
+
+      <div className="rule-accent max-w-4xl mx-auto" />
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* HOY EN APRENDE — streak + practice prompts                     */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="px-5 lg:px-12 py-10 lg:py-14 max-w-4xl mx-auto">
+        <p className="eyebrow mb-6">Hoy en Aprende</p>
+
+        {/* Streak dot strip */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-2.5">
+            {dotStrip.map((d, i) => (
+              <div key={i} className="flex flex-col items-center gap-1.5">
+                <span className={`w-3 h-3 rounded-full transition-all ${d.filled ? 'bg-orange-500' : 'border-2 border-ink/20'} ${d.today ? 'ring-2 ring-orange-500/30 ring-offset-2 ring-offset-paper scale-110' : ''}`} />
+                <span className={`text-[10px] font-bold ${d.today ? 'text-orange-600' : 'text-dust'}`}>{d.label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex-1 min-w-0 hidden sm:block">
+            <p className="text-2xl font-serif font-bold text-sienna-700 leading-none">{streak.count} <span className="text-base font-medium text-dust">días</span></p>
+            <p className="text-xs text-dust mt-1">Mejor: {streak.best || streak.count}</p>
+          </div>
+        </div>
+
+        {/* Practice TOC — magazine-style list with right-aligned counts */}
+        <div className="space-y-1">
+          {dueCards > 0 && (
+            <button onClick={() => setSection('vocabulario')}
+              className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
+              <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Tarjetas debido hoy</span>
+              <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
+              <span className="font-mono text-sm font-bold text-orange-600">{dueCards}</span>
+              <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+            </button>
+          )}
+          {weakAreas.length > 0 && weakAreas.slice(0, 2).map(w => (
+            <button key={w.category} onClick={() => setSection('ejercicios')}
+              className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
+              <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Área débil — {w.category}</span>
+              <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
+              <span className="font-mono text-sm font-bold text-orange-600">{Math.round(w.acc*100)}%</span>
+              <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+            </button>
+          ))}
+          <button onClick={() => setSection('ejercicios')}
+            className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
+            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Quiz cronometrado</span>
+            <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
+            <span className="font-mono text-sm font-bold text-dust">5 min</span>
+            <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+          </button>
+          <button onClick={() => setSection('pronunciacion')}
+            className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
+            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Practicar pronunciación</span>
+            <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
+            <span className="font-mono text-sm font-bold text-dust">~3 min</span>
+            <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+          </button>
+        </div>
+
+        {/* Frase del día — small editorial pull-quote */}
+        <div className="mt-12 lg:mt-14 max-w-2xl">
+          <p className="eyebrow mb-3">Frase del día</p>
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <p className="font-serif font-bold text-2xl lg:text-3xl text-sienna-700 leading-tight">"{phrase.es}"</p>
+              <p className="text-sm text-dust mt-2 italic">{phrase.en}</p>
+              {phrase.example && <p className="text-sm text-ink/70 mt-3 leading-relaxed"><span className="text-orange-500">—</span> {phrase.example}</p>}
+            </div>
+            <SpeakBtn text={phrase.es} size="lg" />
+          </div>
+        </div>
+      </section>
+
+      <div className="rule-thin max-w-4xl mx-auto" />
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* EXPLORA — editorial 4-column section index                     */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      <section className="px-5 lg:px-12 py-10 lg:py-14 max-w-4xl mx-auto">
+        <p className="eyebrow mb-6">Explora</p>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
+          {GROUPS.map(group => (
+            <div key={group.title}>
+              <p className="font-serif font-bold text-sm text-orange-600 mb-3 pb-2 border-b border-orange-500/30 tracking-tight">{group.title}</p>
+              <ul className="space-y-2.5">
+                {group.items.map((item, i) => (
+                  <li key={i}>
+                    <button onClick={() => setSection(item._alt || item.id)}
+                      className="group text-left w-full">
+                      <p className="font-serif font-semibold text-base text-ink leading-tight group-hover:text-orange-600 transition-colors">
+                        {item.label}
+                      </p>
+                      <p className="text-[11px] text-dust group-hover:text-sienna-700 transition-colors mt-0.5">{item.sub}</p>
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-          )}
-          {/* XP + Level bar */}
-          <Card dark={dark} className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{level.emoji}</span>
-                <div>
-                  <p className="font-bold text-sm">{level.label}</p>
-                  <p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>{level.total} XP total · +{xpState.todayXP||0} hoy</p>
-                </div>
-              </div>
-              {level.next && <p className={`text-xs font-semibold ${dark?'text-stone-400':'text-stone-500'}`}>{level.next.min - level.total} XP para {level.next.label}</p>}
-            </div>
-            <div className={`h-2.5 rounded-full overflow-hidden ${dark?'bg-white/10':'bg-stone-100'}`}>
-              <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-700 rounded-full" style={{width: level.pct+'%'}} />
-            </div>
-            {achievementGet().length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {achievementGet().slice(-6).map(id => {
-                  const a = ACHIEVEMENTS_DEF.find(x=>x.id===id);
-                  return a ? <span key={id} title={a.title+': '+a.desc} className={`text-lg cursor-default`}>{a.emoji}</span> : null;
-                })}
-                <span className={`text-xs self-center ${dark?'text-stone-500':'text-stone-400'}`}>{achievementGet().length} logros</span>
-              </div>
-            )}
-          </Card>
+          ))}
         </div>
-        <div>
-          <p className={`text-xs font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Secciones</p>
-          <div className="grid grid-cols-2 gap-3">
-            {SECTION_TILES.map(tile => (
-              <button key={tile.id} onClick={() => setSection(tile.id)}
-                className={`rounded-2xl p-4 text-left transition-all hover:scale-[1.02] bg-gradient-to-br ${colorMap[tile.color]} text-white shadow-sm`}>
-                <span className="text-2xl block mb-2">{tile.emoji}</span>
-                <p className="font-bold text-sm">{tile.label}</p>
-                <p className="text-xs opacity-80">{tile.sublabel}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* Mobile layout */}
-      <div className="lg:hidden px-4 space-y-4 pb-6">
-        <WordCard />
-        <PhraseCard />
-        {weakAreas.length > 0 && (
-          <div>
-            <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>📊 Áreas de mejora</p>
-            <div className="space-y-2">
-              {weakAreas.map(w => (
-                <div key={w.category} className={`flex items-center justify-between rounded-2xl px-4 py-3 ${dark ? 'bg-white/[0.05]' : 'bg-stone-100'}`}>
-                  <div>
-                    <p className="font-semibold text-sm">{w.category}</p>
-                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{Math.round(w.acc * 100)}% correcto (últimos {w.count})</p>
-                  </div>
-                  <button onClick={() => setSection('ejercicios')} className="text-xs px-3 py-1.5 bg-orange-500 text-white rounded-xl font-semibold">Practicar →</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        {/* XP + Level bar */}
-        <Card dark={dark} className="p-5">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{level.emoji}</span>
-              <div>
-                <p className="font-bold text-sm">{level.label}</p>
-                <p className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>{level.total} XP total · +{xpState.todayXP||0} hoy</p>
-              </div>
-            </div>
-            {level.next && <p className={`text-xs font-semibold ${dark?'text-stone-400':'text-stone-500'}`}>{level.next.min - level.total} XP para {level.next.label}</p>}
-          </div>
-          <div className={`h-2.5 rounded-full overflow-hidden ${dark?'bg-white/10':'bg-stone-100'}`}>
-            <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 transition-all duration-700 rounded-full" style={{width: level.pct+'%'}} />
-          </div>
-          {achievementGet().length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3">
-              {achievementGet().slice(-6).map(id => {
-                const a = ACHIEVEMENTS_DEF.find(x=>x.id===id);
-                return a ? <span key={id} title={a.title+': '+a.desc} className={`text-lg cursor-default`}>{a.emoji}</span> : null;
-              })}
-              <span className={`text-xs self-center ${dark?'text-stone-500':'text-stone-400'}`}>{achievementGet().length} logros</span>
-            </div>
-          )}
-        </Card>
-        <div>
-          <p className={`text-[10px] font-bold tracking-widest uppercase mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Secciones</p>
-          <div className="grid grid-cols-2 gap-3">
-            {SECTION_TILES.map(tile => (
-              <button key={tile.id} onClick={() => setSection(tile.id)}
-                className={`rounded-2xl p-4 text-left transition-all bg-gradient-to-br ${colorMap[tile.color]} text-white shadow-sm`}>
-                <span className="text-xl block mb-2">{tile.emoji}</span>
-                <p className="font-bold text-sm">{tile.label}</p>
-                <p className="text-[11px] opacity-80">{tile.sublabel}</p>
-              </button>
-            ))}
-          </div>
+        {/* Footer link to ajustes */}
+        <div className="mt-10 pt-6 border-t border-ink/10 flex items-center justify-between">
+          <p className="text-xs text-dust">{xpState.total} XP · {level.label} {level.emoji}</p>
+          <button onClick={() => setSection('ajustes')} className="text-sm font-medium text-dust hover:text-orange-600 transition-colors">Ajustes ⚙</button>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
