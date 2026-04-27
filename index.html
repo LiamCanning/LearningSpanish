@@ -4391,6 +4391,90 @@ function ttsGetAzureConfig() {
   };
 }
 
+// ============================================================================
+// AI TRANSLATION – call Anthropic Claude for idiomatic English→Spanish
+// User stores API key in Ajustes. Results cached in localStorage by query.
+// ============================================================================
+function aiGetAnthropicKey() {
+  return getStorage('aprende.ai.anthropicKey', '');
+}
+
+const AI_TRANSLATE_PROMPT = `You translate English phrases into the most natural, idiomatic SPAIN Spanish — never word-for-word. You are an expert in everyday Castilian Spanish as spoken in Madrid, Valencia, Sevilla.
+
+Rules:
+- Use Castilian Spanish (Spain), not Latin American
+- Find the equivalent expression Spaniards actually say — never literal calques
+- "It takes time" → "Lleva tiempo" (NEVER "toma tiempo")
+- "I can't be bothered" → "No me apetece" (NEVER literal)
+- "I'm starving" → "Me muero de hambre" (NEVER "estoy hambriento")
+- For idioms, find the matching Spanish idiom even if the imagery differs
+- Use the appropriate register (informal/neutral/formal)
+
+Respond with ONLY a valid JSON object — no markdown fences, no commentary, no surrounding text. Schema:
+{
+  "spanish": "the most natural Spanish equivalent (single phrase)",
+  "alternatives": ["1-3 alternative ways Spaniards might say it"],
+  "example": "a Spanish sentence using the phrase in real context",
+  "exampleEn": "natural English translation of the example",
+  "explanation": "why this is the natural way (max 2 sentences). If a literal translation would be wrong, mention it.",
+  "register": "informal" | "neutral" | "formal",
+  "category": "frustración|sorpresa|acuerdo|tiempo|cansancio|comida|dinero|esfuerzo|salud|meteo|saludos|disculpas|sentimientos|opinión|muletillas|ánimo|duda|interés|negación|énfasis|relaciones|logros"
+}
+
+If the input is too vague or not really English, return:
+{ "error": "no_match", "message": "brief reason in Spanish" }`;
+
+async function aiTranslate(query, apiKey) {
+  if (!apiKey) throw new Error('no-key');
+  // Check cache first
+  const cacheKey = 'aprende.ai.cache.' + query.toLowerCase().trim().replace(/\s+/g, '_').slice(0, 100);
+  const cached = getStorage(cacheKey, null);
+  if (cached) return { ...cached, _cached: true };
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 600,
+      system: AI_TRANSLATE_PROMPT,
+      messages: [{ role: 'user', content: `English phrase to translate: "${query}"` }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    if (resp.status === 401) throw new Error('invalid-key');
+    if (resp.status === 429) throw new Error('rate-limit');
+    throw new Error('api-error: ' + resp.status + ' ' + errText.slice(0, 100));
+  }
+
+  const data = await resp.json();
+  const text = data?.content?.[0]?.text || '';
+  // Extract JSON from response (handles cases where model adds whitespace/fences)
+  let jsonStr = text.trim();
+  const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (fenceMatch) jsonStr = fenceMatch[1].trim();
+  const firstBrace = jsonStr.indexOf('{');
+  const lastBrace = jsonStr.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) jsonStr = jsonStr.slice(firstBrace, lastBrace + 1);
+
+  let parsed;
+  try { parsed = JSON.parse(jsonStr); }
+  catch(e) { throw new Error('parse-failed'); }
+
+  if (parsed.error === 'no_match') return parsed;
+
+  // Cache successful translations (skip the response-wrapper field)
+  setStorage(cacheKey, parsed);
+  return parsed;
+}
+
 // ── Character usage tracking (resets monthly) ──
 function ttsBumpUsage(chars) {
   const now = new Date();
@@ -9640,16 +9724,26 @@ function EscrituraView({ prompt, dark, onBack }) {
 // =============================================================================
 function Equivalentes({ onBack, dark, onSearch }) {
   const [query, setQuery] = useState('');
-  const [selectedCat, setSelectedCat] = useState('all');
+  const [selectedCat, setSelectedCat] = useState(null); // null = home grid
   const [recording, setRecording] = useState(false);
   const [recError, setRecError] = useState(null);
+  // AI translation state
+  const [aiResult, setAiResult] = useState(null);   // { spanish, alternatives, ... }
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+  const [aiQuery, setAiQuery] = useState(null);     // the query the AI result corresponds to
   const azureRecogRef = React.useRef(null);
   const inputRef = React.useRef(null);
 
   const azCfg = ttsGetAzureConfig();
   const hasAzure = !!(azCfg.apiKey && azCfg.region);
+  const aiKey = aiGetAnthropicKey();
+  const hasAi = !!aiKey;
 
   const matches = React.useMemo(() => findEquivalents(query, 6), [query]);
+  const trimmedQuery = query.trim();
+  const isSearching = trimmedQuery.length >= 2;
+  const hasExactMatch = matches.length > 0 && matches[0].score >= 0.95;
 
   // Categories present in dataset, sorted by entry count desc
   const categories = React.useMemo(() => {
@@ -9658,11 +9752,10 @@ function Equivalentes({ onBack, dark, onSearch }) {
     return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
   }, []);
 
-  // Phrases shown when no query – filtered by selected category
-  const browseList = React.useMemo(() => {
-    if (selectedCat === 'all') return EQUIVALENTS;
-    return EQUIVALENTS.filter(e => e.cat === selectedCat);
-  }, [selectedCat]);
+  // Get up to 2 sample English phrases per category for the tile preview
+  const samplesForCat = (cat) => {
+    return EQUIVALENTS.filter(e => e.cat === cat).slice(0, 2).map(e => e.en);
+  };
 
   const handleSpeak = async () => {
     setRecError(null);
@@ -9688,17 +9781,45 @@ function Equivalentes({ onBack, dark, onSearch }) {
     }
   };
 
+  const handleAITranslate = async () => {
+    if (!hasAi) { setAiError('no-key'); return; }
+    if (!trimmedQuery) return;
+    setAiError(null); setAiLoading(true); setAiResult(null);
+    setAiQuery(trimmedQuery);
+    try {
+      const result = await aiTranslate(trimmedQuery, aiKey);
+      if (result.error === 'no_match') {
+        setAiError('no-match'); setAiLoading(false); return;
+      }
+      setAiResult(result); setAiLoading(false);
+    } catch(e) {
+      setAiLoading(false);
+      const msg = e.message || '';
+      if (msg.includes('invalid-key')) setAiError('invalid-key');
+      else if (msg.includes('rate-limit')) setAiError('rate-limit');
+      else if (msg.includes('parse-failed')) setAiError('parse-failed');
+      else setAiError('api-error');
+    }
+  };
+
+  // Clear AI result if query changes
+  React.useEffect(() => {
+    if (aiQuery && trimmedQuery !== aiQuery) {
+      setAiResult(null); setAiError(null); setAiQuery(null);
+    }
+  }, [trimmedQuery, aiQuery]);
+
   // Single result card – shows English → Spanish prominently with context
-  const ResultCard = ({ entry, score, variant }) => {
-    const meta = EQUIV_CAT_META[entry.cat] || { label:entry.cat, emoji:'💬', color:'from-stone-400 to-stone-500' };
+  const ResultCard = ({ entry, score, variant, isAi }) => {
+    const meta = EQUIV_CAT_META[entry.cat] || { label:entry.cat || 'general', emoji:'💬', color:'from-stone-400 to-stone-500' };
     const confidence = score == null ? null : score >= 0.95 ? 'exacta' : score >= 0.75 ? 'alta' : 'parcial';
     const confColor = confidence === 'exacta' ? 'bg-emerald-100 text-emerald-700'
                     : confidence === 'alta' ? 'bg-sky-100 text-sky-700'
                     : 'bg-amber-100 text-amber-700';
     return (
-      <Card dark={dark} className="p-5">
+      <Card dark={dark} className={`p-5 ${isAi ? 'border-2 border-violet-300' : ''}`}>
         <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${meta.color} text-white`}>
               {meta.emoji} {meta.label}
             </span>
@@ -9707,8 +9828,13 @@ function Equivalentes({ onBack, dark, onSearch }) {
                 {entry.register}
               </span>
             )}
+            {isAi && (
+              <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-100 text-violet-700">
+                🤖 IA
+              </span>
+            )}
           </div>
-          {confidence && (
+          {confidence && !isAi && (
             <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${confColor}`}>
               coincidencia {confidence}
             </span>
@@ -9756,13 +9882,39 @@ function Equivalentes({ onBack, dark, onSearch }) {
     );
   };
 
+  // Compact preview card on Spanish, used for the "ver más" mini-strip
+  const PhrasePreviewCard = ({ entry, onClick }) => (
+    <button onClick={onClick}
+      className={`text-left rounded-2xl p-4 transition-all hover:scale-[1.02] active:scale-[0.99] ${dark?'bg-white/[0.04] hover:bg-white/[0.08]':'bg-white hover:bg-stone-50 shadow-sm border border-stone-200/60'}`}>
+      <p className={`text-[11px] font-semibold mb-1 ${dark?'text-stone-400':'text-stone-500'}`}>"{entry.en}"</p>
+      <p className="font-serif font-bold text-base leading-tight">{entry.es}</p>
+    </button>
+  );
+
+  // Render the AI result as a result card
+  const aiResultCard = aiResult ? (
+    <ResultCard
+      entry={{
+        en: aiQuery,
+        es: aiResult.spanish,
+        esAlts: aiResult.alternatives || [],
+        example: aiResult.example,
+        exampleEn: aiResult.exampleEn,
+        explain: aiResult.explanation,
+        register: aiResult.register,
+        cat: aiResult.category,
+      }}
+      isAi={true}
+    />
+  ) : null;
+
   return (
     <div>
-      <BackHeader title="Cómo se dice" subtitle="Type English → get the real Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+      <BackHeader title="Cómo se dice" subtitle="Type English → get real Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
 
-        {/* Search input + mic */}
-        <Card dark={dark} className="p-4 mb-4">
+        {/* ── Search bar (always visible) ─────────────────────────────────── */}
+        <Card dark={dark} className="p-4 mb-5">
           <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
             ¿Cómo se dice esto en español?
           </p>
@@ -9778,70 +9930,149 @@ function Equivalentes({ onBack, dark, onSearch }) {
               {recording ? '🔴' : '🎤'}
             </button>
             {query && (
-              <button onClick={() => { setQuery(''); inputRef.current && inputRef.current.focus(); }}
+              <button onClick={() => { setQuery(''); setAiResult(null); setAiError(null); inputRef.current && inputRef.current.focus(); }}
                 className={`rounded-xl px-3 py-3 text-sm flex-shrink-0 ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}
                 title="Clear">✕</button>
             )}
           </div>
-          {recError && (
-            <p className="text-xs text-amber-600 mt-2 font-medium">{recError}</p>
-          )}
-          <p className={`text-[11px] mt-2 ${dark?'text-stone-500':'text-stone-400'}`}>
-            Solo coincidencias verificadas — nunca traduce palabra por palabra. Si no hay coincidencia exacta, mostramos lo más parecido.
-          </p>
+          {recError && <p className="text-xs text-amber-600 mt-2 font-medium">{recError}</p>}
         </Card>
 
-        {/* Search results */}
-        {query.trim().length >= 2 ? (
-          matches.length === 0 ? (
-            <Card dark={dark} className="p-6 text-center">
-              <p className="text-3xl mb-2">🤔</p>
-              <p className={`font-semibold mb-1 ${dark?'text-stone-200':'text-stone-700'}`}>No tenemos esa expresión todavía</p>
-              <p className={`text-sm ${dark?'text-stone-400':'text-stone-500'}`}>
-                Prueba a reformular: "I can't believe it" en lugar de "unbelievable", por ejemplo.
-                Esto evita traducciones literales falsas.
-              </p>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
-                {matches.length === 1 ? '1 coincidencia' : `${matches.length} coincidencias`}
-              </p>
-              {matches.map((m, i) => (
-                <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />
-              ))}
-            </div>
-          )
-        ) : (
-          /* Browse mode – categories + all phrases */
-          <>
-            <div className="mb-4">
-              <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
-                Explora por categoría
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button onClick={() => setSelectedCat('all')}
-                  className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${selectedCat==='all'?'bg-orange-500 text-white':dark?'bg-white/[0.06] text-stone-300 hover:bg-white/10':'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                  Todas ({EQUIVALENTS.length})
-                </button>
-                {categories.map(cat => {
-                  const meta = EQUIV_CAT_META[cat] || { label:cat, emoji:'💬' };
-                  const count = EQUIVALENTS.filter(e => e.cat === cat).length;
-                  return (
-                    <button key={cat} onClick={() => setSelectedCat(cat)}
-                      className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${selectedCat===cat?'bg-orange-500 text-white':dark?'bg-white/[0.06] text-stone-300 hover:bg-white/10':'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                      {meta.emoji} {meta.label} ({count})
+        {/* ── Search mode ─────────────────────────────────────────────────── */}
+        {isSearching ? (
+          <div className="space-y-3">
+            {/* Curated matches */}
+            {matches.length > 0 && (
+              <>
+                <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+                  {matches.length === 1 ? '1 coincidencia verificada' : `${matches.length} coincidencias verificadas`}
+                </p>
+                {matches.map((m, i) => (
+                  <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />
+                ))}
+              </>
+            )}
+
+            {/* No exact match → AI fallback prompt */}
+            {!hasExactMatch && (
+              <Card dark={dark} className={`p-5 ${matches.length === 0 ? '' : 'mt-2'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">🤖</span>
+                  <p className="font-bold text-base">Traducción con IA</p>
+                </div>
+                <p className={`text-sm mb-4 ${dark?'text-stone-400':'text-stone-600'}`}>
+                  {matches.length === 0
+                    ? 'No tenemos esta frase en el diccionario. Pídele a Claude la traducción natural en español de España.'
+                    : 'Si las coincidencias no encajan, pídele a Claude una traducción natural específica para tu frase.'}
+                </p>
+                {hasAi ? (
+                  <>
+                    <button onClick={handleAITranslate}
+                      disabled={aiLoading}
+                      className={`w-full sm:w-auto rounded-xl px-5 py-3 font-bold text-sm transition-colors ${aiLoading?'bg-violet-300 text-white cursor-wait':'bg-violet-500 hover:bg-violet-600 text-white'}`}>
+                      {aiLoading ? '⏳ Traduciendo…' : `🤖 Traducir "${trimmedQuery.length > 40 ? trimmedQuery.slice(0,40)+'…' : trimmedQuery}"`}
                     </button>
-                  );
-                })}
-              </div>
+                    {aiError === 'invalid-key' && <p className="text-xs text-red-600 mt-2 font-medium">Clave de Anthropic inválida — revísala en Ajustes.</p>}
+                    {aiError === 'rate-limit' && <p className="text-xs text-amber-600 mt-2 font-medium">Has excedido el límite de uso. Espera un momento.</p>}
+                    {aiError === 'parse-failed' && <p className="text-xs text-amber-600 mt-2 font-medium">Respuesta del modelo malformada. Inténtalo otra vez.</p>}
+                    {aiError === 'api-error' && <p className="text-xs text-red-600 mt-2 font-medium">Fallo de red. Comprueba tu conexión.</p>}
+                    {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">El modelo no encontró traducción natural — prueba a reformular en inglés.</p>}
+                  </>
+                ) : (
+                  <div className={`text-xs rounded-xl p-3 ${dark?'bg-violet-500/10 text-violet-200':'bg-violet-50 text-violet-900'}`}>
+                    <p className="font-bold mb-1">🔑 Configura una clave de Anthropic</p>
+                    <p>Ve a <strong>Ajustes → IA Traducción</strong> y pega tu clave de Anthropic (api.anthropic.com). Solo se usa para esta función — tus claves quedan guardadas localmente en este dispositivo.</p>
+                  </div>
+                )}
+              </Card>
+            )}
+
+            {/* AI result card */}
+            {aiResultCard && (
+              <>
+                <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+                  Traducción IA {aiResult._cached ? '(caché)' : ''}
+                </p>
+                {aiResultCard}
+              </>
+            )}
+          </div>
+        ) : selectedCat ? (
+          /* ── Category drilldown ──────────────────────────────────────────── */
+          <div>
+            <button onClick={() => setSelectedCat(null)}
+              className={`mb-4 text-sm font-semibold flex items-center gap-1.5 ${dark?'text-stone-300 hover:text-white':'text-stone-600 hover:text-stone-900'}`}>
+              ← Volver a categorías
+            </button>
+            {(() => {
+              const meta = EQUIV_CAT_META[selectedCat] || { label:selectedCat, emoji:'💬', color:'from-stone-400 to-stone-500' };
+              const items = EQUIVALENTS.filter(e => e.cat === selectedCat);
+              return (
+                <>
+                  <div className={`rounded-3xl p-6 mb-5 bg-gradient-to-br ${meta.color} text-white shadow-sm`}>
+                    <p className="text-4xl mb-2">{meta.emoji}</p>
+                    <p className="font-serif font-bold text-2xl leading-tight">{meta.label}</p>
+                    <p className="text-sm opacity-90">{items.length} {items.length === 1 ? 'frase' : 'frases'} naturales en español</p>
+                  </div>
+                  <div className="space-y-3">
+                    {items.map((entry, i) => <ResultCard key={i} entry={entry} />)}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        ) : (
+          /* ── Home grid: category tiles ─────────────────────────────────── */
+          <>
+            <div className="mb-5">
+              <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
+                Explora por tema
+              </p>
+              <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
+                {EQUIVALENTS.length} expresiones nativas organizadas por situación. O escribe arriba para buscar la tuya.
+              </p>
             </div>
 
-            <div className="space-y-3">
-              {browseList.map((entry, i) => (
-                <ResultCard key={i} entry={entry} />
-              ))}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              {categories.map(cat => {
+                const meta = EQUIV_CAT_META[cat] || { label:cat, emoji:'💬', color:'from-stone-400 to-stone-500' };
+                const count = EQUIVALENTS.filter(e => e.cat === cat).length;
+                const samples = samplesForCat(cat);
+                return (
+                  <button key={cat} onClick={() => setSelectedCat(cat)}
+                    className={`relative overflow-hidden rounded-3xl p-5 text-left transition-all hover:scale-[1.02] active:scale-[0.99] bg-gradient-to-br ${meta.color} text-white shadow-sm min-h-[150px] flex flex-col`}>
+                    <div className="flex items-start justify-between mb-2">
+                      <span className="text-3xl">{meta.emoji}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 bg-white/20 px-2 py-0.5 rounded-full">{count}</span>
+                    </div>
+                    <p className="font-serif font-bold text-lg leading-tight mb-2">{meta.label}</p>
+                    <div className="mt-auto space-y-0.5">
+                      {samples.map((s, i) => (
+                        <p key={i} className="text-[11px] opacity-85 font-medium truncate">"{s}"</p>
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
+
+            {/* AI hint at bottom */}
+            <Card dark={dark} className="p-5 mt-6">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl flex-shrink-0">🤖</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold mb-1">¿Falta una frase?</p>
+                  <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
+                    Escribe lo que quieras decir arriba. Si no está en el diccionario, puedes pedirle una traducción natural a Claude (necesita clave Anthropic en Ajustes).
+                  </p>
+                  {!hasAi && (
+                    <p className={`text-[11px] mt-2 ${dark?'text-violet-300':'text-violet-700'}`}>
+                      Sin clave configurada — solo el diccionario verificado funcionará por ahora.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
           </>
         )}
       </div>
@@ -11612,6 +11843,12 @@ function Ajustes({ dark, onBack }) {
   const [azTestMsg, setAzTestMsg]             = useState('');
   const [azureUsage, setAzureUsage]           = useState(() => ttsGetAzureUsage());
 
+  // ── Anthropic AI translation key ──
+  const [anthropicKey, setAnthropicKey]       = useState(() => getStorage('aprende.ai.anthropicKey', ''));
+  const [showAnthropicKey, setShowAnthropicKey] = useState(false);
+  const [aiTestStatus, setAiTestStatus]       = useState(null);
+  const [aiTestMsg, setAiTestMsg]             = useState('');
+
   // ── Shared ──
   const [speechRate, setSpeechRate]           = useState(() => getStorage('aprende.tts.speechRate', 1.0));
   const [cacheSize, setCacheSize] = useState(() => ttsCacheSize());
@@ -11638,8 +11875,49 @@ function Ajustes({ dark, onBack }) {
   }, [azureKey, azureRegion, azureVoiceFemale, azureVoiceMale]);
 
   useEffect(() => {
+    setStorage('aprende.ai.anthropicKey', anthropicKey.trim());
+  }, [anthropicKey]);
+
+  useEffect(() => {
     setStorage('aprende.tts.speechRate', speechRate);
   }, [speechRate]);
+
+  // ── Anthropic test (also used to clear AI cache) ──
+  const runAiTest = async () => {
+    if (!anthropicKey.trim()) {
+      setAiTestStatus('error');
+      setAiTestMsg('Pega tu clave de Anthropic primero.');
+      return;
+    }
+    setAiTestStatus('testing');
+    setAiTestMsg('Probando traducción con Claude...');
+    try {
+      const result = await aiTranslate("I'm starving", anthropicKey.trim());
+      if (result.error === 'no_match') {
+        setAiTestStatus('error');
+        setAiTestMsg('Respuesta inesperada del modelo. Inténtalo otra vez.');
+      } else {
+        setAiTestStatus('ok');
+        setAiTestMsg(`✓ Funciona. "I'm starving" → "${result.spanish}"`);
+      }
+    } catch(e) {
+      setAiTestStatus('error');
+      const msg = e.message || '';
+      if (msg.includes('invalid-key')) setAiTestMsg('❌ Clave inválida o sin permisos.');
+      else if (msg.includes('rate-limit')) setAiTestMsg('❌ Has excedido el límite de uso.');
+      else if (msg.includes('parse-failed')) setAiTestMsg('⚠️ Respuesta malformada del modelo.');
+      else setAiTestMsg('❌ Error de red — comprueba la conexión.');
+    }
+  };
+
+  const clearAiCache = () => {
+    let count = 0;
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('aprende.ai.cache.')) { localStorage.removeItem(k); count++; }
+    });
+    setAiTestStatus('ok');
+    setAiTestMsg(`✓ Caché borrada (${count} traducciones).`);
+  };
 
   // ── ElevenLabs test ──
   const runElTest = async (gender) => {
@@ -12015,6 +12293,47 @@ function Ajustes({ dark, onBack }) {
           </div>
         </div>
 
+        {/* ══════════════════════════════════════
+            ANTHROPIC AI – English → natural Spanish
+        ══════════════════════════════════════ */}
+        <div>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🤖 Traducción IA – Cómo se dice (Anthropic Claude)</p>
+          <div className="space-y-4">
+            <Card dark={dark} className="p-5">
+              <p className={`text-sm font-semibold mb-2 ${dark?'text-stone-200':'text-stone-700'}`}>Para qué sirve</p>
+              <p className={`text-xs mb-3 ${dark?'text-stone-400':'text-stone-600'}`}>
+                Cuando escribes una frase en <strong>Cómo se dice</strong> que no está en el diccionario verificado, Claude te da la traducción natural en español de España — sin calcos literales como "toma tiempo".
+              </p>
+              <ol className={`text-xs space-y-1 mb-3 list-decimal pl-4 ${dark?'text-stone-300':'text-stone-700'}`}>
+                <li>Crea una clave en <code>console.anthropic.com → API Keys</code></li>
+                <li>Pega la clave abajo (empieza por <code>sk-ant-</code>)</li>
+                <li>Las traducciones se cachean — solo paga la primera vez</li>
+              </ol>
+              <p className={`text-[11px] ${dark?'text-stone-500':'text-stone-400'}`}>
+                Coste: ~$0.00025 por frase con Claude Haiku. 1000 frases ≈ $0.25.
+              </p>
+            </Card>
+
+            <InputCard label="Anthropic API Key" value={anthropicKey} onChange={setAnthropicKey}
+              show={showAnthropicKey} setShow={setShowAnthropicKey} placeholder="sk-ant-..." confirmed={!!anthropicKey} />
+
+            <Card dark={dark} className="p-5">
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Probar y mantener</p>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={runAiTest} disabled={aiTestStatus === 'testing'}
+                  className={`text-xs px-4 py-2 rounded-xl font-semibold transition-colors ${aiTestStatus === 'testing' ? 'bg-violet-300 text-white cursor-wait' : 'bg-violet-500 hover:bg-violet-600 text-white'}`}>
+                  {aiTestStatus === 'testing' ? '⏳ Probando…' : '🤖 Probar con "I\'m starving"'}
+                </button>
+                <button onClick={clearAiCache}
+                  className={`text-xs px-3 py-2 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                  🗑️ Borrar caché de traducciones
+                </button>
+              </div>
+              <TestBanner status={aiTestStatus} msg={aiTestMsg} />
+            </Card>
+          </div>
+        </div>
+
         {/* ── Cache ── */}
         <Card dark={dark} className="p-5">
           <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-stone-500">Caché de audio (compartida)</p>
@@ -12038,6 +12357,7 @@ function Ajustes({ dark, onBack }) {
             'aprende.tts.googleKey','aprende.tts.googleVoiceFemale','aprende.tts.googleVoiceMale',
             'aprende.tts.azureKey','aprende.tts.azureRegion','aprende.tts.azureVoiceFemale','aprende.tts.azureVoiceMale',
             'aprende.tts.speechRate',
+            'aprende.ai.anthropicKey',
           ];
           const [copied, setCopied] = React.useState(false);
           const [exportCode, setExportCode] = React.useState('');
