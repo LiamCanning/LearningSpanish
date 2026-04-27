@@ -3330,6 +3330,293 @@ const IDIOMS = [
   {es:'Tirar la toalla',literal:'To throw the towel',meaning:'To throw in the towel / to give up',example:'No tires la toalla – estás casi allí.',exampleEn:'Don\'t throw in the towel – you\'re nearly there.',category:'general'}
 ];
 
+// =============================================================================
+// EQUIVALENTS – curated English-to-natural-Spanish lookup
+// Every entry hand-vetted. Lookup never invents — if no match, we show similar.
+// cat keys: frustración, sorpresa, acuerdo, tiempo, cansancio, comida, dinero,
+//   esfuerzo, salud, meteo, saludos, disculpas, sentimientos, opinión,
+//   muletillas, ánimo, duda, interés, negación, énfasis, relaciones, logros
+// =============================================================================
+const EQUIVALENTS = [
+  // ─── FRUSTRACIÓN / FED UP / GIVING UP ───────────────────────────────────────
+  {en:"I can't be bothered",enAlts:["i can't be arsed","i cannot be bothered","i don't feel like it","not in the mood","cant be bothered"],es:'No me apetece',esAlts:['Me da pereza','Paso de eso'],example:'No me apetece nada salir esta noche.',exampleEn:"I really can't be bothered going out tonight.",explain:"'Apetecer' works backwards like gustar – 'me apetece' = it appeals to me. 'Me da pereza' is closer to 'CBA energy'. 'Paso' = I'll skip it.",cat:'frustración',register:'informal'},
+  {en:"I'm fed up",enAlts:["i'm sick of it","i've had enough","im fed up","i am fed up"],es:'Estoy hasta las narices',esAlts:['Estoy harto','Estoy hasta el moño'],example:'Estoy hasta las narices de sus excusas.',exampleEn:"I'm absolutely fed up with his excuses.",explain:"Literally 'up to the nostrils'. 'Hasta el moño' (up to the bun/hairdo) is even stronger.",cat:'frustración',register:'informal'},
+  {en:"I give up",enAlts:["i quit","i'm giving up","i'm done"],es:'Tiro la toalla',esAlts:['Me rindo'],example:'Después de tres intentos, tiré la toalla.',exampleEn:'After three tries, I threw in the towel.',explain:"'Tirar la toalla' = throw the towel. 'Me rindo' is more neutral.",cat:'frustración',register:'neutral'},
+  {en:"Whatever",enAlts:["it doesn't matter","whatever you want"],es:'Lo que sea',esAlts:['Da igual','Como quieras'],example:'– ¿Pizza o pasta? – Lo que sea, me da igual.',exampleEn:"– Pizza or pasta? – Whatever, I don't mind.",cat:'frustración',register:'informal'},
+  {en:"I don't care",enAlts:["i dont care","doesn't matter to me","i don't mind"],es:'Me da igual',esAlts:['Me da lo mismo','No me importa'],example:'Me da igual lo que piensen los demás.',exampleEn:"I don't care what other people think.",explain:"'Me da igual' literally = 'it gives me equal'. Don't say 'no me cuido' – that means 'I don't take care of myself'.",cat:'frustración',register:'neutral'},
+  {en:"It's a pain",enAlts:["what a pain","it's annoying","it's a hassle"],es:'Es un rollo',esAlts:['Es un coñazo','Qué pereza'],example:'Tener que repetir el examen es un rollo.',exampleEn:"Having to retake the exam is such a pain.",explain:"'Coñazo' is vulgar but extremely common. 'Rollo' is the safe choice.",cat:'frustración',register:'informal'},
+  {en:"Get off my back",enAlts:["leave me alone","stop bothering me"],es:'Déjame en paz',esAlts:['No me rayes','Pasa de mí'],example:'¡Déjame en paz, que estoy ocupado!',exampleEn:"Get off my back, I'm busy!",cat:'frustración',register:'informal'},
+  {en:"What a drag",enAlts:["what a bore","this sucks"],es:'Qué rollo',esAlts:['Qué palo','Vaya rollo'],example:'¡Qué rollo tener que trabajar el sábado!',exampleEn:"What a drag having to work Saturday!",cat:'frustración',register:'informal'},
+
+  // ─── SORPRESA / DISBELIEF ──────────────────────────────────────────────────
+  {en:"I can't believe it",enAlts:["unbelievable","i cant believe it","no way"],es:'No me lo puedo creer',esAlts:['Es increíble','¡Anda ya!'],example:'No me lo puedo creer, ¡has aprobado!',exampleEn:"I can't believe it – you passed!",explain:"The reflexive 'me lo' makes it more emphatic and natural.",cat:'sorpresa',register:'neutral'},
+  {en:"No way!",enAlts:["no way","you're kidding","get out of here"],es:'¡Anda ya!',esAlts:['¡Qué va!','¡No puede ser!','¡Venga ya!'],example:'– Me casé el sábado. – ¡Anda ya!',exampleEn:"– I got married Saturday. – No way!",explain:"'¡Anda ya!' and '¡Venga ya!' are quintessentially Spanish dismissive disbelief.",cat:'sorpresa',register:'informal'},
+  {en:"You're kidding!",enAlts:["are you kidding","you must be kidding","seriously"],es:'¡No me digas!',esAlts:['¿En serio?','¿Hablas en serio?'],example:'– Me ascendieron. – ¡No me digas! ¡Felicidades!',exampleEn:"– I got promoted. – You're kidding! Congrats!",cat:'sorpresa',register:'neutral'},
+  {en:"Are you serious?",enAlts:["seriously","you serious","for real"],es:'¿En serio?',esAlts:['¿De verdad?','¿Hablas en serio?'],example:'¿En serio? ¿No te lo dijo nadie?',exampleEn:"Are you serious? Nobody told you?",cat:'sorpresa',register:'neutral'},
+  {en:"What the hell?",enAlts:["wtf","what the heck","what's going on"],es:'¿Qué demonios?',esAlts:['¿Pero qué pasa?','¿Qué narices?'],example:'¿Qué demonios está pasando aquí?',exampleEn:"What the hell is going on here?",explain:"'Qué coño' is the vulgar version – very common but rude.",cat:'sorpresa',register:'informal'},
+  {en:"Oh my god",enAlts:["omg","oh my","oh god"],es:'¡Madre mía!',esAlts:['¡Dios mío!','¡Joder!'],example:'¡Madre mía, qué susto me has dado!',exampleEn:"Oh my god, you scared me!",explain:"'¡Madre mía!' is the everyday Spanish 'OMG' – not religious, just expressive.",cat:'sorpresa',register:'neutral'},
+  {en:"That's crazy",enAlts:["that is crazy","wild","insane"],es:'Es una locura',esAlts:['Qué fuerte','Es de locos'],example:'¿Vas a dejar el trabajo? Es una locura.',exampleEn:"You're quitting? That's crazy.",cat:'sorpresa',register:'neutral'},
+  {en:"Wow",enAlts:["wow","whoa"],es:'¡Hala!',esAlts:['¡Vaya!','¡Toma ya!'],example:'¡Hala, qué casa más bonita!',exampleEn:"Wow, what a beautiful house!",explain:"'¡Hala!' is very Spanish, ranges from surprise to mild reproach.",cat:'sorpresa',register:'informal'},
+
+  // ─── ACUERDO / SAYING YES ──────────────────────────────────────────────────
+  {en:"Sure",enAlts:["sure thing","of course"],es:'Claro',esAlts:['Vale','Por supuesto'],example:'– ¿Me pasas la sal? – Claro.',exampleEn:"– Pass me the salt? – Sure.",cat:'acuerdo',register:'neutral'},
+  {en:"No problem",enAlts:["no worries","no problem at all","you're welcome"],es:'No pasa nada',esAlts:['Sin problema','Tranquilo'],example:'– Perdona el retraso. – No pasa nada.',exampleEn:"– Sorry I'm late. – No problem.",explain:"'No pasa nada' is the most natural – literally 'nothing happens'. Use it for apologies AND requests.",cat:'acuerdo',register:'neutral'},
+  {en:"Sounds good",enAlts:["sounds great","that works","sounds like a plan"],es:'Me parece bien',esAlts:['Suena bien','Perfecto'],example:'– ¿Quedamos a las ocho? – Me parece bien.',exampleEn:"– Meet at eight? – Sounds good.",cat:'acuerdo',register:'neutral'},
+  {en:"Got it",enAlts:["understood","i got it","i understand"],es:'Entendido',esAlts:['Vale','Captado'],example:'Vale, entendido. Lo hago ahora mismo.',exampleEn:"OK, got it. I'll do it right now.",cat:'acuerdo',register:'neutral'},
+  {en:"Of course",enAlts:["obviously","absolutely","sure"],es:'Por supuesto',esAlts:['Claro que sí','Faltaría más'],example:'¿Vienes? – Por supuesto.',exampleEn:"Are you coming? – Of course.",explain:"'Faltaría más' is a very Spanish 'but of course / I wouldn't have it any other way'.",cat:'acuerdo',register:'formal'},
+  {en:"Fair enough",enAlts:["that's fair","i can see that"],es:'Está bien visto',esAlts:['Tiene sentido','Me parece justo'],example:'– No vine porque estaba enfermo. – Está bien visto.',exampleEn:"– I didn't come because I was ill. – Fair enough.",cat:'acuerdo',register:'neutral'},
+  {en:"You're right",enAlts:["i agree","exactly","you have a point"],es:'Tienes razón',esAlts:['Llevas razón','En eso estamos de acuerdo'],example:'Tienes razón, no lo había pensado así.',exampleEn:"You're right, I hadn't thought of it that way.",cat:'acuerdo',register:'neutral'},
+  {en:"Exactly",enAlts:["that's right","precisely","spot on"],es:'Exacto',esAlts:['Eso es','Justamente'],example:'– Entonces no vamos hoy. – Exacto.',exampleEn:"– So we're not going today. – Exactly.",cat:'énfasis',register:'neutral'},
+
+  // ─── TIEMPO / TIME ─────────────────────────────────────────────────────────
+  {en:"It takes time",enAlts:["it'll take time","this takes time","takes a while"],es:'Lleva tiempo',esAlts:['Requiere tiempo','Lleva su tiempo'],example:'Aprender un idioma lleva tiempo, no te frustres.',exampleEn:"Learning a language takes time, don't get frustrated.",explain:"NEVER 'toma tiempo' – that's a direct calque from English. Spaniards say 'lleva' (carries/takes). 'Tomar tiempo' sounds wrong.",cat:'tiempo',register:'neutral'},
+  {en:"It's been a while",enAlts:["long time no see","it's been ages"],es:'Cuánto tiempo',esAlts:['Hacía tiempo que no nos veíamos','Hace siglos'],example:'¡Cuánto tiempo sin verte!',exampleEn:"It's been ages! Long time no see!",explain:"'¡Cuánto tiempo!' alone, with surprise, is the standard greeting after a long absence.",cat:'tiempo',register:'neutral'},
+  {en:"In a moment",enAlts:["one moment","just a sec","hold on"],es:'En un momento',esAlts:['Enseguida','Un segundo'],example:'Estoy contigo en un momento.',exampleEn:"I'll be with you in a moment.",cat:'tiempo',register:'neutral'},
+  {en:"Right now",enAlts:["right away","immediately","at once"],es:'Ahora mismo',esAlts:['En este momento','Ya mismo'],example:'Salgo de casa ahora mismo.',exampleEn:"I'm leaving the house right now.",cat:'tiempo',register:'neutral'},
+  {en:"Sooner or later",enAlts:["eventually","at some point"],es:'Tarde o temprano',esAlts:['Antes o después'],example:'Tarde o temprano se enterará de la verdad.',exampleEn:"Sooner or later he'll find out the truth.",cat:'tiempo',register:'neutral'},
+  {en:"From time to time",enAlts:["once in a while","every now and then","sometimes"],es:'De vez en cuando',esAlts:['A veces','De cuando en cuando'],example:'De vez en cuando salgo a correr por la mañana.',exampleEn:"From time to time I go for a morning run.",cat:'tiempo',register:'neutral'},
+  {en:"At the last minute",enAlts:["last minute","at the eleventh hour"],es:'A última hora',esAlts:['En el último momento'],example:'Cancelaron el viaje a última hora.',exampleEn:"They cancelled the trip at the last minute.",cat:'tiempo',register:'neutral'},
+  {en:"In the long run",enAlts:["in the long term","eventually"],es:'A la larga',esAlts:['A largo plazo'],example:'A la larga te alegrarás de haberlo hecho.',exampleEn:"In the long run you'll be glad you did it.",cat:'tiempo',register:'neutral'},
+  {en:"Time flies",enAlts:["time goes fast","time really flies"],es:'El tiempo vuela',esAlts:['Cómo pasa el tiempo'],example:'¡Cómo pasa el tiempo! Ya es viernes otra vez.',exampleEn:"Time flies! It's Friday again already.",cat:'tiempo',register:'neutral'},
+
+  // ─── CANSANCIO / SLEEP ─────────────────────────────────────────────────────
+  {en:"I'm exhausted",enAlts:["i'm wiped out","i'm knackered","i'm shattered","i'm wrecked"],es:'Estoy hecho polvo',esAlts:['Estoy reventado','Estoy molido'],example:'Después de la mudanza estoy hecho polvo.',exampleEn:"After moving I'm completely wiped out.",explain:"'Hecho polvo' literally = 'turned to dust'. The most natural way Spaniards say it.",cat:'cansancio',register:'informal'},
+  {en:"I slept like a log",enAlts:["i slept really well","slept like a baby"],es:'Dormí como un tronco',esAlts:['Dormí como un bebé','Dormí del tirón'],example:'Anoche dormí como un tronco, no oí nada.',exampleEn:"Last night I slept like a log, I heard nothing.",cat:'cansancio',register:'neutral'},
+  {en:"I had a rough night",enAlts:["bad night","didn't sleep well"],es:'Pasé mala noche',esAlts:['Dormí fatal','He pasado la noche en vela'],example:'Pasé mala noche por el ruido de los vecinos.',exampleEn:"I had a rough night because of the neighbours.",cat:'cansancio',register:'neutral'},
+  {en:"I'm dying for a coffee",enAlts:["i need a coffee","i could kill for a coffee"],es:'Me muero por un café',esAlts:['Necesito un café ya'],example:'Me muero por un café, no he dormido nada.',exampleEn:"I'm dying for a coffee, I haven't slept.",cat:'cansancio',register:'informal'},
+  {en:"I can't keep my eyes open",enAlts:["i'm falling asleep","so sleepy"],es:'Se me cierran los ojos',esAlts:['Me caigo de sueño'],example:'Se me cierran los ojos, me voy a dormir.',exampleEn:"I can't keep my eyes open, I'm off to bed.",cat:'cansancio',register:'neutral'},
+
+  // ─── COMIDA / FOOD ─────────────────────────────────────────────────────────
+  {en:"I'm starving",enAlts:["i'm famished","i'm so hungry","i could eat a horse"],es:'Me muero de hambre',esAlts:['Tengo un hambre que no veo','Me comería una vaca'],example:'¡Cuándo cenamos! Me muero de hambre.',exampleEn:"When are we eating? I'm starving!",cat:'comida',register:'informal'},
+  {en:"It's delicious",enAlts:["it's amazing","this is so good","yummy"],es:'Está riquísimo',esAlts:['Está de muerte','Está para chuparse los dedos'],example:'Esta paella está riquísima, la mejor que he probado.',exampleEn:"This paella is delicious – the best I've had.",explain:"Use 'está' (estar) for taste, not 'es' (ser). 'De muerte' = 'to die for'.",cat:'comida',register:'neutral'},
+  {en:"It's awful",enAlts:["it's disgusting","it's gross","it's terrible"],es:'Está malísimo',esAlts:['Está asqueroso','Sabe a rayos'],example:'No te lo comas, está malísimo.',exampleEn:"Don't eat it, it's awful.",cat:'comida',register:'neutral'},
+  {en:"I'm full",enAlts:["i'm stuffed","i can't eat any more"],es:'Estoy lleno',esAlts:['No puedo más','Estoy a tope'],example:'Gracias, estoy lleno. No puedo más.',exampleEn:"Thanks, I'm full. I can't eat any more.",cat:'comida',register:'neutral'},
+  {en:"Cheers!",enAlts:["a toast","to your health"],es:'¡Salud!',esAlts:['¡Chinchín!'],example:'¡Salud! Por nosotros.',exampleEn:"Cheers! To us.",cat:'comida',register:'neutral'},
+  {en:"Enjoy your meal",enAlts:["bon appetit","enjoy"],es:'¡Que aproveche!',esAlts:['¡Buen provecho!'],example:'¡Que aproveche! ¿Cómo está la comida?',exampleEn:"Enjoy your meal! How's the food?",explain:"Said when you start eating or pass someone eating. Universal in Spain.",cat:'comida',register:'neutral'},
+  {en:"My mouth is watering",enAlts:["that looks delicious","makes me hungry"],es:'Se me hace la boca agua',esAlts:['Qué pinta tiene'],example:'Sólo de pensar en el pan recién hecho se me hace la boca agua.',exampleEn:"Just thinking about fresh bread makes my mouth water.",cat:'comida',register:'neutral'},
+
+  // ─── DINERO / MONEY ────────────────────────────────────────────────────────
+  {en:"It costs a fortune",enAlts:["it's expensive","costs an arm and a leg","very pricey"],es:'Cuesta un ojo de la cara',esAlts:['Cuesta un riñón','Es carísimo'],example:'Esa moto cuesta un ojo de la cara.',exampleEn:"That motorbike costs a fortune.",explain:"Literally 'costs an eye from the face'. Universal Spanish idiom.",cat:'dinero',register:'informal'},
+  {en:"I'm broke",enAlts:["i'm skint","no money","i'm flat broke"],es:'Estoy sin blanca',esAlts:['Estoy pelado','No tengo un duro'],example:'No puedo salir esta semana, estoy sin blanca.',exampleEn:"I can't go out this week, I'm broke.",explain:"'Sin blanca' refers to old white coins. 'Pelado' = peeled / stripped of money.",cat:'dinero',register:'informal'},
+  {en:"It's a rip-off",enAlts:["that's a rip off","total scam","it's a steal"],es:'Es un robo',esAlts:['Es una estafa','Te están clavando'],example:'¿Quince euros por una cerveza? Es un robo.',exampleEn:"Fifteen euros for a beer? That's a rip-off.",cat:'dinero',register:'informal'},
+  {en:"It's a bargain",enAlts:["what a deal","it's a steal","really cheap"],es:'Es un chollo',esAlts:['Está tirado de precio','Es una ganga'],example:'Diez euros por la chaqueta es un chollo.',exampleEn:"Ten euros for the jacket is a bargain.",explain:"'Chollo' is the perfect Spanish word for 'great deal / steal'.",cat:'dinero',register:'informal'},
+  {en:"Money doesn't grow on trees",enAlts:["i'm not made of money"],es:'El dinero no crece en los árboles',esAlts:['No soy un banco'],example:'¡El dinero no crece en los árboles, hijo!',exampleEn:"Money doesn't grow on trees, son!",cat:'dinero',register:'neutral'},
+
+  // ─── ESFUERZO / EFFORT ─────────────────────────────────────────────────────
+  {en:"It's a piece of cake",enAlts:["it's easy","easy peasy","no problem"],es:'Es pan comido',esAlts:['Está chupado','Es coser y cantar'],example:'El examen fue pan comido.',exampleEn:"The exam was a piece of cake.",explain:"'Está chupado' (it's sucked) and 'coser y cantar' (to sew and sing) are also idiomatic.",cat:'esfuerzo',register:'informal'},
+  {en:"It's tough",enAlts:["it's hard","it's difficult","it's a challenge"],es:'Está difícil',esAlts:['Es complicado','Tiene tela'],example:'Encontrar piso en Madrid está difícil.',exampleEn:"Finding a flat in Madrid is tough.",explain:"'Tiene tela' = 'it's got cloth' = there's a lot to it / it's a handful.",cat:'esfuerzo',register:'informal'},
+  {en:"I'm doing my best",enAlts:["i'm trying my hardest","doing the best i can"],es:'Hago lo que puedo',esAlts:['Doy lo mejor de mí','Lo intento'],example:'Hago lo que puedo, pero no es fácil.',exampleEn:"I'm doing my best, but it's not easy.",cat:'esfuerzo',register:'neutral'},
+  {en:"Let's get to the point",enAlts:["cut to the chase","get to the point"],es:'Vamos al grano',esAlts:['Sin rodeos'],example:'Vamos al grano: ¿qué necesitas?',exampleEn:"Let's get to the point: what do you need?",cat:'esfuerzo',register:'neutral'},
+  {en:"I have a lot on my plate",enAlts:["i'm swamped","i'm slammed","loads to do"],es:'Estoy hasta arriba',esAlts:['Tengo mucho lío','Estoy liadísimo'],example:'No puedo quedar hoy, estoy hasta arriba.',exampleEn:"Can't meet today, I'm swamped.",explain:"'Hasta arriba' = 'up to the top'. The standard Spanish way to say overwhelmed at work.",cat:'esfuerzo',register:'informal'},
+  {en:"It's not rocket science",enAlts:["it's not that hard","it's simple"],es:'No es para tanto',esAlts:['No tiene tanto misterio'],example:'Tranquilo, no es para tanto, es muy fácil.',exampleEn:"Relax, it's not rocket science.",cat:'esfuerzo',register:'informal'},
+  {en:"I'm at my limit",enAlts:["i can't take much more","i'm at the end of my rope"],es:'No puedo más',esAlts:['Estoy al límite','No doy más de mí'],example:'Llevo trabajando doce horas, no puedo más.',exampleEn:"I've worked twelve hours, I'm at my limit.",cat:'esfuerzo',register:'neutral'},
+
+  // ─── SALUD / HEALTH ────────────────────────────────────────────────────────
+  {en:"I have a headache",enAlts:["my head hurts","headache"],es:'Me duele la cabeza',esAlts:['Tengo dolor de cabeza'],example:'Me duele la cabeza desde esta mañana.',exampleEn:"I've had a headache since this morning.",explain:"'Doler' works backwards like 'gustar': 'me duele' = it hurts me. Don't say 'tengo un dolor de cabeza' – use 'me duele' or 'tengo dolor'.",cat:'salud',register:'neutral'},
+  {en:"I feel sick",enAlts:["i'm not feeling well","i feel ill","i feel awful"],es:'Me encuentro mal',esAlts:['Estoy malo','No me siento bien'],example:'Me voy a casa, me encuentro mal.',exampleEn:"I'm going home, I feel sick.",explain:"'Estar malo/a' means 'to be ill' (not 'bad'). Don't confuse with 'ser malo' (= to be evil).",cat:'salud',register:'neutral'},
+  {en:"I'm coming down with something",enAlts:["i'm getting sick","feeling under the weather"],es:'Estoy pillando algo',esAlts:['Creo que me está dando algo','Estoy malucho'],example:'Llevo dos días raros, creo que estoy pillando algo.',exampleEn:"I've felt off for days, I think I'm coming down with something.",cat:'salud',register:'informal'},
+  {en:"Bless you",enAlts:["gesundheit"],es:'¡Salud!',esAlts:['¡Jesús!'],example:'– ¡Achís! – ¡Salud!',exampleEn:"– Achoo! – Bless you!",explain:"'Jesús' is also used after sneezing – not religious, just traditional.",cat:'salud',register:'neutral'},
+  {en:"Get well soon",enAlts:["feel better","hope you feel better"],es:'Que te mejores',esAlts:['Que te recuperes pronto'],example:'¡Que te mejores pronto!',exampleEn:"Get well soon!",cat:'salud',register:'neutral'},
+
+  // ─── METEO / WEATHER ───────────────────────────────────────────────────────
+  {en:"It's raining cats and dogs",enAlts:["it's pouring","heavy rain","bucketing down"],es:'Llueve a cántaros',esAlts:['Está cayendo la mundial','Está diluviando'],example:'Coge el paraguas, llueve a cántaros.',exampleEn:"Grab the umbrella, it's pouring.",explain:"Literally 'rains by jugfuls'. Universal idiom.",cat:'meteo',register:'neutral'},
+  {en:"It's freezing",enAlts:["it's cold","i'm freezing","brass monkey weather"],es:'Hace un frío que pela',esAlts:['Hace un frío de muerte','Me estoy congelando'],example:'Ponte el abrigo, hace un frío que pela.',exampleEn:"Put your coat on, it's freezing.",explain:"'Que pela' = that peels (peels your skin off with cold). Very Spanish.",cat:'meteo',register:'informal'},
+  {en:"It's boiling",enAlts:["it's so hot","it's roasting","it's scorching"],es:'Hace un calor de muerte',esAlts:['Me estoy asando','Hace un calor que no se puede'],example:'Hace un calor de muerte hoy en Sevilla.',exampleEn:"It's boiling in Sevilla today.",cat:'meteo',register:'informal'},
+  {en:"It looks like rain",enAlts:["might rain","looks rainy"],es:'Tiene pinta de llover',esAlts:['Parece que va a llover'],example:'Coge el paraguas, tiene pinta de llover.',exampleEn:"Grab an umbrella, it looks like rain.",cat:'meteo',register:'neutral'},
+
+  // ─── SALUDOS Y DESPEDIDAS / GREETINGS ──────────────────────────────────────
+  {en:"How's it going?",enAlts:["how are you","what's up","how are things"],es:'¿Qué tal?',esAlts:['¿Cómo va todo?','¿Qué hay?'],example:'¡Hola Juan! ¿Qué tal?',exampleEn:"Hi Juan! How's it going?",explain:"'¿Qué tal?' is the most universal Spanish greeting – more common than '¿Cómo estás?'",cat:'saludos',register:'neutral'},
+  {en:"What's new?",enAlts:["anything new","what's up"],es:'¿Qué hay de nuevo?',esAlts:['¿Qué me cuentas?'],example:'¿Qué hay de nuevo? ¿Cómo va el trabajo?',exampleEn:"What's new? How's work?",cat:'saludos',register:'neutral'},
+  {en:"See you later",enAlts:["see you","catch you later","see ya"],es:'Hasta luego',esAlts:['Nos vemos','Hasta otra'],example:'Bueno, me voy. ¡Hasta luego!',exampleEn:"Right, I'm off. See you later!",explain:"'Hasta luego' is the standard goodbye in Spain – not specifically 'later', just 'bye'.",cat:'saludos',register:'neutral'},
+  {en:"Take care",enAlts:["look after yourself","stay safe"],es:'Cuídate',esAlts:['Cuídate mucho'],example:'Adiós. ¡Cuídate mucho!',exampleEn:"Bye. Take care!",cat:'saludos',register:'neutral'},
+  {en:"Have a good day",enAlts:["have a nice day","enjoy your day"],es:'Que tengas un buen día',esAlts:['Que vaya bien'],example:'Hasta mañana. ¡Que tengas un buen día!',exampleEn:"See you tomorrow. Have a good day!",cat:'saludos',register:'neutral'},
+  {en:"Long time no see",enAlts:["it's been ages","it's been forever"],es:'¡Cuánto tiempo!',esAlts:['Hacía siglos que no nos veíamos'],example:'¡Hombre, cuánto tiempo! ¿Qué tal?',exampleEn:"Hey, long time no see! How are you?",cat:'saludos',register:'informal'},
+
+  // ─── DISCULPAS / APOLOGIES ─────────────────────────────────────────────────
+  {en:"My bad",enAlts:["my fault","sorry that's on me"],es:'Culpa mía',esAlts:['Ha sido cosa mía','Lo siento'],example:'Perdona, ha sido culpa mía. Mañana lo arreglo.',exampleEn:"Sorry, my bad. I'll fix it tomorrow.",cat:'disculpas',register:'neutral'},
+  {en:"I'm sorry to bother you",enAlts:["sorry to bug you","sorry to interrupt"],es:'Perdona la molestia',esAlts:['Disculpa que te moleste','Siento molestarte'],example:'Perdona la molestia, ¿tienes un momento?',exampleEn:"Sorry to bother you, do you have a moment?",cat:'disculpas',register:'formal'},
+  {en:"It's my fault",enAlts:["i'm to blame","i did it"],es:'Es culpa mía',esAlts:['La culpa es mía'],example:'Es culpa mía, no debí decir nada.',exampleEn:"It's my fault, I shouldn't have said anything.",cat:'disculpas',register:'neutral'},
+  {en:"Don't mention it",enAlts:["no problem","you're welcome","not at all"],es:'De nada',esAlts:['No hay de qué','Faltaría más'],example:'– Gracias. – De nada.',exampleEn:"– Thanks. – Don't mention it.",cat:'disculpas',register:'neutral'},
+  {en:"Excuse me",enAlts:["pardon me","sorry"],es:'Perdona',esAlts:['Perdone','Disculpe'],example:'Perdona, ¿sabes dónde está la calle Mayor?',exampleEn:"Excuse me, do you know where Calle Mayor is?",explain:"'Perdona' (informal) / 'perdone' (formal) for getting attention. 'Disculpe' is more polite.",cat:'disculpas',register:'neutral'},
+
+  // ─── SENTIMIENTOS / FEELINGS ───────────────────────────────────────────────
+  {en:"I'm in a good mood",enAlts:["i feel great","feeling good"],es:'Estoy de buen humor',esAlts:['Estoy contento'],example:'Hoy estoy de buen humor, hace sol.',exampleEn:"I'm in a good mood today, it's sunny.",cat:'sentimientos',register:'neutral'},
+  {en:"I'm in a bad mood",enAlts:["i'm grumpy","i'm cranky"],es:'Estoy de mal humor',esAlts:['Estoy mosqueado','Estoy de mala leche'],example:'Hoy mejor no me hables, estoy de mal humor.',exampleEn:"Better not talk to me today, I'm in a bad mood.",explain:"'Mala leche' literally = 'bad milk' but means 'bad temper'. Very Spanish.",cat:'sentimientos',register:'informal'},
+  {en:"I'm bored",enAlts:["this is boring","i'm bored stiff"],es:'Me aburro',esAlts:['Estoy aburrido','Me aburro como una ostra'],example:'Esta peli es un rollo, me aburro.',exampleEn:"This movie's a drag, I'm bored.",explain:"'Como una ostra' = 'like an oyster' = bored to death.",cat:'sentimientos',register:'neutral'},
+  {en:"I'm in love",enAlts:["i love them","head over heels"],es:'Estoy enamorado',esAlts:['Estoy colado por ella','Me he enamorado'],example:'Estoy enamorado, no puedo dejar de pensar en ella.',exampleEn:"I'm in love, I can't stop thinking about her.",cat:'sentimientos',register:'neutral'},
+  {en:"I'm scared",enAlts:["i'm afraid","i'm terrified"],es:'Tengo miedo',esAlts:['Estoy asustado','Estoy acojonado'],example:'Tengo miedo de las alturas.',exampleEn:"I'm scared of heights.",explain:"In Spanish you 'have' fear, not 'are' afraid. 'Acojonado' is vulgar but very common.",cat:'sentimientos',register:'neutral'},
+  {en:"I'm jealous",enAlts:["i'm envious"],es:'Tengo envidia',esAlts:['Qué envidia','Estoy celoso'],example:'¡Tengo envidia! Yo también quiero ir a la playa.',exampleEn:"I'm jealous! I want to go to the beach too.",explain:"'Envidia' = jealous of what someone has. 'Celos' = romantic jealousy.",cat:'sentimientos',register:'neutral'},
+  {en:"I'm so happy",enAlts:["i'm thrilled","i'm over the moon"],es:'Estoy súper feliz',esAlts:['Estoy en una nube','No me lo creo de la alegría'],example:'Estoy en una nube, ¡me han dado el trabajo!',exampleEn:"I'm over the moon – I got the job!",explain:"'Estar en una nube' = to be on cloud nine.",cat:'sentimientos',register:'informal'},
+  {en:"I miss you",enAlts:["i missed you","missing you"],es:'Te echo de menos',esAlts:['Te extraño'],example:'Te echo de menos, vuelve pronto.',exampleEn:"I miss you, come back soon.",explain:"'Echar de menos' is the Spain version. 'Extrañar' is Latin American.",cat:'sentimientos',register:'neutral'},
+
+  // ─── OPINIÓN / OPINION ─────────────────────────────────────────────────────
+  {en:"It's up to you",enAlts:["your call","whatever you want","you decide"],es:'Tú decides',esAlts:['Como tú quieras','Tú mismo'],example:'¿Cine o cena? Tú decides.',exampleEn:"Movies or dinner? It's up to you.",cat:'opinión',register:'neutral'},
+  {en:"I'm not sure",enAlts:["not sure","i'm not certain","i don't know"],es:'No estoy seguro',esAlts:['No sé qué decirte','No tengo claro'],example:'No estoy seguro, déjame pensarlo.',exampleEn:"I'm not sure, let me think about it.",cat:'opinión',register:'neutral'},
+  {en:"It depends",enAlts:["depending","it kind of depends"],es:'Depende',esAlts:['Según se mire'],example:'– ¿Es difícil? – Depende.',exampleEn:"– Is it hard? – It depends.",cat:'opinión',register:'neutral'},
+  {en:"In my opinion",enAlts:["i think","if you ask me"],es:'En mi opinión',esAlts:['A mi parecer','Yo creo que'],example:'En mi opinión, es la mejor opción.',exampleEn:"In my opinion, it's the best option.",cat:'opinión',register:'neutral'},
+  {en:"Honestly",enAlts:["to be honest","frankly","tbh"],es:'La verdad',esAlts:['Sinceramente','La verdad sea dicha'],example:'La verdad, no me gustó nada la película.',exampleEn:"Honestly, I didn't like the movie at all.",explain:"'La verdad' alone, often at the start, is the natural 'tbh' filler.",cat:'opinión',register:'neutral'},
+
+  // ─── MULETILLAS / FILLERS ──────────────────────────────────────────────────
+  {en:"By the way",enAlts:["btw","speaking of which"],es:'Por cierto',esAlts:['A propósito'],example:'Por cierto, ¿viste el partido ayer?',exampleEn:"By the way, did you see the match yesterday?",cat:'muletillas',register:'neutral'},
+  {en:"I mean...",enAlts:["i mean","or rather","what i mean is"],es:'O sea...',esAlts:['Quiero decir','Es decir'],example:'O sea, no es que no me guste, es que no me apetece.',exampleEn:"I mean, it's not that I don't like it, I just don't fancy it.",explain:"'O sea' (literally 'or it be') is the most Spanish filler – overused but natural.",cat:'muletillas',register:'informal'},
+  {en:"Anyway",enAlts:["anyhow","at any rate"],es:'En fin',esAlts:['De todos modos','Bueno, qué más da'],example:'En fin, mejor cambiamos de tema.',exampleEn:"Anyway, let's change the subject.",cat:'muletillas',register:'neutral'},
+  {en:"You know",enAlts:["y'know","like"],es:'Ya sabes',esAlts:['Ya me entiendes'],example:'Es uno de esos días, ya sabes.',exampleEn:"It's one of those days, you know.",cat:'muletillas',register:'informal'},
+  {en:"Well...",enAlts:["umm","so","hmm"],es:'Pues...',esAlts:['Bueno...','A ver...'],example:'Pues no sé qué decirte la verdad.',exampleEn:"Well, I don't really know what to tell you.",explain:"'Pues' is hands-down the #1 Spanish filler – used to start almost any reply.",cat:'muletillas',register:'neutral'},
+  {en:"Look...",enAlts:["listen","see"],es:'Mira...',esAlts:['Oye...','A ver...'],example:'Mira, te lo voy a decir claro.',exampleEn:"Look, I'm going to tell you straight.",cat:'muletillas',register:'informal'},
+  {en:"Anyway, the thing is",enAlts:["the thing is","what i'm trying to say"],es:'El caso es que',esAlts:['El tema es que','La cosa es que'],example:'El caso es que no llegamos a tiempo.',exampleEn:"The thing is, we didn't make it in time.",cat:'muletillas',register:'neutral'},
+
+  // ─── ÁNIMO / ENCOURAGEMENT ─────────────────────────────────────────────────
+  {en:"Don't worry",enAlts:["no worries","relax","chill"],es:'No te preocupes',esAlts:['Tranqui','Tranquilo','No pasa nada'],example:'No te preocupes, ya lo arreglamos.',exampleEn:"Don't worry, we'll sort it out.",cat:'ánimo',register:'neutral'},
+  {en:"Hang in there",enAlts:["stay strong","keep going"],es:'Aguanta',esAlts:['Ánimo','Tú puedes'],example:'Aguanta, queda poco para terminar.',exampleEn:"Hang in there, almost done.",cat:'ánimo',register:'informal'},
+  {en:"You got this",enAlts:["you can do it","you're nearly there"],es:'Tú puedes',esAlts:['Vamos, tú puedes con esto','A por ello'],example:'Vamos, tú puedes con esto.',exampleEn:"Come on, you got this.",cat:'ánimo',register:'informal'},
+  {en:"Take it easy",enAlts:["chill out","relax","easy now"],es:'Tómatelo con calma',esAlts:['Tranquilo','Sin estrés'],example:'Tómatelo con calma, no hay prisa.',exampleEn:"Take it easy, there's no rush.",cat:'ánimo',register:'neutral'},
+  {en:"Cheer up",enAlts:["chin up","don't be sad"],es:'Anímate',esAlts:['Arriba ese ánimo'],example:'¡Anímate! Mañana será otro día.',exampleEn:"Cheer up! Tomorrow's another day.",cat:'ánimo',register:'neutral'},
+  {en:"Good luck",enAlts:["best of luck","fingers crossed"],es:'Suerte',esAlts:['Mucha suerte','Cruzo los dedos'],example:'¡Suerte con la entrevista!',exampleEn:"Good luck with the interview!",explain:"Don't say 'buena suerte' – just 'suerte' is more natural.",cat:'ánimo',register:'neutral'},
+
+  // ─── DUDA / DOUBT ──────────────────────────────────────────────────────────
+  {en:"Who knows",enAlts:["who can say","go figure"],es:'Vete tú a saber',esAlts:['Quién sabe','A saber'],example:'Vete tú a saber por qué lo hizo.',exampleEn:"Who knows why he did it.",explain:"'Vete tú a saber' = 'go you to know' = beats me / who knows. Very Spanish.",cat:'duda',register:'informal'},
+  {en:"Maybe",enAlts:["perhaps","could be"],es:'Quizás',esAlts:['Tal vez','A lo mejor'],example:'A lo mejor mañana hace mejor tiempo.',exampleEn:"Maybe tomorrow the weather will be better.",explain:"'A lo mejor' takes indicative. 'Quizás' and 'tal vez' usually take subjunctive.",cat:'duda',register:'neutral'},
+  {en:"I have my doubts",enAlts:["i'm not convinced","not sure about it"],es:'Tengo mis dudas',esAlts:['No me convence del todo'],example:'Tengo mis dudas sobre su honestidad.',exampleEn:"I have my doubts about his honesty.",cat:'duda',register:'neutral'},
+  {en:"Beats me",enAlts:["i don't know","no idea","beats me"],es:'Ni idea',esAlts:['No tengo ni idea','A saber'],example:'– ¿A qué hora es la reunión? – Ni idea.',exampleEn:"– What time's the meeting? – Beats me.",cat:'duda',register:'informal'},
+
+  // ─── INTERÉS / INTEREST ────────────────────────────────────────────────────
+  {en:"I love it",enAlts:["i adore it","i'm crazy about it"],es:'Me encanta',esAlts:['Me chifla','Me flipa'],example:'Me encanta esta canción.',exampleEn:"I love this song.",explain:"'Encantar' works backwards like 'gustar'. 'Flipar' and 'chiflar' are stronger/informal.",cat:'interés',register:'neutral'},
+  {en:"It's not my thing",enAlts:["i'm not into it","not my cup of tea"],es:'No es lo mío',esAlts:['No me va','No me llama'],example:'El golf no es lo mío, prefiero el tenis.',exampleEn:"Golf isn't my thing, I prefer tennis.",cat:'interés',register:'neutral'},
+  {en:"I don't get it",enAlts:["i don't understand","what does that mean"],es:'No lo pillo',esAlts:['No lo entiendo','No me entero'],example:'Repítemelo, no lo pillo.',exampleEn:"Say it again, I don't get it.",explain:"'Pillar' (to catch) is hugely informal Spanish for 'to get / understand'.",cat:'interés',register:'informal'},
+  {en:"I'm into it",enAlts:["i like it","i dig it","i'm hooked"],es:'Me mola',esAlts:['Me gusta mucho','Me flipa'],example:'Me mola tu chaqueta, ¿dónde la compraste?',exampleEn:"I'm into your jacket, where did you get it?",explain:"'Molar' is super-informal Spanish slang for 'to be cool / I like it'. Very Madrid.",cat:'interés',register:'informal'},
+
+  // ─── NEGACIÓN / REFUSAL ────────────────────────────────────────────────────
+  {en:"Hell no",enAlts:["no way","absolutely not","over my dead body"],es:'Ni de coña',esAlts:['Ni hablar','Ni en broma','Ni loco'],example:'¿Saltar en paracaídas? Ni de coña.',exampleEn:"Skydiving? Hell no.",explain:"'Ni de coña' = 'not even as a joke' (vulgar). 'Ni hablar' is the polite version.",cat:'negación',register:'informal'},
+  {en:"Not at all",enAlts:["definitely not","by no means"],es:'Para nada',esAlts:['En absoluto','Qué va'],example:'– ¿Te molesta? – Para nada.',exampleEn:"– Does it bother you? – Not at all.",cat:'negación',register:'neutral'},
+  {en:"Not really",enAlts:["not so much","kind of not"],es:'La verdad es que no',esAlts:['No mucho','No tanto'],example:'– ¿Te gustó? – La verdad es que no.',exampleEn:"– Did you like it? – Not really.",cat:'negación',register:'neutral'},
+  {en:"You wish",enAlts:["dream on","fat chance"],es:'Ya quisieras',esAlts:['Sueña','En tus sueños'],example:'– Soy mejor que tú al fútbol. – ¡Ya quisieras!',exampleEn:"– I'm better than you at football. – You wish!",cat:'negación',register:'informal'},
+
+  // ─── ÉNFASIS / EMPHASIS ────────────────────────────────────────────────────
+  {en:"Totally",enAlts:["absolutely","completely","100%"],es:'Totalmente',esAlts:['Del todo','Cien por cien'],example:'Totalmente de acuerdo contigo.',exampleEn:"I totally agree with you.",cat:'énfasis',register:'neutral'},
+  {en:"Definitely",enAlts:["for sure","without a doubt"],es:'Sin duda',esAlts:['Seguro','Desde luego'],example:'Sin duda es la mejor opción.',exampleEn:"Definitely the best option.",cat:'énfasis',register:'neutral'},
+  {en:"For real",enAlts:["seriously","honestly","truly"],es:'En serio',esAlts:['De verdad','De verdad de la buena'],example:'En serio, no estoy bromeando.',exampleEn:"For real, I'm not joking.",cat:'énfasis',register:'neutral'},
+  {en:"Big time",enAlts:["a lot","majorly"],es:'Un montón',esAlts:['A lo bestia','Mogollón'],example:'Me gustó un montón el concierto.',exampleEn:"I liked the concert big time.",cat:'énfasis',register:'informal'},
+
+  // ─── RELACIONES / PEOPLE ───────────────────────────────────────────────────
+  {en:"He's a great guy",enAlts:["she's a great person","good people"],es:'Es buena gente',esAlts:['Es un tío majo','Es muy maja'],example:'Tu jefe parece buena gente.',exampleEn:"Your boss seems like a great guy.",explain:"'Majo/maja' is the standard Spanish word for 'nice/lovely' as a person. 'Buena gente' applies to anyone (singular or plural).",cat:'relaciones',register:'informal'},
+  {en:"She's annoying",enAlts:["he's so annoying","they're a pain"],es:'Es un coñazo',esAlts:['Es pesada','Es un peñazo'],example:'Mi vecino es un coñazo, no para de quejarse.',exampleEn:"My neighbour is so annoying, never stops complaining.",explain:"'Coñazo' is vulgar but extremely common. 'Pesado/a' (heavy) is the safe alternative.",cat:'relaciones',register:'informal'},
+  {en:"We hit it off",enAlts:["we got along great","we clicked"],es:'Conectamos enseguida',esAlts:['Hicimos buenas migas','Nos llevamos genial'],example:'Conocí a Pablo y conectamos enseguida.',exampleEn:"I met Pablo and we hit it off straight away.",explain:"'Hacer buenas migas' = 'to make good crumbs' (eat the same broken bread = old peasant phrase for getting along).",cat:'relaciones',register:'neutral'},
+  {en:"We broke up",enAlts:["we split up","i dumped him","she dumped me"],es:'Lo dejamos',esAlts:['Cortamos','Rompimos'],example:'Después de cinco años, lo dejamos.',exampleEn:"After five years, we broke up.",explain:"'Dejar(lo)' (to leave it) is the most natural – 'cortar' (to cut) is more informal.",cat:'relaciones',register:'neutral'},
+  {en:"He stood me up",enAlts:["she stood me up","ditched me"],es:'Me dejó plantado',esAlts:['Me dio plantón'],example:'Le esperé una hora y me dejó plantado.',exampleEn:"I waited an hour and he stood me up.",explain:"'Dejar plantado' = 'to leave planted' = stand up.",cat:'relaciones',register:'informal'},
+  {en:"He's a flake",enAlts:["she's flaky","they always cancel"],es:'Es un cantamañanas',esAlts:['No es de fiar','Siempre se raja'],example:'No quedes con él, es un cantamañanas.',exampleEn:"Don't make plans with him, he's a flake.",cat:'relaciones',register:'informal'},
+  {en:"They're family",enAlts:["he's like family"],es:'Son como de la familia',esAlts:['Son familia para mí'],example:'Mis vecinos son como de la familia.',exampleEn:"My neighbours are like family.",cat:'relaciones',register:'neutral'},
+
+  // ─── LOGROS Y FRACASOS / WINS & FAILS ──────────────────────────────────────
+  {en:"I nailed it",enAlts:["i smashed it","i killed it","i aced it"],es:'Me salió genial',esAlts:['Lo bordé','Di en el clavo'],example:'La presentación me salió genial.',exampleEn:"I nailed the presentation.",explain:"'Bordar' literally = to embroider. 'Lo bordé' = I did it perfectly.",cat:'logros',register:'informal'},
+  {en:"I screwed up",enAlts:["i messed up","i blew it","i botched it"],es:'La cagué',esAlts:['Metí la pata','La fastidié'],example:'La cagué con el correo, lo envié sin firmar.',exampleEn:"I screwed up with the email, sent it unsigned.",explain:"'La cagué' is vulgar but extremely common. 'Meter la pata' is the polite version.",cat:'logros',register:'informal'},
+  {en:"I lucked out",enAlts:["i got lucky","what a stroke of luck"],es:'Tuve mucha suerte',esAlts:['Me sonó la flauta','Por los pelos'],example:'Tuve mucha suerte de encontrar plaza de aparcamiento.',exampleEn:"I lucked out finding a parking space.",cat:'logros',register:'neutral'},
+  {en:"It's a long shot",enAlts:["unlikely","slim chance"],es:'Es difícil',esAlts:['No es muy probable','Por probar que no quede'],example:'Es difícil que ganen, pero por probar que no quede.',exampleEn:"It's a long shot they win, but worth trying.",cat:'logros',register:'neutral'},
+  {en:"I'll give it a shot",enAlts:["i'll try","let me try"],es:'Lo intento',esAlts:['Voy a probar','Le doy una oportunidad'],example:'Bueno, lo intento – a ver qué pasa.',exampleEn:"Right, I'll give it a shot – we'll see.",cat:'logros',register:'neutral'},
+
+  // ─── BONUS / MISC EVERYDAY ─────────────────────────────────────────────────
+  {en:"Make yourself at home",enAlts:["make yourself comfortable","have a seat"],es:'Estás en tu casa',esAlts:['Ponte cómodo','Como en tu casa'],example:'Pasa, pasa. Estás en tu casa.',exampleEn:"Come in. Make yourself at home.",cat:'saludos',register:'neutral'},
+  {en:"Long time coming",enAlts:["about time","finally"],es:'Ya era hora',esAlts:['Por fin','Ya tocaba'],example:'¡Ya era hora de que llegaras!',exampleEn:"About time you got here!",cat:'tiempo',register:'informal'},
+  {en:"Just in case",enAlts:["to be safe","you never know"],es:'Por si acaso',esAlts:['Por si las moscas'],example:'Lleva paraguas por si acaso.',exampleEn:"Take an umbrella just in case.",explain:"'Por si las moscas' = 'in case of the flies' = just in case (very Spanish).",cat:'tiempo',register:'neutral'},
+  {en:"It is what it is",enAlts:["nothing we can do","such is life"],es:'Es lo que hay',esAlts:['Qué le vamos a hacer','Así es la vida'],example:'No me gusta, pero es lo que hay.',exampleEn:"I don't like it, but it is what it is.",cat:'frustración',register:'neutral'},
+  {en:"That's life",enAlts:["c'est la vie","such is life"],es:'Así es la vida',esAlts:['Es la vida'],example:'Pasan cosas. Así es la vida.',exampleEn:"Things happen. That's life.",cat:'frustración',register:'neutral'},
+  {en:"I'm running late",enAlts:["i'm late","i'll be late"],es:'Voy con retraso',esAlts:['Llego tarde','Voy a llegar tarde'],example:'Voy con retraso, espérame cinco minutos.',exampleEn:"I'm running late, give me five minutes.",cat:'tiempo',register:'neutral'},
+  {en:"Mind your own business",enAlts:["none of your business","stay out of it"],es:'No te metas',esAlts:['Métete en tus asuntos','A ti qué te importa'],example:'No te metas, esto no es asunto tuyo.',exampleEn:"Mind your own business, this isn't your concern.",cat:'frustración',register:'informal'},
+  {en:"Speak of the devil",enAlts:["speaking of him","talk of the devil"],es:'Hablando del rey de Roma',esAlts:['Por la puerta asoma'],example:'¡Hablando del rey de Roma! Justo decíamos de ti.',exampleEn:"Speak of the devil! We were just talking about you.",explain:"Full saying: 'Hablando del rey de Roma, por la puerta asoma' (Speaking of the King of Rome, here he comes through the door).",cat:'sorpresa',register:'informal'},
+  {en:"At the end of the day",enAlts:["when all is said and done","ultimately"],es:'A fin de cuentas',esAlts:['Al final del día','Al fin y al cabo'],example:'A fin de cuentas, lo que importa es la salud.',exampleEn:"At the end of the day, health is what matters.",cat:'opinión',register:'neutral'},
+  {en:"Wait and see",enAlts:["we'll see","time will tell"],es:'Ya veremos',esAlts:['El tiempo dirá'],example:'Ya veremos qué pasa la semana que viene.',exampleEn:"We'll wait and see what happens next week.",cat:'duda',register:'neutral'},
+  {en:"It's worth it",enAlts:["it pays off","it's worthwhile"],es:'Vale la pena',esAlts:['Merece la pena'],example:'Es difícil, pero vale la pena.',exampleEn:"It's hard, but it's worth it.",cat:'opinión',register:'neutral'},
+  {en:"Better safe than sorry",enAlts:["just to be safe"],es:'Más vale prevenir que curar',esAlts:['Mejor prevenir'],example:'Llévate el casco – más vale prevenir que curar.',exampleEn:"Take the helmet – better safe than sorry.",cat:'opinión',register:'neutral'},
+  {en:"Easier said than done",enAlts:["that's easier said","not so easy"],es:'Del dicho al hecho hay mucho trecho',esAlts:['Más fácil decirlo que hacerlo'],example:'Adelgazar es fácil de decir – del dicho al hecho hay mucho trecho.',exampleEn:"Losing weight is easy to say – easier said than done.",cat:'esfuerzo',register:'neutral'},
+  {en:"It rings a bell",enAlts:["sounds familiar","i think i remember"],es:'Me suena',esAlts:['Me suena de algo'],example:'Su nombre me suena pero no recuerdo de qué.',exampleEn:"His name rings a bell but I can't place it.",cat:'duda',register:'neutral'},
+  {en:"On the dot",enAlts:["sharp","exactly on time"],es:'En punto',esAlts:['A la hora exacta','Clavado'],example:'La reunión empieza a las nueve en punto.',exampleEn:"The meeting starts at nine on the dot.",cat:'tiempo',register:'neutral'},
+  {en:"More or less",enAlts:["roughly","approximately","kind of"],es:'Más o menos',esAlts:['Aproximadamente'],example:'– ¿Cuánto cuesta? – Más o menos veinte euros.',exampleEn:"– How much? – More or less twenty euros.",cat:'énfasis',register:'neutral'},
+  {en:"On second thought",enAlts:["actually","wait","never mind"],es:'Pensándolo bien',esAlts:['Bien pensado','Mejor lo pienso'],example:'Pensándolo bien, mejor no voy.',exampleEn:"On second thought, better I don't go.",cat:'opinión',register:'neutral'},
+  {en:"Nothing special",enAlts:["nothing fancy","just normal"],es:'Nada del otro mundo',esAlts:['Nada especial','Normalito'],example:'La peli estuvo bien, pero nada del otro mundo.',exampleEn:"The movie was OK but nothing special.",explain:"'Nada del otro mundo' = 'nothing from the other world'.",cat:'opinión',register:'neutral'},
+  {en:"Once in a blue moon",enAlts:["very rarely","hardly ever"],es:'De Pascuas a Ramos',esAlts:['Muy de vez en cuando'],example:'Voy al cine de Pascuas a Ramos.',exampleEn:"I go to the cinema once in a blue moon.",explain:"'De Pascuas a Ramos' = 'from Easter to Palm Sunday' (almost a whole year).",cat:'tiempo',register:'informal'},
+  {en:"Out of the blue",enAlts:["all of a sudden","unexpectedly"],es:'De la nada',esAlts:['De repente','Sin venir a cuento'],example:'Me llamó de la nada después de tres años.',exampleEn:"He called me out of the blue after three years.",cat:'sorpresa',register:'neutral'},
+  {en:"At first sight",enAlts:["love at first sight"],es:'A primera vista',esAlts:['Amor a primera vista'],example:'Fue amor a primera vista.',exampleEn:"It was love at first sight.",cat:'sentimientos',register:'neutral'},
+];
+
+// Normalize an English query for fuzzy matching.
+// Strip punctuation incl. apostrophes (so "I'm" and "im" both become "im"),
+// then drop a few weak stopwords that don't change meaning.
+function normalizeEn(s) {
+  if (!s) return '';
+  return s.toLowerCase()
+    .replace(/['']/g, "'")
+    .replace(/[.,!?;:""""()'`]/g, '')
+    .replace(/\b(i|to|the|a|an|that|this|am|do|does|did|have|has|had)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Find best matches with confidence scores. Returns sorted top-N matches.
+function findEquivalents(query, topN = 5) {
+  if (!query || query.trim().length < 2) return [];
+  const norm = normalizeEn(query);
+  const normWords = norm.split(/\s+/).filter(Boolean);
+  const results = [];
+  for (const entry of EQUIVALENTS) {
+    let bestScore = 0;
+    let bestVariant = entry.en;
+    const variants = [entry.en, ...(entry.enAlts || [])];
+    for (const variant of variants) {
+      const v = normalizeEn(variant);
+      let score = 0;
+      // Exact match wins
+      if (v === norm) { score = 1.0; }
+      // Substring containment (either direction)
+      else if (v && norm && (v.includes(norm) || norm.includes(v))) {
+        const ratio = Math.min(v.length, norm.length) / Math.max(v.length, norm.length);
+        score = 0.55 + 0.4 * ratio;
+      } else {
+        // Word-overlap score
+        const vw = v.split(/\s+/).filter(Boolean);
+        const vSet = new Set(vw);
+        const inter = normWords.filter(w => vSet.has(w)).length;
+        const overlap = inter / Math.max(vw.length, normWords.length, 1);
+        if (overlap >= 0.5) score = Math.max(score, 0.45 + 0.4 * overlap);
+        // Levenshtein on whole strings (cheap fallback)
+        const maxL = Math.max(v.length, norm.length);
+        if (maxL > 0) {
+          const sim = 1 - levenshtein(v, norm) / maxL;
+          if (sim > 0.7) score = Math.max(score, sim * 0.85);
+        }
+      }
+      if (score > bestScore) { bestScore = score; bestVariant = variant; }
+    }
+    if (bestScore >= 0.45) results.push({ entry, score: bestScore, variant: bestVariant });
+  }
+  results.sort((a, b) => b.score - a.score);
+  return results.slice(0, topN);
+}
+
+// Visual metadata for category chips
+const EQUIV_CAT_META = {
+  'frustración': { label:'Frustración', emoji:'😤', color:'from-rose-400 to-red-500' },
+  'sorpresa':    { label:'Sorpresa',    emoji:'😲', color:'from-amber-400 to-orange-500' },
+  'acuerdo':     { label:'Acuerdo',     emoji:'✅', color:'from-emerald-400 to-teal-500' },
+  'tiempo':      { label:'Tiempo',      emoji:'⏰', color:'from-sky-400 to-blue-500' },
+  'cansancio':   { label:'Cansancio',   emoji:'😴', color:'from-indigo-400 to-violet-500' },
+  'comida':      { label:'Comida',      emoji:'🍽️', color:'from-orange-400 to-amber-500' },
+  'dinero':      { label:'Dinero',      emoji:'💰', color:'from-yellow-400 to-amber-500' },
+  'esfuerzo':    { label:'Esfuerzo',    emoji:'💪', color:'from-stone-400 to-stone-600' },
+  'salud':       { label:'Salud',       emoji:'🤒', color:'from-red-400 to-rose-500' },
+  'meteo':       { label:'Tiempo (clima)', emoji:'☔', color:'from-cyan-400 to-blue-500' },
+  'saludos':     { label:'Saludos',     emoji:'👋', color:'from-amber-400 to-orange-500' },
+  'disculpas':   { label:'Disculpas',   emoji:'🙏', color:'from-teal-400 to-cyan-500' },
+  'sentimientos':{ label:'Sentimientos',emoji:'❤️', color:'from-pink-400 to-rose-500' },
+  'opinión':     { label:'Opinión',     emoji:'💭', color:'from-violet-400 to-purple-500' },
+  'muletillas':  { label:'Muletillas',  emoji:'💬', color:'from-stone-400 to-stone-500' },
+  'ánimo':       { label:'Ánimo',       emoji:'🚀', color:'from-orange-400 to-red-500' },
+  'duda':        { label:'Duda',        emoji:'❓', color:'from-slate-400 to-slate-600' },
+  'interés':     { label:'Interés',     emoji:'👍', color:'from-lime-400 to-emerald-500' },
+  'negación':    { label:'Negación',    emoji:'❌', color:'from-red-500 to-rose-600' },
+  'énfasis':     { label:'Énfasis',     emoji:'⚡', color:'from-yellow-400 to-orange-500' },
+  'relaciones':  { label:'Relaciones',  emoji:'👫', color:'from-fuchsia-400 to-pink-500' },
+  'logros':      { label:'Logros',      emoji:'🎯', color:'from-emerald-400 to-green-500' },
+};
+
 const EXERCISES = [
   {
     category:'Pasado',
@@ -4342,10 +4629,10 @@ async function ttsGetAudioUrlAzure(text, gender) {
 
 // ── Azure Speech-to-Text (uses same SDK as TTS — no Google dependency) ──
 // Returns the recognised text string, or throws with e.srCode set.
-async function azureRecognizeOnce(apiKey, region, onRecognizer) {
+async function azureRecognizeOnce(apiKey, region, onRecognizer, lang) {
   const SDK = await loadAzureSDK();
   const speechConfig = SDK.SpeechConfig.fromSubscription(apiKey, region);
-  speechConfig.speechRecognitionLanguage = 'es-ES';
+  speechConfig.speechRecognitionLanguage = lang || 'es-ES';
   const audioConfig = SDK.AudioConfig.fromDefaultMicrophoneInput();
   const recognizer = new SDK.SpeechRecognizer(speechConfig, audioConfig);
   if (onRecognizer) onRecognizer(recognizer);
@@ -4696,6 +4983,7 @@ function Inicio({ dark, section, setSection }) {
     { id:'chuletas', label:'Chuletas', sublabel:'Cheat Sheets', emoji:'📋', color:'purple' },
     { id:'vocabulario', label:'Vocabulario', sublabel:'Vocab + Glosario', emoji:'📚', color:'emerald' },
     { id:'frases', label:'Frases', sublabel:'Phrases + Idioms', emoji:'💬', color:'rose' },
+    { id:'equivalentes', label:'Cómo se dice', sublabel:'EN → ES natural', emoji:'🗣️', color:'fuchsia' },
     { id:'lecturas', label:'Lecturas', sublabel:'Reading', emoji:'📖', color:'sky' },
     { id:'conversaciones', label:'Conversaciones', sublabel:'Listening', emoji:'🎧', color:'violet' },
     { id:'negocios', label:'Negocios', sublabel:'Business Spanish', emoji:'💼', color:'teal' },
@@ -4717,6 +5005,7 @@ function Inicio({ dark, section, setSection }) {
     indigo: 'from-indigo-400 to-indigo-500',
     violet: 'from-violet-400 to-violet-500',
     pink: 'from-pink-400 to-pink-500',
+    fuchsia: 'from-fuchsia-400 to-fuchsia-500',
     stone: 'from-stone-400 to-stone-500',
   };
 
@@ -9345,6 +9634,221 @@ function EscrituraView({ prompt, dark, onBack }) {
   );
 }
 
+// =============================================================================
+// EQUIVALENTES – type or speak English, get the natural Spanish equivalent
+// 100% accuracy: only returns matches from the curated EQUIVALENTS dictionary
+// =============================================================================
+function Equivalentes({ onBack, dark, onSearch }) {
+  const [query, setQuery] = useState('');
+  const [selectedCat, setSelectedCat] = useState('all');
+  const [recording, setRecording] = useState(false);
+  const [recError, setRecError] = useState(null);
+  const azureRecogRef = React.useRef(null);
+  const inputRef = React.useRef(null);
+
+  const azCfg = ttsGetAzureConfig();
+  const hasAzure = !!(azCfg.apiKey && azCfg.region);
+
+  const matches = React.useMemo(() => findEquivalents(query, 6), [query]);
+
+  // Categories present in dataset, sorted by entry count desc
+  const categories = React.useMemo(() => {
+    const counts = {};
+    EQUIVALENTS.forEach(e => { counts[e.cat] = (counts[e.cat] || 0) + 1; });
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+  }, []);
+
+  // Phrases shown when no query – filtered by selected category
+  const browseList = React.useMemo(() => {
+    if (selectedCat === 'all') return EQUIVALENTS;
+    return EQUIVALENTS.filter(e => e.cat === selectedCat);
+  }, [selectedCat]);
+
+  const handleSpeak = async () => {
+    setRecError(null);
+    if (recording) {
+      try { if (azureRecogRef.current) { azureRecogRef.current.close(); azureRecogRef.current = null; } } catch(e) {}
+      setRecording(false); return;
+    }
+    if (!hasAzure) {
+      setRecError("Voice input needs the Azure key (Ajustes → API). You can still type.");
+      return;
+    }
+    setRecording(true);
+    try {
+      const text = await azureRecognizeOnce(azCfg.apiKey, azCfg.region, r => { azureRecogRef.current = r; }, 'en-US');
+      azureRecogRef.current = null;
+      setRecording(false);
+      if (text) setQuery(text);
+    } catch(e) {
+      azureRecogRef.current = null;
+      setRecording(false);
+      if (e.srCode === 'no-speech') setRecError("Didn't catch that – try again.");
+      else setRecError("Voice input failed. Try typing instead.");
+    }
+  };
+
+  // Single result card – shows English → Spanish prominently with context
+  const ResultCard = ({ entry, score, variant }) => {
+    const meta = EQUIV_CAT_META[entry.cat] || { label:entry.cat, emoji:'💬', color:'from-stone-400 to-stone-500' };
+    const confidence = score == null ? null : score >= 0.95 ? 'exacta' : score >= 0.75 ? 'alta' : 'parcial';
+    const confColor = confidence === 'exacta' ? 'bg-emerald-100 text-emerald-700'
+                    : confidence === 'alta' ? 'bg-sky-100 text-sky-700'
+                    : 'bg-amber-100 text-amber-700';
+    return (
+      <Card dark={dark} className="p-5">
+        <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${meta.color} text-white`}>
+              {meta.emoji} {meta.label}
+            </span>
+            {entry.register && (
+              <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-600'}`}>
+                {entry.register}
+              </span>
+            )}
+          </div>
+          {confidence && (
+            <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${confColor}`}>
+              coincidencia {confidence}
+            </span>
+          )}
+        </div>
+
+        <p className={`text-xs font-semibold mb-1 ${dark?'text-stone-400':'text-stone-500'}`}>
+          {variant ? `"${variant}"` : `"${entry.en}"`}
+        </p>
+        <div className="flex items-start gap-2 mb-3">
+          <p className="font-serif font-bold text-2xl leading-tight flex-1 min-w-0 break-words">{entry.es}</p>
+          <SpeakBtn text={entry.es} size="sm" />
+        </div>
+
+        {entry.esAlts && entry.esAlts.length > 0 && (
+          <div className={`mb-3 pb-3 border-b ${dark?'border-white/10':'border-stone-200'}`}>
+            <p className={`text-[10px] font-bold tracking-widest uppercase mb-1.5 ${dark?'text-stone-500':'text-stone-400'}`}>También</p>
+            <div className="flex flex-wrap gap-1.5">
+              {entry.esAlts.map((alt, i) => (
+                <span key={i} className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-lg ${dark?'bg-white/[0.06] text-stone-200':'bg-stone-100 text-stone-700'}`}>
+                  {alt}
+                  <SpeakBtn text={alt} size="sm" />
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {entry.example && (
+          <div className="mb-2">
+            <div className="flex items-start gap-2">
+              <p className={`flex-1 min-w-0 text-sm italic font-medium ${dark?'text-stone-200':'text-stone-700'}`}>"{entry.example}"</p>
+              <SpeakBtn text={entry.example} size="sm" />
+            </div>
+            {entry.exampleEn && <p className={`text-xs mt-1 ${dark?'text-stone-500':'text-stone-500'}`}>{entry.exampleEn}</p>}
+          </div>
+        )}
+
+        {entry.explain && (
+          <div className={`mt-3 text-xs rounded-xl p-3 ${dark?'bg-amber-500/10 text-amber-200':'bg-amber-50 text-amber-900'}`}>
+            <span className="font-bold">💡 </span>{entry.explain}
+          </div>
+        )}
+      </Card>
+    );
+  };
+
+  return (
+    <div>
+      <BackHeader title="Cómo se dice" subtitle="Type English → get the real Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+
+        {/* Search input + mic */}
+        <Card dark={dark} className="p-4 mb-4">
+          <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
+            ¿Cómo se dice esto en español?
+          </p>
+          <div className="flex gap-2">
+            <input ref={inputRef} type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="e.g. I can't be bothered, no way, take it easy..."
+              className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-orange-500 transition-colors`} />
+            <button onClick={handleSpeak}
+              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-orange-500 hover:bg-orange-600 text-white'}`}
+              title={recording ? 'Stop' : 'Speak in English'}>
+              {recording ? '🔴' : '🎤'}
+            </button>
+            {query && (
+              <button onClick={() => { setQuery(''); inputRef.current && inputRef.current.focus(); }}
+                className={`rounded-xl px-3 py-3 text-sm flex-shrink-0 ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}
+                title="Clear">✕</button>
+            )}
+          </div>
+          {recError && (
+            <p className="text-xs text-amber-600 mt-2 font-medium">{recError}</p>
+          )}
+          <p className={`text-[11px] mt-2 ${dark?'text-stone-500':'text-stone-400'}`}>
+            Solo coincidencias verificadas — nunca traduce palabra por palabra. Si no hay coincidencia exacta, mostramos lo más parecido.
+          </p>
+        </Card>
+
+        {/* Search results */}
+        {query.trim().length >= 2 ? (
+          matches.length === 0 ? (
+            <Card dark={dark} className="p-6 text-center">
+              <p className="text-3xl mb-2">🤔</p>
+              <p className={`font-semibold mb-1 ${dark?'text-stone-200':'text-stone-700'}`}>No tenemos esa expresión todavía</p>
+              <p className={`text-sm ${dark?'text-stone-400':'text-stone-500'}`}>
+                Prueba a reformular: "I can't believe it" en lugar de "unbelievable", por ejemplo.
+                Esto evita traducciones literales falsas.
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+                {matches.length === 1 ? '1 coincidencia' : `${matches.length} coincidencias`}
+              </p>
+              {matches.map((m, i) => (
+                <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />
+              ))}
+            </div>
+          )
+        ) : (
+          /* Browse mode – categories + all phrases */
+          <>
+            <div className="mb-4">
+              <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
+                Explora por categoría
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setSelectedCat('all')}
+                  className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${selectedCat==='all'?'bg-orange-500 text-white':dark?'bg-white/[0.06] text-stone-300 hover:bg-white/10':'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                  Todas ({EQUIVALENTS.length})
+                </button>
+                {categories.map(cat => {
+                  const meta = EQUIV_CAT_META[cat] || { label:cat, emoji:'💬' };
+                  const count = EQUIVALENTS.filter(e => e.cat === cat).length;
+                  return (
+                    <button key={cat} onClick={() => setSelectedCat(cat)}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${selectedCat===cat?'bg-orange-500 text-white':dark?'bg-white/[0.06] text-stone-300 hover:bg-white/10':'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+                      {meta.emoji} {meta.label} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {browseList.map((entry, i) => (
+                <ResultCard key={i} entry={entry} />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Ejercicios({ onBack, dark, onSearch }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(null);
@@ -12507,6 +13011,7 @@ function App() {
     { id: 'chuletas', label: 'Chuletas', emoji: '📋' },
     { id: 'vocabulario', label: 'Vocabulario', emoji: '📚' },
     { id: 'frases', label: 'Frases', emoji: '💬' },
+    { id: 'equivalentes', label: 'Cómo se dice', emoji: '🗣️' },
     { id: 'lecturas', label: 'Lecturas', emoji: '📖' },
     { id: 'conversaciones', label: 'Conversaciones', emoji: '🎧' },
     { id: 'negocios', label: 'Negocios', emoji: '💼' },
@@ -12527,6 +13032,7 @@ function App() {
       case 'vocabulario': return <Vocabulario {...props} />;
       case 'conectores': return <Frases {...props} initialTab="conectores" />;
       case 'frases': return <Frases {...props} />;
+      case 'equivalentes': return <Equivalentes {...props} />;
       case 'lecturas': return <Lecturas {...props} />;
       case 'conversaciones': return <Conversaciones {...props} />;
       case 'negocios': return <Negocios {...props} />;
