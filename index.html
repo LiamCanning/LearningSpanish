@@ -5770,11 +5770,11 @@ function DataTable({ data, dark }) {
   const rows = data.slice(1);
   return (
     <div className="overflow-x-auto rounded-xl">
-      <table className="w-full text-sm">
+      <table className="w-full text-base">
         <thead>
           <tr className={dark ? 'bg-white/[0.08]' : 'bg-stone-100'}>
             {headers.map((h, i) => (
-              <th key={i} className="px-3 py-2 text-left font-semibold text-xs">{h}</th>
+              <th key={i} className="px-4 py-2.5 text-left font-semibold text-sm">{h}</th>
             ))}
           </tr>
         </thead>
@@ -5782,7 +5782,7 @@ function DataTable({ data, dark }) {
           {rows.map((row, ri) => (
             <tr key={ri} className={ri % 2 === 0 ? '' : dark ? 'bg-white/[0.02]' : 'bg-stone-50'}>
               {row.map((cell, ci) => (
-                <td key={ci} className={`px-3 py-2 text-xs ${ci === 0 ? 'font-semibold' : ''}`}>{cell}</td>
+                <td key={ci} className={`px-4 py-2.5 text-sm ${ci === 0 ? 'font-semibold' : ''}`}>{cell}</td>
               ))}
             </tr>
           ))}
@@ -8991,7 +8991,7 @@ function Chuletas({ onBack, dark, onSearch }) {
     return (
       <div>
         <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} onSearch={onSearch} />
-        <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
+        <div className="px-4 lg:px-8 py-8 max-w-5xl mx-auto">
           <SectionIndex dark={dark} sections={[
             { id:'gramatica',    emoji:'📐', label:'Gramática',       sub:'Cheat sheets for grammar & verbs',     color:'from-blue-400 to-blue-500',    onClick:() => setTab('gramatica') },
             { id:'errores',      emoji:'⚠️', label:'Errores comunes', sub:'Common mistakes & corrections',        color:'from-rose-400 to-rose-500',    onClick:() => setTab('errores') },
@@ -9021,22 +9021,22 @@ function Chuletas({ onBack, dark, onSearch }) {
           <div className="flex-1"><BackHeader title={selectedSheet.title} subtitle={selectedSheet.titleEn} onBack={() => setSelectedSheet(null)} dark={dark} /></div>
           <button onClick={() => window.print()} className={`no-print mr-4 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>🖨️ Imprimir</button>
         </div>
-        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
           <Card dark={dark} className="overflow-hidden">
             <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[selectedSheet.color] || tileColorMap.stone} text-white`}>
               <p className="font-serif font-bold text-2xl lg:text-3xl">{selectedSheet.title}</p>
-              <p className="text-sm opacity-90 mt-1">{selectedSheet.titleEn}</p>
+              <p className="text-base opacity-90 mt-1">{selectedSheet.titleEn}</p>
             </div>
             {selectedSheet.intro && (
               <div className={`px-6 py-4 border-b ${dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-stone-50 border-stone-100'}`}>
-                <p className={`text-sm leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{selectedSheet.intro}</p>
+                <p className={`text-base leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{selectedSheet.intro}</p>
               </div>
             )}
             <div className="px-6 pb-6 pt-5 space-y-6">
               {selectedSheet.content.map((section, si) => (
                 <div key={si}>
                   {section.heading && (
-                    <p className={`text-sm font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.heading}</p>
+                    <p className={`text-base font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.heading}</p>
                   )}
                   {section.rows && Array.isArray(section.rows) && (
                     <DataTable data={section.rows} dark={dark} />
@@ -9074,12 +9074,12 @@ function Chuletas({ onBack, dark, onSearch }) {
     return (
       <div>
         <BackHeader title={selectedDoc.title} subtitle={selectedDoc.group} onBack={() => setSelectedDoc(null)} dark={dark} />
-        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
           <Card dark={dark} className="overflow-hidden">
             <div className={`px-6 py-5 bg-gradient-to-br ${docGroupColorMap[selectedDoc.group] || tileColorMap.stone} text-white`}>
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-3xl">{selectedDoc.icon}</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/25">{selectedDoc.group}</span>
+                <span className="text-sm font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/25">{selectedDoc.group}</span>
               </div>
               <p className="font-serif font-bold text-2xl lg:text-3xl leading-tight">{selectedDoc.title}</p>
             </div>
@@ -9087,7 +9087,7 @@ function Chuletas({ onBack, dark, onSearch }) {
               {selectedDoc.sections.map((section, si) => (
                 <div key={si}>
                   {section.heading && (
-                    <p className={`text-sm font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.heading}</p>
+                    <p className={`text-base font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.heading}</p>
                   )}
                   {Array.isArray(section.content) ? (
                     <DataTable data={section.content} dark={dark} />
@@ -9125,17 +9125,17 @@ function Chuletas({ onBack, dark, onSearch }) {
     return (
       <div>
         <BackHeader title="Errores comunes" subtitle="Error detail" onBack={() => setSelectedMistake(null)} dark={dark} />
-        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
+        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
           <Card dark={dark} className="overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-br from-rose-400 to-rose-500 text-white">
-              <p className="text-[10px] font-bold uppercase tracking-wider opacity-90 mb-1">Error común</p>
+              <p className="text-xs font-bold uppercase tracking-wider opacity-90 mb-1">Error común</p>
               <p className="font-serif font-bold text-xl lg:text-2xl line-through opacity-90">{m.wrong}</p>
             </div>
             <div className="p-6 space-y-5">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-emerald-500 text-xl">✓</span>
-                  <p className={`text-[11px] font-bold uppercase tracking-wider ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}>Lo correcto</p>
+                  <p className={`text-sm font-bold uppercase tracking-wider ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}>Lo correcto</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <p className="font-serif font-bold text-2xl flex-1">{m.right}</p>
@@ -9143,11 +9143,11 @@ function Chuletas({ onBack, dark, onSearch }) {
                     <SpeakBtn text={m.right} size="md" />
                   )}
                 </div>
-                <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{m.en}</p>
+                <p className={`text-base mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{m.en}</p>
               </div>
               <div className={`rounded-xl p-4 ${dark ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-100'}`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${dark ? 'text-blue-300' : 'text-blue-700'}`}>💡 ¿Por qué?</p>
-                <p className={`text-sm leading-relaxed ${dark ? 'text-blue-100' : 'text-blue-900'}`}>{m.why}</p>
+                <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${dark ? 'text-blue-300' : 'text-blue-700'}`}>💡 ¿Por qué?</p>
+                <p className={`text-base leading-relaxed ${dark ? 'text-blue-100' : 'text-blue-900'}`}>{m.why}</p>
               </div>
               {m.examples && Array.isArray(m.examples) && (
                 <div className={`rounded-xl p-4 ${dark ? 'bg-white/[0.04]' : 'bg-orange-50/50'}`}>
@@ -9214,7 +9214,7 @@ function Chuletas({ onBack, dark, onSearch }) {
         {tab === 'errores' && (
           <div>
             <Card dark={dark} className="p-4 bg-amber-50 border-amber-200 mb-5">
-              <p className="text-xs text-amber-800 font-medium">⚠️ Errores comunes que cometen los anglohablantes al aprender español. Toca una tarjeta para ver la explicación completa.</p>
+              <p className="text-sm text-amber-800 font-medium">⚠️ Errores comunes que cometen los anglohablantes al aprender español. Toca una tarjeta para ver la explicación completa.</p>
             </Card>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {COMMON_MISTAKES.map((m, i) => (
@@ -9241,19 +9241,19 @@ function Chuletas({ onBack, dark, onSearch }) {
         {tab === 'pronunciacion' && (
           <div className="space-y-3">
             <Card dark={dark} className="p-4 bg-blue-50 border-blue-200">
-              <p className="text-xs text-blue-800 font-medium">🗣️ Spanish phonetics – Castilian (Spain) variant. Toca 🔊 para escuchar los ejemplos.</p>
+              <p className="text-sm text-blue-800 font-medium">🗣️ Spanish phonetics – Castilian (Spain) variant. Toca 🔊 para escuchar los ejemplos.</p>
             </Card>
             {PRONUNCIATION_GUIDE.map((p, i) => (
               <Card key={i} dark={dark} className="p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <p className="font-serif font-bold text-2xl text-orange-500 min-w-[3rem]">{p.letter}</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{p.sound}</p>
+                  <p className="text-sm font-bold uppercase tracking-wider text-stone-500">{p.sound}</p>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <p className="font-serif italic text-base flex-1">{p.example}</p>
                   <SpeakBtn text={p.example} size="sm" />
                 </div>
-                <p className="text-xs text-stone-600">{p.tip}</p>
+                <p className="text-sm text-stone-600">{p.tip}</p>
               </Card>
             ))}
           </div>
