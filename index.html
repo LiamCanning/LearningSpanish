@@ -10,37 +10,49 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Aprende" />
-<meta name="theme-color" content="#f97316" />
-<link id="apple-touch-icon-link" rel="apple-touch-icon" />
-<link id="favicon-link" rel="icon" type="image/png" />
+<meta name="theme-color" content="#C4202E" />
 <script>
-// Generate 180×180 PNG app icon via Canvas — works with no external files
+// Generate icon synchronously and inject <link> tags inline so Arc / iOS
+// Safari see the href at parse time rather than after-script-runs.
 (function(){
   try {
+    var sz = 180;
     var c = document.createElement('canvas');
-    c.width = c.height = 180;
+    c.width = c.height = sz;
     var ctx = c.getContext('2d');
-    // Background: Spanish red top/bottom, yellow band
-    ctx.fillStyle = '#c60b1e'; ctx.fillRect(0,0,180,180);
-    ctx.fillStyle = '#f1bf00'; ctx.fillRect(0,45,180,90);
-    // Rounded mask
-    ctx.globalCompositeOperation = 'destination-in';
+    var r = 38; // corner radius
+
+    // ── Rounded-rect clip path ──────────────────────────────────
     ctx.beginPath();
-    var r=36;
-    ctx.moveTo(r,0); ctx.lineTo(180-r,0); ctx.quadraticCurveTo(180,0,180,r);
-    ctx.lineTo(180,180-r); ctx.quadraticCurveTo(180,180,180-r,180);
-    ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
-    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0); ctx.closePath(); ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-    // "A" letter
-    ctx.fillStyle = '#7a0012';
-    ctx.font = 'bold 112px Georgia,serif';
+    ctx.moveTo(r, 0); ctx.lineTo(sz-r, 0); ctx.quadraticCurveTo(sz, 0, sz, r);
+    ctx.lineTo(sz, sz-r); ctx.quadraticCurveTo(sz, sz, sz-r, sz);
+    ctx.lineTo(r, sz); ctx.quadraticCurveTo(0, sz, 0, sz-r);
+    ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0); ctx.closePath();
+    ctx.clip();
+
+    // ── Background: carmín red ──────────────────────────────────
+    ctx.fillStyle = '#C4202E'; ctx.fillRect(0, 0, sz, sz);
+
+    // ── Subtle gold stripe (Spanish flag midband, 25% opacity) ──
+    ctx.fillStyle = 'rgba(212,148,58,0.22)'; ctx.fillRect(0, 56, sz, 68);
+
+    // ── "A" in white ────────────────────────────────────────────
+    ctx.fillStyle = 'rgba(255,255,255,0.97)';
+    ctx.font = 'bold 118px Georgia,serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('A', 90, 96);
+    ctx.fillText('A', sz/2, sz/2 + 4);
+
     var url = c.toDataURL('image/png');
-    document.getElementById('apple-touch-icon-link').href = url;
-    document.getElementById('favicon-link').href = url;
-  } catch(e){}
+
+    // Write link tags synchronously so the href is baked in at parse time
+    document.write(
+      '<link rel="apple-touch-icon" sizes="180x180" href="' + url + '">' +
+      '<link rel="icon" type="image/png" sizes="180x180" href="' + url + '">'
+    );
+  } catch(e){
+    // Fallback: empty links so the page still parses
+    document.write('<link rel="apple-touch-icon"><link rel="icon" type="image/png">');
+  }
 })();
 </script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -4728,14 +4740,22 @@ Rules:
 
 Respond with ONLY a valid JSON object — no markdown fences, no commentary, no surrounding text. Schema:
 {
-  "spanish": "the most natural Spanish equivalent (single phrase)",
-  "alternatives": ["1-3 alternative ways Spaniards might say it"],
-  "example": "a Spanish sentence using the phrase in real context",
+  "spanish": "the single most natural, most common Spanish equivalent",
+  "alternatives": [
+    {
+      "phrase": "another valid Spanish equivalent",
+      "level": "muy natural" | "natural" | "formal" | "coloquial" | "literario",
+      "note": "one short sentence: when to use this, or how it differs from the main phrase"
+    }
+  ],
+  "example": "a Spanish sentence using the main phrase in real context",
   "exampleEn": "natural English translation of the example",
-  "explanation": "why this is the natural way (max 2 sentences). If a literal translation would be wrong, mention it.",
+  "explanation": "why the main phrase is the most natural choice (max 2 sentences). Mention if a literal translation would be wrong or sound unnatural.",
   "register": "informal" | "neutral" | "formal",
   "category": "frustración|sorpresa|acuerdo|tiempo|cansancio|comida|dinero|esfuerzo|salud|meteo|saludos|disculpas|sentimientos|opinión|muletillas|ánimo|duda|interés|negación|énfasis|relaciones|logros"
 }
+
+For "alternatives": always include 2–4 entries. Rank them by how natural/common they sound — most natural first. Include the literal/word-for-word translation last if it exists and is grammatically correct but less natural (label it "natural" or "formal" as appropriate). This helps learners understand the full range.
 
 If the input is too vague or not really English, return:
 { "error": "no_match", "message": "brief reason in Spanish" }`;
@@ -4743,7 +4763,7 @@ If the input is too vague or not really English, return:
 async function aiTranslate(query, apiKey) {
   if (!apiKey) throw new Error('no-key');
   // Check cache first
-  const cacheKey = 'aprende.ai.cache.' + query.toLowerCase().trim().replace(/\s+/g, '_').slice(0, 100);
+  const cacheKey = 'aprende.ai.cache.v2.' + query.toLowerCase().trim().replace(/\s+/g, '_').slice(0, 100);
   const cached = getStorage(cacheKey, null);
   if (cached) return { ...cached, _cached: true };
 
@@ -4757,7 +4777,7 @@ async function aiTranslate(query, apiKey) {
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5',
-      max_tokens: 600,
+      max_tokens: 900,
       system: AI_TRANSLATE_PROMPT,
       messages: [{ role: 'user', content: `English phrase to translate: "${query}"` }],
     }),
@@ -10470,7 +10490,7 @@ function Equivalentes({ onBack, dark, onSearch }) {
 
   const handleSaveEntry = () => {
     if (!aiResult || !saveCat) return;
-    const entry = { en: aiQuery, enAlts: [], es: aiResult.spanish, esAlts: aiResult.alternatives || [],
+    const entry = { en: aiQuery, enAlts: [], es: aiResult.spanish, esAlts: (aiResult.alternatives || []).map(a => typeof a === 'string' ? a : a.phrase),
       example: aiResult.example, exampleEn: aiResult.exampleEn, explain: aiResult.explanation,
       register: aiResult.register, cat: saveCat, isCustom: true };
     const updated = [...customEquivs, entry];
@@ -10535,17 +10555,57 @@ function Equivalentes({ onBack, dark, onSearch }) {
   };
 
   // ── AI result + save affordance ──────────────────────────────────────────
+  const NATURALNESS_META = {
+    'muy natural': { label: 'muy natural', color: 'bg-emerald-100 text-emerald-800', dot: '🟢' },
+    'natural':     { label: 'natural',     color: 'bg-sky-100 text-sky-800',        dot: '🔵' },
+    'coloquial':   { label: 'coloquial',   color: 'bg-orange-100 text-orange-800',  dot: '🟠' },
+    'formal':      { label: 'formal',      color: 'bg-indigo-100 text-indigo-800',  dot: '🔷' },
+    'literario':   { label: 'literario',   color: 'bg-stone-100 text-stone-600',    dot: '📖' },
+    'regional':    { label: 'regional',    color: 'bg-purple-100 text-purple-800',  dot: '📍' },
+  };
+
   const AiResultSection = () => {
     if (!aiResult) return null;
+    const alts = (aiResult.alternatives || []);
+    // Support both old flat-string format and new rich-object format
+    const richAlts = alts.map(a => typeof a === 'string' ? { phrase: a, level: 'natural', note: null } : a);
+
     return (
       <div className="space-y-3">
         <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
           Traducción IA {aiResult._cached ? '(caché)' : ''}
         </p>
+        {/* Main result — no esAlts pills; alternatives shown separately below */}
         <ResultCard
-          entry={{ en: aiQuery, es: aiResult.spanish, esAlts: aiResult.alternatives||[], example: aiResult.example,
+          entry={{ en: aiQuery, es: aiResult.spanish, esAlts: [], example: aiResult.example,
             exampleEn: aiResult.exampleEn, explain: aiResult.explanation, register: aiResult.register, cat: aiResult.category }}
           isAi={true} />
+
+        {/* Rich alternatives */}
+        {richAlts.length > 0 && (
+          <Card dark={dark} className="p-5">
+            <p className={`text-[10px] font-bold tracking-widest uppercase mb-4 ${dark?'text-stone-500':'text-stone-400'}`}>
+              Otras formas de decirlo
+            </p>
+            <div className="space-y-3">
+              {richAlts.map((alt, i) => {
+                const meta = NATURALNESS_META[alt.level] || NATURALNESS_META['natural'];
+                return (
+                  <div key={i} className={`flex items-start gap-3 pb-3 ${i < richAlts.length - 1 ? (dark ? 'border-b border-white/10' : 'border-b border-stone-100') : ''}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className={`font-serif font-bold text-lg leading-tight`}>{alt.phrase}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${meta.color}`}>{meta.label}</span>
+                      </div>
+                      {alt.note && <p className={`text-xs leading-relaxed ${dark?'text-stone-400':'text-stone-500'}`}>{alt.note}</p>}
+                    </div>
+                    <SpeakBtn text={alt.phrase} size="sm" />
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
         {/* Save button / form */}
         {saveFlash ? (
           <div className={`rounded-2xl py-3 px-4 text-center font-bold text-sm ${dark?'bg-emerald-500/20 text-emerald-300':'bg-emerald-50 text-emerald-700'}`}>
