@@ -4060,7 +4060,11 @@ const DOCUMENTS = [
     groupColor:'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     icon:'🚪',
     sections:[
-      {heading:'Introduction',content:'"Salir" is one of the most versatile and frequently used verbs in Spanish. It means much more than just "to leave" – it covers going out socially, leaving places, resulting/turning out, and appearing in media. Mastering its uses will make your Spanish sound much more natural.'},
+      {heading:'Introduction',content:'"Salir" is one of the most versatile and frequently used verbs in Spanish. It means much more than just "to leave" – it covers going out socially, leaving places, resulting/turning out, and appearing in media. Mastering its uses will make your Spanish sound much more natural.',
+        examples:[
+          {es:'¿Salimos esta noche o nos quedamos en casa?', en:'Are we going out tonight or staying in?'},
+          {es:'El tren sale a las nueve y cuarto. No llegues tarde.', en:'The train leaves at quarter past nine. Don\'t be late.'},
+        ]},
       {heading:'Core Meanings',content:[
         ['Meaning','Construction','Example','When to use'],
         ['To leave / go out of','salir de + place','Salgo de casa a las ocho.','Physical departure from a place'],
@@ -4071,7 +4075,12 @@ const DOCUMENTS = [
         ['To set off / depart','salir para + destination','El tren sale para Madrid.','Transport departures'],
         ['To come up / arise','salir (un tema)','Salió el tema del trabajo.','Topics arising in conversation'],
         ['Dating (with a person)','salir con','Está saliendo con un chico guapo.','Romantic context']
-      ]},
+      ], examples:[
+          {es:'Salgo de la oficina a las seis y luego me voy al gimnasio.', en:'I leave the office at six and then head to the gym.'},
+          {es:'¿Cómo te salió la entrevista? – Creo que salió bastante bien.', en:'How did the interview go? – I think it went pretty well.'},
+          {es:'Está saliendo con un chico de su trabajo desde hace unos meses.', en:'She\'s been going out with a guy from work for a few months.'},
+          {es:'¿A cuánto sale la habitación por noche?', en:'How much does the room come to per night?'},
+        ]},
       {heading:'All Tenses',content:[
         ['Tense','yo','tú','él/ella','nosotros','ellos'],
         ['Presente','salgo','sales','sale','salimos','salen'],
@@ -4083,8 +4092,17 @@ const DOCUMENTS = [
         ['Subjuntivo pres.','salga','salgas','salga','salgamos','salgan'],
         ['Imperativo (tú)','sal','–','–','–','–'],
         ['Gerundio','saliendo','–','–','–','–']
-      ]},
-      {heading:'Key Points',content:'1. Salir is a yo-go verb: yo salgo (not salo). 2. The imperative tú form is irregular: sal (not sale). 3. In the future and conditional, the stem is saldr-. 4. "Salir con alguien" is the natural way to say "to date someone" in Spain. 5. "¿Cómo te salió el examen?" = How did your exam go? Very common.'}
+      ], examples:[
+          {es:'Si salgo antes de las cinco, puedo evitar el tráfico.', en:'If I leave before five, I can avoid the traffic.'},
+          {es:'Cuando éramos pequeños, salíamos al parque todos los domingos.', en:'When we were little, we used to go to the park every Sunday.'},
+          {es:'Saldría antes, pero tengo una reunión que no puedo cancelar.', en:'I would leave earlier, but I have a meeting I can\'t cancel.'},
+        ]},
+      {heading:'Key Points',content:'1. Salir is a yo-go verb: yo salgo (not salo). 2. The imperative tú form is irregular: sal (not sale). 3. In the future and conditional, the stem is saldr-. 4. "Salir con alguien" is the natural way to say "to date someone" in Spain. 5. "¿Cómo te salió el examen?" = How did your exam go? Very common.',
+        examples:[
+          {es:'¡Sal ya! Llevamos esperándote veinte minutos.', en:'Come on, get out here! We\'ve been waiting for you for twenty minutes.'},
+          {es:'No me salió bien el examen, pero tampoco fue un desastre.', en:'The exam didn\'t go well for me, but it wasn\'t a disaster either.'},
+          {es:'No salgas sin paraguas – está a punto de llover.', en:'Don\'t go out without an umbrella – it\'s about to rain.'},
+        ]}
     ]
   },
   {
@@ -5501,6 +5519,77 @@ function TabBar({ tabs, active, onChange, dark }) {
   );
 }
 
+/* ── ViewToggle ──────────────────────────────────────────────────
+   Two-option switch. Replaces 2-tab horizontal TabBar.            */
+function ViewToggle({ options, active, onChange, dark }) {
+  return (
+    <div className="flex gap-3 mb-6">
+      {options.map(o => (
+        <button key={o.id} onClick={() => onChange(o.id)}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-sm font-semibold transition-all ${
+            active === o.id
+              ? 'bg-[#C4202E] text-white shadow-sm'
+              : dark ? 'bg-white/[0.07] text-stone-300 hover:bg-white/[0.12]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+          }`}>
+          {o.emoji && <span>{o.emoji}</span>}
+          <span>{o.label}</span>
+          {o.count !== undefined && <span className="opacity-60 text-xs">({o.count})</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ── CategoryNav ─────────────────────────────────────────────────
+   2×2 grid of tappable category tiles. Active tile is highlighted.
+   Content renders below (no drilldown — same page).               */
+function CategoryNav({ categories, active, onChange, dark }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 mb-6">
+      {categories.map(c => {
+        const isActive = active === c.id;
+        return (
+          <button key={c.id} onClick={() => onChange(c.id)}
+            className={`text-left p-4 rounded-2xl border-2 transition-all ${
+              isActive
+                ? 'border-[#C4202E] bg-orange-50'
+                : dark ? 'border-white/[0.08] bg-white/[0.04] hover:border-white/[0.20] hover:bg-white/[0.08]'
+                       : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
+            }`}>
+            {c.emoji && <span className="text-xl block mb-1">{c.emoji}</span>}
+            <p className={`font-bold text-sm leading-tight ${isActive ? 'text-[#C4202E]' : ''}`}>{c.label}</p>
+            {c.sub && <p className="text-xs mt-0.5 text-stone-500">{c.sub}</p>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── SectionIndex ────────────────────────────────────────────────
+   Top-level tile grid for sections that drill into their content.
+   Replaces TabBar for 3+ sections.                                */
+function SectionIndex({ sections, dark }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {sections.map(s => (
+        <button key={s.id} onClick={s.onClick} className="text-left">
+          <Card dark={dark} className="p-5 flex items-start gap-4 hover:shadow-lg transition-all hover:-translate-y-0.5">
+            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center text-2xl flex-shrink-0 shadow-sm`}>
+              {s.emoji}
+            </div>
+            <div className="flex-1 min-w-0 pt-0.5">
+              <p className="font-bold text-base leading-tight">{s.label}</p>
+              {s.sub && <p className={`text-xs mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{s.sub}</p>}
+              {s.count !== undefined && <p className="text-xs font-semibold mt-1.5 text-orange-500">{s.count} →</p>}
+            </div>
+          </Card>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function DataTable({ data, dark }) {
   if (!data || !data.length) return null;
   const headers = data[0];
@@ -5810,9 +5899,7 @@ function Hoy({ onBack, dark, onSearch }) {
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Hoy</h2>
         </div>
-        <div className="mb-5">
-          <TabBar dark={dark} tabs={[{id:'hoy',label:'Hoy'},{id:'archivo',label:'Archivo (últimos 14 días)'}]} active={tab} onChange={setTab} />
-        </div>
+        <ViewToggle dark={dark} options={[{id:'hoy',emoji:'📖',label:'Hoy'},{id:'archivo',emoji:'📅',label:'Archivo'}]} active={tab} onChange={setTab} />
 
         {tab === 'hoy' && (
           <div className="space-y-5">
@@ -6034,11 +6121,11 @@ function Tiempos({ onBack, dark, onSearch }) {
   const [tab, setTab] = useState('pasado');
   const [selectedTense, setSelectedTense] = useState(null);
 
-  const tabs = [
-    {id:'pasado', label:'Pasado'},
-    {id:'presente', label:'Presente'},
-    {id:'futuro', label:'Futuro'},
-    {id:'subjuntivo', label:'Subjuntivo'},
+  const tenseCategories = [
+    {id:'pasado',    emoji:'⏮',  label:'Pasado',     sub:'Pretérito, imperfecto, pluscuamperf.'},
+    {id:'presente',  emoji:'▶',  label:'Presente',   sub:'Presente & progresivo'},
+    {id:'futuro',    emoji:'⏭',  label:'Futuro',     sub:'Futuro & condicional'},
+    {id:'subjuntivo',emoji:'🌊', label:'Subjuntivo', sub:'Presente, imperfecto & más'},
   ];
 
   // When a tense is selected, show its full card
@@ -6062,9 +6149,7 @@ function Tiempos({ onBack, dark, onSearch }) {
         <div className="hidden lg:block mb-4">
           <h2 className="text-2xl font-serif font-bold">Tiempos verbales</h2>
         </div>
-        <div className="mb-6">
-          <TabBar dark={dark} tabs={tabs} active={tab} onChange={(t) => { setTab(t); setSelectedTense(null); }} />
-        </div>
+        <CategoryNav dark={dark} categories={tenseCategories} active={tab} onChange={(t) => { setTab(t); setSelectedTense(null); }} />
         {(
           <div className="grid grid-cols-2 gap-4">
             {(TENSES[tab] || []).map(card => (
@@ -8703,7 +8788,7 @@ const PRONUNCIATION_GUIDE = [
 ];
 
 function Chuletas({ onBack, dark, onSearch }) {
-  const [tab, setTab] = useState('gramatica');
+  const [tab, setTab] = useState(null);
   const [selectedSheet, setSelectedSheet] = useState(null);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [selectedMistake, setSelectedMistake] = useState(null);
@@ -8726,6 +8811,31 @@ function Chuletas({ onBack, dark, onSearch }) {
     'Conectores': 'from-emerald-400 to-emerald-500',
     'Conversación': 'from-violet-400 to-violet-500',
   };
+
+  // ---- INDEX VIEW (no tab selected) ----
+  if (!tab) {
+    return (
+      <div>
+        <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} onSearch={onSearch} />
+        <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
+          <SectionIndex dark={dark} sections={[
+            { id:'gramatica',    emoji:'📐', label:'Gramática',       sub:'Cheat sheets for grammar & verbs',     color:'from-blue-400 to-blue-500',    onClick:() => setTab('gramatica') },
+            { id:'errores',      emoji:'⚠️', label:'Errores comunes', sub:'Common mistakes & corrections',        color:'from-rose-400 to-rose-500',    onClick:() => setTab('errores') },
+            { id:'pronunciacion',emoji:'🎤', label:'Pronunciación',   sub:'Sounds, stress & regional rules',      color:'from-violet-400 to-violet-500', onClick:() => setTab('pronunciacion') },
+            { id:'documentos',   emoji:'📚', label:'Documentos',      sub:'Verb & grammar deep dives',            color:'from-emerald-400 to-emerald-500',onClick:() => setTab('documentos') },
+          ]} />
+        </div>
+      </div>
+    );
+  }
+
+  const SECTION_META = {
+    gramatica:    { label:'Gramática',       sub:'Cheat sheets' },
+    errores:      { label:'Errores comunes', sub:'Common mistakes' },
+    pronunciacion:{ label:'Pronunciación',   sub:'Sounds & rules' },
+    documentos:   { label:'Documentos',      sub:'Verb & grammar guides' },
+  };
+  const goBackToIndex = () => { setTab(null); setSelectedSheet(null); setSelectedDoc(null); setSelectedMistake(null); };
 
   // ---- DETAIL VIEWS ----
 
@@ -8889,21 +8999,11 @@ function Chuletas({ onBack, dark, onSearch }) {
   }
 
   // ---- LIST / GRID VIEW ----
+  const meta = SECTION_META[tab] || { label:'Chuletas', sub:'Cheat sheets' };
   return (
     <div>
-      <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title={meta.label} subtitle={meta.sub} onBack={goBackToIndex} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Chuletas</h2>
-        </div>
-        <div className="mb-6">
-          <TabBar dark={dark} tabs={[
-            {id:'gramatica',label:'Gramática'},
-            {id:'errores',label:'Errores'},
-            {id:'pronunciacion',label:'Pronunciación'},
-            {id:'documentos',label:'Documentos'}
-          ]} active={tab} onChange={(id) => { setTab(id); setSelectedSheet(null); setSelectedDoc(null); setSelectedMistake(null); }} />
-        </div>
         {tab === 'gramatica' && (
           <div>
             {/* Category filter pills */}
@@ -9012,9 +9112,7 @@ function Chuletas({ onBack, dark, onSearch }) {
 // SECTION: Vocabulario
 // ============================================================
 
-function VocabTemas({ onBack, dark }) {
-  const [selectedTheme, setSelectedTheme] = useState(null);
-  const [filter, setFilter] = useState('all');
+function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }) {
 
   const colorAccentMap = {
     orange:'bg-orange-500', green:'bg-green-500', blue:'bg-blue-500',
@@ -9067,9 +9165,7 @@ function VocabTemas({ onBack, dark }) {
     const types = ['all','noun','verb','adj','phrase'];
     const filtered = filter === 'all' ? selectedTheme.words : selectedTheme.words.filter(w => w.type === filter);
     return (
-      <div>
-        <BackHeader title={selectedTheme.titleEs} subtitle={selectedTheme.titleEn} onBack={() => setSelectedTheme(null)} dark={dark} />
-        <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
+      <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
           <div className="flex flex-wrap gap-2 mb-5">
             <button onClick={() => handlePracticar(selectedTheme)}
               className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
@@ -9107,7 +9203,6 @@ function VocabTemas({ onBack, dark }) {
             ))}
           </div>
         </div>
-      </div>
     );
   }
 
@@ -9115,7 +9210,7 @@ function VocabTemas({ onBack, dark }) {
     <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {VOCAB_THEMES.map(theme => (
-          <button key={theme.theme} onClick={() => { setSelectedTheme(theme); setFilter('all'); }}
+          <button key={theme.theme} onClick={() => setSelectedTheme(theme)}
             className={`rounded-2xl p-6 text-left transition-all hover:scale-[1.02] hover:shadow-md min-h-[160px] ${dark ? 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border border-stone-200/80 shadow-sm'}`}>
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 ${colorAccentMap[theme.color] || 'bg-stone-400'} text-white`}>
               {theme.emoji}
@@ -9132,21 +9227,33 @@ function VocabTemas({ onBack, dark }) {
 
 function Vocabulario({ onBack, dark, initialTab, onSearch }) {
   const [tab, setTab] = useState(initialTab || 'temas');
-  const tabs = [
-    { id:'temas', label:'Temas' },
-    { id:'glosario', label:'Glosario' },
-  ];
+  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [themeFilter, setThemeFilter] = useState('all');
+
+  const handleSelectTheme = (theme) => { setSelectedTheme(theme); setThemeFilter('all'); };
+  const handleBackFromTheme = () => setSelectedTheme(null);
+
   return (
     <div>
-      <BackHeader title="Vocabulario" subtitle="Vocab + Glosario" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
-        <div className="hidden lg:block mb-4">
-          <h2 className="text-2xl font-serif font-bold">Vocabulario</h2>
+      <BackHeader
+        title={selectedTheme ? selectedTheme.titleEs : 'Vocabulario'}
+        subtitle={selectedTheme ? selectedTheme.titleEn : 'Vocab + Glosario'}
+        onBack={selectedTheme ? handleBackFromTheme : onBack}
+        dark={dark} onSearch={onSearch}
+      />
+      {!selectedTheme && (
+        <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
+          <ViewToggle dark={dark}
+            options={[{id:'temas',emoji:'🗂️',label:'Temas'},{id:'glosario',emoji:'📖',label:'Glosario'}]}
+            active={tab} onChange={setTab} />
         </div>
-        <TabBar dark={dark} tabs={tabs} active={tab} onChange={setTab} />
-      </div>
-      {tab === 'temas' && <VocabTemas onBack={onBack} dark={dark} onSearch={onSearch} />}
-      {tab === 'glosario' && <GlosarioInner dark={dark} />}
+      )}
+      {tab === 'temas' && (
+        <VocabTemas dark={dark}
+          selectedTheme={selectedTheme} setSelectedTheme={handleSelectTheme}
+          filter={themeFilter} setFilter={setThemeFilter} />
+      )}
+      {tab === 'glosario' && !selectedTheme && <GlosarioInner dark={dark} />}
     </div>
   );
 }
@@ -9309,14 +9416,15 @@ const VALENCIAN_PHRASES = [
 ];
 
 function Frases({ onBack, dark, initialTab, onSearch }) {
-  const [tab, setTab] = useState(initialTab || 'situaciones');
+  const [section, setSection] = useState(null);
   const [selectedSit, setSelectedSit] = useState(null);
   const [selectedValGroup, setSelectedValGroup] = useState(null);
   const [idiomsCategory, setIdiomsCategory] = useState('all');
   const [selectedIdiom, setSelectedIdiom] = useState(null);
   const [selectedMandato, setSelectedMandato] = useState(null);
 
-  const tabs = [{id:'situaciones',label:'Situaciones'},{id:'mandatos',label:'Mandatos'},{id:'modismos',label:'Modismos'},{id:'argot',label:'Argot'},{id:'valencia',label:'Valencià'},{id:'conectores',label:'Conectores'}];
+  const goSection = (s) => { setSection(s); setSelectedSit(null); setSelectedValGroup(null); setSelectedIdiom(null); setSelectedMandato(null); };
+  const goIndex   = ()  => goSection(null);
 
   const idiomCategories = ['all','comida','animales','cuerpo','general'];
   const filteredIdioms = idiomsCategory === 'all' ? IDIOMS : IDIOMS.filter(i => i.category === idiomsCategory);
@@ -9325,137 +9433,190 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
     const map = { formal:'bg-blue-100 text-blue-700', informal:'bg-orange-100 text-orange-700', neutral:'bg-stone-100 text-stone-600' };
     return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${map[reg] || map.neutral}`}>{reg}</span>;
   };
-
+  const notaBadge = (nota) => {
+    if (!nota) return null;
+    const map = { 'tú':'bg-orange-100 text-orange-700','neg. tú':'bg-rose-100 text-rose-700','usted':'bg-blue-100 text-blue-700','ustedes':'bg-indigo-100 text-indigo-700','nosotros':'bg-emerald-100 text-emerald-700' };
+    return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${map[nota] || 'bg-stone-100 text-stone-600'}`}>{nota}</span>;
+  };
   const slangDoc = DOCUMENTS.find(d => d.id === 'slang-dossier');
-
-  // Emoji/colour map keyed by situation name – adds visual identity to each tile
   const situationMeta = {
-    'En el restaurante':   { emoji:'🍽️', color:'from-orange-400 to-rose-500' },
-    'De compras':          { emoji:'🛍️', color:'from-pink-400 to-fuchsia-500' },
-    'En el médico':        { emoji:'🩺', color:'from-red-400 to-rose-500' },
-    'Pedir y dar indicaciones': { emoji:'🗺️', color:'from-sky-400 to-blue-500' },
-    'En el trabajo':       { emoji:'💼', color:'from-stone-400 to-stone-600' },
-    'Hablar por teléfono': { emoji:'📞', color:'from-indigo-400 to-violet-500' },
-    'Quedando con amigos': { emoji:'🍻', color:'from-amber-400 to-orange-500' },
-    'Expresar opiniones':  { emoji:'💭', color:'from-violet-400 to-purple-500' },
-    'Quejarse':            { emoji:'😤', color:'from-rose-400 to-red-500' },
-    'Pedir favores':       { emoji:'🙏', color:'from-teal-400 to-cyan-500' },
-    'En el banco y administración': { emoji:'🏦', color:'from-slate-400 to-slate-600' },
-    'Emergencias':         { emoji:'🚨', color:'from-red-500 to-rose-600' },
+    'En el restaurante':{ emoji:'🍽️', color:'from-orange-400 to-rose-500' },
+    'De compras':       { emoji:'🛍️', color:'from-pink-400 to-fuchsia-500' },
+    'En el médico':     { emoji:'🩺', color:'from-red-400 to-rose-500' },
+    'Pedir y dar indicaciones':{ emoji:'🗺️', color:'from-sky-400 to-blue-500' },
+    'En el trabajo':    { emoji:'💼', color:'from-stone-400 to-stone-600' },
+    'Hablar por teléfono':{ emoji:'📞', color:'from-indigo-400 to-violet-500' },
+    'Quedando con amigos':{ emoji:'🍻', color:'from-amber-400 to-orange-500' },
+    'Expresar opiniones':{ emoji:'💭', color:'from-violet-400 to-purple-500' },
+    'Quejarse':         { emoji:'😤', color:'from-rose-400 to-red-500' },
+    'Pedir favores':    { emoji:'🙏', color:'from-teal-400 to-cyan-500' },
+    'En el banco y administración':{ emoji:'🏦', color:'from-slate-400 to-slate-600' },
+    'Emergencias':      { emoji:'🚨', color:'from-red-500 to-rose-600' },
   };
   const sitMeta = (name) => situationMeta[name] || { emoji:'💬', color:'from-stone-400 to-stone-600' };
-
-  // Index-based category grouping for Valencià (keeps VALENCIAN_PHRASES array untouched)
   const valGroups = [
-    { key:'saludos',      title:'Saludos & cortesía', titleEn:'Greetings & courtesy', emoji:'👋', color:'from-amber-400 to-orange-500',
-      indices:[0,1,2,3,4,5,6,7,8,25,26] },
-    { key:'presentarse',  title:'Presentarse', titleEn:'Introductions', emoji:'🙋', color:'from-sky-400 to-blue-500',
-      indices:[9,10,11,12,13,14] },
-    { key:'direcciones',  title:'Direcciones & lugares', titleEn:'Directions & places', emoji:'📍', color:'from-violet-400 to-purple-500',
-      indices:[16,17,18,19] },
-    { key:'dia',          title:'Día a día', titleEn:'Everyday life', emoji:'☕', color:'from-rose-400 to-pink-500',
-      indices:[15,20,21,22,23,24,27,28,29] },
+    { key:'saludos',     title:'Saludos & cortesía',   titleEn:'Greetings & courtesy', emoji:'👋', color:'from-amber-400 to-orange-500', indices:[0,1,2,3,4,5,6,7,8,25,26] },
+    { key:'presentarse', title:'Presentarse',           titleEn:'Introductions',        emoji:'🙋', color:'from-sky-400 to-blue-500',    indices:[9,10,11,12,13,14] },
+    { key:'direcciones', title:'Direcciones & lugares', titleEn:'Directions & places',  emoji:'📍', color:'from-violet-400 to-purple-500',indices:[16,17,18,19] },
+    { key:'dia',         title:'Día a día',             titleEn:'Everyday life',        emoji:'☕', color:'from-rose-400 to-pink-500',   indices:[15,20,21,22,23,24,27,28,29] },
   ];
 
-  // Container widens to max-w-5xl for tile-grid tabs and stays max-w-3xl for reading-style tabs
-  const gridTab = (tab === 'situaciones' && !selectedSit)
-               || (tab === 'mandatos' && !selectedMandato)
-               || (tab === 'valencia' && !selectedValGroup)
-               || tab === 'modismos'
-               || tab === 'conectores';
-  const containerWidth = gridTab ? 'max-w-5xl' : 'max-w-3xl';
-
-  return (
-    <div>
-      <BackHeader title="Frases" subtitle="Phrases & idioms" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className={`px-4 lg:px-8 py-6 ${containerWidth} mx-auto`}>
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Frases</h2>
-        </div>
-        <div className="mb-6">
-          <TabBar dark={dark} tabs={tabs} active={tab} onChange={(t) => { setTab(t); setSelectedSit(null); setSelectedValGroup(null); setSelectedIdiom(null); setSelectedMandato(null); }} />
-        </div>
-
-        {tab === 'situaciones' && !selectedSit && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {SITUATIONAL_PHRASES.map((sit, si) => {
-              const meta = sitMeta(sit.situation);
-              return (
-                <button key={si} onClick={() => setSelectedSit(sit)} className="text-left">
-                  <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>
-                      {meta.emoji}
-                    </div>
-                    <p className="font-bold text-base lg:text-lg leading-tight mb-1">{sit.situation}</p>
-                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sit.situationEn}</p>
-                    <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{sit.phrases.length} frases →</p>
-                  </Card>
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {tab === 'situaciones' && selectedSit && (
-          <div className="max-w-2xl mx-auto">
-            <button onClick={() => setSelectedSit(null)} className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
-              <span>←</span> Todas las situaciones
-            </button>
-            <div className="flex items-center gap-3 mb-5">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${sitMeta(selectedSit.situation).color} flex items-center justify-center text-3xl shadow-sm`}>
-                {sitMeta(selectedSit.situation).emoji}
+  // ── Level 2: Item drilldowns (each gets its own BackHeader) ──────────────
+  if (section === 'situaciones' && selectedSit) {
+    return (
+      <div>
+        <BackHeader title={selectedSit.situation} subtitle={selectedSit.situationEn} onBack={() => setSelectedSit(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-3">
+          {selectedSit.phrases.map((phrase, pi) => (
+            <Card key={pi} dark={dark} className="p-5">
+              <div className="flex items-start gap-2 mb-1">
+                <p className="font-semibold text-base lg:text-lg flex-1">{phrase.es}</p>
+                <SpeakBtn text={phrase.es} size="sm" />
+                {registerBadge(phrase.register)}
               </div>
-              <div>
-                <p className="font-serif font-bold text-2xl leading-tight">{selectedSit.situation}</p>
-                <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedSit.situationEn}</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {selectedSit.phrases.map((phrase, pi) => (
-                <Card key={pi} dark={dark} className="p-5">
-                  <div className="flex items-start gap-2 mb-1">
-                    <p className="font-semibold text-base lg:text-lg flex-1">{phrase.es}</p>
-                    <SpeakBtn text={phrase.es} size="sm" />
-                    {registerBadge(phrase.register)}
-                  </div>
-                  <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{phrase.en}</p>
-                  {phrase.when && (
-                    <p className={`text-xs italic ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{phrase.when}</p>
-                  )}
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+              <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{phrase.en}</p>
+              {phrase.when && <p className={`text-xs italic text-stone-500`}>{phrase.when}</p>}
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-        {tab === 'modismos' && (
-          selectedIdiom ? (
-            <div className="max-w-2xl mx-auto">
-              <button onClick={() => setSelectedIdiom(null)}
-                className="mb-4 flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
-                <span>←</span> Volver a modismos
-              </button>
-              <Card dark={dark} className="p-6">
-                <div className="flex items-start gap-2 mb-2">
-                  <p className="font-serif font-bold text-3xl flex-1">{selectedIdiom.es}</p>
-                  <SpeakBtn text={selectedIdiom.es} size="lg" />
+  if (section === 'mandatos' && selectedMandato) {
+    return (
+      <div>
+        <BackHeader title={selectedMandato.title} subtitle={selectedMandato.titleEn} onBack={() => setSelectedMandato(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-3">
+          {selectedMandato.phrases.map((phrase, pi) => (
+            <Card key={pi} dark={dark} className="p-5">
+              <div className="flex items-start gap-2 mb-1">
+                <p className="font-serif font-bold text-lg lg:text-xl flex-1">{phrase.es}</p>
+                <SpeakBtn text={phrase.es} size="sm" />
+                {notaBadge(phrase.nota)}
+              </div>
+              <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-600'}`}>{phrase.en}</p>
+              {phrase.when && <p className="text-xs italic text-stone-500">{phrase.when}</p>}
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (section === 'valencia' && selectedValGroup) {
+    return (
+      <div>
+        <BackHeader title={selectedValGroup.title} subtitle={selectedValGroup.titleEn} onBack={() => setSelectedValGroup(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-3">
+          {selectedValGroup.indices.map((idx) => {
+            const p = VALENCIAN_PHRASES[idx];
+            if (!p) return null;
+            return (
+              <Card key={idx} dark={dark} className="p-5">
+                <div className="flex items-start gap-2 mb-1">
+                  <p className="font-serif font-bold text-lg lg:text-xl flex-1">{p.es}</p>
+                  <SpeakBtn text={p.es} size="sm" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">VAL</span>
                 </div>
-                <p className={`text-sm italic mb-4 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Literal: "{selectedIdiom.literal}"</p>
-                <div className="bg-orange-50 rounded-xl p-4 mb-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-orange-600 mb-1">Significado</p>
-                  <p className="text-base font-semibold text-stone-800">{selectedIdiom.meaning}</p>
+                <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-600'}`}>{p.en}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className={`text-xs italic ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Castellà: <span className={dark ? 'text-stone-400' : 'text-stone-500'}>{p.es_es}</span></p>
+                  <SpeakBtn text={p.es_es} size="sm" />
                 </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Ejemplo</p>
-                  <div className="flex items-start gap-2 mb-1">
-                    <p className="font-serif italic text-base flex-1">"{selectedIdiom.example}"</p>
-                    <SpeakBtn text={selectedIdiom.example} size="sm" />
-                  </div>
-                  <p className="text-xs text-stone-500">{selectedIdiom.exampleEn}</p>
-                </div>
+                {p.when && <p className="text-xs text-stone-500">{p.when}</p>}
               </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (section === 'modismos' && selectedIdiom) {
+    return (
+      <div>
+        <BackHeader title={selectedIdiom.es} subtitle="Modismo" onBack={() => setSelectedIdiom(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto">
+          <Card dark={dark} className="p-6">
+            <div className="flex items-start gap-2 mb-2">
+              <p className="font-serif font-bold text-3xl flex-1">{selectedIdiom.es}</p>
+              <SpeakBtn text={selectedIdiom.es} size="lg" />
             </div>
-          ) : (
+            <p className={`text-sm italic mb-4 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Literal: "{selectedIdiom.literal}"</p>
+            <div className="bg-orange-50 rounded-xl p-4 mb-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-orange-600 mb-1">Significado</p>
+              <p className="text-base font-semibold text-stone-800">{selectedIdiom.meaning}</p>
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Ejemplo</p>
+            <div className="flex items-start gap-2 mb-1">
+              <p className="font-serif italic text-base flex-1">"{selectedIdiom.example}"</p>
+              <SpeakBtn text={selectedIdiom.example} size="sm" />
+            </div>
+            <p className="text-xs text-stone-500">{selectedIdiom.exampleEn}</p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Level 1: Section content ─────────────────────────────────────────────
+  if (section) {
+    const SECTION_META = {
+      situaciones:{ title:'Situaciones', sub:'Phrases for real-life contexts' },
+      mandatos:   { title:'Mandatos',    sub:'Commands in context' },
+      modismos:   { title:'Modismos',    sub:'Spanish idioms & expressions' },
+      argot:      { title:'Argot',       sub:'Slang & colloquial speech' },
+      valencia:   { title:'Valencià',    sub:'Basics for Valencia & the levant' },
+      conectores: { title:'Conectores',  sub:'Connectors & discourse markers' },
+    };
+    const secMeta = SECTION_META[section] || { title:section, sub:'' };
+    const wide = section === 'situaciones' || section === 'mandatos' || section === 'valencia' || section === 'modismos';
+    return (
+      <div>
+        <BackHeader title={secMeta.title} subtitle={secMeta.sub} onBack={goIndex} dark={dark} onSearch={onSearch} />
+        <div className={`px-4 lg:px-8 py-6 ${wide ? 'max-w-5xl' : 'max-w-3xl'} mx-auto`}>
+
+          {section === 'situaciones' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {SITUATIONAL_PHRASES.map((sit, si) => {
+                const meta = sitMeta(sit.situation);
+                return (
+                  <button key={si} onClick={() => setSelectedSit(sit)} className="text-left">
+                    <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>{meta.emoji}</div>
+                      <p className="font-bold text-base lg:text-lg leading-tight mb-1">{sit.situation}</p>
+                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sit.situationEn}</p>
+                      <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{sit.phrases.length} frases →</p>
+                    </Card>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {section === 'mandatos' && (
+            <div>
+              <Card dark={dark} className="p-4 mb-5" style={{background:'#fff7ed',borderColor:'#fed7aa'}}>
+                <p className="text-sm font-semibold text-orange-900 mb-1">📢 Mandatos — imperativo en contexto</p>
+                <p className="text-xs text-orange-800">Commands are one of the most natural parts of spoken Spanish. Each group shows phrases you'd actually use — tú, usted & nosotros. Grammar reference is in Chuletas → El Imperativo.</p>
+              </Card>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {MANDATOS_DATA.map((group) => (
+                  <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left">
+                    <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${group.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>{group.emoji}</div>
+                      <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
+                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
+                      <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{group.phrases.length} mandatos →</p>
+                    </Card>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {section === 'modismos' && (
             <div>
               <div className="flex gap-2 mb-5 overflow-x-auto hide-scroll">
                 {idiomCategories.map(cat => (
@@ -9477,160 +9638,61 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
                 ))}
               </div>
             </div>
-          )
-        )}
+          )}
 
-        {tab === 'argot' && slangDoc && (
-          <div className="space-y-5">
-            {slangDoc.sections.map((section, si) => (
-              <div key={si}>
-                {section.heading && (
-                  <p className={`text-sm font-bold mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{section.heading}</p>
-                )}
-                {Array.isArray(section.content) ? (
-                  <Card dark={dark} className="overflow-hidden p-0">
-                    <DataTable data={section.content} dark={dark} />
-                  </Card>
-                ) : (
-                  <p className={`text-sm leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{section.content}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === 'valencia' && !selectedValGroup && (
-          <div>
-            <Card dark={dark} className="p-4 bg-amber-50 border-amber-200 mb-5">
-              <p className="text-sm text-amber-900 font-medium mb-1">🍊 Valencià básico</p>
-              <p className="text-xs text-amber-800">Valencià is the regional language of the Comunitat Valenciana – a Catalan variant. You'll hear it daily in Valencia. Learning a few phrases shows respect and warms locals up immediately.</p>
-            </Card>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {valGroups.map(g => (
-                <button key={g.key} onClick={() => setSelectedValGroup(g)} className="text-left">
-                  <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${g.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>
-                      {g.emoji}
-                    </div>
-                    <p className="font-bold text-base lg:text-lg leading-tight mb-1">{g.title}</p>
-                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{g.titleEn}</p>
-                    <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{g.indices.length} frases →</p>
-                  </Card>
-                </button>
+          {section === 'argot' && slangDoc && (
+            <div className="space-y-5">
+              {slangDoc.sections.map((sec, si) => (
+                <div key={si}>
+                  {sec.heading && <p className={`text-sm font-bold mb-3 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>{sec.heading}</p>}
+                  {Array.isArray(sec.content)
+                    ? <Card dark={dark} className="overflow-hidden p-0"><DataTable data={sec.content} dark={dark} /></Card>
+                    : <p className={`text-sm leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{sec.content}</p>}
+                </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {tab === 'valencia' && selectedValGroup && (
-          <div className="max-w-2xl mx-auto">
-            <button onClick={() => setSelectedValGroup(null)} className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
-              <span>←</span> Todas las categorías
-            </button>
-            <div className="flex items-center gap-3 mb-5">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${selectedValGroup.color} flex items-center justify-center text-3xl shadow-sm`}>
-                {selectedValGroup.emoji}
-              </div>
-              <div>
-                <p className="font-serif font-bold text-2xl leading-tight">{selectedValGroup.title}</p>
-                <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedValGroup.titleEn}</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {selectedValGroup.indices.map((idx) => {
-                const p = VALENCIAN_PHRASES[idx];
-                if (!p) return null;
-                return (
-                  <Card key={idx} dark={dark} className="p-5">
-                    <div className="flex items-start gap-2 mb-1">
-                      <p className="font-serif font-bold text-lg lg:text-xl flex-1">{p.es}</p>
-                      <SpeakBtn text={p.es} size="sm" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">VAL</span>
-                    </div>
-                    <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-600'}`}>{p.en}</p>
-                    <div className="flex items-center gap-2 mb-2">
-                      <p className={`text-xs italic ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Castellà: <span className={dark ? 'text-stone-400' : 'text-stone-500'}>{p.es_es}</span></p>
-                      <SpeakBtn text={p.es_es} size="sm" />
-                    </div>
-                    {p.when && <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{p.when}</p>}
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {tab === 'mandatos' && !selectedMandato && (
-          <div>
-            <Card dark={dark} className="p-4 mb-5" style={{background:'#fff7ed',borderColor:'#fed7aa'}}>
-              <p className="text-sm font-semibold text-orange-900 mb-1">📢 Mandatos — imperativo en contexto</p>
-              <p className="text-xs text-orange-800">Commands are one of the most natural parts of spoken Spanish. Each group below shows you the phrases you'd actually hear and use — tú (informal), usted (formal), or nosotros (let's). The grammar is in Chuletas → El Imperativo.</p>
-            </Card>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {MANDATOS_DATA.map((group) => (
-                <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left">
-                  <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${group.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>
-                      {group.emoji}
-                    </div>
-                    <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
-                    <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
-                    <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{group.phrases.length} mandatos →</p>
-                  </Card>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {tab === 'mandatos' && selectedMandato && (() => {
-          const notaBadge = (nota) => {
-            if (!nota) return null;
-            const map = {
-              'tú':'bg-orange-100 text-orange-700',
-              'neg. tú':'bg-rose-100 text-rose-700',
-              'usted':'bg-blue-100 text-blue-700',
-              'ustedes':'bg-indigo-100 text-indigo-700',
-              'nosotros':'bg-emerald-100 text-emerald-700',
-            };
-            return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${map[nota] || 'bg-stone-100 text-stone-600'}`}>{nota}</span>;
-          };
-          return (
-            <div className="max-w-2xl mx-auto">
-              <button onClick={() => setSelectedMandato(null)} className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-orange-500 transition-colors">
-                <span>←</span> Todos los grupos
-              </button>
-              <div className="flex items-center gap-3 mb-5">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${selectedMandato.color} flex items-center justify-center text-3xl shadow-sm`}>
-                  {selectedMandato.emoji}
-                </div>
-                <div>
-                  <p className="font-serif font-bold text-2xl leading-tight">{selectedMandato.title}</p>
-                  <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedMandato.titleEn}</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                {selectedMandato.phrases.map((phrase, pi) => (
-                  <Card key={pi} dark={dark} className="p-5">
-                    <div className="flex items-start gap-2 mb-1">
-                      <p className="font-serif font-bold text-lg lg:text-xl flex-1">{phrase.es}</p>
-                      <SpeakBtn text={phrase.es} size="sm" />
-                      {notaBadge(phrase.nota)}
-                    </div>
-                    <p className={`text-sm mb-1 ${dark ? 'text-stone-400' : 'text-stone-600'}`}>{phrase.en}</p>
-                    {phrase.when && (
-                      <p className={`text-xs italic ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{phrase.when}</p>
-                    )}
-                  </Card>
+          {section === 'valencia' && (
+            <div>
+              <Card dark={dark} className="p-4 bg-amber-50 border-amber-200 mb-5">
+                <p className="text-sm text-amber-900 font-medium mb-1">🍊 Valencià básico</p>
+                <p className="text-xs text-amber-800">Valencià is the regional language of the Comunitat Valenciana – a Catalan variant. You'll hear it daily in Valencia. Learning a few phrases shows respect and warms locals up immediately.</p>
+              </Card>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {valGroups.map(g => (
+                  <button key={g.key} onClick={() => setSelectedValGroup(g)} className="text-left">
+                    <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${g.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>{g.emoji}</div>
+                      <p className="font-bold text-base lg:text-lg leading-tight mb-1">{g.title}</p>
+                      <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{g.titleEn}</p>
+                      <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{g.indices.length} frases →</p>
+                    </Card>
+                  </button>
                 ))}
               </div>
             </div>
-          );
-        })()}
+          )}
 
-        {tab === 'conectores' && (
-          <ConectoresPanel dark={dark} />
-        )}
+          {section === 'conectores' && <ConectoresPanel dark={dark} />}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Level 0: Index ────────────────────────────────────────────────────────
+  return (
+    <div>
+      <BackHeader title="Frases" subtitle="Phrases & idioms" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
+        <SectionIndex dark={dark} sections={[
+          { id:'situaciones', emoji:'💬', label:'Situaciones', sub:`Phrases for ${SITUATIONAL_PHRASES.length} real-life contexts`,  color:'from-orange-400 to-rose-500',  onClick:()=>goSection('situaciones') },
+          { id:'mandatos',    emoji:'📢', label:'Mandatos',    sub:'Commands — tú, usted & nosotros',                              color:'from-amber-400 to-orange-500', onClick:()=>goSection('mandatos') },
+          { id:'modismos',    emoji:'🎭', label:'Modismos',    sub:`${IDIOMS.length} Spanish idioms & expressions`,                color:'from-violet-400 to-purple-500',onClick:()=>goSection('modismos') },
+          { id:'argot',       emoji:'🗣️', label:'Argot',       sub:'Slang & colloquial speech',                                   color:'from-stone-400 to-stone-600',  onClick:()=>goSection('argot') },
+          { id:'valencia',    emoji:'🍊', label:'Valencià',    sub:'Basics for Valencia & the levant',                             color:'from-amber-400 to-yellow-500', onClick:()=>goSection('valencia') },
+          { id:'conectores',  emoji:'🔗', label:'Conectores',  sub:'Connectors & discourse markers',                               color:'from-teal-400 to-cyan-500',    onClick:()=>goSection('conectores') },
+        ]} />
       </div>
     </div>
   );
@@ -11134,9 +11196,7 @@ function GlosarioInner({ dark }) {
           </div>
         </div>
 
-        <div className="mb-5">
-          <TabBar dark={dark} tabs={[{id:'lista',label:'Lista'},{id:'tarjetas',label:`Tarjetas (${dueDeck.length})`}]} active={tab} onChange={(t) => { setTab(t); setCardFlipped(false); setCardIdx(0); }} />
-        </div>
+        <ViewToggle dark={dark} options={[{id:'lista',emoji:'📋',label:'Lista'},{id:'tarjetas',emoji:'🃏',label:`Tarjetas (${dueDeck.length})`}]} active={tab} onChange={(t) => { setTab(t); setCardFlipped(false); setCardIdx(0); }} />
 
         {tab === 'lista' && (<>
         {/* Type filter pills (doubles as stats) */}
@@ -12091,7 +12151,7 @@ const BUSINESS_SHEETS = [
 ];
 
 function Negocios({ onBack, dark, onSearch }) {
-  const [tab, setTab] = useState('vocabulario');
+  const [tab, setTab] = useState(null);
   const [selectedVocab, setSelectedVocab] = useState(null);
   const [selectedPhrases, setSelectedPhrases] = useState(null);
   const [selectedDialog, setSelectedDialog] = useState(null);
@@ -12376,23 +12436,36 @@ function Negocios({ onBack, dark, onSearch }) {
     );
   }
 
+  const NEG_SECTION_META = {
+    vocabulario:    { label:'Vocabulario',    sub:'Business vocabulary by topic' },
+    frases:         { label:'Frases',         sub:'Phrases for meetings & negotiations' },
+    conversaciones: { label:'Conversaciones', sub:'Listening practice dialogues' },
+    chuletas:       { label:'Chuletas',       sub:'Reference sheets' },
+  };
+
+  // ---- INDEX VIEW ----
+  if (!tab) {
+    return (
+      <div>
+        <BackHeader title="Negocios" subtitle="Business Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+        <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
+          <SectionIndex dark={dark} sections={[
+            { id:'vocabulario',    emoji:'📖', label:'Vocabulario',    sub:'Business vocabulary by topic',         color:'from-blue-400 to-blue-500',    onClick:()=>setTab('vocabulario') },
+            { id:'frases',         emoji:'💼', label:'Frases',         sub:'Phrases for meetings & negotiations',  color:'from-orange-400 to-amber-500', onClick:()=>setTab('frases') },
+            { id:'conversaciones', emoji:'🎧', label:'Conversaciones', sub:'Listening practice dialogues',         color:'from-violet-400 to-purple-500',onClick:()=>setTab('conversaciones') },
+            { id:'chuletas',       emoji:'📋', label:'Chuletas',       sub:'Reference sheets',                     color:'from-emerald-400 to-teal-500', onClick:()=>setTab('chuletas') },
+          ]} />
+        </div>
+      </div>
+    );
+  }
+
   // ---- MAIN TAB VIEW ----
+  const negMeta = NEG_SECTION_META[tab] || { label:'Negocios', sub:'Business Spanish' };
   return (
     <div>
-      <BackHeader title="Negocios" subtitle="Business Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title={negMeta.label} subtitle={negMeta.sub} onBack={() => setTab(null)} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Negocios</h2>
-          <p className="text-sm text-stone-500 mt-1">Español para reuniones, inversión deportiva y agencia de jugadores</p>
-        </div>
-        <div className="mb-6">
-          <TabBar dark={dark} tabs={[
-            {id:'vocabulario',label:'Vocabulario'},
-            {id:'frases',label:'Frases'},
-            {id:'conversaciones',label:'Conversaciones'},
-            {id:'chuletas',label:'Chuletas'}
-          ]} active={tab} onChange={setTab} />
-        </div>
 
         {tab === 'vocabulario' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
