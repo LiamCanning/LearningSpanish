@@ -10750,10 +10750,18 @@ function Equivalentes({ onBack, dark, onSearch }) {
           </p>
           <div className="flex gap-2">
             <input ref={inputRef} type="text" value={query} onChange={e => setQuery(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && isSearching && hasAi && !aiLoading) handleAITranslate(); }}
               placeholder="e.g. I can't be bothered, no way, take it easy..."
               className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-orange-500 transition-colors`} />
+            {isSearching && hasAi && (
+              <button onClick={handleAITranslate} disabled={aiLoading}
+                title="Traducir con IA"
+                className={`rounded-xl px-3 py-3 font-bold text-sm transition-colors flex-shrink-0 ${aiLoading?'bg-violet-300 text-white cursor-wait':'bg-violet-500 hover:bg-violet-600 text-white'}`}>
+                {aiLoading ? '⏳' : '🤖'}
+              </button>
+            )}
             <button onClick={handleSpeak}
-              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-orange-500 hover:bg-orange-600 text-white'}`}>
+              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
               {recording ? '🔴' : '🎤'}
             </button>
             {query && (
@@ -10762,6 +10770,11 @@ function Equivalentes({ onBack, dark, onSearch }) {
             )}
           </div>
           {recError && <p className="text-xs text-amber-600 mt-2 font-medium">{recError}</p>}
+          {aiError === 'invalid-key' && <p className="text-xs text-red-600 mt-2 font-medium">Clave de Anthropic inválida — revísala en Ajustes.</p>}
+          {aiError === 'rate-limit' && <p className="text-xs text-amber-600 mt-2 font-medium">Has excedido el límite de uso. Espera un momento.</p>}
+          {aiError === 'parse-failed' && <p className="text-xs text-amber-600 mt-2 font-medium">Respuesta malformada. Inténtalo otra vez.</p>}
+          {aiError === 'api-error' && <p className="text-xs text-red-600 mt-2 font-medium">Fallo de red. Comprueba tu conexión.</p>}
+          {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">No encontró traducción natural — prueba a reformular.</p>}
         </Card>
 
         {/* ── Search results ─────────────────────────────────────────────── */}
@@ -10775,33 +10788,12 @@ function Equivalentes({ onBack, dark, onSearch }) {
                 {matches.map((m, i) => <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />)}
               </>
             )}
-            {!hasExactMatch && (
-              <Card dark={dark} className="p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">🤖</span>
-                  <p className="font-bold text-base">Traducción con IA</p>
+            {!hasExactMatch && !hasAi && (
+              <Card dark={dark} className="p-4">
+                <div className={`text-xs rounded-xl p-3 ${dark?'bg-violet-500/10 text-violet-200':'bg-violet-50 text-violet-900'}`}>
+                  <p className="font-bold mb-1">🔑 Configura una clave de Anthropic</p>
+                  <p>Ve a <strong>Ajustes → IA Traducción</strong> y pega tu clave para activar la traducción IA.</p>
                 </div>
-                <p className={`text-sm mb-4 ${dark?'text-stone-400':'text-stone-600'}`}>
-                  {matches.length === 0 ? 'No tenemos esta frase en el diccionario. Pídele a Claude la traducción natural.' : 'Si las coincidencias no encajan, pídele a Claude una más específica para tu frase.'}
-                </p>
-                {hasAi ? (
-                  <>
-                    <button onClick={handleAITranslate} disabled={aiLoading}
-                      className={`w-full sm:w-auto rounded-xl px-5 py-3 font-bold text-sm transition-colors ${aiLoading?'bg-violet-300 text-white cursor-wait':'bg-violet-500 hover:bg-violet-600 text-white'}`}>
-                      {aiLoading ? '⏳ Traduciendo…' : `🤖 Traducir "${trimmedQuery.length > 40 ? trimmedQuery.slice(0,40)+'…' : trimmedQuery}"`}
-                    </button>
-                    {aiError === 'invalid-key' && <p className="text-xs text-red-600 mt-2 font-medium">Clave de Anthropic inválida — revísala en Ajustes.</p>}
-                    {aiError === 'rate-limit' && <p className="text-xs text-amber-600 mt-2 font-medium">Has excedido el límite de uso. Espera un momento.</p>}
-                    {aiError === 'parse-failed' && <p className="text-xs text-amber-600 mt-2 font-medium">Respuesta malformada. Inténtalo otra vez.</p>}
-                    {aiError === 'api-error' && <p className="text-xs text-red-600 mt-2 font-medium">Fallo de red. Comprueba tu conexión.</p>}
-                    {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">No encontró traducción natural — prueba a reformular en inglés.</p>}
-                  </>
-                ) : (
-                  <div className={`text-xs rounded-xl p-3 ${dark?'bg-violet-500/10 text-violet-200':'bg-violet-50 text-violet-900'}`}>
-                    <p className="font-bold mb-1">🔑 Configura una clave de Anthropic</p>
-                    <p>Ve a <strong>Ajustes → IA Traducción</strong> y pega tu clave de Anthropic. Se guarda localmente en este dispositivo.</p>
-                  </div>
-                )}
               </Card>
             )}
             <AiResultSection />
@@ -14120,11 +14112,34 @@ function App() {
     return snapToParent[saved] || saved;
   });
 
+  // Navigation history stack — lets Volver go back one section at a time
+  const [navHistory, setNavHistory] = useState([]);
+
   const goTo = (sec) => {
-    setSection(sec);
+    setSection(prev => {
+      if (sec === 'inicio') {
+        // Going home clears history
+        setNavHistory([]);
+      } else {
+        // Push current section onto history before navigating
+        setNavHistory(h => [...h, prev]);
+      }
+      return sec;
+    });
     setStorage('aprende.lastSection', sec);
     // Track the last *practice* destination so the "Continuar" nav can deep-link
     if (sec !== 'inicio') setStorage('aprende.lastNonInicio', sec);
+  };
+
+  const goBack = () => {
+    setNavHistory(h => {
+      if (h.length === 0) return h; // already at root
+      const prev = h[h.length - 1];
+      const next = h.slice(0, -1);
+      setSection(prev);
+      setStorage('aprende.lastSection', prev);
+      return next;
+    });
   };
   const [searchOpen, setSearchOpen] = useState(false);
   const lastNonInicio = getStorage('aprende.lastNonInicio', 'pronunciacion');
@@ -14147,7 +14162,7 @@ function App() {
   ];
 
   const renderSection = () => {
-    const props = { dark, onBack: () => goTo('inicio'), onSearch: () => setSearchOpen(true) };
+    const props = { dark, onBack: goBack, onSearch: () => setSearchOpen(true) };
     switch(section) {
       case 'inicio': return <Inicio dark={dark} section={section} setSection={goTo} />;
       case 'hoy': return <Hoy {...props} />;
