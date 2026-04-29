@@ -4965,6 +4965,122 @@ async function aiTranslate(query, apiKey) {
   return parsed;
 }
 
+// ── Spanish input detection + reverse search ──────────────────────────────
+
+function looksLikeSpanish(text) {
+  if (!text) return false;
+  // Definitive Spanish-only characters
+  if (/[áéíóúüñ¿¡]/i.test(text)) return true;
+  // Heuristic: enough common Spanish function words
+  const lower = text.toLowerCase().trim();
+  const SW = new Set(['no','me','te','se','es','que','de','la','el','lo','un','una','mi','tu','su','ya','por','con','en','al','del','hay','va','voy','soy','nos','os','le','les','esto','eso','bien','muy','más','pero','si','yo']);
+  const words = lower.split(/\s+/).filter(w => w.length > 0);
+  if (words.length < 2) return false;
+  const hits = words.filter(w => SW.has(w)).length;
+  return hits >= Math.max(1, Math.floor(words.length * 0.4));
+}
+
+function searchBySpanish(query, entries) {
+  const norm = query.toLowerCase().trim();
+  const normWords = norm.split(/\s+/).filter(Boolean);
+  const results = [];
+  for (const entry of entries) {
+    const phrases = [entry.es, ...(entry.esAlts || [])].filter(Boolean);
+    let bestScore = 0;
+    for (const phrase of phrases) {
+      const p = phrase.toLowerCase();
+      let score = 0;
+      if (p === norm) { score = 1.0; }
+      else if (p.includes(norm) || norm.includes(p)) {
+        score = 0.6 + 0.35 * Math.min(p.length, norm.length) / Math.max(p.length, norm.length);
+      } else {
+        const pw = p.split(/\s+/).filter(Boolean);
+        const inter = normWords.filter(w => new Set(pw).has(w)).length;
+        const overlap = inter / Math.max(pw.length, normWords.length, 1);
+        if (overlap >= 0.5) score = 0.45 + 0.4 * overlap;
+      }
+      if (score > bestScore) bestScore = score;
+    }
+    if (bestScore >= 0.4) results.push({ entry, score: bestScore, variant: null });
+  }
+  return results.sort((a, b) => b.score - a.score).slice(0, 6);
+}
+
+function getDailyFeaturedPhrases(entries, n) {
+  if (!entries || !entries.length) return [];
+  n = n || 6;
+  const seed = hashDate(todayStr());
+  const result = []; const used = new Set();
+  for (let i = 0; result.length < n && i < entries.length * 3; i++) {
+    const idx = ((seed * 1031 + i * 37) % entries.length + entries.length) % entries.length;
+    if (!used.has(idx)) { used.add(idx); result.push(entries[idx]); }
+  }
+  return result;
+}
+
+const AI_EXPLAIN_PROMPT = `You explain Spanish expressions to an English speaker learning Castilian Spanish (Spain). Given a Spanish phrase, explain clearly what it means in English and how to use it naturally.
+
+Rules:
+- Focus on Castilian Spanish usage (Spain), not Latin American
+- Give the most natural English equivalent — not a word-for-word gloss
+- Note register (informal/neutral/formal)
+- Provide a real example sentence the learner can use
+
+Respond with ONLY a valid JSON object — no markdown fences, no commentary. Schema:
+{
+  "english": "the natural English equivalent or meaning (short, punchy)",
+  "explanation": "2–3 sentences: what it means, when and how Spaniards use it, any traps or cultural notes",
+  "register": "informal" | "neutral" | "formal",
+  "example": "a natural Spanish sentence using the phrase in real context",
+  "exampleEn": "natural English translation of the example",
+  "category": "frustración|sorpresa|acuerdo|tiempo|cansancio|comida|dinero|esfuerzo|salud|meteo|saludos|disculpas|sentimientos|opinión|muletillas|ánimo|duda|interés|negación|énfasis|relaciones|logros"
+}
+
+If the input is not a recognisable Spanish phrase, return:
+{ "error": "no_match", "message": "brief reason in English" }`;
+
+async function aiExplainSpanish(phrase, apiKey) {
+  if (!apiKey) throw new Error('no-key');
+  const cacheKey = 'aprende.ai.explain.v1.' + phrase.toLowerCase().trim().replace(/\s+/g, '_').slice(0, 100);
+  const cached = getStorage(cacheKey, null);
+  if (cached) return { ...cached, _cached: true };
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'x-api-key': apiKey,
+      'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5', max_tokens: 600,
+      system: AI_EXPLAIN_PROMPT,
+      messages: [{ role:'user', content: `Spanish phrase to explain: "${phrase}"` }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    if (resp.status === 401) throw new Error('invalid-key');
+    if (resp.status === 429) throw new Error('rate-limit');
+    throw new Error('api-error: ' + resp.status + ' ' + errText.slice(0, 100));
+  }
+
+  const data = await resp.json();
+  const text = data?.content?.[0]?.text || '';
+  let jsonStr = text.trim();
+  const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (fenceMatch) jsonStr = fenceMatch[1].trim();
+  const firstBrace = jsonStr.indexOf('{');
+  const lastBrace = jsonStr.lastIndexOf('}');
+  if (firstBrace >= 0 && lastBrace > firstBrace) jsonStr = jsonStr.slice(firstBrace, lastBrace + 1);
+
+  let parsed;
+  try { parsed = JSON.parse(jsonStr); }
+  catch(e) { throw new Error('parse-failed'); }
+
+  if (parsed.error === 'no_match') return parsed;
+  setStorage(cacheKey, parsed);
+  return parsed;
+}
+
 // ── Character usage tracking (resets monthly) ──
 function ttsBumpUsage(chars) {
   const now = new Date();
@@ -10536,6 +10652,9 @@ function Equivalentes({ onBack, dark, onSearch }) {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState(null);
   const [aiQuery, setAiQuery] = useState(null);
+  const [reverseResult, setReverseResult] = useState(null);
+  const [reverseLoading, setReverseLoading] = useState(false);
+  const [reverseQuery, setReverseQuery] = useState(null);
   const [customEquivs, setCustomEquivs] = useState(() => getStorage('aprende.custom_equiv', []));
   const [showSaveForm, setShowSaveForm] = useState(false);
   const [saveCat, setSaveCat] = useState('');
@@ -10551,9 +10670,16 @@ function Equivalentes({ onBack, dark, onSearch }) {
   // All equivalents = curated + user-saved
   const allEquivalents = React.useMemo(() => [...EQUIVALENTS, ...customEquivs], [customEquivs]);
 
-  // Search over allEquivalents (inline to include custom entries)
+  const trimmedQuery = query.trim();
+  const isSearching = trimmedQuery.length >= 2;
+  const isSpanishMode = isSearching && looksLikeSpanish(trimmedQuery);
+
+  // Search over allEquivalents — branches on Spanish vs English input
   const matches = React.useMemo(() => {
-    if (!query || query.trim().length < 2) return [];
+    if (!query || trimmedQuery.length < 2) return [];
+    // Spanish input: search ES fields
+    if (looksLikeSpanish(trimmedQuery)) return searchBySpanish(trimmedQuery, allEquivalents);
+    // English input: existing weighted search
     const norm = normalizeEn(query);
     const normWords = norm.split(/\s+/).filter(Boolean);
     const results = [];
@@ -10579,10 +10705,8 @@ function Equivalentes({ onBack, dark, onSearch }) {
       if (bestScore >= 0.45) results.push({ entry, score: bestScore, variant: bestVariant });
     }
     return results.sort((a, b) => b.score - a.score).slice(0, 6);
-  }, [query, allEquivalents]);
+  }, [query, trimmedQuery, allEquivalents]);
 
-  const trimmedQuery = query.trim();
-  const isSearching = trimmedQuery.length >= 2;
   const hasExactMatch = matches.length > 0 && matches[0].score >= 0.95;
 
   const categories = React.useMemo(() => {
@@ -10607,8 +10731,10 @@ function Equivalentes({ onBack, dark, onSearch }) {
     }
     if (!hasAzure) { setRecError("Voice input needs the Azure key (Ajustes → API). You can still type."); return; }
     setRecording(true);
+    // Use Spanish recognition if we're already in Spanish mode, otherwise English
+    const lang = isSpanishMode ? 'es-ES' : 'en-US';
     try {
-      const text = await azureRecognizeOnce(azCfg.apiKey, azCfg.region, r => { azureRecogRef.current = r; }, 'en-US');
+      const text = await azureRecognizeOnce(azCfg.apiKey, azCfg.region, r => { azureRecogRef.current = r; }, lang);
       azureRecogRef.current = null; setRecording(false);
       if (text) setQuery(text);
     } catch(e) {
@@ -10616,6 +10742,40 @@ function Equivalentes({ onBack, dark, onSearch }) {
       if (e.srCode === 'no-speech') setRecError("Didn't catch that – try again.");
       else setRecError("Voice input failed. Try typing instead.");
     }
+  };
+
+  const handleReverseExplain = async () => {
+    if (!hasAi) { setAiError('no-key'); return; }
+    if (!trimmedQuery) return;
+    setAiError(null); setReverseLoading(true); setReverseResult(null); setShowSaveForm(false);
+    setReverseQuery(trimmedQuery);
+    try {
+      const result = await aiExplainSpanish(trimmedQuery, aiKey);
+      if (result.error === 'no_match') { setAiError('no-match'); setReverseLoading(false); return; }
+      setReverseResult(result); setReverseLoading(false);
+      setSaveCat(result.category && EQUIV_CAT_META[result.category] ? result.category : (categories[0] || ''));
+    } catch(e) {
+      setReverseLoading(false);
+      const msg = e.message || '';
+      if (msg.includes('invalid-key')) setAiError('invalid-key');
+      else if (msg.includes('rate-limit')) setAiError('rate-limit');
+      else if (msg.includes('parse-failed')) setAiError('parse-failed');
+      else setAiError('api-error');
+    }
+  };
+
+  const handleSaveExplain = () => {
+    if (!reverseResult || !saveCat) return;
+    const entry = {
+      en: reverseResult.english, enAlts: [],
+      es: reverseQuery, esAlts: [],
+      example: reverseResult.example, exampleEn: reverseResult.exampleEn,
+      explain: reverseResult.explanation, register: reverseResult.register,
+      cat: saveCat, isCustom: true
+    };
+    const updated = [...customEquivs, entry];
+    setCustomEquivs(updated); setStorage('aprende.custom_equiv', updated);
+    setShowSaveForm(false); setSaveFlash(true); setTimeout(() => setSaveFlash(false), 2500);
   };
 
   const handleAITranslate = async () => {
@@ -10640,7 +10800,8 @@ function Equivalentes({ onBack, dark, onSearch }) {
 
   React.useEffect(() => {
     if (aiQuery && trimmedQuery !== aiQuery) { setAiResult(null); setAiError(null); setAiQuery(null); setShowSaveForm(false); }
-  }, [trimmedQuery, aiQuery]);
+    if (reverseQuery && trimmedQuery !== reverseQuery) { setReverseResult(null); setReverseQuery(null); setShowSaveForm(false); }
+  }, [trimmedQuery, aiQuery, reverseQuery]);
 
   const handleSaveEntry = () => {
     if (!aiResult || !saveCat) return;
@@ -10794,6 +10955,75 @@ function Equivalentes({ onBack, dark, onSearch }) {
     );
   };
 
+  // ── Spanish-mode: AI explain result ──────────────────────────────────────
+  const ExplainResultSection = () => {
+    if (!reverseResult) return null;
+    const catMeta = EQUIV_CAT_META[reverseResult.category] || { label: reverseResult.category || 'general', emoji: '💬', color: 'from-stone-400 to-stone-500' };
+    return (
+      <div className="space-y-3">
+        <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+          Explicación IA {reverseResult._cached ? '(caché)' : ''}
+        </p>
+        <Card dark={dark} className="p-5 border-2 border-emerald-300/70">
+          <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${catMeta.color} text-white`}>{catMeta.emoji} {catMeta.label}</span>
+              {reverseResult.register && <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-600'}`}>{reverseResult.register}</span>}
+              <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">🤖 IA</span>
+            </div>
+          </div>
+          <p className={`text-xs font-semibold mb-1 ${dark?'text-stone-400':'text-stone-500'}`}>"{reverseQuery}"</p>
+          <div className="flex items-start gap-2 mb-3">
+            <p className="font-serif font-bold text-2xl leading-tight flex-1 min-w-0 break-words">{reverseResult.english}</p>
+          </div>
+          {reverseResult.example && (
+            <div className="mb-2">
+              <div className="flex items-start gap-2">
+                <p className={`flex-1 min-w-0 text-sm italic font-medium ${dark?'text-stone-200':'text-stone-700'}`}>"{reverseResult.example}"</p>
+                <SpeakBtn text={reverseResult.example} size="sm" />
+              </div>
+              {reverseResult.exampleEn && <p className={`text-xs mt-1 ${dark?'text-stone-500':'text-stone-500'}`}>{reverseResult.exampleEn}</p>}
+            </div>
+          )}
+          {reverseResult.explanation && (
+            <div className={`mt-3 text-xs rounded-xl p-3 ${dark?'bg-amber-500/10 text-amber-200':'bg-amber-50 text-amber-900'}`}>
+              <span className="font-bold">💡 </span>{reverseResult.explanation}
+            </div>
+          )}
+        </Card>
+        {saveFlash ? (
+          <div className={`rounded-2xl py-3 px-4 text-center font-bold text-sm ${dark?'bg-emerald-500/20 text-emerald-300':'bg-emerald-50 text-emerald-700'}`}>
+            ✅ Guardado en {EQUIV_CAT_META[saveCat]?.label || saveCat}
+          </div>
+        ) : !showSaveForm ? (
+          <button onClick={() => setShowSaveForm(true)}
+            className={`w-full rounded-2xl py-3 font-bold text-sm border-2 border-dashed transition-colors ${dark?'border-amber-500/40 text-amber-400 hover:bg-amber-500/10':'border-amber-400 text-amber-700 hover:bg-amber-50'}`}>
+            💾 Guardar en mis frases
+          </button>
+        ) : (
+          <Card dark={dark} className="p-4">
+            <p className={`text-sm font-bold mb-3 ${dark?'text-stone-200':'text-stone-800'}`}>Guardar en categoría</p>
+            <select value={saveCat} onChange={e => setSaveCat(e.target.value)}
+              className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-white border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
+              {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.emoji} {m.label}</option>; })}
+              <option value="general">💬 General</option>
+            </select>
+            <div className="flex gap-2">
+              <button onClick={handleSaveExplain} disabled={!saveCat}
+                className="flex-1 rounded-xl py-2.5 font-bold text-sm bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50">
+                ✓ Guardar
+              </button>
+              <button onClick={() => setShowSaveForm(false)}
+                className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}>
+                Cancelar
+              </button>
+            </div>
+          </Card>
+        )}
+      </div>
+    );
+  };
+
   // ── Category drilldown: 2-col expandable grid ────────────────────────────
   const CategoryDrilldown = () => {
     const meta = EQUIV_CAT_META[selectedCat] || { label: selectedCat, emoji: '💬', color: 'from-stone-400 to-stone-500' };
@@ -10894,32 +11124,51 @@ function Equivalentes({ onBack, dark, onSearch }) {
 
   return (
     <div>
-      <BackHeader title="Cómo se dice" subtitle="Type English → get real Spanish" onBack={handleBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Cómo se dice" subtitle="English → Spanish · Spanish → explained" onBack={handleBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
 
         {/* ── Search bar ────────────────────────────────────────────────── */}
-        <Card dark={dark} className="p-4 mb-5">
-          <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${dark?'text-stone-500':'text-stone-400'}`}>
-            ¿Cómo se dice esto en español?
-          </p>
+        <Card dark={dark} className={`p-4 mb-5 transition-colors ${isSpanishMode ? (dark?'border border-emerald-500/40':'border border-emerald-300') : ''}`}>
+          <div className="flex items-center justify-between mb-2">
+            <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+              {isSpanishMode && isSearching ? '🇪🇸 Español detectado — busca o explica con IA' : '¿Cómo se dice esto en español?'}
+            </p>
+            {isSpanishMode && isSearching && (
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700`}>ES→EN</span>
+            )}
+          </div>
           <div className="flex gap-2">
             <input ref={inputRef} type="text" value={query} onChange={e => setQuery(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && isSearching && hasAi && !aiLoading) handleAITranslate(); }}
-              placeholder="e.g. I can't be bothered, no way, take it easy..."
-              className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-orange-500 transition-colors`} />
+              onKeyDown={e => {
+                if (e.key === 'Enter' && isSearching && hasAi && !aiLoading && !reverseLoading) {
+                  isSpanishMode ? handleReverseExplain() : handleAITranslate();
+                }
+              }}
+              placeholder="English phrase or frase en español..."
+              inputMode="text" autoCapitalize="none" autoComplete="off" spellCheck={false}
+              className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none ${isSpanishMode?'focus:border-emerald-400':'focus:border-orange-500'} transition-colors`} />
             {isSearching && hasAi && (
-              <button onClick={handleAITranslate} disabled={aiLoading}
-                title="Traducir con IA"
-                className={`rounded-xl px-3 py-3 font-bold text-sm transition-colors flex-shrink-0 ${aiLoading?'bg-violet-300 text-white cursor-wait':'bg-violet-500 hover:bg-violet-600 text-white'}`}>
-                {aiLoading ? '⏳' : '🤖'}
+              <button
+                onClick={isSpanishMode ? handleReverseExplain : handleAITranslate}
+                disabled={isSpanishMode ? reverseLoading : aiLoading}
+                title={isSpanishMode ? 'Explicar con IA' : 'Traducir con IA'}
+                className={`rounded-xl px-3 py-3 font-bold text-sm transition-colors flex-shrink-0 ${
+                  (isSpanishMode ? reverseLoading : aiLoading)
+                    ? 'bg-stone-300 text-white cursor-wait'
+                    : isSpanishMode
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                      : 'bg-violet-500 hover:bg-violet-600 text-white'
+                }`}>
+                {(isSpanishMode ? reverseLoading : aiLoading) ? '⏳' : isSpanishMode ? '🔍' : '🤖'}
               </button>
             )}
             <button onClick={handleSpeak}
+              title={isSpanishMode ? 'Habla en español' : 'Speak in English'}
               className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
-              {recording ? '🔴' : '🎤'}
+              {recording ? '🔴' : isSpanishMode ? '🎙️' : '🎤'}
             </button>
             {query && (
-              <button onClick={() => { setQuery(''); setAiResult(null); setAiError(null); setShowSaveForm(false); inputRef.current?.focus(); }}
+              <button onClick={() => { setQuery(''); setAiResult(null); setReverseResult(null); setAiError(null); setShowSaveForm(false); inputRef.current?.focus(); }}
                 className={`rounded-xl px-3 py-3 text-sm flex-shrink-0 ${dark?'bg-white/10 hover:bg-white/20 text-stone-300':'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}>✕</button>
             )}
           </div>
@@ -10928,20 +11177,24 @@ function Equivalentes({ onBack, dark, onSearch }) {
           {aiError === 'rate-limit' && <p className="text-xs text-amber-600 mt-2 font-medium">Has excedido el límite de uso. Espera un momento.</p>}
           {aiError === 'parse-failed' && <p className="text-xs text-amber-600 mt-2 font-medium">Respuesta malformada. Inténtalo otra vez.</p>}
           {aiError === 'api-error' && <p className="text-xs text-red-600 mt-2 font-medium">Fallo de red. Comprueba tu conexión.</p>}
-          {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">No encontró traducción natural — prueba a reformular.</p>}
+          {aiError === 'no-match' && <p className="text-xs text-amber-600 mt-2 font-medium">{isSpanishMode ? 'No pude identificar esta frase — prueba a reformularla.' : 'No encontré traducción natural — prueba a reformular.'}</p>}
         </Card>
 
         {/* ── Search results ─────────────────────────────────────────────── */}
         {isSearching ? (
           <div className="space-y-3">
-            {matches.length > 0 && (
+            {matches.length > 0 ? (
               <>
                 <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
-                  {matches.length === 1 ? '1 coincidencia' : `${matches.length} coincidencias`}
+                  {matches.length === 1 ? '1 coincidencia en el diccionario' : `${matches.length} coincidencias en el diccionario`}
                 </p>
-                {matches.map((m, i) => <ResultCard key={i} entry={m.entry} score={m.score} variant={m.variant} />)}
+                {matches.map((m, i) => <ResultCard key={i} entry={m.entry} score={isSpanishMode ? null : m.score} variant={m.variant} />)}
               </>
-            )}
+            ) : isSpanishMode ? (
+              <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>
+                No está en el diccionario — pulsa 🔍 para que IA lo explique
+              </p>
+            ) : null}
             {!hasExactMatch && !hasAi && (
               <Card dark={dark} className="p-4">
                 <div className={`text-xs rounded-xl p-3 ${dark?'bg-violet-500/10 text-violet-200':'bg-violet-50 text-violet-900'}`}>
@@ -10950,7 +11203,7 @@ function Equivalentes({ onBack, dark, onSearch }) {
                 </div>
               </Card>
             )}
-            <AiResultSection />
+            {isSpanishMode ? <ExplainResultSection /> : <AiResultSection />}
           </div>
 
         ) : selectedCat ? (
@@ -10960,6 +11213,38 @@ function Equivalentes({ onBack, dark, onSearch }) {
         ) : (
           /* ── Home grid ───────────────────────────────────────────────── */
           <>
+            {/* ── Featured phrases (rotate daily) ─────────────────────── */}
+            {(() => {
+              const featured = getDailyFeaturedPhrases(allEquivalents, 6);
+              if (!featured.length) return null;
+              return (
+                <div className="mb-7">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <p className={`text-[10px] font-bold tracking-widest uppercase ${dark?'text-stone-500':'text-stone-400'}`}>Frases del día</p>
+                    <p className={`text-[10px] ${dark?'text-stone-600':'text-stone-400'}`}>Cambian cada 24 h</p>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {featured.map((entry, i) => {
+                      const meta = EQUIV_CAT_META[entry.cat] || { label: entry.cat, emoji: '💬', color: 'from-stone-400 to-stone-500' };
+                      return (
+                        <button key={i}
+                          onClick={() => { setSelectedCat(entry.cat); setExpandedIdx(null); }}
+                          className={`relative text-left rounded-2xl overflow-hidden p-4 transition-all hover:scale-[1.02] active:scale-[0.98] ${dark?'bg-white/[0.05] hover:bg-white/[0.08] border border-white/10':'bg-white hover:bg-stone-50 border border-stone-200/80 shadow-sm'}`}>
+                          <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${meta.color}`} />
+                          <div className="flex items-start justify-between gap-1 mb-2">
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gradient-to-r ${meta.color} text-white`}>{meta.emoji}</span>
+                            <span onClick={e => e.stopPropagation()}><SpeakBtn text={entry.es} size="sm" /></span>
+                          </div>
+                          <p className="font-serif font-bold text-base leading-snug">{entry.es}</p>
+                          <p className={`text-[11px] mt-1 font-medium line-clamp-1 ${dark?'text-stone-400':'text-stone-500'}`}>{entry.en}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
             <div className="mb-5">
               <p className={`text-[10px] font-bold tracking-widest uppercase mb-1.5 ${dark?'text-stone-500':'text-stone-400'}`}>Explora por tema</p>
               <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
