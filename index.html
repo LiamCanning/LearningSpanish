@@ -6461,6 +6461,7 @@ function Inicio({ dark, section, setSection }) {
       {id:'conjugador', label:'Conjugador', sub:'Any verb, any tense'},
       {id:'frases', label:'Conectores', sub:'Linking words', _alt:'frases'},
       {id:'chuletas', label:'Chuletas', sub:'Cheat sheets'},
+      {id:'gramatica', label:'Gramática', sub:'Learn sentence patterns'},
     ]},
     { title: 'Vocabulario', items: [
       {id:'vocabulario', label:'Vocabulario', sub:'Themes & glossary'},
@@ -10467,6 +10468,508 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
           { id:'valencia',    emoji:'🍊', label:'Valencià',    sub:'Basics for Valencia & the levant',                             color:'from-amber-400 to-yellow-500', onClick:()=>goSection('valencia') },
           { id:'conectores',  emoji:'🔗', label:'Conectores',  sub:'Connectors & discourse markers',                               color:'from-teal-400 to-cyan-500',    onClick:()=>goSection('conectores') },
         ]} />
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION: Gramática – interactive grammar lessons
+// ============================================================
+
+const GRAMMAR_LESSONS = [
+  {
+    id:'adjective-placement', title:'¿Dónde va la palabra?', titleEn:'Where describing words go',
+    level:'A2', category:'building', icon:'📐', color:'from-orange-400 to-amber-500',
+    summary:'Why "un coche rojo" but "un gran hombre" — the before/after rule that governs every sentence.',
+    formula:'THING + describing word ← default (80%)\ndescribing word + THING ← feeling / emphasis',
+    video:{ id:'gGwmic8WhE4', title:'Adjective Placement in Spanish: Mal vs Malo, Gran vs Grande and More', channel:'Tell Me In Spanish' },
+    sections:[
+      { heading:'The one rule you need', text:'In English, describing words always go BEFORE: "a red car." In Spanish, the default is AFTER: "un coche rojo." When in doubt, put the describing word after — you\'ll be right most of the time. It only goes before when you\'re expressing a feeling, emphasis, or opinion.' },
+      { heading:'AFTER = factual, objective, which one?', examples:[
+        {es:'un coche rojo',en:'a red car — colour = always after'},
+        {es:'un director deportivo nuevo',en:'a new sporting director — "deportivo" = type label, "nuevo" = which one'},
+        {es:'un chico español',en:'a Spanish guy — nationality = always after'},
+        {es:'una mesa grande',en:'a big table — factual size = after'},
+      ]},
+      { heading:'BEFORE = feeling, emphasis, common short words', examples:[
+        {es:'un gran hombre',en:'a great man — your feeling/opinion about him'},
+        {es:'una hermosa ciudad',en:'a beautiful city — subjective, emotional'},
+        {es:'un buen día',en:'a good day — bueno/malo/grande often go before'},
+        {es:'tres personas, mucha gente',en:'numbers and amounts always go first'},
+      ]},
+      { heading:'★ Some words change meaning by position', examples:[
+        {es:'un viejo amigo = a long-time friend',en:'un amigo viejo = an elderly friend'},
+        {es:'un gran hombre = a great man',en:'un hombre grande = a big/tall man'},
+        {es:'pobre chico = poor thing (sympathy)',en:'un chico pobre = a poor (no money) boy'},
+        {es:'un nuevo coche = a different car',en:'un coche nuevo = a brand-new car'},
+      ]},
+    ],
+    practice:[
+      {q:'How do you say "a red house"?', opts:['una roja casa','una casa roja','una casa rojo'], correct:1, why:'"Roja" is a colour → always AFTER. And "casa" is feminine → roja (not rojo).'},
+      {q:'"She\'s a great teacher" (meaning excellent, not physically big)', opts:['Es una profesora grande','Es una gran profesora','Es una profesora gran'], correct:1, why:'"Gran" before = great (your opinion/feeling). After = physically big.'},
+      {q:'"An old friend of mine" (known them for years)', opts:['un amigo viejo mío','un viejo amigo mío','un antiguo amigo mío'], correct:1, why:'"Viejo" BEFORE = long-time. After = elderly. (Both "viejo" and "antiguo" work before.)'},
+      {q:'Which is correct: "un deportivo director" or "un director deportivo"?', opts:['un deportivo director','un director deportivo','both are correct'], correct:1, why:'"Deportivo" is a type/category label. Type labels ALWAYS go after: director deportivo, selección nacional.'},
+      {q:'"A unique opportunity" (one of a kind)', opts:['una única oportunidad','una oportunidad única','la sola oportunidad'], correct:1, why:'"Único" AFTER = unique/one-of-a-kind. Before = "the only one" (la única oportunidad = the only opportunity).'},
+    ]
+  },
+  {
+    id:'lo-que', title:'"Lo que" — the thing that...', titleEn:'How to say "what" when it isn\'t a question',
+    level:'A2', category:'connecting', icon:'🔗', color:'from-blue-400 to-indigo-500',
+    summary:'"Lo que quiero", "lo que hay", "lo que pasa" — the pattern you\'ll use 20 times a day.',
+    formula:'lo que + ACTION = what / the thing that\n"lo" = the thing · "que" = that · together = "what"',
+    video:{ id:'rWiuu-X1sSA', title:'Learn How to Use LO QUE in Spanish', channel:'Adventures in Spanish' },
+    sections:[
+      { heading:'What is "lo que"?', text:'Think of "lo que" as a single unit meaning "the thing that" or "what" (when "what" isn\'t a question). You can\'t point at it — it\'s an idea, a concept, a situation. "Lo" = the thing. "Que" = that. Together: "the thing that" = "what".' },
+      { heading:'The core patterns', examples:[
+        {es:'Lo que quiero es descansar.',en:'What I want is to rest. (The thing that I want…)'},
+        {es:'No entiendo lo que dices.',en:'I don\'t understand what you\'re saying.'},
+        {es:'Es lo que hay.',en:'It is what it is. (Literally: it\'s the-thing-that exists.)'},
+        {es:'Lo que pasa es que no tengo tiempo.',en:'The thing is I don\'t have time. (What\'s happening is that…)'},
+      ]},
+      { heading:'"Lo que" vs "qué" — what\'s the difference?', text:'"Qué" is for QUESTIONS: "¿Qué quieres?" (What do you want?). "Lo que" is for STATEMENTS — when "what" isn\'t a question but refers to a thing: "Lo que quiero es dormir" (What I want is to sleep). If you can replace it with "the thing that" → use "lo que".' },
+      { heading:'Combinations you\'ll hear daily', examples:[
+        {es:'Lo que más me gusta de España es la comida.',en:'What I like most about Spain is the food.'},
+        {es:'Todo lo que sé lo aprendí aquí.',en:'Everything I know, I learned here.'},
+        {es:'Haz lo que quieras.',en:'Do whatever you want. (Do the-thing-that you want.)'},
+        {es:'No es lo que parece.',en:'It\'s not what it looks like.'},
+      ]},
+    ],
+    practice:[
+      {q:'Translate: "I don\'t know what happened"', opts:['No sé qué pasó','No sé lo que pasó','No sé el que pasó'], correct:1, why:'"What happened" is a statement, not a question → "lo que". ("No sé qué pasó" is also accepted in casual speech, but "lo que" is the standard form.)'},
+      {q:'"What I need is coffee"', opts:['Qué necesito es café','Lo que necesito es café','El que necesito es café'], correct:1, why:'"What I need" = lo que necesito. "Lo" = the thing. "Que" = that. "Necesito" = I need.'},
+      {q:'Fill in: "Es ___ hay — no podemos cambiarlo"', opts:['el que','lo que','la que'], correct:1, why:'"Lo que hay" = what there is / what exists. "Lo" because it\'s an abstract thing, not a specific masculine/feminine noun.'},
+      {q:'"Do whatever you want"', opts:['Haz lo que quieras','Haz qué quieras','Haz el que quieras'], correct:0, why:'"Lo que quieras" = whatever you want. Subjunctive "quieras" because it\'s an open, indefinite "whatever".'},
+    ]
+  },
+  {
+    id:'ser-estar', title:'Ser vs Estar', titleEn:'The two "to be" verbs',
+    level:'A2', category:'tricky-verbs', icon:'⚖️', color:'from-emerald-400 to-green-500',
+    summary:'Both mean "to be" but in completely different situations. This is the fork that changes everything.',
+    formula:'SER = what something IS (permanent, defining)\nESTAR = how something IS RIGHT NOW (state, location, feeling)',
+    video:{ id:'BFmmvdANZl0', title:'Ser or estar?', channel:'Butterfly Spanish' },
+    sections:[
+      { heading:'The simplest way to think about it', text:'SER = what defines the thing. If you\'re describing what it IS (identity, job, origin, material, time) → SER. ESTAR = how it is right now or where it is. If you\'re describing a current STATE (mood, health, location, temporary condition) → ESTAR. The test: could it change tomorrow? → ESTAR. Is it a core fact? → SER.' },
+      { heading:'SER — identity, definition, permanence', examples:[
+        {es:'Soy irlandés.',en:'I\'m Irish. (origin — won\'t change)'},
+        {es:'Es profesora.',en:'She\'s a teacher. (job/identity)'},
+        {es:'Son las tres.',en:'It\'s three o\'clock. (time — always ser)'},
+        {es:'La mesa es de madera.',en:'The table is (made of) wood. (material)'},
+      ]},
+      { heading:'ESTAR — state, location, right now', examples:[
+        {es:'Estoy cansado.',en:'I\'m tired. (right now — will pass)'},
+        {es:'Estamos en Valencia.',en:'We\'re in Valencia. (location — always estar)'},
+        {es:'Está lloviendo.',en:'It\'s raining. (what\'s happening now)'},
+        {es:'¿Cómo estás?',en:'How are you? (current state)'},
+      ]},
+      { heading:'★ Same word, different verb, different meaning', examples:[
+        {es:'Es aburrido = He IS boring (as a person)',en:'Está aburrido = He IS bored (right now)'},
+        {es:'Es listo = He IS clever',en:'Está listo = He IS ready'},
+        {es:'Es rico = He IS rich',en:'Está rico = It TASTES delicious'},
+        {es:'Es malo = He IS a bad person',en:'Está malo = He IS ill / unwell'},
+      ]},
+    ],
+    practice:[
+      {q:'"I\'m tired" — ser or estar?', opts:['Soy cansado','Estoy cansado','Tengo cansado'], correct:1, why:'Tired is a temporary state → ESTAR. You won\'t be tired forever (hopefully).'},
+      {q:'"She\'s a doctor" — ser or estar?', opts:['Está doctora','Es doctora','Está una doctora'], correct:1, why:'Job/profession = identity = SER. It\'s what defines her.'},
+      {q:'"The food is delicious" (tasting it now)', opts:['La comida es rica','La comida está rica','La comida está delicioso'], correct:1, why:'"Está rica" = tastes great right now (state). "Es rica" would mean the food is inherently rich/wealthy.'},
+      {q:'"Where is the station?"', opts:['¿Dónde ser la estación?','¿Dónde es la estación?','¿Dónde está la estación?'], correct:2, why:'Physical location = ALWAYS estar. The station sits somewhere → estar.'},
+      {q:'"He\'s clever"', opts:['Es listo','Está listo','Es inteligente'], correct:0, why:'"Es listo" = clever (permanent trait, SER). "Está listo" = he\'s ready (temporary state, ESTAR). Both use the same word!'},
+    ]
+  },
+  {
+    id:'gustar', title:'Me gusta — backwards verbs', titleEn:'Verbs that work in reverse',
+    level:'A2', category:'tricky-verbs', icon:'🔄', color:'from-violet-400 to-purple-500',
+    summary:'"I like coffee" ≠ "Yo gusto café". Spanish flips it: "Coffee pleases ME" → Me gusta el café.',
+    formula:'English: I like coffee → I = doer, coffee = thing\nSpanish: Me gusta el café → coffee = doer, me = receiver\n"Coffee is-pleasing to me"',
+    video:{ id:'BQOPSJ67fbQ', title:'Me gusta - "to like" in Spanish', channel:'Butterfly Spanish' },
+    sections:[
+      { heading:'Why it\'s backwards', text:'In English YOU do the liking: "I like coffee." In Spanish, the THING does the pleasing: "Me gusta el café" = "Coffee is-pleasing to me." YOU are the receiver, not the doer. That\'s why you say "me" (to me), not "yo" (I). The verb agrees with the THING, not with you.' },
+      { heading:'The pattern', examples:[
+        {es:'Me gusta el café.',en:'I like coffee. (Coffee pleases me.)'},
+        {es:'Me gustan los perros.',en:'I like dogs. (Dogs please me — "gustan" because dogs is plural.)'},
+        {es:'Te gusta España.',en:'You like Spain. (Spain pleases you.)'},
+        {es:'Le gusta bailar.',en:'He/she likes dancing. (Dancing pleases him/her.)'},
+      ]},
+      { heading:'The receiver words — who is pleased', examples:[
+        {es:'Me gusta = I like (pleases me)',en:'me = to me'},
+        {es:'Te gusta = You like (pleases you)',en:'te = to you'},
+        {es:'Le gusta = He/she likes (pleases him/her)',en:'le = to him/her'},
+        {es:'Nos gusta = We like (pleases us)',en:'nos = to us'},
+      ]},
+      { heading:'Other verbs that work the same way', examples:[
+        {es:'Me encanta Valencia.',en:'I love Valencia. (Valencia enchants me.)'},
+        {es:'Me duele la cabeza.',en:'My head hurts. (The head hurts to me.)'},
+        {es:'Me falta tiempo.',en:'I lack time / I need time. (Time is lacking to me.)'},
+        {es:'Me da igual.',en:'I don\'t care. (It gives me equal.)'},
+        {es:'Me apetece una cerveza.',en:'I fancy a beer. (A beer appeals to me.)'},
+        {es:'Me cae bien tu hermano.',en:'I like your brother (as a person). (He falls well to me.)'},
+      ]},
+    ],
+    practice:[
+      {q:'"I like the beaches" — gusta or gustan?', opts:['Me gusta las playas','Me gustan las playas','Yo gusto las playas'], correct:1, why:'"Las playas" is plural → "gustan" (they please). The verb agrees with the thing, not with you.'},
+      {q:'"She likes dancing"', opts:['Ella gusta bailar','Le gusta bailar','La gusta bailar'], correct:1, why:'"Le" = to her. "Bailar" is singular (one activity) → "gusta". Never "ella gusta".'},
+      {q:'"We love this city"', opts:['Nos encantamos esta ciudad','Nos encanta esta ciudad','Nos encantan esta ciudad'], correct:1, why:'"Esta ciudad" = singular → "encanta". "Nos" = to us. Same backwards pattern as gustar.'},
+      {q:'"My head hurts"', opts:['Mi cabeza duele','Me duele la cabeza','Yo duelo la cabeza'], correct:1, why:'Doler works backwards like gustar: "la cabeza" is the doer (it hurts), "me" is the receiver (to me).'},
+    ]
+  },
+  {
+    id:'por-para', title:'Por vs Para', titleEn:'The two words for "for"',
+    level:'B1', category:'little-words', icon:'↔️', color:'from-rose-400 to-pink-500',
+    summary:'Both translate as "for" but they point in different directions: por looks back (cause), para looks forward (purpose).',
+    formula:'POR = because of / through / by / cause (WHY it happened)\nPARA = for / in order to / destination (WHAT it\'s for)',
+    video:{ id:'Cx3bu7et3Yw', title:'Por vs Para: Never Confuse the Two Again!', channel:'BaseLang' },
+    sections:[
+      { heading:'The mental model', text:'POR looks BACKWARDS — the reason behind something (because of, through, caused by). PARA looks FORWARDS — the purpose, destination, or goal (in order to, heading towards, meant for). When you\'re about to say "for", ask yourself: am I explaining WHY (→ por) or WHAT FOR / WHERE TO (→ para)?' },
+      { heading:'POR — the cause, the reason, the through', examples:[
+        {es:'Trabajo por dinero.',en:'I work because of money. (The cause/motivation.)'},
+        {es:'Gracias por tu ayuda.',en:'Thanks for your help. (Because of your help.)'},
+        {es:'Pasamos por Madrid.',en:'We went through Madrid. (Movement through.)'},
+        {es:'Fue hecho por ella.',en:'It was done by her. (By = agent in passive.)'},
+        {es:'Te llamo por la mañana.',en:'I\'ll call you in the morning. (During a time period.)'},
+      ]},
+      { heading:'PARA — the purpose, the destination, the deadline', examples:[
+        {es:'Trabajo para vivir.',en:'I work in order to live. (The purpose/goal.)'},
+        {es:'Es para ti.',en:'It\'s for you. (Intended recipient.)'},
+        {es:'Salimos para Madrid.',en:'We\'re leaving for Madrid. (Destination.)'},
+        {es:'Lo necesito para el lunes.',en:'I need it by Monday. (Deadline.)'},
+        {es:'Para mí, es fácil.',en:'For me / in my opinion, it\'s easy.'},
+      ]},
+      { heading:'★ Same sentence, different meaning', examples:[
+        {es:'Trabajo por ti = I work because of you',en:'(You\'re the reason/cause I work.)'},
+        {es:'Trabajo para ti = I work for you',en:'(You\'re the recipient/boss.)'},
+        {es:'Caminé por el parque = I walked through the park',en:'(Movement through a place.)'},
+        {es:'Caminé para el parque = I walked towards the park',en:'(Destination — heading there.)'},
+      ]},
+    ],
+    practice:[
+      {q:'"Thanks for coming"', opts:['Gracias para venir','Gracias por venir','Gracias de venir'], correct:1, why:'"Gracias" is always followed by POR — you\'re thanking because of their action (cause).'},
+      {q:'"This gift is for you"', opts:['Este regalo es por ti','Este regalo es para ti','Este regalo es a ti'], correct:1, why:'You = the intended recipient/destination of the gift → PARA.'},
+      {q:'"I study Spanish in order to travel"', opts:['Estudio español por viajar','Estudio español para viajar','Estudio español de viajar'], correct:1, why:'Travelling is the PURPOSE/GOAL → PARA. "In order to" = para.'},
+      {q:'"We walked through the city"', opts:['Caminamos para la ciudad','Caminamos por la ciudad','Caminamos en la ciudad'], correct:1, why:'Movement THROUGH a place → POR. If it were "towards the city" (destination) → para.'},
+    ]
+  },
+  {
+    id:'pronouns', title:'Me lo, te la, se lo', titleEn:'When two small words stack up',
+    level:'B1', category:'little-words', icon:'🧩', color:'from-cyan-400 to-teal-500',
+    summary:'How to say "give it to me", "I told her", "send it to him" — the double-pronoun combos.',
+    formula:'WHO receives it + WHAT is it + ACTION\nme/te/le/nos + lo/la/los/las + verb\n★ le + lo → SE lo (le disappears, se takes over)',
+    video:{ id:'ZJX_A8Qh7Dc', title:'The Easiest SE vs LE Explanation – Spanish Double Object Pronouns', channel:'Tell Me In Spanish' },
+    sections:[
+      { heading:'Why two small words?', text:'In English: "Give me the book" → "Give it to me" → "Give me it." You replaced "the book" with "it" and "to me" with "me". Spanish does the same thing but puts BOTH small words BEFORE the verb: "Dámelo" = "Give-me-it".' },
+      { heading:'The order: receiver first, then the thing', examples:[
+        {es:'Me lo dijo.',en:'He told me it. (me = to me, lo = it)'},
+        {es:'Te la mando.',en:'I\'ll send it to you. (te = to you, la = it [feminine])'},
+        {es:'Nos lo explicó.',en:'She explained it to us. (nos = to us, lo = it)'},
+      ]},
+      { heading:'★ The le → se swap', text:'When "le" (to him/her) meets "lo/la" (it), "le" turns into "se". You CANNOT say "le lo" — it becomes "se lo". This is the one rule everyone forgets.', examples:[
+        {es:'✗ Le lo dije → ✓ Se lo dije',en:'I told him/her. (le + lo = se lo)'},
+        {es:'✗ Les la mandé → ✓ Se la mandé',en:'I sent it to them. (les + la = se la)'},
+        {es:'¿Se lo has dicho?',en:'Have you told him/her? (se = to him/her, lo = it)'},
+      ]},
+      { heading:'Where they go — before or stuck on', examples:[
+        {es:'Me lo dijo. (normal verb → before)',en:'He told me it.'},
+        {es:'Quiero dártelo. = Te lo quiero dar.',en:'I want to give it to you. (infinitive → either position)'},
+        {es:'¡Dámelo! (command → stuck to the end)',en:'Give it to me!'},
+        {es:'No me lo digas. (negative command → before)',en:'Don\'t tell me.'},
+      ]},
+    ],
+    practice:[
+      {q:'"I told her (it)" — how do you combine le + lo?', opts:['Le lo dije','Se lo dije','Lo le dije'], correct:1, why:'le + lo = se lo. Le always becomes "se" when followed by lo/la/los/las.'},
+      {q:'"Give it to me!" (command)', opts:['Me lo da','Dámelo','Me da lo'], correct:1, why:'Positive commands → pronouns attach to the END of the verb: da + me + lo = dámelo.'},
+      {q:'"I\'ll send it to you" (te + la)', opts:['La te mando','Te la mando','Se la mando'], correct:1, why:'Receiver first (te), then the thing (la), then the verb: Te la mando.'},
+      {q:'"Don\'t tell me" (negative command)', opts:['No dígame','No me lo digas','No me digas lo'], correct:1, why:'Negative commands → pronouns go BEFORE: No me lo digas.'},
+    ]
+  },
+  {
+    id:'subjunctive-intro', title:'El subjuntivo — the "other world"', titleEn:'When reality isn\'t the point',
+    level:'B1', category:'connecting', icon:'🌀', color:'from-amber-400 to-orange-500',
+    summary:'The subjunctive isn\'t a tense — it\'s a mood. You use it when you\'re talking about wishes, doubts, or things that haven\'t happened yet.',
+    formula:'TRIGGER word + QUE + subjunctive verb\nQuiero que VENGAS (I want you to come)\nEspero que SEA fácil (I hope it\'s easy)',
+    video:{ id:'q4crcCjuMDE', title:'El secreto del subjuntivo en español', channel:'Español con Juan' },
+    sections:[
+      { heading:'What is the subjunctive?', text:'Normal verbs describe what IS happening, what DID happen, or what WILL happen — that\'s the "indicative" (the real world). The subjunctive is for the "other world" — wishes, desires, doubts, emotions, things that MIGHT happen. If the sentence is about wanting, hoping, doubting, or feelings about someone else\'s action → subjunctive.' },
+      { heading:'The triggers — words that open the subjunctive door', examples:[
+        {es:'Quiero que vengas.',en:'I want you to come. (Wanting → subjunctive)'},
+        {es:'Espero que todo salga bien.',en:'I hope everything goes well. (Hoping → subjunctive)'},
+        {es:'No creo que sea verdad.',en:'I don\'t think it\'s true. (Doubt → subjunctive)'},
+        {es:'Me alegra que estés aquí.',en:'I\'m glad you\'re here. (Emotion about someone else → subjunctive)'},
+      ]},
+      { heading:'The pattern is always the same', text:'TRIGGER + que + SUBJUNCTIVE VERB. The trigger is in the main part of the sentence (what I want / I hope / I doubt). After "que", the second verb goes into subjunctive. The two parts must have DIFFERENT subjects: "I want HIM to come." If the subject is the same, you just use the infinitive: "Quiero ir" (I want to go).' },
+      { heading:'Triggers you already know', examples:[
+        {es:'Quiero que… (I want…)',en:'Quiero que me llames. = I want you to call me.'},
+        {es:'Espero que… (I hope…)',en:'Espero que te guste. = I hope you like it.'},
+        {es:'No creo que… (I don\'t think…)',en:'No creo que pueda ir. = I don\'t think I can go.'},
+        {es:'Cuando + future idea',en:'Cuando llegues, avísame. = When you arrive, let me know.'},
+        {es:'Ojalá… (If only / I wish…)',en:'Ojalá fuera verdad. = If only it were true.'},
+      ]},
+    ],
+    practice:[
+      {q:'"I want you to come" — which form?', opts:['Quiero que vienes','Quiero que vengas','Quiero que venir'], correct:1, why:'"Quiero que" (wanting someone else to do something) → triggers subjunctive. "Vengas" is the subjunctive of "venir".'},
+      {q:'"I hope it rains" — which form?', opts:['Espero que llueve','Espero que llueva','Espero que llover'], correct:1, why:'"Espero que" (hope) → triggers subjunctive. "Llueva" is the subjunctive of "llover".'},
+      {q:'"I want to go" (same person wants and goes)', opts:['Quiero que vaya','Quiero ir','Quiero que ir'], correct:1, why:'Same subject (I want, I go) → no "que", just infinitive: "Quiero ir". Subjunctive is only for DIFFERENT subjects.'},
+      {q:'"When you arrive, call me"', opts:['Cuando llegas, llámame','Cuando llegues, llámame','Cuando llegarás, llámame'], correct:1, why:'"Cuando" + future idea → subjunctive. The arrival hasn\'t happened yet — it\'s in the "other world".'},
+    ]
+  },
+  {
+    id:'word-order', title:'Spanish word order', titleEn:'Where things go (and why it\'s flexible)',
+    level:'A2', category:'building', icon:'🏗️', color:'from-stone-400 to-zinc-500',
+    summary:'Spanish lets you move words around more than English. Learn the default order, then learn when to break it.',
+    formula:'Default: DOER + ACTION + THING\nFlexible: THING + ACTION + DOER (for emphasis)\n"No" ALWAYS sticks to the front of the action',
+    video:{ id:'uuxvgK8mE0Y', title:'Demystifying Word Order in Spanish', channel:'Spanish With Qroo Paul' },
+    sections:[
+      { heading:'The default — same as English', text:'The basic order is the same: DOER → ACTION → THING. "María tiene un coche" = "María has a car." The difference is that Spanish lets you shuffle these around for emphasis, and you can drop the doer entirely because verb endings already tell you who.' },
+      { heading:'Dropping the doer', text:'English always needs "I", "you", "he". Spanish doesn\'t. "Tengo hambre" = I\'m hungry. The verb "tengo" already means "I have" — saying "yo" would actually sound weird or overly emphatic.', examples:[
+        {es:'Tengo hambre.',en:'(I) am hungry. — No need for "yo".'},
+        {es:'¿Quieres café?',en:'(Do you) want coffee? — No need for "tú".'},
+        {es:'YO no quiero café.',en:'I don\'t want coffee. — "Yo" here = emphasis: I don\'t (but maybe you do).'},
+      ]},
+      { heading:'Where "no" goes', text:'"No" is simple: it always goes RIGHT BEFORE the action word. If there are small words (me, lo, te) between, "no" still goes first in the group.', examples:[
+        {es:'No quiero.',en:'I don\'t want (it).'},
+        {es:'No lo sé.',en:'I don\'t know. (no + lo + sé)'},
+        {es:'No me gusta.',en:'I don\'t like it. (no + me + gusta)'},
+        {es:'No se lo he dicho.',en:'I haven\'t told him. (no + se + lo + he dicho)'},
+      ]},
+      { heading:'Questions — just add ¿?', text:'Spanish doesn\'t flip word order for questions the way English does. Often the only difference is the question marks and your voice going up. Sometimes the doer moves to the end.', examples:[
+        {es:'¿Tienes hambre?',en:'Are you hungry? (Same order as a statement, just ¿?)'},
+        {es:'¿Dónde vive María?',en:'Where does María live? (Question word first, doer can go to the end.)'},
+        {es:'¿Qué quieres?',en:'What do you want? (Question word + verb — doer dropped.)'},
+      ]},
+    ],
+    practice:[
+      {q:'How do you say "I don\'t know" naturally?', opts:['Yo no sé','No sé / No lo sé','Sé no'], correct:1, why:'Drop "yo" (the verb already means "I know"). "No" goes right before the verb. "No lo sé" adds "lo" (it) for emphasis.'},
+      {q:'"She doesn\'t like it" — where does "no" go?', opts:['Ella no le gusta','No le gusta','Le no gusta'], correct:1, why:'"No" always goes FIRST in the pronoun + verb group: No + le + gusta. Drop "ella" — the verb tells us who.'},
+      {q:'How do you ask "Do you want coffee?" naturally?', opts:['¿Tú quieres café?','¿Quieres café?','¿Hace tú querer café?'], correct:1, why:'Just the verb + thing + question marks. No need for "tú" — the verb ending tells us it\'s "you".'},
+    ]
+  },
+  {
+    id:'que-connector', title:'"Que" — the word that holds Spanish together', titleEn:'Why you can never drop "that"',
+    level:'A2', category:'connecting', icon:'🔗', color:'from-sky-400 to-blue-500',
+    summary:'English drops "that" constantly: "the book I bought." Spanish NEVER can: "el libro QUE compré."',
+    formula:'"que" = that / which / who — the universal connector\nEnglish drops it. Spanish NEVER does.',
+    video:{ id:'OB3pJR_VDXY', title:'How to use QUE in Spanish', channel:'SpanishPod101' },
+    sections:[
+      { heading:'What "que" does', text:'"Que" is the glue that connects two ideas into one sentence. In English you use "that", "which", "who" — or often nothing at all ("the book I bought"). In Spanish, it\'s ALWAYS "que" and you can NEVER leave it out.' },
+      { heading:'Connecting to a thing', examples:[
+        {es:'El libro que compré es bueno.',en:'The book (that) I bought is good. English can drop "that" — Spanish can\'t.'},
+        {es:'La chica que vive aquí es de Madrid.',en:'The girl who lives here is from Madrid. "Que" = who for people too.'},
+        {es:'La película que vimos ayer fue genial.',en:'The film (that) we saw yesterday was great.'},
+      ]},
+      { heading:'After thinking/saying/believing words', text:'After creo, pienso, digo, sé, creer, pensar, decir, saber — you always need "que" before the next idea. English says "I think he\'s right" (no "that"). Spanish: "Creo que tiene razón."', examples:[
+        {es:'Creo que sí.',en:'I think so. (I think that yes.)'},
+        {es:'Dice que viene mañana.',en:'She says (that) she\'s coming tomorrow.'},
+        {es:'Sé que es difícil.',en:'I know (that) it\'s hard.'},
+        {es:'No creo que sea verdad.',en:'I don\'t think (that) it\'s true.'},
+      ]},
+      { heading:'"Es que" — the excuse-maker', text:'"Es que" literally means "it\'s that" but functions like "the thing is..." or "it\'s just that...". It\'s the most common way to softly introduce a reason or excuse.', examples:[
+        {es:'– ¿Por qué no viniste? – Es que estaba enfermo.',en:'– Why didn\'t you come? – (The thing is) I was ill.'},
+        {es:'Es que no tengo tiempo.',en:'It\'s just that I don\'t have time.'},
+      ]},
+    ],
+    practice:[
+      {q:'"The car I bought" — how do you connect these?', opts:['El coche compré','El coche que compré','El coche cual compré'], correct:1, why:'You MUST use "que" to connect "the car" and "I bought". Spanish never drops it like English does.'},
+      {q:'"I think he\'s right"', opts:['Pienso tiene razón','Pienso que tiene razón','Pienso de tiene razón'], correct:1, why:'After creer/pensar → always "que" before the next idea: "Pienso que tiene razón."'},
+      {q:'"The thing is, I can\'t"', opts:['La cosa es no puedo','Es que no puedo','Eso es no puedo'], correct:1, why:'"Es que" = the thing is / it\'s just that. Very common soft excuse pattern.'},
+    ]
+  },
+];
+
+const GRAMMAR_CATEGORIES = [
+  { id:'building', label:'Building sentences', emoji:'🏗️', color:'from-orange-400 to-amber-500' },
+  { id:'connecting', label:'Connecting ideas', emoji:'🔗', color:'from-blue-400 to-indigo-500' },
+  { id:'tricky-verbs', label:'Tricky verbs', emoji:'⚖️', color:'from-emerald-400 to-green-500' },
+  { id:'little-words', label:'Little words', emoji:'🧩', color:'from-rose-400 to-pink-500' },
+];
+
+function GramaticaSection({ onBack, dark, onSearch }) {
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const [practiceMode, setPracticeMode] = useState(false);
+  const [answers, setAnswers] = useState({});
+  const [showResults, setShowResults] = useState({});
+
+  const handleAnswer = (qIdx, optIdx) => {
+    if (showResults[qIdx] !== undefined) return;
+    setAnswers(a => ({...a, [qIdx]: optIdx}));
+    setShowResults(r => ({...r, [qIdx]: optIdx}));
+  };
+
+  const resetPractice = () => { setAnswers({}); setShowResults({}); };
+
+  // ── Lesson detail view ──
+  if (selectedLesson) {
+    const lesson = selectedLesson;
+    const catMeta = GRAMMAR_CATEGORIES.find(c => c.id === lesson.category) || GRAMMAR_CATEGORIES[0];
+    const practiceScore = lesson.practice ? Object.keys(showResults).filter(k => showResults[k] === lesson.practice[k]?.correct).length : 0;
+    const practiceTotal = lesson.practice ? lesson.practice.length : 0;
+    const allAnswered = practiceTotal > 0 && Object.keys(showResults).length === practiceTotal;
+
+    return (
+      <div>
+        <BackHeader title={lesson.title} subtitle={lesson.titleEn} onBack={() => { setSelectedLesson(null); setPracticeMode(false); resetPractice(); }} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto space-y-6">
+
+          {/* Hero / formula card */}
+          <div className={`rounded-2xl p-6 bg-gradient-to-br ${lesson.color} text-white shadow-lg`}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-3xl">{lesson.icon}</span>
+              <span className={`text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/25`}>{lesson.level}</span>
+              <span className="text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/20">{catMeta.label}</span>
+            </div>
+            <p className="font-serif font-bold text-2xl lg:text-3xl leading-tight mb-3">{lesson.title}</p>
+            <p className="text-sm opacity-90 mb-4">{lesson.summary}</p>
+            {lesson.formula && (
+              <div className="bg-black/20 rounded-xl p-4 font-mono text-sm leading-relaxed whitespace-pre-line">{lesson.formula}</div>
+            )}
+          </div>
+
+          {/* Toggle: Learn / Practice */}
+          <div className="flex gap-2">
+            <button onClick={() => { setPracticeMode(false); }} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${!practiceMode ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+              📖 Aprende
+            </button>
+            {lesson.practice && lesson.practice.length > 0 && (
+              <button onClick={() => { setPracticeMode(true); resetPractice(); }} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${practiceMode ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+                🧠 Practica ({practiceTotal})
+              </button>
+            )}
+          </div>
+
+          {!practiceMode ? (
+            <>
+              {/* Sections */}
+              {lesson.sections.map((sec, si) => (
+                <Card key={si} dark={dark} className="p-5">
+                  {sec.heading && <p className={`text-base font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{sec.heading}</p>}
+                  {sec.text && <p className={`text-base leading-relaxed mb-4 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{sec.text}</p>}
+                  {sec.examples && (
+                    <div className="space-y-3">
+                      {sec.examples.map((ex, ei) => (
+                        <div key={ei} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
+                          <div className="flex items-start gap-2">
+                            <p className="font-serif font-bold text-base flex-1">{ex.es}</p>
+                            <SpeakBtn text={ex.es} size="sm" />
+                          </div>
+                          <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{ex.en}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              ))}
+
+              {/* Video embed */}
+              {lesson.video && lesson.video.id && (
+                <Card dark={dark} className="overflow-hidden">
+                  <div className={`px-5 py-3 border-b ${dark ? 'border-white/10' : 'border-stone-100'}`}>
+                    <p className={`text-xs font-bold uppercase tracking-widest ${dark ? 'text-stone-400' : 'text-stone-500'}`}>📺 Video — {lesson.video.channel}</p>
+                    <p className={`text-sm font-semibold mt-0.5 ${dark ? 'text-stone-200' : 'text-stone-700'}`}>{lesson.video.title}</p>
+                  </div>
+                  <div className="aspect-video">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${lesson.video.id}`}
+                      title={lesson.video.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                      loading="lazy"
+                    />
+                  </div>
+                </Card>
+              )}
+            </>
+          ) : (
+            /* Practice mode */
+            <div className="space-y-4">
+              {allAnswered && (
+                <div className={`rounded-2xl p-5 text-center ${practiceScore === practiceTotal ? (dark ? 'bg-emerald-500/20' : 'bg-emerald-50') : (dark ? 'bg-amber-500/20' : 'bg-amber-50')}`}>
+                  <p className="text-3xl mb-2">{practiceScore === practiceTotal ? '🎉' : '💪'}</p>
+                  <p className={`font-bold text-lg ${practiceScore === practiceTotal ? (dark ? 'text-emerald-300' : 'text-emerald-700') : (dark ? 'text-amber-300' : 'text-amber-700')}`}>
+                    {practiceScore} / {practiceTotal} {practiceScore === practiceTotal ? '¡Perfecto!' : '— Sigue practicando'}
+                  </p>
+                  <button onClick={resetPractice} className="mt-3 text-sm font-semibold text-orange-600 hover:text-orange-800">↻ Reintentar</button>
+                </div>
+              )}
+              {lesson.practice.map((p, qi) => {
+                const answered = showResults[qi] !== undefined;
+                const isCorrect = answered && showResults[qi] === p.correct;
+                return (
+                  <Card key={qi} dark={dark} className={`p-5 ${answered ? (isCorrect ? 'ring-2 ring-emerald-400' : 'ring-2 ring-rose-400') : ''}`}>
+                    <p className={`font-bold text-base mb-3 ${dark ? 'text-stone-100' : 'text-stone-800'}`}>
+                      <span className={`inline-block w-7 h-7 rounded-full text-center leading-7 text-sm font-bold mr-2 ${dark ? 'bg-white/10' : 'bg-stone-100'}`}>{qi + 1}</span>
+                      {p.q}
+                    </p>
+                    <div className="space-y-2">
+                      {p.opts.map((opt, oi) => {
+                        const isSelected = answers[qi] === oi;
+                        const isThisCorrect = oi === p.correct;
+                        let btnClass = dark ? 'bg-white/[0.06] text-stone-200 hover:bg-white/[0.1] border-white/10' : 'bg-white text-stone-800 hover:bg-stone-50 border-stone-200';
+                        if (answered && isThisCorrect) btnClass = 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold';
+                        else if (answered && isSelected && !isThisCorrect) btnClass = 'bg-rose-100 text-rose-800 border-rose-300';
+                        else if (answered) btnClass = dark ? 'bg-white/[0.03] text-stone-500 border-white/5' : 'bg-stone-50 text-stone-400 border-stone-100';
+                        return (
+                          <button key={oi} onClick={() => handleAnswer(qi, oi)} disabled={answered}
+                            className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-colors ${btnClass}`}>
+                            {opt}
+                            {answered && isThisCorrect && ' ✓'}
+                            {answered && isSelected && !isThisCorrect && ' ✗'}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {answered && (
+                      <div className={`mt-3 rounded-xl p-3 text-sm ${isCorrect ? (dark ? 'bg-emerald-500/10 text-emerald-200' : 'bg-emerald-50 text-emerald-800') : (dark ? 'bg-rose-500/10 text-rose-200' : 'bg-rose-50 text-rose-800')}`}>
+                        <span className="font-bold">{isCorrect ? '✓ ' : '✗ '}</span>{p.why}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Index view ──
+  return (
+    <div>
+      <BackHeader title="Gramática" subtitle="Learn how Spanish sentences work" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+        <div className="mb-6">
+          <p className={`text-base leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>
+            No grammar jargon. Each lesson explains a pattern in plain terms, shows you real examples with audio, then lets you practise until it clicks.
+          </p>
+        </div>
+        {GRAMMAR_CATEGORIES.map(cat => {
+          const lessons = GRAMMAR_LESSONS.filter(l => l.category === cat.id);
+          if (!lessons.length) return null;
+          return (
+            <div key={cat.id} className="mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">{cat.emoji}</span>
+                <p className={`text-sm font-bold uppercase tracking-widest ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.label}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {lessons.map(lesson => (
+                  <button key={lesson.id} onClick={() => { setSelectedLesson(lesson); setPracticeMode(false); resetPractice(); }}
+                    className={`text-left rounded-2xl overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] border ${dark ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 hover:shadow-md shadow-sm'}`}>
+                    <div className={`h-1.5 bg-gradient-to-r ${lesson.color}`} />
+                    <div className="p-5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{lesson.icon}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${lesson.level === 'A2' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{lesson.level}</span>
+                      </div>
+                      <p className="font-serif font-bold text-lg leading-tight mb-1">{lesson.title}</p>
+                      <p className={`text-sm line-clamp-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{lesson.summary}</p>
+                      {lesson.practice && <p className={`text-xs mt-2 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>🧠 {lesson.practice.length} preguntas</p>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -15072,6 +15575,7 @@ function App() {
     { id: 'tiempos', label: 'Tiempos', emoji: '🕐' },
     { id: 'conjugador', label: 'Conjugador', emoji: '🔤' },
     { id: 'chuletas', label: 'Chuletas', emoji: '📋' },
+    { id: 'gramatica', label: 'Gramática', emoji: '📐' },
     { id: 'vocabulario', label: 'Vocabulario', emoji: '📚' },
     { id: 'frases', label: 'Frases', emoji: '💬' },
     { id: 'equivalentes', label: 'Cómo se dice', emoji: '🗣️' },
@@ -15092,6 +15596,7 @@ function App() {
       case 'tiempos': return <Tiempos {...props} />;
       case 'conjugador': return <ConjugadorSection {...props} />;
       case 'chuletas': return <Chuletas {...props} />;
+      case 'gramatica': return <GramaticaSection {...props} />;
       case 'vocabulario': return <Vocabulario {...props} />;
       case 'conectores': return <Frases {...props} initialTab="conectores" />;
       case 'frases': return <Frases {...props} />;
