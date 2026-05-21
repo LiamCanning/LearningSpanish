@@ -55,10 +55,10 @@
   }
 })();
 </script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com/3.4.1"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet" />
 <script>
 // ============================================================
@@ -5000,7 +5000,16 @@ const EXERCISES = [
       {id:'p5',type:'fill',level:'B1',title:'Irregular Preterite',question:'Ella no ___ (poder) venir a la reunión ayer.',answer:'pudo',hint:'Poder is irregular: pud- stem + irregular endings'},
       {id:'p6',type:'translation',level:'B1',title:'Traducción al español',question:'Yesterday they went to the beach and ate paella.',answer:'Ayer fueron a la playa y comieron paella.',hint:'Use indefinido for completed past actions'},
       {id:'p7',type:'match',level:'A2',title:'Marcadores temporales → tiempo verbal',pairs:[{left:'ayer',right:'indefinido'},{left:'siempre',right:'imperfecto'},{left:'hoy',right:'perfecto'},{left:'de repente',right:'indefinido'},{left:'de pequeño',right:'imperfecto'},{left:'ya',right:'perfecto'}]},
-      {id:'p8',type:'fill',level:'B1',title:'Pluscuamperfecto',question:'Cuando llegué, ellos ya ___ (salir).',answer:'habían salido',hint:'Haber imperfect (habían) + participio irregular (salido)'}
+      {id:'p8',type:'fill',level:'B1',title:'Pluscuamperfecto',question:'Cuando llegué, ellos ya ___ (salir).',answer:'habían salido',hint:'Haber imperfect (habían) + participio irregular (salido)'},
+      {id:'p9',type:'mcq',level:'B1',title:'Perfecto vs Indefinido',question:'"___ a Madrid muchas veces." (speaker is in Spain, talking about recent life)',options:['Fui','He ido','Iba','Iré'],answer:'He ido',hint:'In Spain, the pretérito perfecto is used for experiences connected to the present. In Latin America, "fui" would be more common.'},
+      {id:'p10',type:'fill',level:'B1',title:'Hace + que',question:'___ tres años ___ (vivir, yo) en España.',answer:'Hace / que vivo',hint:'Hace + period + que + present = ongoing since X ago'},
+      {id:'p11',type:'fill',level:'A2',title:'Imperfecto habitual',question:'De pequeño, ___ (jugar, yo) al fútbol todos los sábados.',answer:'jugaba',hint:'Regular -ar verb imperfecto: drop -ar, add -aba'},
+      {id:'p12',type:'mcq',level:'B1',title:'Llevar + gerundio',question:'"___ dos horas esperando." ¿Cómo completamos?',options:['Llevo','He llevado','Llevé','Llevaba'],answer:'Llevo',hint:'Llevar + gerundio = duration up to now. Llevo (present) + gerundio.'},
+      {id:'p13',type:'translation',level:'B1',title:'Traducción – tiempos mixtos',question:'When I arrived, he had already left, and now I\'ve been waiting for an hour.',answer:'Cuando llegué, él ya se había ido, y ahora llevo una hora esperando.',hint:'Indefinido (llegué) + pluscuamperfecto (había ido) + llevar + gerundio'},
+      {id:'p14',type:'mcq',level:'A2',title:'Participio irregular',question:'¿Cuál es el participio de "ver"?',options:['visto','veado','veido','vido'],answer:'visto',hint:'Ver → visto (irregular). Common irregulars: visto, hecho, dicho, escrito, puesto.'},
+      {id:'p15',type:'fill',level:'B1',title:'Se + verbo accidental',question:'___ olvidé el pasaporte en casa.',answer:'Se me',hint:'"Se me olvidó" = I forgot (it slipped my mind). Se + indirect object + verb.'},
+      {id:'p16',type:'match',level:'B1',title:'Participios irregulares',pairs:[{left:'abrir',right:'abierto'},{left:'escribir',right:'escrito'},{left:'poner',right:'puesto'},{left:'decir',right:'dicho'},{left:'romper',right:'roto'},{left:'volver',right:'vuelto'}]},
+      {id:'p17',type:'mcq',level:'B1',title:'Estar + participio (pasiva)',question:'"La puerta ___ cerrada." ¿Ser o estar?',options:['es','está','fue','sería'],answer:'está',hint:'Estar + participio = result state (the door is [already] closed). Ser + participio = passive action.'}
     ]
   },
   {
@@ -5016,7 +5025,16 @@ const EXERCISES = [
       {id:'pr5',type:'mcq',level:'B1',title:'Reflexivos',question:'Ella ___ todos los días a las siete.',options:['levanta','se levanta','levantarse','levantamos'],answer:'se levanta',hint:'Levantarse is reflexive. Third person singular reflexive pronoun = se'},
       {id:'pr6',type:'translation',level:'B1',title:'Ser vs Estar – traducción',question:'The coffee is cold but the milk is delicious.',answer:'El café está frío pero la leche está buenísima.',hint:'Conditions and tastes use ESTAR'},
       {id:'pr7',type:'mcq',level:'B1',title:'Cambio de significado',question:'"Está listo" significa:',options:['He\'s clever','He\'s ready','He\'s evil','He\'s bored'],answer:'He\'s ready',hint:'Estar + listo = ready. Ser + listo = clever.'},
-      {id:'pr8',type:'fill',level:'A2',title:'Gerundio',question:'¿Qué estás ___? – Estoy ___ (leer) un libro muy interesante.',answer:'haciendo / leyendo',hint:'Hacer → haciendo (regular). Leer → leyendo (vowel change: i→y)'}
+      {id:'pr8',type:'fill',level:'A2',title:'Gerundio',question:'¿Qué estás ___? – Estoy ___ (leer) un libro muy interesante.',answer:'haciendo / leyendo',hint:'Hacer → haciendo (regular). Leer → leyendo (vowel change: i→y)'},
+      {id:'pr9',type:'fill',level:'A2',title:'Gustar – estructura',question:'A mí ___ (encantar) el café con leche por las mañanas.',answer:'me encanta',hint:'Gustar-type verbs: A mí me + verb (3rd person singular if noun is singular)'},
+      {id:'pr10',type:'mcq',level:'A2',title:'Soler + infinitivo',question:'"___ desayunar antes de las ocho." ¿Qué verbo?',options:['Suelo','Soy','Tengo','Estoy'],answer:'Suelo',hint:'Soler + infinitivo = to usually do. Soler is a stem-changing verb: suelo/sueles/suele...'},
+      {id:'pr11',type:'mcq',level:'A2',title:'Saber vs Conocer',question:'"___ a Marta desde el colegio." ¿Saber o conocer?',options:['Sé','Conozco','Sabemos','Conocemos'],answer:'Conozco',hint:'Conocer = to know a person/place (familiarity). Saber = to know a fact or skill.'},
+      {id:'pr12',type:'fill',level:'B1',title:'Parecer – opiniones',question:'¿Qué ___ (parecer, a ti) el nuevo proyecto?',answer:'te parece',hint:'Gustar-type: a ti → te + parece. ¿Qué te parece? = What do you think of it?'},
+      {id:'pr13',type:'mcq',level:'A2',title:'Hay vs Está/Están',question:'"___ un banco cerca de aquí?" – asking if one exists',options:['Está','Están','Hay','Es'],answer:'Hay',hint:'Hay = there is/are (existence). Está/están = it is/they are (location of known thing).'},
+      {id:'pr14',type:'translation',level:'B1',title:'Más / menos que',question:'My sister is taller than me but less patient than my brother.',answer:'Mi hermana es más alta que yo pero menos paciente que mi hermano.',hint:'más + adj. + que / menos + adj. + que'},
+      {id:'pr15',type:'mcq',level:'B1',title:'Se impersonal',question:'"___ come muy bien en Valencia." ¿Qué expresa el se?',options:['Reflexive action','Passive/impersonal (one eats well)','Accidental action','Reciprocal action'],answer:'Passive/impersonal (one eats well)',hint:'Se impersonal: se + 3rd person. "Se come bien" = one eats well / you eat well.'},
+      {id:'pr16',type:'fill',level:'A2',title:'Querer – petición educada',question:'___ (querer, yo, conditional) reservar una mesa para dos.',answer:'Querría',hint:'Conditional makes requests polite. Quisiera also works (imperfect subj.) and is even more formal.'},
+      {id:'pr17',type:'match',level:'A2',title:'Verbos irregulares – yo',pairs:[{left:'ir',right:'voy'},{left:'hacer',right:'hago'},{left:'tener',right:'tengo'},{left:'venir',right:'vengo'},{left:'salir',right:'salgo'},{left:'traer',right:'traigo'}]}
     ]
   },
   {
@@ -5030,7 +5048,16 @@ const EXERCISES = [
       {id:'f3',type:'mcq',level:'B1',title:'Condicional',question:'"Yo que tú, ___ más despacio." ¿Qué tiempo?',options:['hablas','hablarías','hablarás','hables'],answer:'hablarías',hint:'Advice: yo que tú + condicional. Add -ías to infinitive.'},
       {id:'f4',type:'mcq',level:'A2',title:'Futuro vs Ir a',question:'¿Cuál es más común en el habla cotidiana para planes?',options:['Futuro simple','Ir a + infinitivo','Presente','Subjuntivo'],answer:'Ir a + infinitivo',hint:'In spoken Spanish, "ir a + inf" is much more common for plans.'},
       {id:'f5',type:'translation',level:'B1',title:'Traducción – futuro irregular',question:'When will you be able to come? I will do what I can.',answer:'¿Cuándo podrás venir? Haré lo que pueda.',hint:'poder → podrás. hacer → haré.'},
-      {id:'f6',type:'fill',level:'B1',title:'Condicional polite',question:'___ (querer, yo) un café con leche, por favor.',answer:'Querría',hint:'Conditional of querer: querr- + ía = querría. Very polite request.'}
+      {id:'f6',type:'fill',level:'B1',title:'Condicional polite',question:'___ (querer, yo) un café con leche, por favor.',answer:'Querría',hint:'Conditional of querer: querr- + ía = querría. Very polite request.'},
+      {id:'f7',type:'mcq',level:'B1',title:'Si + presente → futuro',question:'"Si ___ tiempo, te llamo esta tarde."',options:['tengo','tuviera','tenga','tendré'],answer:'tengo',hint:'Real/open condition: si + present indicative → future or present. Not subjunctive.'},
+      {id:'f8',type:'fill',level:'B1',title:'Futuro de probabilidad',question:'No sé dónde está. ___ (estar) en casa.',answer:'Estará',hint:'Future tense used to speculate about the present: estará = he/she is probably at home.'},
+      {id:'f9',type:'translation',level:'B1',title:'Traducción – condicional',question:'If I were you, I would call him before the meeting.',answer:'Yo que tú, le llamaría antes de la reunión.',hint:'"Yo que tú" + conditional. "Si yo fuera tú" also works.'},
+      {id:'f10',type:'fill',level:'B1',title:'Deber + condicional',question:'___ (deber, tú) descansar más. Te lo digo en serio.',answer:'Deberías',hint:'Deberías + infinitivo = you should. Softer and more common than debes.'},
+      {id:'f11',type:'mcq',level:'B1',title:'Para vs Por – propósito',question:'"Estudio español ___ hablar con mis socios en Madrid."',options:['por','para','a','de'],answer:'para',hint:'Para + infinitivo = purpose / in order to. Por + infinitivo = reason / because of.'},
+      {id:'f12',type:'match',level:'B1',title:'Verbos irregulares – futuro',pairs:[{left:'poder',right:'podr-'},{left:'saber',right:'sabr-'},{left:'haber',right:'habr-'},{left:'querer',right:'querr-'},{left:'venir',right:'vendr-'},{left:'salir',right:'saldr-'}]},
+      {id:'f13',type:'mcq',level:'B1',title:'En cuanto + subjuntivo',question:'"___ llegues, te mando un mensaje."',options:['Cuando','En cuanto','Antes de que','Para que'],answer:'En cuanto',hint:'En cuanto + subjuntivo = as soon as (future event). Identical structure to cuando.'},
+      {id:'f14',type:'fill',level:'B1',title:'Si hipotético – resultado',question:'Si tuviera más dinero, ___ (comprar, yo) una casa en Valencia.',answer:'compraría',hint:'Hypothetical si: si + imperfect subj. + conditional. Comprar → compraría.'},
+      {id:'f15',type:'mcq',level:'B1',title:'Probabilidad – pasado',question:'"¿Dónde estaría cuando llamé?" expresa:',options:['A future plan','A polite request','Speculation about the past','A wish'],answer:'Speculation about the past',hint:'Conditional used to speculate about past situation: estaría = he/she was probably...'}
     ]
   },
   {
@@ -5048,7 +5075,17 @@ const EXERCISES = [
       {id:'s7',type:'mcq',level:'B1',title:'Querer que + subjuntivo',question:'Quiero que tú ___ (venir) a la fiesta.',options:['vengas','vienes','vendrás','vinieras'],answer:'vengas',hint:'Querer que = desire = WEIRDO trigger → subjuntivo presente. Venir: yo vengo → venga → vengas.'},
       {id:'s8',type:'mcq',level:'B1',title:'Cuando + acción futura',question:'Te llamo cuando ___ (llegar) al hotel.',options:['llego','llege','llegue','llegaré'],answer:'llegue',hint:'Cuando + future action → present subjunctive. Llegar: yo llego → llegue.'},
       {id:'s9',type:'fill',level:'B1',title:'Ojalá',question:'___ que mañana no llueva. (I hope / if only)',answer:'Ojalá',hint:'Ojalá is an automatic subjunctive trigger. "Ojalá que" or just "ojalá + subj."'},
-      {id:'s10',type:'mcq',level:'B1',title:'Aunque + dudar vs. hecho',question:'"___ esté cansado, voy a salir esta noche."',options:['Aunque','Porque','Como','Cuando'],answer:'Aunque',hint:'Aunque + subjuntivo = even if (uncertain / hypothetical). Aunque + indicativo = even though (fact).'}
+      {id:'s10',type:'mcq',level:'B1',title:'Aunque + dudar vs. hecho',question:'"___ esté cansado, voy a salir esta noche."',options:['Aunque','Porque','Como','Cuando'],answer:'Aunque',hint:'Aunque + subjuntivo = even if (uncertain / hypothetical). Aunque + indicativo = even though (fact).'},
+      {id:'s11',type:'fill',level:'B1',title:'Para que + subjuntivo',question:'Te lo explico ___ ___ (entender, tú) bien.',answer:'para que entiendas',hint:'Para que (so that) always triggers subjunctive. Entender → entiendas (e→ie stem change + subj. ending)'},
+      {id:'s12',type:'mcq',level:'B1',title:'No creer que + subjuntivo',question:'"No creo que ___ verdad." ¿Indicativo o subjuntivo?',options:['es','sea','era','sería'],answer:'sea',hint:'Negative belief verbs (no creer, no pensar) trigger subjunctive. Ser → sea.'},
+      {id:'s13',type:'fill',level:'B1',title:'Antes de que + subjuntivo',question:'Llámame ___ ___ ___ (salir, tú).',answer:'antes de que salgas',hint:'Antes de que always needs subjunctive. Salir → salgas.'},
+      {id:'s14',type:'mcq',level:'B1',title:'Indefinite antecedent',question:'"Busco un piso que ___ céntrico." ¿Indicativo o subjuntivo?',options:['es','sea','está','esté'],answer:'sea',hint:'Searching for something that may not exist → subjunctive. If you know it exists: "busco el piso que es céntrico" → indicative.'},
+      {id:'s15',type:'fill',level:'B1',title:'Quizás / tal vez',question:'"___ mañana ___ (llover)." (expressing uncertainty)',answer:'Quizás / llueva',hint:'Quizás/tal vez + subjunctive (uncertain). Also possible with indicative but subjunctive is safer.'},
+      {id:'s16',type:'translation',level:'B1',title:'Traducción – si hipotético',question:'If we had more time, we would explain it better.',answer:'Si tuviéramos más tiempo, lo explicaríamos mejor.',hint:'Si + imperfect subj. (tuviéramos) + conditional (explicaríamos)'},
+      {id:'s17',type:'match',level:'B1',title:'Conectores → subjuntivo',pairs:[{left:'para que',right:'so that'},{left:'a menos que',right:'unless'},{left:'sin que',right:'without (sb doing)'},{left:'con tal de que',right:'provided that'},{left:'antes de que',right:'before (sb does)'},{left:'aunque',right:'even if (uncertain)'}]},
+      {id:'s18',type:'mcq',level:'B1',title:'A menos que',question:'"Saldré temprano ___ me avises de lo contrario."',options:['a menos que','para que','aunque','sin que'],answer:'a menos que',hint:'A menos que = unless. Always followed by subjunctive.'},
+      {id:'s19',type:'fill',level:'B1',title:'Sin que + subjuntivo',question:'Entró en la sala ___ nadie ___ (darse cuenta).',answer:'sin que / se diera cuenta',hint:'Sin que + subjunctive. Se diera cuenta = imperfect subj. of darse cuenta.'},
+      {id:'s20',type:'mcq',level:'B1',title:'Superlativo + subjuntivo',question:'"Es lo mejor que ___ (conocer, yo)."',options:['conozco','conozca','conocía','conociera'],answer:'conozca',hint:'Superlative relative clauses use subjunctive: "lo mejor que conozca" (ever encountered).'}
     ]
   },
   {
@@ -5064,7 +5101,16 @@ const EXERCISES = [
       {id:'v5',type:'mcq',level:'A2',title:'Vocabulario – transporte',question:'¿Cómo se dice "platform" en español?',options:['la parada','el andén','el billete','la salida'],answer:'el andén',hint:'El andén = railway platform. La parada = bus/metro stop.'},
       {id:'v6',type:'fill',level:'B1',title:'Conector de contraste',question:'Es muy caro; ___, vale la pena comprarlo.',answer:'sin embargo',hint:'Sin embargo = however/nevertheless. Introduces a concession.'},
       {id:'v7',type:'match',level:'B1',title:'Modismos – significados',pairs:[{left:'tener mala leche',right:'to be bad-tempered'},{left:'hablar por los codos',right:'to talk non-stop'},{left:'costar un ojo de la cara',right:'to cost a fortune'},{left:'tirar la toalla',right:'to give up'},{left:'ir al grano',right:'to get to the point'},{left:'hacer la vista gorda',right:'to turn a blind eye'}]},
-      {id:'v8',type:'mcq',level:'A2',title:'Slang – significado',question:'"¡Qué guay!" significa:',options:['How scary!','How cool / great!','How boring!','How strange!'],answer:'How cool / great!',hint:'Guay is informal Spain Spanish for "cool" or "great".'}
+      {id:'v8',type:'mcq',level:'A2',title:'Slang – significado',question:'"¡Qué guay!" significa:',options:['How scary!','How cool / great!','How boring!','How strange!'],answer:'How cool / great!',hint:'Guay is informal Spain Spanish for "cool" or "great".'},
+      {id:'v9',type:'mcq',level:'B1',title:'False friends – actualmente',question:'"Actualmente trabajo en Madrid." ¿Qué significa?',options:['Actually I work in Madrid','Currently I work in Madrid','I actually like Madrid','I used to work in Madrid'],answer:'Currently I work in Madrid',hint:'Actualmente = currently / nowadays. NOT "actually". "En realidad" = actually.'},
+      {id:'v10',type:'fill',level:'B1',title:'Conector – además',question:'El apartamento es céntrico; ___, tiene parking incluido.',answer:'además',hint:'Además = moreover / in addition. Adds a positive argument. Different from "también" (also).'},
+      {id:'v11',type:'translation',level:'B1',title:'Email profesional',question:'I am writing to follow up on our meeting last Thursday.',answer:'Me pongo en contacto para hacer un seguimiento de nuestra reunión del jueves pasado.',hint:'Me pongo en contacto (I am writing/reaching out). Hacer un seguimiento = to follow up.'},
+      {id:'v12',type:'match',level:'B1',title:'Negocios – vocabulario clave',pairs:[{left:'el traspaso',right:'transfer fee'},{left:'la cláusula de rescisión',right:'release clause'},{left:'los derechos de imagen',right:'image rights'},{left:'la participación minoritaria',right:'minority stake'},{left:'el advisory fee',right:'fixed adviser charge'},{left:'el mecanismo de solidaridad',right:'solidarity mechanism'}]},
+      {id:'v13',type:'mcq',level:'B1',title:'Preposición correcta',question:'"Depende ___ ti, no de mí."',options:['a','de','en','por'],answer:'de',hint:'Depender de = to depend on. De is the correct preposition here.'},
+      {id:'v14',type:'fill',level:'B1',title:'Conector – sin embargo',question:'El precio es alto; ___, el producto merece la pena.',answer:'sin embargo',hint:'Sin embargo = however / nevertheless. Introduces contrast or concession.'},
+      {id:'v15',type:'mcq',level:'B1',title:'Sensible – false friend',question:'"Es una persona muy sensible." ¿Qué significa?',options:['She is a very sensible person','She is a very sensitive person','She is very reasonable','She is very serious'],answer:'She is a very sensitive person',hint:'Sensible = sensitive (emotionally). "Sensato/a" = sensible (reasonable/level-headed).'},
+      {id:'v16',type:'match',level:'B1',title:'Conectores por función',pairs:[{left:'sin embargo',right:'contrast'},{left:'además',right:'addition'},{left:'por lo tanto',right:'result'},{left:'es decir',right:'clarification'},{left:'a pesar de',right:'concession'},{left:'ya que',right:'cause/reason'}]},
+      {id:'v17',type:'translation',level:'B1',title:'Frase de negociación',question:'We would need exclusivity for at least four weeks before we can proceed.',answer:'Necesitaríamos exclusividad durante al menos cuatro semanas antes de poder avanzar.',hint:'Necesitaríamos (conditional, polite). Al menos = at least. Antes de poder avanzar = before being able to proceed.'}
     ]
   }
 ];
@@ -6039,7 +6085,7 @@ async function speakES(text, opts) {
 function playSpeakable(text, opts) {
   return new Promise(async (resolve) => {
     try {
-      const { gender=null, dialect='es-ES', rate=0.95, pitch=1.0 } = opts || {};
+      const { gender=null, dialect='es-ES', rate=0.95, pitch=1.0, onStart=null } = opts || {};
       // Prime before any await — same iOS gesture-chain trick as speakES
       const primedAudio = new Audio();
       primedAudio.preload = 'auto';
@@ -6051,6 +6097,7 @@ function playSpeakable(text, opts) {
         primedAudio.onended = () => resolve();
         primedAudio.onerror  = () => resolve();
         try {
+          if (onStart) onStart();
           await primedAudio.play();
           return; // playing – resolve fires via onended
         } catch(playErr) {
@@ -6145,11 +6192,10 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
     e.stopPropagation(); e.preventDefault();
     if (state === 'playing' || state === 'loading') { AudioBus.stopAll(); return; }
     AudioBus.claim(idRef.current);
-    // Fade idle→playing as soon as we begin (loading state may be momentary)
-    setTimeout(() => AudioBus.setPlaying(idRef.current), 80);
     try {
       // playSpeakable resolves on audio.onended / utterance.onend — accurate playback duration
-      await playSpeakable(text, { gender, dialect });
+      // onStart fires when audio actually begins (after TTS fetch), switching loading→playing
+      await playSpeakable(text, { gender, dialect, onStart: () => AudioBus.setPlaying(idRef.current) });
       if (AudioBus.current().id === idRef.current) AudioBus.release();
     } catch (err) {
       AudioBus.setError(idRef.current);
@@ -12348,7 +12394,7 @@ function Ejercicios({ onBack, dark, onSearch }) {
   const seed = weekSeed();
   const weeklyExercises = EXERCISES.map(cat => ({
     ...cat,
-    exercises: seededShuffle(cat.exercises, seed + cat.category.charCodeAt(0))
+    exercises: seededShuffle(cat.exercises, seed + cat.category.charCodeAt(0)).slice(0, 8)
   }));
 
   if (timedMode) {
@@ -16266,8 +16312,28 @@ function App() {
   );
 }
 
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(err) { return { error: err }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:'1rem',fontFamily:'sans-serif',padding:'2rem',background:'#FAF6EE'}}>
+          <p style={{fontSize:'2rem'}}>⚠️</p>
+          <p style={{fontWeight:'bold',fontSize:'1.125rem',color:'#1A1410'}}>Algo fue mal</p>
+          <p style={{color:'#8B7E6E',fontSize:'0.875rem',textAlign:'center',maxWidth:'320px'}}>La aplicación ha encontrado un error inesperado.</p>
+          <button onClick={() => window.location.reload()} style={{marginTop:'0.5rem',padding:'0.625rem 1.5rem',borderRadius:'9999px',background:'#C4202E',color:'#fff',fontWeight:'600',fontSize:'0.875rem',border:'none',cursor:'pointer'}}>
+            Recargar Aprende
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+root.render(<ErrorBoundary><App /></ErrorBoundary>);
 </script>
 </body>
 </html>
