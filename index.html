@@ -5188,6 +5188,24 @@ function diffDays(a, b) {
   return Math.round((db - da) / 86400000);
 }
 
+function weekSeed() {
+  const d = new Date();
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return d.getFullYear() * 100 + week;
+}
+
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(s) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function tickStreak() {
   const today = todayStr();
   const s = getStorage('aprende.streak', { count: 0, best: 0, lastDate: null });
@@ -6647,9 +6665,9 @@ function Inicio({ dark, section, setSection }) {
           ))}
           <button onClick={() => setSection('ejercicios')}
             className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
-            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Quiz cronometrado</span>
+            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Ejercicios de esta semana</span>
             <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
-            <span className="font-mono text-sm font-bold text-dust">5 min</span>
+            <span className="font-mono text-xs font-bold text-dust/70">S{weekSeed() % 52 + 1}</span>
             <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
           </button>
           <button onClick={() => setSection('pronunciacion')}
@@ -12327,6 +12345,12 @@ function Ejercicios({ onBack, dark, onSearch }) {
   const [escrituraMode, setEscrituraMode] = useState(false);
   const [selectedPrompt, setSelectedPrompt] = useState(null);
 
+  const seed = weekSeed();
+  const weeklyExercises = EXERCISES.map(cat => ({
+    ...cat,
+    exercises: seededShuffle(cat.exercises, seed + cat.category.charCodeAt(0))
+  }));
+
   if (timedMode) {
     return <TimedQuiz onExit={() => setTimedMode(false)} dark={dark} />;
   }
@@ -12488,7 +12512,7 @@ function Ejercicios({ onBack, dark, onSearch }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {EXERCISES.map(cat => (
+          {weeklyExercises.map(cat => (
             <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border-stone-200/80 shadow-sm">
               <div className={`h-1.5 w-full bg-gradient-to-r ${colorMap[cat.color] || colorMap.orange}`} />
               <div className="p-4">
@@ -13163,6 +13187,198 @@ const BUSINESS_VOCAB = [
       { es:'los impuestos', en:'taxes', example:'Todo lo fiscal lo gestionamos con un despacho de Madrid.', exampleEn:'We handle everything tax-related with a Madrid firm.' },
       { es:'el IVA', en:'VAT', example:'Las cifras son sin IVA; el IVA se añade aparte.', exampleEn:'The figures are excluding VAT; VAT is added separately.' }
     ]
+  },
+  {
+    id:'fichajes',
+    label:'Mercado de Fichajes',
+    labelEn:'Transfer Market',
+    emoji:'🔁',
+    color:'blue',
+    items:[
+      { es:'la ventana de fichajes', en:'transfer window', example:'La ventana de invierno cierra el 31 de enero.', exampleEn:'The winter transfer window closes on 31 January.' },
+      { es:'el traspaso', en:'transfer fee', example:'El traspaso se pactó en doce millones pagaderos en tres años.', exampleEn:'The transfer fee was agreed at twelve million payable over three years.' },
+      { es:'cedido/a', en:'on loan', example:'El delantero está cedido al Betis hasta final de temporada.', exampleEn:'The striker is on loan to Betis until the end of the season.' },
+      { es:'la opción de compra', en:'purchase option / buy option', example:'El acuerdo incluye una opción de compra de ocho millones.', exampleEn:'The deal includes a purchase option of eight million.' },
+      { es:'la cláusula de rescisión', en:'release clause', example:'Su cláusula de rescisión es de cincuenta millones de euros.', exampleEn:'His release clause is fifty million euros.' },
+      { es:'el mecanismo de solidaridad', en:'solidarity mechanism', example:'Cada club que formó al jugador recibe un porcentaje por el mecanismo de solidaridad.', exampleEn:'Every club that trained the player receives a percentage via the solidarity mechanism.' },
+      { es:'la compensación de formación', en:'training compensation', example:'El club reclamó compensación de formación por los años en la cantera.', exampleEn:'The club claimed training compensation for the academy years.' },
+      { es:'los derechos de imagen', en:'image rights', example:'Los derechos de imagen se gestionan por separado del contrato deportivo.', exampleEn:'Image rights are managed separately from the sporting contract.' },
+      { es:'el bonus de rendimiento', en:'performance bonus', example:'El jugador cobra un bonus si el equipo asciende.', exampleEn:'The player earns a bonus if the team gets promoted.' },
+      { es:'el porcentaje de reventa', en:'sell-on clause', example:'Nos quedamos con un quince por ciento en la próxima venta.', exampleEn:'We retain fifteen per cent on the next sale.' },
+      { es:'libre', en:'free transfer / out of contract', example:'En junio queda libre y podemos hablar directamente con él.', exampleEn:'He becomes a free agent in June and we can speak to him directly.' },
+      { es:'la prima de fichaje', en:'signing-on fee', example:'Se acordó una prima de fichaje de medio millón.', exampleEn:'A signing-on fee of half a million was agreed.' },
+      { es:'el límite salarial', en:'wage limit / salary cap', example:'El club ha reducido su límite salarial este ejercicio.', exampleEn:'The club has reduced its wage limit this financial year.' },
+      { es:'la oferta formal', en:'formal bid / formal offer', example:'Presentaremos una oferta formal la semana que viene.', exampleEn:'We will submit a formal bid next week.' },
+      { es:'el valor de mercado', en:'market value', example:'Su valor de mercado ronda los veinte millones según Transfermarkt.', exampleEn:'His market value is around twenty million according to Transfermarkt.' }
+    ]
+  },
+  {
+    id:'estructura-club',
+    label:'Estructura del Club',
+    labelEn:'Club Structure',
+    emoji:'🏗️',
+    color:'green',
+    items:[
+      { es:'el director deportivo', en:'sporting director / director of football', example:'El director deportivo toma las decisiones sobre fichajes.', exampleEn:'The sporting director makes the decisions on transfers.' },
+      { es:'el director general', en:'CEO / general director', example:'El director general supervisó la operación desde el principio.', exampleEn:'The CEO oversaw the deal from the start.' },
+      { es:'el jefe de captación', en:'head of recruitment', example:'El jefe de captación lleva dos meses siguiendo al jugador.', exampleEn:'The head of recruitment has been tracking the player for two months.' },
+      { es:'el analista de datos', en:'data analyst', example:'Nuestro analista de datos identificó al jugador con modelos de rendimiento.', exampleEn:'Our data analyst identified the player using performance models.' },
+      { es:'el ojeador', en:'scout', example:'El ojeador viajó tres veces para verle en directo.', exampleEn:'The scout travelled three times to see him live.' },
+      { es:'el coordinador de cantera', en:'academy coordinator', example:'El coordinador de cantera gestiona los préstamos de los jugadores jóvenes.', exampleEn:'The academy coordinator manages loans for young players.' },
+      { es:'el secretario técnico', en:'technical secretary', example:'El secretario técnico se encarga de los trámites de inscripción.', exampleEn:'The technical secretary handles the registration paperwork.' },
+      { es:'el preparador físico', en:'fitness / conditioning coach', example:'El preparador físico diseña los planes de carga de trabajo.', exampleEn:'The fitness coach designs the workload plans.' },
+      { es:'el entrenador de porteros', en:'goalkeeper coach', example:'El entrenador de porteros trabaja de forma independiente con la plantilla.', exampleEn:'The goalkeeper coach works independently with the squad.' },
+      { es:'el médico del equipo', en:'team doctor', example:'El médico del equipo revisó el historial de lesiones antes de cerrar el traspaso.', exampleEn:'The team doctor reviewed the injury history before the transfer was finalised.' },
+      { es:'el departamento de comunicación', en:'communications department', example:'El departamento de comunicación gestiona toda la prensa del club.', exampleEn:'The communications department handles all club press.' },
+      { es:'la junta directiva', en:'board of directors', example:'La junta directiva aprobó el presupuesto de fichajes.', exampleEn:'The board of directors approved the transfer budget.' },
+      { es:'el presidente', en:'president / chairman', example:'El presidente del club tomó la decisión final.', exampleEn:'The club chairman made the final decision.' },
+      { es:'el consejo de administración', en:'management board', example:'El consejo de administración se reúne cada trimestre.', exampleEn:'The management board meets every quarter.' },
+      { es:'el responsable de operaciones', en:'head of operations', example:'El responsable de operaciones coordina logística y calendario.', exampleEn:'The head of operations coordinates logistics and scheduling.' }
+    ]
+  },
+  {
+    id:'derechos',
+    label:'Derechos y Licencias',
+    labelEn:'Rights & Licensing',
+    emoji:'📋',
+    color:'purple',
+    items:[
+      { es:'los derechos audiovisuales', en:'broadcast rights / audiovisual rights', example:'Los derechos audiovisuales de LaLiga valen miles de millones.', exampleEn:'LaLiga\'s broadcast rights are worth billions.' },
+      { es:'los derechos de retransmisión', en:'transmission rights', example:'Negociamos los derechos de retransmisión para el mercado internacional.', exampleEn:'We are negotiating transmission rights for the international market.' },
+      { es:'los derechos de nombre', en:'naming rights', example:'Vendieron los derechos de nombre del estadio por veinte millones al año.', exampleEn:'They sold the stadium naming rights for twenty million a year.' },
+      { es:'la licencia de estadio', en:'stadium licence', example:'Sin licencia de estadio no se puede disputar competiciones europeas.', exampleEn:'Without a stadium licence you cannot compete in European competition.' },
+      { es:'los derechos de patrocinio', en:'sponsorship rights', example:'Los derechos de patrocinio incluyen visibilidad en el estadio y en los medios.', exampleEn:'Sponsorship rights include visibility in the stadium and across media.' },
+      { es:'el reparto de ingresos', en:'revenue sharing', example:'El reparto de ingresos entre los clubes se determina cada temporada.', exampleEn:'Revenue sharing between clubs is determined each season.' },
+      { es:'los derechos comerciales', en:'commercial rights', example:'Los derechos comerciales pertenecen al club, no a la liga.', exampleEn:'The commercial rights belong to the club, not the league.' },
+      { es:'la exclusividad de categoría', en:'category exclusivity', example:'El patrocinador disfruta de exclusividad de categoría en bebidas energéticas.', exampleEn:'The sponsor enjoys category exclusivity in energy drinks.' },
+      { es:'la sublicencia', en:'sublicence', example:'No está permitido sublicenciar sin aprobación escrita.', exampleEn:'Sublicensing is not permitted without written approval.' },
+      { es:'el contrato de licencia', en:'licensing agreement', example:'Firmamos el contrato de licencia por un periodo de tres años.', exampleEn:'We signed the licensing agreement for a three-year period.' },
+      { es:'la acreditación UEFA', en:'UEFA accreditation', example:'La acreditación UEFA es obligatoria para participar en competición europea.', exampleEn:'UEFA accreditation is mandatory to participate in European competition.' },
+      { es:'el producto oficial', en:'official merchandise / licensed product', example:'Solo los distribuidores autorizados pueden vender el producto oficial.', exampleEn:'Only authorised distributors can sell official merchandise.' },
+      { es:'los derechos internacionales', en:'international rights', example:'Los derechos internacionales se negocian por separado de los nacionales.', exampleEn:'International rights are negotiated separately from domestic ones.' },
+      { es:'la propiedad intelectual', en:'intellectual property', example:'La marca del club es propiedad intelectual registrada.', exampleEn:'The club badge is registered intellectual property.' },
+      { es:'la licencia de club', en:'club licence', example:'La licencia de club se renueva anualmente con la federación.', exampleEn:'The club licence is renewed annually with the federation.' }
+    ]
+  },
+  {
+    id:'analisis',
+    label:'Análisis y Rendimiento',
+    labelEn:'Analytics & Performance',
+    emoji:'📊',
+    color:'cyan',
+    items:[
+      { es:'los goles esperados (xG)', en:'expected goals (xG)', example:'Generaron un xG de dos coma tres pero solo marcaron uno.', exampleEn:'They generated an xG of 2.3 but only scored one.' },
+      { es:'los pases progresivos', en:'progressive passes', example:'Es de los mediocampistas con más pases progresivos de la liga.', exampleEn:'He is among the midfielders with the most progressive passes in the league.' },
+      { es:'la presión tras pérdida (PPDA)', en:'pressing intensity after losing the ball', example:'El equipo tiene uno de los PPDA más bajos de la categoría.', exampleEn:'The team has one of the lowest PPDA values in the division.' },
+      { es:'el modelo de datos', en:'data model', example:'Nuestro modelo de datos evalúa a los jugadores en más de doscientas variables.', exampleEn:'Our data model evaluates players across more than two hundred variables.' },
+      { es:'el videoanálisis', en:'video analysis', example:'El videoanálisis muestra que presiona bien en la transición.', exampleEn:'The video analysis shows he presses well in transition.' },
+      { es:'la plataforma de scouting', en:'scouting platform', example:'Usamos Wyscout como plataforma de scouting principal.', exampleEn:'We use Wyscout as our main scouting platform.' },
+      { es:'el índice de rendimiento', en:'performance index / performance rating', example:'Su índice de rendimiento ha mejorado cinco puntos esta temporada.', exampleEn:'His performance index has improved by five points this season.' },
+      { es:'el mapa de calor', en:'heat map', example:'El mapa de calor indica que actúa principalmente en la banda derecha.', exampleEn:'The heat map indicates he operates mainly on the right flank.' },
+      { es:'el perfilado de jugador', en:'player profiling', example:'El perfilado de jugador nos ayuda a definir el tipo de perfil que buscamos.', exampleEn:'Player profiling helps us define the type of profile we are looking for.' },
+      { es:'la base de datos de scouting', en:'scouting database', example:'Tenemos más de cincuenta mil jugadores en nuestra base de datos de scouting.', exampleEn:'We have more than fifty thousand players in our scouting database.' },
+      { es:'el informe de scouting', en:'scouting report', example:'Enviaré el informe de scouting completo esta tarde.', exampleEn:'I will send the full scouting report this afternoon.' },
+      { es:'el análisis de partido', en:'match analysis', example:'El análisis de partido post-partido identifica los errores defensivos.', exampleEn:'Post-match analysis identifies defensive errors.' },
+      { es:'los datos en tiempo real', en:'real-time data', example:'La plataforma ofrece datos en tiempo real durante el partido.', exampleEn:'The platform delivers real-time data during the match.' },
+      { es:'el modelo predictivo', en:'predictive model', example:'El modelo predictivo estima el rendimiento futuro del jugador.', exampleEn:'The predictive model estimates the player\'s future performance.' },
+      { es:'la estadística avanzada', en:'advanced statistics', example:'Las estadísticas avanzadas van mucho más allá de goles y asistencias.', exampleEn:'Advanced statistics go well beyond goals and assists.' }
+    ]
+  },
+  {
+    id:'matchday',
+    label:'Estadio y Matchday',
+    labelEn:'Stadium & Matchday',
+    emoji:'🏟️',
+    color:'orange',
+    items:[
+      { es:'el día de partido', en:'matchday', example:'Los ingresos del día de partido son esenciales para la tesorería del club.', exampleEn:'Matchday revenues are essential for the club\'s cashflow.' },
+      { es:'el aforo', en:'stadium capacity', example:'El estadio tiene un aforo de veintidós mil espectadores.', exampleEn:'The stadium has a capacity of twenty-two thousand spectators.' },
+      { es:'la hospitalidad VIP', en:'VIP hospitality', example:'Los paquetes de hospitalidad VIP incluyen acceso al palco y cena.', exampleEn:'VIP hospitality packages include box access and dinner.' },
+      { es:'el palco', en:'directors\' box / executive box', example:'El presidente recibió a los inversores en el palco durante el partido.', exampleEn:'The chairman received the investors in the box during the match.' },
+      { es:'la tienda oficial', en:'club shop / official store', example:'La tienda oficial factura más de un millón al año solo en camisetas.', exampleEn:'The club shop turns over more than a million a year in shirts alone.' },
+      { es:'los ingresos por taquilla', en:'gate receipts / matchday ticket revenue', example:'Los ingresos por taquilla cayeron por el descenso de categoría.', exampleEn:'Gate receipts fell after relegation.' },
+      { es:'la experiencia del aficionado', en:'fan experience', example:'Mejorar la experiencia del aficionado es una prioridad estratégica.', exampleEn:'Improving the fan experience is a strategic priority.' },
+      { es:'la acreditación de prensa', en:'press accreditation', example:'Gestionamos todas las acreditaciones de prensa desde el departamento de comunicación.', exampleEn:'We handle all press accreditation from the communications department.' },
+      { es:'la zona mixta', en:'mixed zone', example:'Los jugadores hablan con la prensa en la zona mixta tras el partido.', exampleEn:'Players speak to the press in the mixed zone after the match.' },
+      { es:'las suites corporativas', en:'corporate hospitality suites', example:'Las suites corporativas están todas vendidas para esta temporada.', exampleEn:'The corporate suites are all sold out for this season.' },
+      { es:'el abono de temporada', en:'season ticket', example:'El club vendió doce mil abonos de temporada.', exampleEn:'The club sold twelve thousand season tickets.' },
+      { es:'la señalética digital', en:'digital signage / LED perimeter boards', example:'La señalética digital permite rotación de anunciantes durante el partido.', exampleEn:'Digital signage allows advertiser rotation during the match.' },
+      { es:'el campo de entrenamiento', en:'training ground', example:'El nuevo campo de entrenamiento costó quince millones de euros.', exampleEn:'The new training ground cost fifteen million euros.' },
+      { es:'el vestuario', en:'dressing room', example:'El ambiente del vestuario es clave para el rendimiento colectivo.', exampleEn:'The dressing room atmosphere is key to collective performance.' },
+      { es:'la sala de prensa', en:'press room / media room', example:'La rueda de prensa se celebrará en la sala de prensa a las once.', exampleEn:'The press conference will be held in the press room at eleven.' }
+    ]
+  },
+  {
+    id:'inversion',
+    label:'Inversión y Propiedad',
+    labelEn:'Investment & Ownership',
+    emoji:'💼',
+    color:'amber',
+    items:[
+      { es:'el grupo propietario', en:'ownership group', example:'El grupo propietario tiene clubes en tres países distintos.', exampleEn:'The ownership group has clubs in three different countries.' },
+      { es:'la participación mayoritaria', en:'majority stake', example:'El fondo adquirió una participación mayoritaria del sesenta y dos por ciento.', exampleEn:'The fund acquired a majority stake of sixty-two per cent.' },
+      { es:'la participación minoritaria', en:'minority stake', example:'Ofrecemos una participación minoritaria del quince por ciento.', exampleEn:'We are offering a minority stake of fifteen per cent.' },
+      { es:'la valoración del club', en:'club valuation', example:'La valoración del club se estimó en ochenta millones en la última ronda.', exampleEn:'The club valuation was estimated at eighty million in the last round.' },
+      { es:'el capital privado', en:'private equity', example:'Varios fondos de capital privado han mostrado interés en el club.', exampleEn:'Several private equity funds have shown interest in the club.' },
+      { es:'el fondo de inversión', en:'investment fund', example:'El fondo de inversión exige un retorno mínimo del doce por ciento anual.', exampleEn:'The investment fund requires a minimum return of twelve per cent per annum.' },
+      { es:'el consorcio', en:'consortium', example:'Un consorcio de inversores americanos compró el club el año pasado.', exampleEn:'A consortium of American investors bought the club last year.' },
+      { es:'los derechos de voto', en:'voting rights', example:'Los derechos de voto siguen en manos del grupo fundador.', exampleEn:'Voting rights remain with the founding group.' },
+      { es:'la estructura societaria', en:'corporate structure', example:'La estructura societaria se reorganizó para optimizar la fiscalidad.', exampleEn:'The corporate structure was reorganised to optimise the tax position.' },
+      { es:'el holding', en:'holding company', example:'El club opera bajo un holding registrado en Luxemburgo.', exampleEn:'The club operates under a holding company registered in Luxembourg.' },
+      { es:'la adquisición', en:'acquisition / takeover', example:'La adquisición se completó tras meses de negociación.', exampleEn:'The acquisition was completed after months of negotiation.' },
+      { es:'el acuerdo de accionistas', en:'shareholders\' agreement', example:'El acuerdo de accionistas protege los derechos de los socios minoritarios.', exampleEn:'The shareholders\' agreement protects the rights of minority partners.' },
+      { es:'el retorno sobre inversión (ROI)', en:'return on investment (ROI)', example:'El ROI proyectado a cinco años es del treinta y cinco por ciento.', exampleEn:'The projected five-year ROI is thirty-five per cent.' },
+      { es:'la tasa interna de retorno (TIR)', en:'internal rate of return (IRR)', example:'La TIR del proyecto supera el umbral mínimo del fondo.', exampleEn:'The project IRR exceeds the fund\'s minimum threshold.' },
+      { es:'la gestión patrimonial', en:'asset management / wealth management', example:'La gestión patrimonial del club incluye el estadio, la cantera y la marca.', exampleEn:'The club\'s asset management covers the stadium, academy and brand.' }
+    ]
+  },
+  {
+    id:'normativa',
+    label:'Normativa y Gobernanza',
+    labelEn:'Rules & Governance',
+    emoji:'⚖️',
+    color:'red',
+    items:[
+      { es:'el fair play financiero (FPF)', en:'financial fair play (FFP)', example:'El club tuvo problemas con el fair play financiero por sus pérdidas acumuladas.', exampleEn:'The club had financial fair play issues due to accumulated losses.' },
+      { es:'el Reglamento de Sostenibilidad y Beneficio (RSB)', en:'Profitability and Sustainability Rules (PSR)', example:'El RSB de la Premier limita las pérdidas a ciento cinco millones en tres años.', exampleEn:'The Premier League PSR caps losses at one hundred and five million over three years.' },
+      { es:'el techo salarial', en:'salary cap / wage ceiling', example:'El techo salarial del club bajó un treinta por ciento tras el descenso.', exampleEn:'The club\'s salary cap fell thirty per cent after relegation.' },
+      { es:'la inscripción de jugadores', en:'player registration', example:'La inscripción del jugador se bloqueó por deudas con la liga.', exampleEn:'The player\'s registration was blocked due to debts to the league.' },
+      { es:'la licencia UEFA', en:'UEFA licence', example:'Sin licencia UEFA el club no puede participar en competición europea.', exampleEn:'Without a UEFA licence the club cannot participate in European competition.' },
+      { es:'los estatutos del club', en:'club statutes / bylaws', example:'Cualquier cambio en la propiedad debe notificarse según los estatutos del club.', exampleEn:'Any change in ownership must be notified under the club statutes.' },
+      { es:'la normativa de jugadores formados en casa', en:'homegrown player rule', example:'La normativa obliga a incluir al menos ocho jugadores formados en casa en la plantilla.', exampleEn:'The rule requires at least eight homegrown players in the squad.' },
+      { es:'el protocolo disciplinario', en:'disciplinary procedure', example:'El jugador fue sometido al protocolo disciplinario por su conducta.', exampleEn:'The player was subject to the disciplinary procedure for his conduct.' },
+      { es:'el VAR', en:'VAR (Video Assistant Referee)', example:'El gol fue anulado tras la revisión del VAR.', exampleEn:'The goal was disallowed following the VAR review.' },
+      { es:'el delegado del partido', en:'match delegate', example:'El delegado del partido reportó el incidente a la federación.', exampleEn:'The match delegate reported the incident to the federation.' },
+      { es:'la sanción', en:'sanction / ban', example:'El club recibió una sanción económica por saltarse el fair play financiero.', exampleEn:'The club received a financial sanction for breaching financial fair play.' },
+      { es:'el reglamento de competición', en:'competition regulations', example:'El reglamento de competición se actualiza cada temporada.', exampleEn:'The competition regulations are updated every season.' },
+      { es:'el índice de deuda', en:'debt ratio', example:'El índice de deuda del club supera el límite establecido por la liga.', exampleEn:'The club\'s debt ratio exceeds the limit set by the league.' },
+      { es:'el control de costes', en:'cost control', example:'El nuevo dueño implantó medidas estrictas de control de costes.', exampleEn:'The new owner implemented strict cost control measures.' },
+      { es:'la normativa FIFA', en:'FIFA regulations', example:'El traspaso debe cumplir con la normativa FIFA sobre pagos a terceros.', exampleEn:'The transfer must comply with FIFA regulations on third-party payments.' }
+    ]
+  },
+  {
+    id:'comercial',
+    label:'Comercial y Patrocinio',
+    labelEn:'Commercial & Sponsorship',
+    emoji:'🤝',
+    color:'teal',
+    items:[
+      { es:'el patrocinador principal', en:'title sponsor / main sponsor', example:'El patrocinador principal paga doce millones al año por los derechos de camiseta.', exampleEn:'The title sponsor pays twelve million a year for shirt rights.' },
+      { es:'el patrocinador técnico', en:'kit supplier / technical sponsor', example:'El patrocinador técnico suministra toda la equipación del primer equipo.', exampleEn:'The kit supplier provides all the first team\'s equipment.' },
+      { es:'el acuerdo de equipación', en:'kit deal', example:'Renovaron el acuerdo de equipación por cinco años con una marca global.', exampleEn:'They renewed the kit deal for five years with a global brand.' },
+      { es:'la publicidad en camiseta', en:'shirt advertising', example:'La publicidad en camiseta genera los ingresos comerciales más altos del club.', exampleEn:'Shirt advertising generates the club\'s highest commercial revenues.' },
+      { es:'la activación de marca', en:'brand activation', example:'El patrocinador realizó una activación de marca en el estadio el día del derbi.', exampleEn:'The sponsor ran a brand activation at the stadium on derby day.' },
+      { es:'el retorno de imagen', en:'media value / brand exposure', example:'El retorno de imagen del acuerdo supera los veinte millones en cobertura mediática.', exampleEn:'The media value of the deal exceeds twenty million in media coverage.' },
+      { es:'la colaboración de marca', en:'brand partnership / brand collaboration', example:'Lanzamos una colaboración de marca con una firma de moda de lujo.', exampleEn:'We launched a brand partnership with a luxury fashion house.' },
+      { es:'el acuerdo de co-branding', en:'co-branding deal', example:'El acuerdo de co-branding permite usar la marca del club en líneas de producto.', exampleEn:'The co-branding deal allows use of the club badge on product lines.' },
+      { es:'la agencia de marketing deportivo', en:'sports marketing agency', example:'Trabajamos con una agencia de marketing deportivo especializada en fútbol europeo.', exampleEn:'We work with a sports marketing agency specialising in European football.' },
+      { es:'el patrocinador regional', en:'regional sponsor', example:'Tenemos seis patrocinadores regionales que operan en mercados concretos.', exampleEn:'We have six regional sponsors operating in specific markets.' },
+      { es:'los derechos de naming', en:'naming rights', example:'Los derechos de naming del estadio se vendieron por diez años.', exampleEn:'The stadium naming rights were sold for ten years.' },
+      { es:'el acuerdo de licencia de producto', en:'product licensing deal', example:'El acuerdo de licencia de producto permite fabricar artículos oficiales del club.', exampleEn:'The product licensing deal allows manufacture of official club merchandise.' },
+      { es:'el marketing digital', en:'digital marketing', example:'El departamento de marketing digital gestiona todas las redes sociales del club.', exampleEn:'The digital marketing department manages all the club\'s social media.' },
+      { es:'la presencia en redes sociales', en:'social media presence', example:'Tienen una presencia en redes sociales de más de diez millones de seguidores.', exampleEn:'They have a social media presence of more than ten million followers.' },
+      { es:'el retorno de la inversión comercial', en:'commercial return on investment', example:'Medimos el retorno de la inversión comercial de cada patrocinador de forma trimestral.', exampleEn:'We measure the commercial return on investment for each sponsor quarterly.' }
+    ]
   }
 ];
 
@@ -13269,6 +13485,74 @@ const BUSINESS_PHRASES = [
       { es:'Muchísimas gracias por su tiempo, ha sido muy productivo.', en:'Thank you so much for your time, this has been very productive.', when:'Formal sign-off.' },
       { es:'Cualquier cosa que necesiten, me tienen a su disposición.', en:'Anything you need, I\'m at your disposal.', when:'Warm but professional close.' },
       { es:'Un placer, como siempre.', en:'A pleasure, as always.', when:'Close with an existing contact.' }
+    ]
+  },
+  {
+    id:'hablando-jugador',
+    title:'Hablando de un Jugador',
+    titleEn:'Discussing a Player',
+    emoji:'⚽',
+    color:'blue',
+    items:[
+      { es:'Es un perfil que encaja muy bien con lo que buscamos.', en:'It\'s a profile that fits very well with what we\'re looking for.', when:'Opening a player discussion with a club or agent.' },
+      { es:'¿Cuál es su situación contractual actual?', en:'What is his current contract situation?', when:'Asking about contract length or expiry.' },
+      { es:'Tiene recorrido por delante, solo tiene veintitrés años.', en:'He has a lot of runway ahead of him, he\'s only twenty-three.', when:'Making a case based on age and development potential.' },
+      { es:'¿Cuánto se pediría por él si hubiera interés formal?', en:'How much would you be asking if there were formal interest?', when:'Testing price without making a binding offer.' },
+      { es:'Vemos un perfil con margen de mejora considerable.', en:'We see a profile with considerable room for improvement.', when:'Framing the player as a developmental acquisition.' },
+      { es:'¿Estaría el club abierto a cederle este invierno?', en:'Would the club be open to loaning him out this winter?', when:'Exploring a loan before a full transfer.' },
+      { es:'Su rendimiento en las últimas doce semanas ha sido muy sólido.', en:'His performance over the last twelve weeks has been very solid.', when:'Citing recent form to justify interest.' },
+      { es:'Necesitamos revisar el historial médico antes de avanzar.', en:'We need to review the medical history before moving forward.', when:'Flagging due diligence on injuries.' }
+    ]
+  },
+  {
+    id:'hablando-operacion',
+    title:'Hablando de una Operación',
+    titleEn:'Discussing a Deal',
+    emoji:'📝',
+    color:'green',
+    items:[
+      { es:'¿En qué estructura estaríais pensando?', en:'What structure would you be thinking of?', when:'Opening a commercial or transfer negotiation.' },
+      { es:'Podríamos estructurarlo en varios plazos.', en:'We could structure it in several instalments.', when:'Proposing staged payments.' },
+      { es:'Necesitamos un período de exclusividad de cuatro semanas.', en:'We need an exclusivity period of four weeks.', when:'Requesting exclusivity before closing.' },
+      { es:'¿Cuáles serían las condiciones precedentes?', en:'What would the conditions precedent be?', when:'Clarifying what must happen before the deal completes.' },
+      { es:'El calendario lo marcaría el cierre del mercado.', en:'The timeline would be set by the transfer window close.', when:'Explaining urgency driven by a deadline.' },
+      { es:'Queremos asegurarnos de que los incentivos están alineados.', en:'We want to make sure the incentives are aligned.', when:'Discussing variable payments or equity stakes.' },
+      { es:'¿Hay otras partes involucradas que debamos conocer?', en:'Are there other parties involved that we should know about?', when:'Checking for agents, intermediaries or co-owners.' },
+      { es:'Propongo que lo dejemos por escrito antes de seguir.', en:'I suggest we put it in writing before we go any further.', when:'Moving toward a term sheet or LOI.' }
+    ]
+  },
+  {
+    id:'reunion-club',
+    title:'Reunión con un Club',
+    titleEn:'Meeting a Club Contact',
+    emoji:'🏟️',
+    color:'purple',
+    items:[
+      { es:'¿Cuáles son vuestras prioridades estratégicas para esta temporada?', en:'What are your strategic priorities for this season?', when:'Opening a discovery conversation with a club.' },
+      { es:'¿Quién lidera el proceso de toma de decisiones en vuestra organización?', en:'Who leads the decision-making process in your organisation?', when:'Mapping the stakeholder landscape.' },
+      { es:'¿Trabajáis ya con alguna plataforma de datos o estáis evaluando opciones?', en:'Are you already working with a data platform, or are you evaluating options?', when:'Qualifying an opportunity before pitching.' },
+      { es:'Nos gustaría entender mejor cómo fluye la información internamente.', en:'We\'d like to better understand how information flows internally.', when:'Diagnosing the club\'s internal workflow.' },
+      { es:'¿Cuál sería el siguiente paso desde vuestra parte?', en:'What would the next step be from your side?', when:'Closing a meeting and assigning ownership of next steps.' },
+      { es:'Podemos preparar una propuesta adaptada a vuestras necesidades.', en:'We can prepare a proposal tailored to your needs.', when:'Signalling readiness to move to a commercial proposal.' },
+      { es:'¿Tenéis un plazo para tomar una decisión sobre esto?', en:'Do you have a timeline for making a decision on this?', when:'Qualifying urgency and deal velocity.' },
+      { es:'Sería útil hablar también con el director deportivo. ¿Sería posible?', en:'It would be useful to speak with the sporting director too. Would that be possible?', when:'Expanding access to key decision-makers.' }
+    ]
+  },
+  {
+    id:'presentando-datos',
+    title:'Presentando Datos',
+    titleEn:'Presenting Analytics',
+    emoji:'📊',
+    color:'cyan',
+    items:[
+      { es:'Según nuestro modelo, este jugador está en el percentil noventa de su posición.', en:'According to our model, this player is in the ninetieth percentile for his position.', when:'Citing a ranking or benchmark from your analytics.' },
+      { es:'Los datos muestran una tendencia clara de mejora en las últimas ocho semanas.', en:'The data shows a clear improvement trend over the last eight weeks.', when:'Presenting time-series performance data.' },
+      { es:'Si comparamos con el perfil que nos indicasteis, hay una coincidencia muy alta.', en:'If we compare against the profile you gave us, there is a very high match.', when:'Showing how a player fits a club\'s stated criteria.' },
+      { es:'La métrica que más nos llama la atención es la presión tras pérdida.', en:'The metric that stands out most for us is pressing intensity after losing the ball.', when:'Highlighting a specific standout stat.' },
+      { es:'Podemos filtrar por liga, posición, edad y valor de mercado simultáneamente.', en:'We can filter by league, position, age and market value simultaneously.', when:'Demonstrating the platform\'s filtering capabilities.' },
+      { es:'Aquí tenéis el informe completo; os lo enviamos en PDF después de la reunión.', en:'Here is the full report; we will send it to you as a PDF after the meeting.', when:'Distributing a scouting report during or after a call.' },
+      { es:'¿Queréis que profundice en alguna métrica en concreto?', en:'Would you like me to go deeper on any specific metric?', when:'Inviting the club to steer the data discussion.' },
+      { es:'Los datos son de la temporada en curso, actualizados a esta semana.', en:'The data is from the current season, updated as of this week.', when:'Establishing data recency and credibility.' }
     ]
   }
 ];
@@ -13454,6 +13738,73 @@ const BUSINESS_DIALOGS = [
       { es:'no devuelves nada', en:'you don\'t pay anything back' }
     ],
     notes:'Note the switch to tú – with young players it\'s natural and builds trust. The key psychological phrases here are "tu carrera deportiva es lo primero" (puts the player at ease) and "no pasa nada por tu parte" (reassurance about downside). TPO is a sensitive topic – always distinguish federative vs economic rights explicitly.'
+  },
+  {
+    id:'reunion-director-deportivo-b1',
+    title:'Reunión con el Director Deportivo',
+    level:'B1',
+    context:'Keeps (B) meets a club\'s sporting director (A) to introduce their recruitment intelligence platform. The conversation moves from discovery through demo interest to next steps.',
+    speakers:{ A:'Director Deportivo', B:'Keeps' },
+    lines:[
+      { who:'B', es:'Buenos días, Sergio. Gracias por recibirnos. Sé que tenéis una agenda muy apretada en esta época del año.', en:'Good morning, Sergio. Thank you for having us. I know you have a very packed schedule at this time of year.' },
+      { who:'A', es:'No hay problema. Tengo cuarenta y cinco minutos. ¿Qué es exactamente lo que hacéis?', en:'No problem. I have forty-five minutes. What exactly is it that you do?' },
+      { who:'B', es:'En Keeps trabajamos con clubes para ayudarles a identificar perfiles de fichaje usando datos e inteligencia de mercado. No somos una agencia ni vendemos jugadores; somos una capa de inteligencia sobre el proceso de captación.', en:'At Keeps we work with clubs to help them identify transfer targets using data and market intelligence. We\'re not an agency or a player seller; we\'re an intelligence layer on top of the recruitment process.' },
+      { who:'A', es:'¿Y qué os diferencia de una plataforma como Wyscout o InStat?', en:'And what differentiates you from a platform like Wyscout or InStat?' },
+      { who:'B', es:'Las plataformas de vídeo son fantásticas para el análisis individual. Nosotros ponemos eso en el contexto del mercado: disponibilidad contractual, perfil de propietario, política de préstamos, historial de traspasos. Es inteligencia de negocio aplicada al fútbol.', en:'Video platforms are great for individual analysis. We place that in market context: contract availability, owner profile, loan policy, transfer history. It\'s business intelligence applied to football.' },
+      { who:'A', es:'¿Podéis hacer un ejemplo práctico? ¿Qué tipo de perfil podríais identificarme ahora mismo?', en:'Can you give me a practical example? What kind of profile could you identify for me right now?' },
+      { who:'B', es:'Claro. Si me decís qué posición y qué características buscáis, puedo mostraros en diez minutos cómo trabaja nuestra herramienta.', en:'Of course. If you tell me what position and what characteristics you\'re looking for, I can show you in ten minutes how our tool works.' },
+      { who:'A', es:'Necesitamos un mediocentro de menos de veintiséis años, con buen pie izquierdo, que pueda jugar en un esquema de cuatro-tres-tres. Presupuesto máximo de traspaso alrededor de cuatro millones.', en:'We need a central midfielder under twenty-six, with a good left foot, who can play in a four-three-three. Maximum transfer budget around four million.' },
+      { who:'B', es:'Perfecto. Puedo tener una lista inicial de diez candidatos para vosotros en cuarenta y ocho horas, con disponibilidad contractual incluida. ¿Os sería útil eso como punto de partida?', en:'Perfect. I can have an initial shortlist of ten candidates for you within forty-eight hours, including contract availability. Would that be useful as a starting point?' },
+      { who:'A', es:'Sí, mándamelo y lo vemos con el equipo técnico. ¿Y cómo funcionaría comercialmente si quisiéramos trabajar con vosotros de forma regular?', en:'Yes, send it to me and we\'ll look at it with the technical staff. And how would it work commercially if we wanted to work with you on a regular basis?' },
+      { who:'B', es:'Tenemos un modelo de suscripción anual para clubes. Pero antes de hablar de eso, prefiero que veáis la lista y valoréis si el producto os aporta valor. Los números pueden esperar.', en:'We have an annual subscription model for clubs. But before talking about that, I\'d prefer you to see the shortlist and assess whether the product adds value for you. The numbers can wait.' },
+      { who:'A', es:'Me parece bien. Te mando un correo con mis datos y espero esa lista. Si es lo que dices, hablamos.', en:'That works for me. I\'ll send you an email with my details and I\'ll wait for that list. If it\'s what you say, we\'ll talk.' },
+      { who:'B', es:'Perfecto. Esta tarde la tenéis. Gracias, Sergio, ha sido un placer.', en:'Perfect. You\'ll have it this afternoon. Thank you, Sergio, it\'s been a pleasure.' }
+    ],
+    vocab:[
+      { es:'la agenda apretada', en:'packed schedule' },
+      { es:'la capa de inteligencia', en:'intelligence layer' },
+      { es:'la captación', en:'recruitment (in football context)' },
+      { es:'la disponibilidad contractual', en:'contract availability (is the player gettable?)' },
+      { es:'el perfil de propietario', en:'owner profile (who owns the player / controls their rights)' },
+      { es:'el punto de partida', en:'starting point' },
+      { es:'el modelo de suscripción', en:'subscription model' },
+      { es:'aportar valor', en:'to add value' }
+    ],
+    notes:'The key strategic move in this conversation is B\'s "los números pueden esperar" – separating product value from commercial discussion builds credibility. Notice how B offers a concrete 48-hour deliverable rather than vague follow-up. "No somos una agencia ni vendemos jugadores" directly addresses the first objection clubs have about working with a commercial intermediary.'
+  },
+  {
+    id:'negociacion-agente',
+    title:'Con el Agente de un Jugador',
+    level:'B1',
+    context:'Keeps (B) speaks with a player\'s agent (A) who has reached out after a client expressed interest in the platform. The agent is protective and wants to understand the business model before committing his client.',
+    speakers:{ A:'Agente', B:'Keeps' },
+    lines:[
+      { who:'A', es:'Mira, mi cliente está interesado en lo que le contaste en Dubai. Pero antes de avanzar, necesito entender exactamente qué hacéis y cómo ganáis dinero.', en:'Look, my client is interested in what you told him in Dubai. But before we move forward, I need to understand exactly what you do and how you make money.' },
+      { who:'B', es:'Por supuesto, es la pregunta correcta. Nuestro modelo es sencillo: ponemos en contacto a jugadores con inversores que quieren financiar anticipos sobre sus derechos de imagen. No tocamos los derechos federativos en ningún momento.', en:'Of course, it\'s the right question. Our model is simple: we connect players with investors who want to finance advances on their image rights. We never touch federative rights at any point.' },
+      { who:'A', es:'¿Y cómo queda la comisión de Keeps en todo esto?', en:'And how does Keeps\' fee sit in all of this?' },
+      { who:'B', es:'Nuestra comisión la paga el inversor, no el jugador. El jugador recibe el importe íntegro del anticipo. Eso es una línea roja para nosotros: jamás cobramos al jugador.', en:'Our fee is paid by the investor, not the player. The player receives the full advance amount. That\'s a red line for us: we never charge the player.' },
+      { who:'A', es:'¿Y si el jugador no rinde o se lesiona? ¿Qué pasa con el anticipo?', en:'And if the player underperforms or gets injured? What happens to the advance?' },
+      { who:'B', es:'El jugador no devuelve nada. El riesgo lo asume el inversor completamente. Por eso el inversor evalúa el perfil deportivo y comercial del jugador antes de entrar.', en:'The player pays nothing back. The risk is entirely borne by the investor. That is why the investor evaluates the player\'s sporting and commercial profile before committing.' },
+      { who:'A', es:'Eso es lo que más me preocupaba. ¿Y los derechos de imagen quedan comprometidos durante el período del contrato?', en:'That\'s what I was most worried about. And are the image rights encumbered during the contract period?' },
+      { who:'B', es:'Se ceden parcialmente al inversor durante el período acordado. El jugador puede seguir haciendo acuerdos comerciales, pero una parte de esos ingresos va al inversor hasta cubrir el anticipo más el retorno pactado.', en:'They are partially assigned to the investor for the agreed period. The player can continue to do commercial deals, but a portion of that income goes to the investor until the advance plus agreed return is covered.' },
+      { who:'A', es:'¿Cuánto tiempo suele durar ese período?', en:'How long does that period usually last?' },
+      { who:'B', es:'Entre dos y cuatro años, dependiendo del importe y del perfil del jugador. Lo estructuramos para que los plazos sean realistas y el jugador no sienta que está comprometido más allá de lo razonable.', en:'Between two and four years, depending on the amount and the player\'s profile. We structure it so the timeline is realistic and the player doesn\'t feel committed beyond what\'s reasonable.' },
+      { who:'A', es:'Voy a hablar con mi cliente y con mi abogado. ¿Podéis mandarnos la documentación estándar del acuerdo?', en:'I\'ll speak with my client and my lawyer. Can you send us the standard deal documentation?' },
+      { who:'B', es:'Por supuesto. Os envío el term sheet y el modelo de contrato esta tarde. Cualquier pregunta, estoy disponible. Preferimos que todo quede claro antes de firmar nada.', en:'Of course. I\'ll send you the term sheet and the contract template this afternoon. Any questions, I\'m available. We prefer everything to be clear before anything is signed.' },
+      { who:'A', es:'De acuerdo. Gracias por la transparencia.', en:'Understood. Thank you for the transparency.' },
+      { who:'B', es:'Para eso estamos. Habláis con el abogado con calma y me decís.', en:'That\'s what we\'re here for. Speak with the lawyer at your own pace and let me know.' }
+    ],
+    vocab:[
+      { es:'el anticipo', en:'advance (on future income)' },
+      { es:'los derechos federativos', en:'federative rights (registration / transfer rights)' },
+      { es:'los derechos de imagen', en:'image rights (commercial rights)' },
+      { es:'la cesión parcial', en:'partial assignment' },
+      { es:'comprometido', en:'encumbered / committed' },
+      { es:'el term sheet', en:'term sheet (heads of terms document)' },
+      { es:'la línea roja', en:'red line (non-negotiable limit)' },
+      { es:'íntegro', en:'full / in full / intact' }
+    ],
+    notes:'Agents are gatekeepers – always validate their role first and answer the "how do you make money?" question directly before being asked. The phrase "jamás cobramos al jugador" is the most important line in the conversation; it removes the default conflict-of-interest assumption. "Línea roja" is a widely-used Spanish expression for a non-negotiable position – natural and credible in this context.'
   }
 ];
 
@@ -13658,6 +14009,137 @@ const BUSINESS_SHEETS = [
         ['mandato de representación','representation mandate','Written agreement, FIFA-required.'],
         ['comisión del agente','agent commission','Usually 5–10% on gross contract.'],
         ['exclusividad','exclusivity','Key clause – how tight is the lock-in?']
+      ]}
+    ]
+  },
+  {
+    id:'estructura-traspaso',
+    title:'Estructura de un Traspaso',
+    subtitle:'Anatomía de una operación de fichaje',
+    emoji:'🔁',
+    color:'blue',
+    sections:[
+      { heading:'Componentes principales', type:'table', rows:[
+        ['Componente','Español','Descripción'],
+        ['Transfer fee','tarifa de traspaso / traspaso','El importe principal que paga el club comprador.'],
+        ['Instalments','plazos de pago','El traspaso se divide en pagos anuales (p.ej., 3+3+3M).'],
+        ['Sell-on clause','porcentaje de reventa / cláusula de reventa','El club vendedor cobra un % si el jugador se vende después.'],
+        ['Solidarity mechanism','mecanismo de solidaridad','Distribución automática a clubs formadores (5% del traspaso).'],
+        ['Training compensation','compensación de formación','Pago a clubs que formaron al jugador entre los 12 y 23 años.'],
+        ['Image rights','derechos de imagen','Gestionados a menudo como contrato separado del deportivo.'],
+        ['Signing-on fee','prima de fichaje / plus de fichaje','Pago único al jugador al firmar el contrato.'],
+        ['Performance bonuses','bonus por rendimiento','Objetivos individuales o colectivos con pagos variables.'],
+        ['Loan fee','precio del préstamo / canon de cesión','Importe anual que paga el club cesionario.'],
+        ['Purchase option','opción de compra','Derecho a comprar al final del préstamo a precio fijo.']
+      ]},
+      { heading:'Fases de la operación', type:'list', items:[
+        'Interés informal - conversación exploratoria entre clubes o a través de agente.',
+        'Oferta formal (bid) - propuesta escrita con precio y condiciones.',
+        'Negociación de estructura - plazos, variables, derechos de imagen.',
+        'Acuerdo de clubes (deal agreed) - se abre la comunicación con el jugador.',
+        'Términos personales - contrato deportivo y prima de fichaje.',
+        'Medical - revisión médica obligatoria antes de cerrar.',
+        'Papeleo - documentación FIFA (TMS), inscripción en liga.',
+        'Anuncio oficial - comunicado del club y publicación en redes.'
+      ]},
+      { heading:'Frases clave en una negociación', type:'table', rows:[
+        ['Español','English'],
+        ['El traspaso se pagaría en tres plazos anuales.','The fee would be paid in three annual instalments.'],
+        ['Incluimos un porcentaje de reventa del quince por ciento.','We include a fifteen per cent sell-on clause.'],
+        ['Los derechos de imagen se negocian por separado.','Image rights are negotiated separately.'],
+        ['La oferta es firme y válida hasta el viernes.','The offer is firm and valid until Friday.'],
+        ['Necesitamos la documentación FIFA antes del cierre del mercado.','We need the FIFA documentation before the transfer window closes.']
+      ]}
+    ]
+  },
+  {
+    id:'due-diligence-deportiva',
+    title:'Due Diligence Deportiva',
+    subtitle:'Qué se revisa en una adquisición de club',
+    emoji:'🔍',
+    color:'amber',
+    sections:[
+      { heading:'Áreas clave de revisión', type:'table', rows:[
+        ['Área','Aspectos a revisar'],
+        ['Plantilla y contratos','Valor de mercado, duración de contratos, cláusulas de rescisión, buy-out options.'],
+        ['Masa salarial','Salario total bruto, ratio salario/ingreso, cláusulas variables.'],
+        ['Deuda financiera','Deuda bancaria, préstamos de accionistas, deudas con otros clubes.'],
+        ['Ingresos por derechos TV','Distribución de la liga, derechos europeos, contratos vigentes.'],
+        ['Patrocinios y comercial','Acuerdos vigentes, fechas de vencimiento, exclusividades.'],
+        ['Estadio','Propiedad o arrendamiento, estado, licencias, capacidad.'],
+        ['Cantera','Contratos jóvenes, compensación de formación pendiente.'],
+        ['Normativa y cumplimiento','Situación FPF/PSR, sanciones activas, licencias UEFA/Liga.'],
+        ['Litigios','Reclamaciones pendientes, disputas con jugadores o agentes.'],
+        ['Marca e IP','Derechos de naming, licencias de producto, registros de marca.']
+      ]},
+      { heading:'Vocabulario de due diligence', type:'table', rows:[
+        ['Español','English'],
+        ['sala de datos virtual','virtual data room (VDR)'],
+        ['cuaderno de venta','information memorandum / IM'],
+        ['carta de intenciones','letter of intent (LOI)'],
+        ['acuerdo de confidencialidad','non-disclosure agreement (NDA)'],
+        ['ajuste de precio post-cierre','post-closing price adjustment'],
+        ['declaraciones y garantías','representations and warranties (reps & warranties)'],
+        ['período de exclusividad','exclusivity period'],
+        ['condiciones precedentes','conditions precedent (CPs)'],
+        ['precio de compra ajustado','adjusted purchase price']
+      ]},
+      { heading:'Preguntas habituales en due diligence', type:'list', items:[
+        '¿Cuál es la deuda total neta del club en este momento?',
+        '¿Hay pagos de traspasos diferidos pendientes con otros clubes?',
+        '¿Están al corriente de pago con los jugadores y el personal?',
+        '¿Cuántos contratos vencen al final de esta temporada?',
+        '¿Cuál es el ratio salario sobre ingresos de los últimos tres ejercicios?',
+        '¿Existe alguna sanción activa de UEFA, FIFA o la liga nacional?',
+        '¿El estadio es propiedad del club o está arrendado?',
+        '¿Hay litigios activos con jugadores, agentes u otros clubes?'
+      ]}
+    ]
+  },
+  {
+    id:'vocabulario-datos',
+    title:'Vocabulario de Datos en Español',
+    subtitle:'Glosario de analítica para reuniones con clubes',
+    emoji:'📊',
+    color:'cyan',
+    sections:[
+      { heading:'Métricas ofensivas', type:'table', rows:[
+        ['Español','English','Definición breve'],
+        ['goles esperados (xG)','expected goals (xG)','Probabilidad de que un remate acabe en gol.'],
+        ['goles esperados contra (xGA)','expected goals against (xGA)','xG concedido por el equipo.'],
+        ['xG por noventa minutos','xG per 90','xG normalizado por minutos jugados.'],
+        ['goles sobre el xG (GxG)','goals over xG','Diferencia entre goles reales y esperados.'],
+        ['pases clave','key passes','Pases que generan un remate.'],
+        ['centros al área','crosses into the box','Centros que llegan al área de penalti.'],
+        ['acciones de creación de ocasiones (SCAs)','shot-creating actions (SCAs)','Dos acciones que preceden directamente a un remate.']
+      ]},
+      { heading:'Métricas de posesión y creación', type:'table', rows:[
+        ['Español','English','Definición breve'],
+        ['pases progresivos','progressive passes','Pases que avanzan el balón al menos diez metros hacia portería.'],
+        ['carries progresivos','progressive carries','Conducciones que avanzan el balón significativamente.'],
+        ['porcentaje de posesión','possession percentage','Tiempo con el balón respecto al total.'],
+        ['velocidad de juego','tempo / speed of play','Número de pases por minuto o por posesión.'],
+        ['presión en campo rival','high press / pressing in opposition half','Intentos de recuperar el balón en el tercio final del rival.'],
+        ['pases al espacio','through balls / passes into space','Pases entre líneas hacia jugadores en carrera.']
+      ]},
+      { heading:'Métricas defensivas y de pressing', type:'table', rows:[
+        ['Español','English','Definición breve'],
+        ['presiones','pressures','Intentos de presionar al poseedor del balón.'],
+        ['presiones exitosas','successful pressures','Presiones que resultan en recuperación en cinco segundos.'],
+        ['PPDA','PPDA (passes allowed per defensive action)','Cuantos menos pases concede por acción defensiva, más presiona.'],
+        ['línea defensiva alta','high defensive line','El equipo defiende en campo rival para comprimir el espacio.'],
+        ['duelos ganados','duels won','Disputas uno contra uno ganadas, aéreas y terrestres.'],
+        ['intercepciones','interceptions','Cortes del balón antes de que llegue al receptor.'],
+        ['recuperaciones','recoveries / ball recoveries','Balones ganados en cualquier zona del campo.']
+      ]},
+      { heading:'Cómo presentar datos en una reunión', type:'list', items:[
+        'Nuestro modelo indica que... (Our model indicates that...)',
+        'Si lo comparamos con la media de la liga... (If we compare with the league average...)',
+        'En el percentil noventa de su posición... (In the ninetieth percentile for his position...)',
+        'Los datos de las últimas doce semanas muestran... (Data from the last twelve weeks shows...)',
+        'Filtrando por edad y posición, los candidatos son... (Filtering by age and position, the candidates are...)',
+        'El índice de rendimiento ha mejorado / empeorado... (The performance index has improved / declined...)',
+        '¿Queréis que profundice en alguna métrica concreta? (Would you like me to go deeper on any specific metric?)'
       ]}
     ]
   }
