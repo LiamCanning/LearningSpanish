@@ -13189,9 +13189,9 @@ const BUSINESS_VOCAB = [
     ]
   },
   {
-    id:'fichajes',
-    label:'Mercado de Fichajes',
-    labelEn:'Transfer Market',
+    id:'mercado-fichajes',
+    title:'Mercado de Fichajes',
+    titleEn:'Transfer Market',
     emoji:'🔁',
     color:'blue',
     items:[
@@ -13214,8 +13214,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'estructura-club',
-    label:'Estructura del Club',
-    labelEn:'Club Structure',
+    title:'Estructura del Club',
+    titleEn:'Club Structure',
     emoji:'🏗️',
     color:'green',
     items:[
@@ -13238,8 +13238,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'derechos',
-    label:'Derechos y Licencias',
-    labelEn:'Rights & Licensing',
+    title:'Derechos y Licencias',
+    titleEn:'Rights & Licensing',
     emoji:'📋',
     color:'purple',
     items:[
@@ -13262,8 +13262,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'analisis',
-    label:'Análisis y Rendimiento',
-    labelEn:'Analytics & Performance',
+    title:'Análisis y Rendimiento',
+    titleEn:'Analytics & Performance',
     emoji:'📊',
     color:'cyan',
     items:[
@@ -13286,8 +13286,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'matchday',
-    label:'Estadio y Matchday',
-    labelEn:'Stadium & Matchday',
+    title:'Estadio y Matchday',
+    titleEn:'Stadium & Matchday',
     emoji:'🏟️',
     color:'orange',
     items:[
@@ -13310,8 +13310,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'inversion',
-    label:'Inversión y Propiedad',
-    labelEn:'Investment & Ownership',
+    title:'Inversión y Propiedad',
+    titleEn:'Investment & Ownership',
     emoji:'💼',
     color:'amber',
     items:[
@@ -13334,8 +13334,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'normativa',
-    label:'Normativa y Gobernanza',
-    labelEn:'Rules & Governance',
+    title:'Normativa y Gobernanza',
+    titleEn:'Rules & Governance',
     emoji:'⚖️',
     color:'red',
     items:[
@@ -13358,8 +13358,8 @@ const BUSINESS_VOCAB = [
   },
   {
     id:'comercial',
-    label:'Comercial y Patrocinio',
-    labelEn:'Commercial & Sponsorship',
+    title:'Comercial y Patrocinio',
+    titleEn:'Commercial & Sponsorship',
     emoji:'🤝',
     color:'teal',
     items:[
@@ -13740,44 +13740,58 @@ const BUSINESS_DIALOGS = [
     notes:'Note the switch to tú – with young players it\'s natural and builds trust. The key psychological phrases here are "tu carrera deportiva es lo primero" (puts the player at ease) and "no pasa nada por tu parte" (reassurance about downside). TPO is a sensitive topic – always distinguish federative vs economic rights explicitly.'
   },
   {
-    id:'reunion-director-deportivo-b1',
-    title:'Reunión con el Director Deportivo',
+    id:'pitch-propietario-b1',
+    title:'Pitch al Propietario del Club',
+    titleEn:'Pitching the club owner',
     level:'B1',
-    context:'Keeps (B) meets a club\'s sporting director (A) to introduce their recruitment intelligence platform. The conversation moves from discovery through demo interest to next steps.',
-    speakers:{ A:'Director Deportivo', B:'Keeps' },
+    emoji:'💼',
+    setting:'Keeps se reúne con el propietario de un club que está valorando captar capital externo para financiar una nueva ciudad deportiva. Keeps se presenta como asesor especializado que conecta activos deportivos con capital institucional y privado.',
+    speakers:[
+      { id:'A', name:'Propietario', color:'bg-indigo-100 text-indigo-700' },
+      { id:'B', name:'Keeps', color:'bg-emerald-100 text-emerald-700' }
+    ],
     lines:[
-      { who:'B', es:'Buenos días, Sergio. Gracias por recibirnos. Sé que tenéis una agenda muy apretada en esta época del año.', en:'Good morning, Sergio. Thank you for having us. I know you have a very packed schedule at this time of year.' },
-      { who:'A', es:'No hay problema. Tengo cuarenta y cinco minutos. ¿Qué es exactamente lo que hacéis?', en:'No problem. I have forty-five minutes. What exactly is it that you do?' },
-      { who:'B', es:'En Keeps trabajamos con clubes para ayudarles a identificar perfiles de fichaje usando datos e inteligencia de mercado. No somos una agencia ni vendemos jugadores; somos una capa de inteligencia sobre el proceso de captación.', en:'At Keeps we work with clubs to help them identify transfer targets using data and market intelligence. We\'re not an agency or a player seller; we\'re an intelligence layer on top of the recruitment process.' },
-      { who:'A', es:'¿Y qué os diferencia de una plataforma como Wyscout o InStat?', en:'And what differentiates you from a platform like Wyscout or InStat?' },
-      { who:'B', es:'Las plataformas de vídeo son fantásticas para el análisis individual. Nosotros ponemos eso en el contexto del mercado: disponibilidad contractual, perfil de propietario, política de préstamos, historial de traspasos. Es inteligencia de negocio aplicada al fútbol.', en:'Video platforms are great for individual analysis. We place that in market context: contract availability, owner profile, loan policy, transfer history. It\'s business intelligence applied to football.' },
-      { who:'A', es:'¿Podéis hacer un ejemplo práctico? ¿Qué tipo de perfil podríais identificarme ahora mismo?', en:'Can you give me a practical example? What kind of profile could you identify for me right now?' },
-      { who:'B', es:'Claro. Si me decís qué posición y qué características buscáis, puedo mostraros en diez minutos cómo trabaja nuestra herramienta.', en:'Of course. If you tell me what position and what characteristics you\'re looking for, I can show you in ten minutes how our tool works.' },
-      { who:'A', es:'Necesitamos un mediocentro de menos de veintiséis años, con buen pie izquierdo, que pueda jugar en un esquema de cuatro-tres-tres. Presupuesto máximo de traspaso alrededor de cuatro millones.', en:'We need a central midfielder under twenty-six, with a good left foot, who can play in a four-three-three. Maximum transfer budget around four million.' },
-      { who:'B', es:'Perfecto. Puedo tener una lista inicial de diez candidatos para vosotros en cuarenta y ocho horas, con disponibilidad contractual incluida. ¿Os sería útil eso como punto de partida?', en:'Perfect. I can have an initial shortlist of ten candidates for you within forty-eight hours, including contract availability. Would that be useful as a starting point?' },
-      { who:'A', es:'Sí, mándamelo y lo vemos con el equipo técnico. ¿Y cómo funcionaría comercialmente si quisiéramos trabajar con vosotros de forma regular?', en:'Yes, send it to me and we\'ll look at it with the technical staff. And how would it work commercially if we wanted to work with you on a regular basis?' },
-      { who:'B', es:'Tenemos un modelo de suscripción anual para clubes. Pero antes de hablar de eso, prefiero que veáis la lista y valoréis si el producto os aporta valor. Los números pueden esperar.', en:'We have an annual subscription model for clubs. But before talking about that, I\'d prefer you to see the shortlist and assess whether the product adds value for you. The numbers can wait.' },
-      { who:'A', es:'Me parece bien. Te mando un correo con mis datos y espero esa lista. Si es lo que dices, hablamos.', en:'That works for me. I\'ll send you an email with my details and I\'ll wait for that list. If it\'s what you say, we\'ll talk.' },
-      { who:'B', es:'Perfecto. Esta tarde la tenéis. Gracias, Sergio, ha sido un placer.', en:'Perfect. You\'ll have it this afternoon. Thank you, Sergio, it\'s been a pleasure.' }
+      { who:'B', es:'Buenas tardes, Roberto. Gracias por recibirnos. Sé que es una época complicada con el mercado de fichajes encima.', en:'Good afternoon, Roberto. Thank you for meeting us. I know it\'s a complicated time with the transfer window approaching.' },
+      { who:'A', es:'Así es. Tengo una hora. Decidme qué hacéis exactamente, porque me han llegado referencias vuestras de dos personas distintas.', en:'That\'s right. I have an hour. Tell me exactly what you do, because I\'ve had references to you from two different people.' },
+      { who:'B', es:'En Keeps asesoramos a clubes y activos deportivos en operaciones de capital: entrada de inversores, venta de participaciones minoritarias, financiación de proyectos de infraestructura. Conectamos al club con el tipo de capital adecuado para cada objetivo.', en:'At Keeps we advise clubs and sports assets on capital transactions: investor entry, minority stake sales, project finance for infrastructure. We connect the club with the right type of capital for each objective.' },
+      { who:'A', es:'¿Y vosotros de dónde venís? ¿Sois banco de inversión, consultora, qué?', en:'And where do you come from? Are you an investment bank, a consultancy, what?' },
+      { who:'B', es:'Venimos del deporte profesional, no de las finanzas. Eso nos diferencia: entendemos el negocio del fútbol por dentro antes de estructurar cualquier operación. No tratamos un club como si fuera una empresa de logística.', en:'We come from professional sport, not finance. That\'s what sets us apart: we understand the football business from the inside before structuring any deal. We don\'t treat a club like it\'s a logistics company.' },
+      { who:'A', es:'¿Cuál sería vuestra propuesta concreta para nosotros?', en:'What would your specific proposal be for us?' },
+      { who:'B', es:'Depende de lo que necesitéis. Si el objetivo es financiar la ciudad deportiva, lo estructuramos como financiación de proyecto con deuda o con capital. Si buscáis un socio estratégico a largo plazo, abrimos un proceso ordenado con inversores cualificados que entienden el fútbol europeo.', en:'It depends on what you need. If the goal is to finance the training ground, we structure it as project finance with debt or equity. If you\'re looking for a long-term strategic partner, we run a structured process with qualified investors who understand European football.' },
+      { who:'A', es:'¿Y cómo ganáis dinero vosotros en todo esto?', en:'And how do you make money in all of this?' },
+      { who:'B', es:'Cobramos un advisory fee fijo por el proceso y un porcentaje de éxito sobre el capital captado, que solo se activa si cerramos la operación. Si no hay acuerdo, no cobramos comisión.', en:'We charge a fixed advisory fee for the process and a success fee on capital raised, which only triggers if we close the deal. If there\'s no agreement, we don\'t charge a commission.' },
+      { who:'A', es:'¿Qué tipo de inversores tenéis en vuestra red? ¿Fondos, family offices, individuos?', en:'What type of investors do you have in your network? Funds, family offices, individuals?' },
+      { who:'B', es:'Los tres. Principalmente family offices europeos y norteamericanos con mandato deportivo, algunos fondos de capital privado especializados en deporte, y grupos empresariales con interés en la industria del entretenimiento y el fútbol en particular.', en:'All three. Mainly European and North American family offices with a sports mandate, some private equity funds specialising in sport, and business groups with interest in the entertainment industry and football specifically.' },
+      { who:'A', es:'¿Podríais preparar una propuesta escrita con los pasos concretos y los plazos? Necesito compartirlo con mi consejo de administración.', en:'Could you prepare a written proposal with the specific steps and timelines? I need to share it with my board.' },
+      { who:'B', es:'Por supuesto. En una semana os tenemos un memo con el proceso propuesto, el perfil de inversor objetivo y los plazos orientativos. ¿Hay algún número que el consejo necesite ver desde el principio?', en:'Of course. Within a week we\'ll have a memo for you with the proposed process, the target investor profile and indicative timelines. Is there any number the board needs to see from the outset?' },
+      { who:'A', es:'Necesitamos como mínimo veinte millones para el proyecto de infraestructura. Eso es lo que hay sobre la mesa.', en:'We need a minimum of twenty million for the infrastructure project. That\'s what\'s on the table.' },
+      { who:'B', es:'Entendido. Eso es perfectamente factible para el perfil de inversor que tenemos en mente. Lo reflejamos en el memo y hablamos la semana que viene.', en:'Understood. That is perfectly achievable for the investor profile we have in mind. We\'ll reflect that in the memo and speak next week.' }
     ],
     vocab:[
-      { es:'la agenda apretada', en:'packed schedule' },
-      { es:'la capa de inteligencia', en:'intelligence layer' },
-      { es:'la captación', en:'recruitment (in football context)' },
-      { es:'la disponibilidad contractual', en:'contract availability (is the player gettable?)' },
-      { es:'el perfil de propietario', en:'owner profile (who owns the player / controls their rights)' },
-      { es:'el punto de partida', en:'starting point' },
-      { es:'el modelo de suscripción', en:'subscription model' },
-      { es:'aportar valor', en:'to add value' }
+      { es:'la ciudad deportiva', en:'training ground / sports city complex' },
+      { es:'la participación minoritaria', en:'minority stake' },
+      { es:'la financiación de proyecto', en:'project finance' },
+      { es:'el advisory fee', en:'advisory fee (fixed adviser charge)' },
+      { es:'el porcentaje de éxito', en:'success fee' },
+      { es:'el capital captado', en:'capital raised' },
+      { es:'el family office', en:'family office (private wealth management vehicle)' },
+      { es:'el mandato deportivo', en:'sports mandate (investor brief focused on sport)' },
+      { es:'el consejo de administración', en:'board of directors' },
+      { es:'factible', en:'achievable / feasible' }
     ],
-    notes:'The key strategic move in this conversation is B\'s "los números pueden esperar" – separating product value from commercial discussion builds credibility. Notice how B offers a concrete 48-hour deliverable rather than vague follow-up. "No somos una agencia ni vendemos jugadores" directly addresses the first objection clubs have about working with a commercial intermediary.'
+    notes:'The critical distinction in this dialogue: Keeps advises owners on capital, not sporting directors on players. Notice B leads with "venimos del deporte profesional, no de las finanzas" – this is the competitive positioning against banks and generic advisers. The "solo se activa si cerramos la operación" line on fees removes the owner\'s first objection. Always close by asking what the board needs to see – it maps the next step to a concrete internal process.'
   },
   {
     id:'negociacion-agente',
     title:'Con el Agente de un Jugador',
+    titleEn:'Negotiating with a player\'s agent',
     level:'B1',
-    context:'Keeps (B) speaks with a player\'s agent (A) who has reached out after a client expressed interest in the platform. The agent is protective and wants to understand the business model before committing his client.',
-    speakers:{ A:'Agente', B:'Keeps' },
+    emoji:'🤝',
+    setting:'Keeps habla con el agente de un jugador que ha contactado tras mostrar su cliente interés en la plataforma. El agente es protector y quiere entender el modelo de negocio antes de comprometer a su cliente.',
+    speakers:[
+      { id:'A', name:'Agente', color:'bg-violet-100 text-violet-700' },
+      { id:'B', name:'Keeps', color:'bg-emerald-100 text-emerald-700' }
+    ],
     lines:[
       { who:'A', es:'Mira, mi cliente está interesado en lo que le contaste en Dubai. Pero antes de avanzar, necesito entender exactamente qué hacéis y cómo ganáis dinero.', en:'Look, my client is interested in what you told him in Dubai. But before we move forward, I need to understand exactly what you do and how you make money.' },
       { who:'B', es:'Por supuesto, es la pregunta correcta. Nuestro modelo es sencillo: ponemos en contacto a jugadores con inversores que quieren financiar anticipos sobre sus derechos de imagen. No tocamos los derechos federativos en ningún momento.', en:'Of course, it\'s the right question. Our model is simple: we connect players with investors who want to finance advances on their image rights. We never touch federative rights at any point.' },
@@ -14015,11 +14029,12 @@ const BUSINESS_SHEETS = [
   {
     id:'estructura-traspaso',
     title:'Estructura de un Traspaso',
-    subtitle:'Anatomía de una operación de fichaje',
+    titleEn:'Anatomy of a transfer deal',
+    intro:'Un traspaso en el fútbol moderno tiene muchos componentes más allá del precio titular. Conocer el vocabulario exacto te permite negociar y seguir conversaciones de primera mano.',
     emoji:'🔁',
     color:'blue',
-    sections:[
-      { heading:'Componentes principales', type:'table', rows:[
+    content:[
+      { heading:'Componentes principales', rows:[
         ['Componente','Español','Descripción'],
         ['Transfer fee','tarifa de traspaso / traspaso','El importe principal que paga el club comprador.'],
         ['Instalments','plazos de pago','El traspaso se divide en pagos anuales (p.ej., 3+3+3M).'],
@@ -14032,17 +14047,17 @@ const BUSINESS_SHEETS = [
         ['Loan fee','precio del préstamo / canon de cesión','Importe anual que paga el club cesionario.'],
         ['Purchase option','opción de compra','Derecho a comprar al final del préstamo a precio fijo.']
       ]},
-      { heading:'Fases de la operación', type:'list', items:[
-        'Interés informal - conversación exploratoria entre clubes o a través de agente.',
-        'Oferta formal (bid) - propuesta escrita con precio y condiciones.',
-        'Negociación de estructura - plazos, variables, derechos de imagen.',
-        'Acuerdo de clubes (deal agreed) - se abre la comunicación con el jugador.',
-        'Términos personales - contrato deportivo y prima de fichaje.',
-        'Medical - revisión médica obligatoria antes de cerrar.',
-        'Papeleo - documentación FIFA (TMS), inscripción en liga.',
-        'Anuncio oficial - comunicado del club y publicación en redes.'
+      { heading:'Fases de la operación', examples:[
+        { es:'Interés informal', en:'Exploratory conversation between clubs or through an agent.' },
+        { es:'Oferta formal (bid)', en:'Written proposal with price and conditions.' },
+        { es:'Negociación de estructura', en:'Agreeing instalments, variables, image rights split.' },
+        { es:'Acuerdo de clubes (deal agreed)', en:'Communication with the player opens.' },
+        { es:'Términos personales', en:'Sporting contract and signing-on fee agreed.' },
+        { es:'Medical', en:'Mandatory medical review before closing.' },
+        { es:'Papeleo (TMS + liga)', en:'FIFA documentation, league registration.' },
+        { es:'Anuncio oficial', en:'Club statement and social media announcement.' }
       ]},
-      { heading:'Frases clave en una negociación', type:'table', rows:[
+      { heading:'Frases clave en una negociación', rows:[
         ['Español','English'],
         ['El traspaso se pagaría en tres plazos anuales.','The fee would be paid in three annual instalments.'],
         ['Incluimos un porcentaje de reventa del quince por ciento.','We include a fifteen per cent sell-on clause.'],
@@ -14055,11 +14070,12 @@ const BUSINESS_SHEETS = [
   {
     id:'due-diligence-deportiva',
     title:'Due Diligence Deportiva',
-    subtitle:'Qué se revisa en una adquisición de club',
+    titleEn:'Sports M&A due diligence',
+    intro:'Cuando un inversor o propietario entra en un club, revisa estas áreas antes de cerrar. Conocer el vocabulario te permite participar en estas conversaciones con autoridad.',
     emoji:'🔍',
     color:'amber',
-    sections:[
-      { heading:'Áreas clave de revisión', type:'table', rows:[
+    content:[
+      { heading:'Áreas clave de revisión', rows:[
         ['Área','Aspectos a revisar'],
         ['Plantilla y contratos','Valor de mercado, duración de contratos, cláusulas de rescisión, buy-out options.'],
         ['Masa salarial','Salario total bruto, ratio salario/ingreso, cláusulas variables.'],
@@ -14072,7 +14088,7 @@ const BUSINESS_SHEETS = [
         ['Litigios','Reclamaciones pendientes, disputas con jugadores o agentes.'],
         ['Marca e IP','Derechos de naming, licencias de producto, registros de marca.']
       ]},
-      { heading:'Vocabulario de due diligence', type:'table', rows:[
+      { heading:'Vocabulario del proceso', rows:[
         ['Español','English'],
         ['sala de datos virtual','virtual data room (VDR)'],
         ['cuaderno de venta','information memorandum / IM'],
@@ -14084,26 +14100,27 @@ const BUSINESS_SHEETS = [
         ['condiciones precedentes','conditions precedent (CPs)'],
         ['precio de compra ajustado','adjusted purchase price']
       ]},
-      { heading:'Preguntas habituales en due diligence', type:'list', items:[
-        '¿Cuál es la deuda total neta del club en este momento?',
-        '¿Hay pagos de traspasos diferidos pendientes con otros clubes?',
-        '¿Están al corriente de pago con los jugadores y el personal?',
-        '¿Cuántos contratos vencen al final de esta temporada?',
-        '¿Cuál es el ratio salario sobre ingresos de los últimos tres ejercicios?',
-        '¿Existe alguna sanción activa de UEFA, FIFA o la liga nacional?',
-        '¿El estadio es propiedad del club o está arrendado?',
-        '¿Hay litigios activos con jugadores, agentes u otros clubes?'
+      { heading:'Preguntas habituales en due diligence', examples:[
+        { es:'¿Cuál es la deuda total neta del club en este momento?', en:'What is the club\'s total net debt right now?' },
+        { es:'¿Hay pagos de traspasos diferidos pendientes con otros clubes?', en:'Are there any deferred transfer payments outstanding with other clubs?' },
+        { es:'¿Están al corriente de pago con los jugadores y el personal?', en:'Are they up to date on payments to players and staff?' },
+        { es:'¿Cuántos contratos vencen al final de esta temporada?', en:'How many contracts expire at the end of this season?' },
+        { es:'¿Cuál es el ratio salario sobre ingresos de los últimos tres ejercicios?', en:'What is the wage-to-revenue ratio over the last three financial years?' },
+        { es:'¿Existe alguna sanción activa de UEFA, FIFA o la liga nacional?', en:'Are there any active sanctions from UEFA, FIFA or the domestic league?' },
+        { es:'¿El estadio es propiedad del club o está arrendado?', en:'Is the stadium owned by the club or leased?' },
+        { es:'¿Hay litigios activos con jugadores, agentes u otros clubes?', en:'Are there any active disputes with players, agents or other clubs?' }
       ]}
     ]
   },
   {
     id:'vocabulario-datos',
     title:'Vocabulario de Datos en Español',
-    subtitle:'Glosario de analítica para reuniones con clubes',
+    titleEn:'Analytics vocabulary for club meetings',
+    intro:'Las métricas avanzadas tienen nombres en español que no siempre son traducciones literales. Este glosario cubre las más comunes en reuniones con clubes y directores deportivos.',
     emoji:'📊',
     color:'cyan',
-    sections:[
-      { heading:'Métricas ofensivas', type:'table', rows:[
+    content:[
+      { heading:'Métricas ofensivas', rows:[
         ['Español','English','Definición breve'],
         ['goles esperados (xG)','expected goals (xG)','Probabilidad de que un remate acabe en gol.'],
         ['goles esperados contra (xGA)','expected goals against (xGA)','xG concedido por el equipo.'],
@@ -14113,7 +14130,7 @@ const BUSINESS_SHEETS = [
         ['centros al área','crosses into the box','Centros que llegan al área de penalti.'],
         ['acciones de creación de ocasiones (SCAs)','shot-creating actions (SCAs)','Dos acciones que preceden directamente a un remate.']
       ]},
-      { heading:'Métricas de posesión y creación', type:'table', rows:[
+      { heading:'Métricas de posesión y creación', rows:[
         ['Español','English','Definición breve'],
         ['pases progresivos','progressive passes','Pases que avanzan el balón al menos diez metros hacia portería.'],
         ['carries progresivos','progressive carries','Conducciones que avanzan el balón significativamente.'],
@@ -14122,7 +14139,7 @@ const BUSINESS_SHEETS = [
         ['presión en campo rival','high press / pressing in opposition half','Intentos de recuperar el balón en el tercio final del rival.'],
         ['pases al espacio','through balls / passes into space','Pases entre líneas hacia jugadores en carrera.']
       ]},
-      { heading:'Métricas defensivas y de pressing', type:'table', rows:[
+      { heading:'Métricas defensivas y de pressing', rows:[
         ['Español','English','Definición breve'],
         ['presiones','pressures','Intentos de presionar al poseedor del balón.'],
         ['presiones exitosas','successful pressures','Presiones que resultan en recuperación en cinco segundos.'],
@@ -14132,14 +14149,14 @@ const BUSINESS_SHEETS = [
         ['intercepciones','interceptions','Cortes del balón antes de que llegue al receptor.'],
         ['recuperaciones','recoveries / ball recoveries','Balones ganados en cualquier zona del campo.']
       ]},
-      { heading:'Cómo presentar datos en una reunión', type:'list', items:[
-        'Nuestro modelo indica que... (Our model indicates that...)',
-        'Si lo comparamos con la media de la liga... (If we compare with the league average...)',
-        'En el percentil noventa de su posición... (In the ninetieth percentile for his position...)',
-        'Los datos de las últimas doce semanas muestran... (Data from the last twelve weeks shows...)',
-        'Filtrando por edad y posición, los candidatos son... (Filtering by age and position, the candidates are...)',
-        'El índice de rendimiento ha mejorado / empeorado... (The performance index has improved / declined...)',
-        '¿Queréis que profundice en alguna métrica concreta? (Would you like me to go deeper on any specific metric?)'
+      { heading:'Frases para presentar datos', examples:[
+        { es:'Nuestro modelo indica que...', en:'Our model indicates that...' },
+        { es:'Si lo comparamos con la media de la liga...', en:'If we compare with the league average...' },
+        { es:'En el percentil noventa de su posición...', en:'In the ninetieth percentile for his position...' },
+        { es:'Los datos de las últimas doce semanas muestran...', en:'Data from the last twelve weeks shows...' },
+        { es:'Filtrando por edad y posición, los candidatos son...', en:'Filtering by age and position, the candidates are...' },
+        { es:'El índice de rendimiento ha mejorado / empeorado...', en:'The performance index has improved / declined...' },
+        { es:'¿Queréis que profundice en alguna métrica concreta?', en:'Would you like me to go deeper on any specific metric?' }
       ]}
     ]
   }
