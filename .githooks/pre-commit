@@ -1,0 +1,8 @@
+#!/bin/sh
+# Block commits containing real Slack tokens (not placeholders like xoxb-...)
+# Real tokens: xoxb- followed by 20+ alphanumeric chars
+if git diff --cached --name-only | xargs grep -lE 'xox[bpae]-[0-9]{8,}-[0-9A-Za-z]{10,}' 2>/dev/null | grep -q .; then
+  echo "ERROR: Slack token detected in staged files. Remove it before committing."
+  exit 1
+fi
+exit 0
