@@ -16721,19 +16721,26 @@ function App() {
 }
 
 class ErrorBoundary extends React.Component {
-  constructor(props) { super(props); this.state = { error: null }; }
+  constructor(props) { super(props); this.state = { error: null, info: null }; }
   static getDerivedStateFromError(err) { return { error: err }; }
+  componentDidCatch(err, info) { this.setState({ error: err, info }); }
   render() {
     if (this.state.error) {
+      const stack = this.state.error.stack || '';
+      const compStack = this.state.info && this.state.info.componentStack ? this.state.info.componentStack : '';
       return (
-        <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:'1rem',fontFamily:'sans-serif',padding:'2rem',background:'#FAF6EE'}}>
-          <p style={{fontSize:'2rem'}}>⚠️</p>
-          <p style={{fontWeight:'bold',fontSize:'1.125rem',color:'#1A1410'}}>Algo fue mal</p>
-          <p style={{color:'#8B7E6E',fontSize:'0.875rem',textAlign:'center',maxWidth:'320px'}}>La aplicación ha encontrado un error inesperado.</p>
-          <p style={{color:'#C4202E',fontSize:'0.75rem',textAlign:'center',maxWidth:'480px',fontFamily:'monospace',wordBreak:'break-word'}}>{String(this.state.error)}</p>
-          <button onClick={() => window.location.reload()} style={{marginTop:'0.5rem',padding:'0.625rem 1.5rem',borderRadius:'9999px',background:'#C4202E',color:'#fff',fontWeight:'600',fontSize:'0.875rem',border:'none',cursor:'pointer'}}>
-            Recargar Aprende
-          </button>
+        <div style={{minHeight:'100vh',display:'flex',alignItems:'flex-start',justifyContent:'center',fontFamily:'sans-serif',padding:'2rem',background:'#FAF6EE'}}>
+          <div style={{maxWidth:'640px',width:'100%'}}>
+            <p style={{fontSize:'2rem',textAlign:'center'}}>⚠️</p>
+            <p style={{fontWeight:'bold',fontSize:'1.125rem',color:'#1A1410',textAlign:'center',marginBottom:'1rem'}}>Algo fue mal</p>
+            <pre style={{color:'#C4202E',fontSize:'0.7rem',background:'#fff',padding:'1rem',borderRadius:'8px',overflowX:'auto',whiteSpace:'pre-wrap',wordBreak:'break-word',marginBottom:'0.75rem'}}>{String(this.state.error)}{'\n'}{stack}</pre>
+            <pre style={{color:'#666',fontSize:'0.65rem',background:'#f5f5f5',padding:'0.75rem',borderRadius:'8px',overflowX:'auto',whiteSpace:'pre-wrap',wordBreak:'break-word',marginBottom:'1rem'}}>{compStack}</pre>
+            <div style={{textAlign:'center'}}>
+              <button onClick={() => window.location.reload()} style={{padding:'0.625rem 1.5rem',borderRadius:'9999px',background:'#C4202E',color:'#fff',fontWeight:'600',fontSize:'0.875rem',border:'none',cursor:'pointer'}}>
+                Recargar Aprende
+              </button>
+            </div>
+          </div>
         </div>
       );
     }
