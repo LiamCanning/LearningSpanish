@@ -16730,6 +16730,7 @@ class ErrorBoundary extends React.Component {
           <p style={{fontSize:'2rem'}}>⚠️</p>
           <p style={{fontWeight:'bold',fontSize:'1.125rem',color:'#1A1410'}}>Algo fue mal</p>
           <p style={{color:'#8B7E6E',fontSize:'0.875rem',textAlign:'center',maxWidth:'320px'}}>La aplicación ha encontrado un error inesperado.</p>
+          <p style={{color:'#C4202E',fontSize:'0.75rem',textAlign:'center',maxWidth:'480px',fontFamily:'monospace',wordBreak:'break-word'}}>{String(this.state.error)}</p>
           <button onClick={() => window.location.reload()} style={{marginTop:'0.5rem',padding:'0.625rem 1.5rem',borderRadius:'9999px',background:'#C4202E',color:'#fff',fontWeight:'600',fontSize:'0.875rem',border:'none',cursor:'pointer'}}>
             Recargar Aprende
           </button>
