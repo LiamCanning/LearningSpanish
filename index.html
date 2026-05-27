@@ -8034,6 +8034,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
   const [playMode, setPlayMode] = useState(null); // null | 'normal' | 'shadow'
   const stopRef = useRef(false);
   const shadowTimerRef = useRef(null);
+  const pausedMidLineRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -8082,9 +8083,26 @@ function Conversaciones({ onBack, dark, onSearch }) {
 
   const pauseAll = () => {
     stopRef.current = true;
-    ttsStop();
     if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
+    pausedMidLineRef.current = !!ttsCurrentAudio;
+    try { if (ttsCurrentAudio) ttsCurrentAudio.pause(); } catch(e) {}
+    try { if (!ttsCurrentAudio && 'speechSynthesis' in window) window.speechSynthesis.pause(); } catch(e) {}
     setPlayMode(prev => prev === 'shadow' ? 'paused-shadow' : 'paused-normal');
+  };
+
+  const resumeAll = () => {
+    const resumeMode = playMode === 'paused-shadow' ? 'shadow' : 'normal';
+    if (pausedMidLineRef.current) {
+      // Mid-sentence: resume the audio in place; the existing await will resolve naturally
+      stopRef.current = false;
+      setPlayMode(resumeMode);
+      try { if (ttsCurrentAudio) ttsCurrentAudio.play().catch(() => {}); } catch(e) {}
+      try { if (!ttsCurrentAudio && 'speechSynthesis' in window) window.speechSynthesis.resume(); } catch(e) {}
+    } else {
+      // Paused between lines: advance to the next line
+      const nextIdx = playingIdx !== null ? playingIdx + 1 : 0;
+      playAll(selected.lines, resumeMode, nextIdx);
+    }
   };
 
   if (selected) {
@@ -8130,7 +8148,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
                 </>
               ) : (
                 <>
-                  <button onClick={() => playAll(selected.lines, playMode === 'paused-shadow' ? 'shadow' : 'normal', playingIdx)}
+                  <button onClick={resumeAll}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
                     <span>▶</span> Reanudar {playMode === 'paused-shadow' ? '(sombra)' : ''}
                   </button>
