@@ -8042,12 +8042,12 @@ function Conversaciones({ onBack, dark, onSearch }) {
     };
   }, []);
 
-  const playAll = (lines, mode = 'normal') => {
+  const playAll = (lines, mode = 'normal', startIdx = 0) => {
     ttsStop();
     if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     stopRef.current = false;
     setPlayMode(mode);
-    let i = 0;
+    let i = startIdx;
     const next = async () => {
       if (stopRef.current || i >= lines.length) {
         setPlayingIdx(null);
@@ -8080,6 +8080,13 @@ function Conversaciones({ onBack, dark, onSearch }) {
     setPlayMode(null);
   };
 
+  const pauseAll = () => {
+    stopRef.current = true;
+    ttsStop();
+    if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
+    setPlayMode(prev => prev === 'shadow' ? 'paused-shadow' : 'paused-normal');
+  };
+
   if (selected) {
     return (
       <div>
@@ -8098,7 +8105,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
           <Card dark={dark} className="p-5 mb-5">
             <p className="text-sm italic text-stone-500 mb-4">{selected.setting}</p>
             <div className="flex flex-wrap gap-2 mb-4">
-              {playingIdx === null ? (
+              {playMode === null ? (
                 <>
                   <button onClick={() => playAll(selected.lines, 'normal')}
                     className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
@@ -8110,14 +8117,31 @@ function Conversaciones({ onBack, dark, onSearch }) {
                     <span>🎭</span> Modo sombra
                   </button>
                 </>
+              ) : (playMode === 'normal' || playMode === 'shadow') ? (
+                <>
+                  <button onClick={pauseAll}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold">
+                    <span>⏸</span> Pausar {playMode === 'shadow' ? '(sombra)' : ''}
+                  </button>
+                  <button onClick={stopAll}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
+                    <span>⏹</span> Parar
+                  </button>
+                </>
               ) : (
-                <button onClick={stopAll}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-800 hover:bg-stone-900 text-white text-sm font-bold">
-                  <span>⏹</span> Parar {playMode === 'shadow' ? '(sombra)' : ''}
-                </button>
+                <>
+                  <button onClick={() => playAll(selected.lines, playMode === 'paused-shadow' ? 'shadow' : 'normal', playingIdx)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+                    <span>▶</span> Reanudar {playMode === 'paused-shadow' ? '(sombra)' : ''}
+                  </button>
+                  <button onClick={stopAll}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
+                    <span>⏹</span> Parar
+                  </button>
+                </>
               )}
             </div>
-            {playMode === 'shadow' && (
+            {(playMode === 'shadow' || playMode === 'paused-shadow') && (
               <p className={`text-xs italic mb-3 ${dark ? 'text-violet-300' : 'text-violet-600'}`}>🎭 Modo sombra: repite cada línea en voz alta durante la pausa.</p>
             )}
 
