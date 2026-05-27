@@ -16621,9 +16621,11 @@ function XPToast({ xp, onDone }) {
 
 function App() {
   const dark = false;
+  const SECTION_IDS = ['inicio','tiempos','conjugador','chuletas','gramatica','vocabulario','frases','equivalentes','lecturas','conversaciones','negocios','ejercicios','dictado','pronunciacion','ajustes'];
   const [section, setSection] = useState(() => {
+    const hash = window.location.hash.replace('#', '').trim();
+    if (hash && SECTION_IDS.includes(hash)) return hash;
     const saved = getStorage('aprende.lastSection', 'inicio');
-    // Don't restore sub-pages that need context – snap back to their parent
     const snapToParent = { hoy:'inicio', conectores:'frases' };
     return snapToParent[saved] || saved;
   });
@@ -16632,18 +16634,16 @@ function App() {
   const [navHistory, setNavHistory] = useState([]);
 
   const goTo = (sec) => {
+    history.replaceState(null, '', '#' + sec);
     setSection(prev => {
       if (sec === 'inicio') {
-        // Going home clears history
         setNavHistory([]);
       } else {
-        // Push current section onto history before navigating
         setNavHistory(h => [...h, prev]);
       }
       return sec;
     });
     setStorage('aprende.lastSection', sec);
-    // Track the last *practice* destination so the "Continuar" nav can deep-link
     if (sec !== 'inicio') setStorage('aprende.lastNonInicio', sec);
   };
 
@@ -16657,6 +16657,18 @@ function App() {
       return next;
     });
   };
+  useEffect(() => {
+    const onHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash && SECTION_IDS.includes(hash)) {
+        setSection(hash);
+        setNavHistory([]);
+        setStorage('aprende.lastSection', hash);
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
   const [searchOpen, setSearchOpen] = useState(false);
   const lastNonInicio = getStorage('aprende.lastNonInicio', 'pronunciacion');
 
@@ -16721,15 +16733,15 @@ function App() {
         </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
           {NAV_ITEMS.map(item => (
-            <button key={item.id} onClick={() => goTo(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl text-left transition-all font-medium text-sm sidebar-item
+            <a key={item.id} href={`#${item.id}`} onClick={e => { e.preventDefault(); goTo(item.id); }}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl text-left transition-all font-medium text-sm sidebar-item no-underline
                 ${section === item.id
                   ? 'bg-orange-500 text-paper shadow-sm'
                   : 'text-ink hover:bg-cream'
                 }`}>
               <span className="text-base flex-shrink-0">{item.emoji}</span>
               <span>{item.label}</span>
-            </button>
+            </a>
           ))}
         </nav>
       </aside>
@@ -16763,13 +16775,13 @@ function App() {
         const [moreOpen, setMoreOpen] = React.useState(false);
         const continueItem = NAV_ITEMS.find(n => n.id === lastNonInicio) || NAV_ITEMS.find(n => n.id === 'pronunciacion');
 
-        const NavBtn = ({ active, emoji, label, onClick, ariaLabel }) => (
-          <button onClick={onClick} aria-label={ariaLabel || label}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 min-h-14 py-2.5 transition-all
+        const NavBtn = ({ active, emoji, label, href, onClick, ariaLabel }) => (
+          <a href={href || '#'} onClick={e => { e.preventDefault(); onClick && onClick(); }} aria-label={ariaLabel || label}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 min-h-14 py-2.5 transition-all no-underline
               ${active ? 'text-orange-500' : 'text-dust'}`}>
             <span className="text-xl leading-none">{emoji}</span>
             <span className="text-[10px] font-semibold leading-none tracking-wide">{label}</span>
-          </button>
+          </a>
         );
 
         return (
@@ -16777,12 +16789,13 @@ function App() {
             <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-ink/10 glass-light"
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
               <div className="flex">
-                <NavBtn active={section === 'inicio'} emoji="🏠" label="Inicio"
+                <NavBtn active={section === 'inicio'} emoji="🏠" label="Inicio" href="#inicio"
                   onClick={() => { goTo('inicio'); setMoreOpen(false); }} />
                 <NavBtn
                   active={section === continueItem.id && section !== 'inicio'}
                   emoji={section !== 'inicio' && section === continueItem.id ? continueItem.emoji : '↻'}
                   label={section !== 'inicio' && section === continueItem.id ? continueItem.label.split(' ')[0] : 'Continuar'}
+                  href={`#${continueItem.id}`}
                   ariaLabel={`Continuar con ${continueItem.label}`}
                   onClick={() => { goTo(continueItem.id); setMoreOpen(false); }} />
                 <NavBtn active={moreOpen} emoji="⋯" label="Más"
@@ -16801,15 +16814,15 @@ function App() {
                   <p className="eyebrow text-center mb-4">Todas las secciones</p>
                   <div className="grid grid-cols-4 gap-2">
                     {NAV_ITEMS.map(item => (
-                      <button key={item.id} onClick={() => { goTo(item.id); setMoreOpen(false); }}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all min-h-[68px]
+                      <a key={item.id} href={`#${item.id}`} onClick={e => { e.preventDefault(); goTo(item.id); setMoreOpen(false); }}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all min-h-[68px] no-underline
                           ${section === item.id
                             ? 'bg-orange-500 text-paper shadow-md'
                             : 'bg-cream text-ink hover:bg-ochre-100 active:scale-[0.98]'
                           }`}>
                         <span className="text-2xl leading-none">{item.emoji}</span>
                         <span className="text-[10px] font-semibold leading-tight text-center">{item.label}</span>
-                      </button>
+                      </a>
                     ))}
                   </div>
                 </div>
