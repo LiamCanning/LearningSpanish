@@ -8148,6 +8148,8 @@ function Conversaciones({ onBack, dark, onSearch }) {
   const stopRef = useRef(false);
   const shadowTimerRef = useRef(null);
   const pausedMidLineRef = useRef(false);
+  const playTokenRef = useRef(0);   // bump to cancel any in-flight playback loop
+  const lineRefs = useRef([]);      // one DOM node per line, for auto-scroll
 
   useEffect(() => {
     return () => {
@@ -8156,16 +8158,24 @@ function Conversaciones({ onBack, dark, onSearch }) {
     };
   }, []);
 
-  const playAll = (lines, mode = 'normal', startIdx = 0) => {
+  // Keep the currently-playing line in view so the screen follows the conversation
+  useEffect(() => {
+    if (playingIdx !== null && lineRefs.current[playingIdx]) {
+      lineRefs.current[playingIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [playingIdx]);
+
+  // Plays lines [startIdx, endIdx). endIdx defaults to the end; pass startIdx+1 to repeat one line.
+  const playAll = (lines, mode = 'normal', startIdx = 0, endIdx = lines.length) => {
     ttsStop();
     if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     stopRef.current = false;
+    const token = ++playTokenRef.current;
     setPlayMode(mode);
     let i = startIdx;
     const next = async () => {
-      if (stopRef.current || i >= lines.length) {
-        setPlayingIdx(null);
-        setPlayMode(null);
+      if (stopRef.current || token !== playTokenRef.current || i >= endIdx) {
+        if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); }
         return;
       }
       setPlayingIdx(i);
@@ -8175,7 +8185,10 @@ function Conversaciones({ onBack, dark, onSearch }) {
         ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
         : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
       await playSpeakable(line.es, voiceOpts);
-      if (stopRef.current) { setPlayingIdx(null); setPlayMode(null); return; }
+      if (stopRef.current || token !== playTokenRef.current) {
+        if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); }
+        return;
+      }
       i++;
       // Shadow mode leaves a longer gap (~1.2× line length) so the learner can repeat aloud
       const gap = mode === 'shadow'
@@ -8188,6 +8201,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
 
   const stopAll = () => {
     stopRef.current = true;
+    playTokenRef.current++;   // invalidate any running loop
     ttsStop();
     if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
     setPlayingIdx(null);
@@ -8281,9 +8295,11 @@ function Conversaciones({ onBack, dark, onSearch }) {
                 const speaker = selected.speakers.find(s => s.id === line.who) || selected.speakers[0];
                 const isPlaying = playingIdx === i;
                 return (
-                  <div key={i} className={`rounded-xl p-3 transition-colors ${isPlaying ? 'bg-amber-50 ring-2 ring-amber-300' : 'bg-stone-50'}`}>
+                  <div key={i} ref={el => { lineRefs.current[i] = el; }}
+                    className={`rounded-xl p-3 transition-colors ${isPlaying ? 'bg-amber-50 ring-2 ring-amber-300' : 'bg-stone-50'}`}>
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${speaker.color}`}>{speaker.name}</span>
+                      <span className="text-[10px] text-stone-300">{i + 1}/{selected.lines.length}</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <p className="text-base leading-relaxed flex-1">{line.es}</p>
@@ -8292,6 +8308,14 @@ function Conversaciones({ onBack, dark, onSearch }) {
                     {showTranslation && (
                       <p className="text-xs text-stone-500 mt-1">{line.en}</p>
                     )}
+                    <div className="flex gap-2 mt-2">
+                      <button onClick={() => playAll(selected.lines, 'normal', i)}
+                        className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 hover:bg-orange-200"
+                        title="Reproducir desde esta línea hasta el final">▶ Desde aquí</button>
+                      <button onClick={() => playAll(selected.lines, 'normal', i, i + 1)}
+                        className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-violet-100 text-violet-700 hover:bg-violet-200"
+                        title="Repetir solo esta línea">🔁 Repetir línea</button>
+                    </div>
                   </div>
                 );
               })}
