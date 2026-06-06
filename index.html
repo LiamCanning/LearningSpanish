@@ -8345,6 +8345,31 @@ function Conversaciones({ onBack, dark, onSearch }) {
             </Card>
           )}
         </div>
+
+        {/* Floating playback bar - stays in view while scrolling so pause/stop are always reachable */}
+        {playMode && (
+          <div className="fixed left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-2 rounded-full shadow-xl ring-1 ring-black/10 bg-white/95 backdrop-blur"
+            style={{ bottom: 'calc(1.25rem + env(safe-area-inset-bottom))' }}>
+            {playingIdx !== null && (
+              <span className="text-[11px] font-bold text-stone-500 px-1 tabular-nums">{playingIdx + 1}/{selected.lines.length}</span>
+            )}
+            {(playMode === 'normal' || playMode === 'shadow') ? (
+              <button onClick={pauseAll}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold">
+                <span>⏸</span> Pausar
+              </button>
+            ) : (
+              <button onClick={resumeAll}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+                <span>▶</span> Reanudar
+              </button>
+            )}
+            <button onClick={stopAll}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
+              <span>⏹</span> Parar
+            </button>
+          </div>
+        )}
       </div>
     );
   }
