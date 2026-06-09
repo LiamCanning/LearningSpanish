@@ -6295,11 +6295,34 @@ function ttsStop() {
   try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e) {}
 }
 
+// ── Pause / resume the active audio IN PLACE (keeps position so it can resume) ──
+// Returns true if it actually paused/resumed something, false otherwise.
+function ttsPause() {
+  try { if (ttsCurrentAudio && !ttsCurrentAudio.paused) { ttsCurrentAudio.pause(); return true; } } catch(e) {}
+  try {
+    if (!ttsCurrentAudio && 'speechSynthesis' in window && window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+      window.speechSynthesis.pause(); return true;
+    }
+  } catch(e) {}
+  return false;
+}
+function ttsResume() {
+  try { if (ttsCurrentAudio && ttsCurrentAudio.paused) { ttsCurrentAudio.play().catch(() => {}); return true; } } catch(e) {}
+  try {
+    if (!ttsCurrentAudio && 'speechSynthesis' in window && window.speechSynthesis.paused) {
+      window.speechSynthesis.resume(); return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
 // ── Fire-and-forget: speak and move on (used by 🔊 buttons) ──
 async function speakES(text, opts) {
   try {
     const { gender=null, dialect='es-ES', rate=0.95, pitch=1.0 } = opts || {};
-    ttsStop();
+    // Stop anything already playing (other buttons, dialogue auto-play, Web Speech)
+    // and reset their visual state, so only one audio is ever active.
+    if (typeof AudioBus !== 'undefined') AudioBus.stopAll(); else ttsStop();
     // Create + prime the Audio element HERE — before any await — so iOS
     // considers it user-gesture-initiated and allows .play() after the fetch.
     const primedAudio = new Audio();
@@ -6397,18 +6420,29 @@ const AudioBus = (() => {
   let currentId = null;
   let currentState = 'idle'; // idle | loading | playing | error
   const subs = new Set();
+  const stoppers = new Map(); // id -> stop fn for sequential players (dialogue auto-play)
   const notify = () => subs.forEach(fn => fn(currentId, currentState));
+  // Stop every audio source except the one identified by keepId:
+  // the HTML <audio> element, Web Speech, and any registered sequential player.
+  const stopOthers = (keepId) => {
+    stoppers.forEach((fn, id) => { if (id !== keepId) { try { fn(); } catch(e){} } });
+    ttsStop(); // pauses the active <audio> element and cancels Web Speech
+  };
   return {
     subscribe(fn) { subs.add(fn); return () => subs.delete(fn); },
+    // Sequential players (DialoguePlayer) register a stop fn under a stable id so
+    // any new playback can interrupt them, and they're skipped when they claim.
+    registerStopper(id, fn) { stoppers.set(id, fn); return () => stoppers.delete(id); },
     claim(id) {
-      // Stop any other audio first.
-      try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch(e){}
+      stopOthers(id);
       currentId = id; currentState = 'loading'; notify();
     },
     setPlaying(id) { if (currentId === id) { currentState = 'playing'; notify(); } },
+    setPaused(id)  { if (currentId === id) { currentState = 'paused';  notify(); } },
     setError(id)   { if (currentId === id) { currentState = 'error';   notify(); setTimeout(() => { if (currentId === id) AudioBus.release(); }, 1800); } },
     release()      { currentId = null; currentState = 'idle'; notify(); },
-    stopAll()      { try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch(e){} AudioBus.release(); },
+    releaseIf(id)  { if (currentId === id) AudioBus.release(); },
+    stopAll()      { stopOthers(null); currentId = null; currentState = 'idle'; notify(); },
     current()      { return { id: currentId, state: currentState }; },
   };
 })();
@@ -6437,11 +6471,21 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
 
   const handle = async (e) => {
     e.stopPropagation(); e.preventDefault();
-    if (state === 'playing' || state === 'loading') { AudioBus.stopAll(); return; }
+    if (state === 'loading') { AudioBus.stopAll(); return; }
+    if (state === 'playing') {            // pause in place, keep position
+      if (ttsPause()) AudioBus.setPaused(idRef.current);
+      else AudioBus.stopAll();
+      return;
+    }
+    if (state === 'paused') {             // resume from where it stopped
+      if (ttsResume()) AudioBus.setPlaying(idRef.current);
+      else AudioBus.stopAll();
+      return;
+    }
     AudioBus.claim(idRef.current);
     try {
-      // playSpeakable resolves on audio.onended / utterance.onend — accurate playback duration
-      // onStart fires when audio actually begins (after TTS fetch), switching loading→playing
+      // playSpeakable resolves on audio.onended / utterance.onend — accurate playback duration.
+      // The same promise stays pending across a pause, then resolves when playback finishes.
       await playSpeakable(text, { gender, dialect, onStart: () => AudioBus.setPlaying(idRef.current) });
       if (AudioBus.current().id === idRef.current) AudioBus.release();
     } catch (err) {
@@ -6459,15 +6503,14 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
     cls += ' border-orange-500/40 bg-paper text-orange-500';
     glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden style={{animation:'spin 0.9s linear infinite'}}><path d="M14 8a6 6 0 1 1-3-5.196" strokeLinecap="round"/></svg>);
   } else if (state === 'playing') {
+    // Filled + pulsing = active. Glyph is a pause bar: click to pause in place.
     cls += ' border-orange-500 bg-orange-500 text-paper';
     ring = <span className="absolute inset-0 rounded-full border-2 border-orange-500/60 ring-pulse pointer-events-none" />;
-    glyph = (
-      <span className="inline-flex items-end gap-[2px] h-[10px]">
-        <span className="audio-bar w-[2px] h-full bg-paper rounded-sm" />
-        <span className="audio-bar w-[2px] h-full bg-paper rounded-sm" />
-        <span className="audio-bar w-[2px] h-full bg-paper rounded-sm" />
-      </span>
-    );
+    glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><rect x="4.5" y="3.5" width="2.6" height="9" rx="0.8"/><rect x="8.9" y="3.5" width="2.6" height="9" rx="0.8"/></svg>);
+  } else if (state === 'paused') {
+    // Mid-sentence: amber tint + play triangle to resume from where it stopped.
+    cls += ' border-amber-500 bg-amber-50 text-amber-600';
+    glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M5 5.5v5l5 2.5V3z"/></svg>);
   } else if (state === 'error') {
     cls += ' border-dust bg-paper text-dust shake';
     glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1.5L1 14h14L8 1.5zm0 4l4.5 8h-9L8 5.5zM7 7h2v3H7V7zm0 4h2v2H7v-2z"/></svg>);
@@ -6477,8 +6520,8 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
     <button
       type="button"
       onClick={handle}
-      title={state === 'playing' ? 'Detener' : 'Escuchar'}
-      aria-label={state === 'playing' ? 'Detener audio' : 'Reproducir audio'}
+      title={state === 'playing' ? 'Pausar' : state === 'paused' ? 'Reanudar' : state === 'loading' ? 'Detener' : 'Escuchar'}
+      aria-label={state === 'playing' ? 'Pausar audio' : state === 'paused' ? 'Reanudar audio' : 'Reproducir audio'}
       className={`${dim} ${cls}`}
     >
       {ring}
@@ -7762,7 +7805,7 @@ function Lecturas({ onBack, dark, onSearch }) {
                   <span className="font-serif font-bold flex-shrink-0">{g[0]}</span>
                   <span className="text-stone-300">·</span>
                   <span className="text-stone-600 flex-1">{g[1]}</span>
-                  <button onClick={() => speakES(g[0])} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                  <SpeakBtn text={g[0]} size="sm" />
                 </div>
               ))}
             </div>
@@ -8227,9 +8270,14 @@ function Conversaciones({ onBack, dark, onSearch }) {
   const pausedMidLineRef = useRef(false);
   const playTokenRef = useRef(0);   // bump to cancel any in-flight playback loop
   const lineRefs = useRef([]);      // one DOM node per line, for auto-scroll
+  const busIdRef = useRef('dlg-' + Math.random().toString(36).slice(2));
+  const stopAllRef = useRef(null);  // points at stopAll so the bus can interrupt us
 
   useEffect(() => {
+    // Let any other speech button interrupt this dialogue's auto-play.
+    const unregister = AudioBus.registerStopper(busIdRef.current, () => { if (stopAllRef.current) stopAllRef.current(); });
     return () => {
+      unregister();
       ttsStop();
       if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     };
@@ -8244,7 +8292,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
 
   // Plays lines [startIdx, endIdx). endIdx defaults to the end; pass startIdx+1 to repeat one line.
   const playAll = (lines, mode = 'normal', startIdx = 0, endIdx = lines.length) => {
-    ttsStop();
+    AudioBus.claim(busIdRef.current); // stop other buttons/audio + reset their visuals
     if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     stopRef.current = false;
     const token = ++playTokenRef.current;
@@ -8252,7 +8300,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
     let i = startIdx;
     const next = async () => {
       if (stopRef.current || token !== playTokenRef.current || i >= endIdx) {
-        if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); }
+        if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); AudioBus.releaseIf(busIdRef.current); }
         return;
       }
       setPlayingIdx(i);
@@ -8263,7 +8311,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
         : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
       await playSpeakable(line.es, voiceOpts);
       if (stopRef.current || token !== playTokenRef.current) {
-        if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); }
+        if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); AudioBus.releaseIf(busIdRef.current); }
         return;
       }
       i++;
@@ -8283,7 +8331,9 @@ function Conversaciones({ onBack, dark, onSearch }) {
     if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
     setPlayingIdx(null);
     setPlayMode(null);
+    AudioBus.releaseIf(busIdRef.current);
   };
+  stopAllRef.current = stopAll;
 
   const pauseAll = () => {
     stopRef.current = true;
@@ -8408,7 +8458,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
                     <span className="font-serif font-bold flex-shrink-0">{v.es}</span>
                     <span className="text-stone-300">·</span>
                     <span className="text-stone-600 flex-1">{v.en}</span>
-                    <button onClick={() => speakES(v.es)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                    <SpeakBtn text={v.es} size="sm" />
                   </div>
                 ))}
               </div>
@@ -9885,7 +9935,7 @@ function Conjugador({ dark }) {
                            style={{gridTemplateColumns:'3rem 1fr 1.25rem'}}>
                         <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{persons[i]}</span>
                         <span className={`font-bold break-words ${dark ? 'text-stone-100' : 'text-stone-900'}`}>{form}</span>
-                        <button onClick={() => speakES(form)} className="text-stone-400 hover:text-orange-500 text-xs leading-none">🔊</button>
+                        <SpeakBtn text={form} size="sm" />
                       </div>
                     ))}
                   </div>
@@ -14938,6 +14988,8 @@ function Negocios({ onBack, dark, onSearch }) {
   const [playMode, setPlayMode] = useState(null);
   const stopRef = useRef(false);
   const shadowTimerRef = useRef(null);
+  const busIdRef = useRef('dlg-' + Math.random().toString(36).slice(2));
+  const stopAllRef = useRef(null);
 
   const tileColorMap = {
     orange:'from-orange-400 to-orange-500',
@@ -14951,14 +15003,16 @@ function Negocios({ onBack, dark, onSearch }) {
   };
 
   useEffect(() => {
+    const unregister = AudioBus.registerStopper(busIdRef.current, () => { if (stopAllRef.current) stopAllRef.current(); });
     return () => {
+      unregister();
       ttsStop();
       if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     };
   }, []);
 
   const playAll = (lines, mode = 'normal') => {
-    ttsStop();
+    AudioBus.claim(busIdRef.current); // stop other buttons/audio + reset their visuals
     if (shadowTimerRef.current) clearTimeout(shadowTimerRef.current);
     stopRef.current = false;
     setPlayMode(mode);
@@ -14967,6 +15021,7 @@ function Negocios({ onBack, dark, onSearch }) {
       if (stopRef.current || i >= lines.length) {
         setPlayingIdx(null);
         setPlayMode(null);
+        AudioBus.releaseIf(busIdRef.current);
         return;
       }
       setPlayingIdx(i);
@@ -14975,7 +15030,7 @@ function Negocios({ onBack, dark, onSearch }) {
         ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
         : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
       await playSpeakable(line.es, voiceOpts);
-      if (stopRef.current) { setPlayingIdx(null); setPlayMode(null); return; }
+      if (stopRef.current) { setPlayingIdx(null); setPlayMode(null); AudioBus.releaseIf(busIdRef.current); return; }
       i++;
       const gap = mode === 'shadow'
         ? Math.max(1500, Math.round(line.es.length * 70))
@@ -14991,7 +15046,9 @@ function Negocios({ onBack, dark, onSearch }) {
     if (shadowTimerRef.current) { clearTimeout(shadowTimerRef.current); shadowTimerRef.current = null; }
     setPlayingIdx(null);
     setPlayMode(null);
+    AudioBus.releaseIf(busIdRef.current);
   };
+  stopAllRef.current = stopAll;
 
   // ---- VOCAB CATEGORY DETAIL VIEW (cards grid, no scrolling list) ----
   if (selectedVocab) {
@@ -15139,7 +15196,7 @@ function Negocios({ onBack, dark, onSearch }) {
                     <span className="font-serif font-bold flex-shrink-0">{v.es}</span>
                     <span className="text-stone-300">·</span>
                     <span className="text-stone-600 flex-1">{v.en}</span>
-                    <button onClick={() => speakES(v.es)} className="text-stone-400 hover:text-orange-500 text-xs">🔊</button>
+                    <SpeakBtn text={v.es} size="sm" />
                   </div>
                 ))}
               </div>
