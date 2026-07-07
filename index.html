@@ -5612,19 +5612,19 @@ function hashDate(dateStr) {
 }
 
 function getWordOfDay() {
-  const d = new Date().toISOString().slice(0, 10);
+  const d = todayStr(); // local date: must roll over at midnight local like the streak, not 1-2am (UTC)
   return WORDS_OF_DAY[hashDate(d) % WORDS_OF_DAY.length];
 }
 
 function getPhraseOfDay() {
-  const d = new Date().toISOString().slice(0, 10);
+  const d = todayStr();
   return PHRASES_OF_DAY[(hashDate(d) + 7) % PHRASES_OF_DAY.length];
 }
 
 function getWordForDate(daysAgo) {
   const d = new Date();
   d.setDate(d.getDate() - daysAgo);
-  const s = d.toISOString().slice(0, 10);
+  const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   return {
     word: WORDS_OF_DAY[hashDate(s) % WORDS_OF_DAY.length],
     phrase: PHRASES_OF_DAY[(hashDate(s) + 7) % PHRASES_OF_DAY.length],
@@ -5638,7 +5638,19 @@ function getStorage(k, def) {
 }
 
 function setStorage(k, v) {
-  try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {
+    // Quota full - evict the rebuildable audio/AI caches and retry once, so
+    // streak/XP/glossary/SRS writes are never silently lost.
+    try {
+      localStorage.removeItem('aprende.tts.cache');
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('aprende.ai.cache.') || key.startsWith('aprende.ai.explain.')) localStorage.removeItem(key);
+      });
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch (e2) {
+      try { ToastBus.push('⚠️ No se pudo guardar - almacenamiento lleno'); } catch (e3) {}
+    }
+  }
 }
 
 function todayStr() {
@@ -6337,7 +6349,7 @@ async function loadAzureSDK() {
   if (window.SpeechSDK) { _azureSDK = window.SpeechSDK; return _azureSDK; }
   await new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js';
+    s.src = 'https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@1.50.0/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js';
     s.onload = resolve;
     s.onerror = () => reject(new Error('Could not load Azure Speech SDK'));
     document.head.appendChild(s);
@@ -7082,9 +7094,10 @@ function Inicio({ dark, section, setSection }) {
 
   // Tarjetas due today
   const dueCards = React.useMemo(() => {
-    const cards = getStorage('aprende.glosario', []);
+    const entries = getStorage('aprende.glossary', []) || [];
+    const srs = getStorage('aprende.srs', {});
     const now = Date.now();
-    return cards.filter(c => c.srs && c.srs.due && c.srs.due <= now).length;
+    return entries.filter(e => { const r = srs[e.id]; return !r || (r.due || 0) <= now; }).length;
   }, []);
 
   // Streak dot strip - last 7 days. Approximation: today is filled if practiced;
@@ -15726,7 +15739,7 @@ function Ajustes({ dark, onBack }) {
   const clearAiCache = () => {
     let count = 0;
     Object.keys(localStorage).forEach(k => {
-      if (k.startsWith('aprende.ai.cache.')) { localStorage.removeItem(k); count++; }
+      if (k.startsWith('aprende.ai.cache.') || k.startsWith('aprende.ai.explain.')) { localStorage.removeItem(k); count++; }
     });
     setAiTestStatus('ok');
     setAiTestMsg(`✓ Caché borrada (${count} traducciones).`);
@@ -15950,8 +15963,14 @@ function Ajustes({ dark, onBack }) {
             'aprende.tts.azureKey','aprende.tts.azureRegion','aprende.tts.azureVoiceFemale','aprende.tts.azureVoiceMale',
             'aprende.tts.speechRate',
             'aprende.ai.anthropicKey',
-            'aprende.slack.webhookUrl',
+            'aprende.slack.botToken','aprende.slack.channelId',
             'aprende.custom_equiv',
+            // Learning data - glossary/SRS/streak/XP live only in this
+            // browser's localStorage; without these in the transfer there is
+            // no backup at all.
+            'aprende.glossary','aprende.srs','aprende.streak','aprende.xp',
+            'aprende.achievements','aprende.exercise_history','aprende.saved_verbs',
+            'aprende.dictado.stats','aprende.dictado.count',
           ];
           const [copied, setCopied] = React.useState(false);
           const [exportCode, setExportCode] = React.useState('');
@@ -15964,7 +15983,7 @@ function Ajustes({ dark, onBack }) {
               const v = localStorage.getItem(k);
               if (v) data[k] = v;
             });
-            const str = btoa(JSON.stringify(data));
+            const str = btoa(unescape(encodeURIComponent(JSON.stringify(data)))); // UTF-8-safe: plain btoa throws on curly quotes/emoji
             setExportCode(str);
             try {
               navigator.clipboard.writeText(str).then(() => {
@@ -15976,7 +15995,10 @@ function Ajustes({ dark, onBack }) {
 
           const handleImport = () => {
             try {
-              const data = JSON.parse(atob(importVal.trim()));
+              const raw = atob(importVal.trim());
+              let json;
+              try { json = decodeURIComponent(escape(raw)); } catch (e) { json = raw; }
+              const data = JSON.parse(json);
               let count = 0;
               TRANSFER_KEYS.forEach(k => {
                 if (data[k] !== undefined) { localStorage.setItem(k, data[k]); count++; }
