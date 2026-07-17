@@ -10413,13 +10413,23 @@ function fmtSheetDate(iso) {
   return `${d} ${meses[m - 1]} ${y}`;
 }
 
-function Chuletas({ onBack, dark, onSearch }) {
+function Chuletas({ onBack, dark, onSearch, jump }) {
   const [tab, setTab] = usePersistedState('aprende.view.chuletas.tab', null);
   const [selectedSheetId, setSelectedSheetId] = usePersistedState('aprende.view.chuletas.sheetId', null);
   const selectedSheet = selectedSheetId ? CHEAT_SHEETS.find(s => s.id === selectedSheetId) : null;
   const setSelectedSheet = (sheet) => setSelectedSheetId(sheet ? sheet.id : null);
   const [selectedMistake, setSelectedMistake] = usePersistedState('aprende.view.chuletas.mistake', null);
   const [sheetFilter, setSheetFilter] = usePersistedState('aprende.view.chuletas.filter', 'todos');
+  const [sheetQuery, setSheetQuery] = useState('');
+
+  // Open a specific sheet when global search deep-links here (once per new jump nonce).
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      if (CHEAT_SHEETS.find(s => s.id === jump.id)) { setTab('gramatica'); setSelectedSheetId(jump.id); }
+    }
+  }, [jump]);
 
   const tileColorMap = {
     orange:'from-orange-400 to-orange-500',
@@ -10568,6 +10578,12 @@ function Chuletas({ onBack, dark, onSearch }) {
 
   // ---- LIST / GRID VIEW ----
   const meta = SECTION_META[tab] || { label:'Chuletas', sub:'Cheat sheets' };
+  // Sheets shown in the "Todas las chuletas" grid: category pill + full-text query.
+  const sheetQ = sheetQuery.trim().toLowerCase();
+  const gramaticaSheets = (sheetFilter === 'recientes'
+    ? [...CHEAT_SHEETS].filter(s => s.added).sort((a, b) => (b.added || '').localeCompare(a.added || ''))
+    : CHEAT_SHEETS.filter(s => sheetFilter === 'todos' || s.category === sheetFilter)
+  ).filter(s => !sheetQ || chuletaSearchText(s).includes(sheetQ));
   return (
     <div>
       <BackHeader title={meta.label} subtitle={meta.sub} onBack={goBackToIndex} dark={dark} onSearch={onSearch} />
@@ -10591,11 +10607,19 @@ function Chuletas({ onBack, dark, onSearch }) {
                 </button>
               ))}
             </div>
+            {/* Full-text search across every cheat sheet's title and content */}
+            <div className={`flex items-center gap-2 mb-5 px-3.5 py-2.5 rounded-xl border ${dark ? 'bg-white/[0.04] border-white/10' : 'bg-white border-stone-200'}`}>
+              <span className="text-stone-400">🔍</span>
+              <input value={sheetQuery} onChange={e => setSheetQuery(e.target.value)}
+                placeholder="Buscar en las chuletas (título o contenido)..."
+                className={`flex-1 outline-none text-sm bg-transparent ${dark ? 'text-stone-200 placeholder-stone-500' : 'text-stone-700 placeholder-stone-400'}`} />
+              {sheetQuery && <button onClick={() => setSheetQuery('')} className="text-stone-400 text-xl leading-none">×</button>}
+            </div>
+            {gramaticaSheets.length === 0 && (
+              <p className="text-center text-sm text-stone-400 py-10">Ninguna chuleta coincide con "{sheetQuery}".</p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {(sheetFilter === 'recientes'
-              ? [...CHEAT_SHEETS].filter(s => s.added).sort((a, b) => (b.added || '').localeCompare(a.added || ''))
-              : CHEAT_SHEETS.filter(s => sheetFilter === 'todos' || s.category === sheetFilter)
-            ).map((sheet, idx) => (
+            {gramaticaSheets.map((sheet, idx) => (
               <button key={sheet.id} onClick={() => setSelectedSheet(sheet)} className="text-left">
                 <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
                   <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
@@ -13758,6 +13782,19 @@ function GlosarioInner({ dark }) {
 // GLOBAL SEARCH
 // ============================================================
 
+// Flatten a cheat sheet's full content into one lowercase blob so global search
+// can match anything inside it (headings, table rows, examples), not just the title.
+function chuletaSearchText(c) {
+  const parts = [c.title, c.titleEn, c.titleEs, c.subtitle, c.intro, c.concept];
+  (c.content || []).forEach(sec => {
+    if (sec.heading) parts.push(sec.heading);
+    if (sec.text) parts.push(sec.text);
+    if (Array.isArray(sec.rows)) sec.rows.forEach(row => Array.isArray(row) && parts.push(row.join(' ')));
+    if (Array.isArray(sec.examples)) sec.examples.forEach(ex => parts.push((ex.es || '') + ' ' + (ex.en || '')));
+  });
+  return parts.filter(Boolean).join(' ').toLowerCase();
+}
+
 function buildSearchIndex() {
   const idx = [];
   // Words of day
@@ -13769,7 +13806,7 @@ function buildSearchIndex() {
     (TENSES[group] || []).forEach(t => idx.push({ kind:'Tiempo', section:'tiempos', es:t.title, en:t.subtitle, hint:t.concept }));
   });
   // Cheat sheets
-  (typeof CHEAT_SHEETS !== 'undefined' ? CHEAT_SHEETS : []).forEach(c => idx.push({ kind:'Chuleta', section:'chuletas', es:c.title || c.titleEs || '', en:c.subtitle || c.titleEn || '', hint:c.concept || c.intro || '' }));
+  (typeof CHEAT_SHEETS !== 'undefined' ? CHEAT_SHEETS : []).forEach(c => idx.push({ kind:'Chuleta', section:'chuletas', sheetId:c.id, es:c.title || c.titleEs || '', en:c.subtitle || c.titleEn || '', hint:c.concept || c.intro || '', body:chuletaSearchText(c) }));
   // Vocab themes
   (typeof VOCAB_THEMES !== 'undefined' ? VOCAB_THEMES : []).forEach(t => {
     (t.words || []).forEach(w => idx.push({ kind:'Vocab', section:'vocabulario', es:w.es, en:w.en, hint:w.example }));
@@ -13817,8 +13854,21 @@ function GlobalSearch({ open, onClose, onJump }) {
   const results = query.length < 2 ? [] : SEARCH_INDEX.filter(r =>
     (r.es && r.es.toLowerCase().includes(query)) ||
     (r.en && r.en.toLowerCase().includes(query)) ||
-    (r.hint && r.hint.toLowerCase().includes(query))
+    (r.hint && r.hint.toLowerCase().includes(query)) ||
+    (r.body && r.body.includes(query))
   ).slice(0, 50);
+
+  // For a chuleta matched only on its inner content, pull a short snippet around the
+  // hit so the result shows why it matched (e.g. the exact row containing the word).
+  const bodySnippet = (r) => {
+    if (!r.body) return null;
+    const shown = ((r.es || '') + ' ' + (r.en || '') + ' ' + (r.hint || '')).toLowerCase();
+    if (shown.includes(query)) return null;
+    const at = r.body.indexOf(query);
+    if (at < 0) return null;
+    const start = Math.max(0, at - 35), end = Math.min(r.body.length, at + query.length + 35);
+    return (start > 0 ? '…' : '') + r.body.slice(start, end).trim() + (end < r.body.length ? '…' : '');
+  };
 
   const KIND_COLOR = {
     'Palabra':'bg-orange-100 text-orange-700',
@@ -13854,6 +13904,8 @@ function GlobalSearch({ open, onClose, onJump }) {
           )}
           {results.map((r, i) => {
             const expanded = openIdx === i;
+            const snippet = bodySnippet(r);
+            const isChuleta = r.section === 'chuletas' && r.sheetId;
             return (
             <div key={i} className="border-b border-stone-100">
               <button onClick={() => setOpenIdx(expanded ? null : i)}
@@ -13864,14 +13916,15 @@ function GlobalSearch({ open, onClose, onJump }) {
                   <span className={`text-stone-300 text-xl leading-none transition-transform ${expanded ? 'rotate-90' : ''}`}>›</span>
                 </div>
                 {r.en && <p className="text-xs text-stone-500">{r.en}</p>}
-                {!expanded && r.hint && <p className="text-xs text-stone-400 italic mt-0.5 truncate">{r.hint}</p>}
+                {!expanded && (snippet || r.hint) && <p className="text-xs text-stone-400 italic mt-0.5 truncate">{snippet || r.hint}</p>}
               </button>
               {expanded && (
                 <div className="px-5 pb-4 -mt-1">
+                  {snippet && <p className="text-xs text-stone-500 mb-2 break-words">Coincide con: <span className="italic">{snippet}</span></p>}
                   {r.hint && <p className="text-sm text-stone-600 italic mb-3 break-words">{r.hint}</p>}
-                  <button onClick={() => { onJump(r.section); onClose(); }}
+                  <button onClick={() => { onJump(r.section, r.sheetId); onClose(); }}
                     className="text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-full px-3.5 py-1.5 transition-colors">
-                    Abrir {SECTION_LABEL[r.section] || 'sección'} →
+                    {isChuleta ? 'Abrir chuleta' : `Abrir ${SECTION_LABEL[r.section] || 'sección'}`} →
                   </button>
                 </div>
               )}
@@ -17328,6 +17381,10 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
   const [searchOpen, setSearchOpen] = useState(false);
+  // Deep-link target for opening a specific cheat sheet from global search.
+  // The nonce (n) lets Chuletas re-open even if it's already the active section.
+  const [chuletaJump, setChuletaJump] = useState(null);
+  const openChuleta = (id) => setChuletaJump(prev => ({ id, n: (prev ? prev.n : 0) + 1 }));
   const lastNonInicio = getStorage('aprende.lastNonInicio', 'pronunciacion');
 
   const NAV_ITEMS = [
@@ -17355,7 +17412,7 @@ function App() {
       case 'hoy': return <Hoy {...props} />;
       case 'tiempos': return <Tiempos {...props} />;
       case 'conjugador': return <ConjugadorSection {...props} />;
-      case 'chuletas': return <Chuletas {...props} />;
+      case 'chuletas': return <Chuletas {...props} jump={chuletaJump} />;
       case 'gramatica': return <GramaticaSection {...props} />;
       case 'vocabulario': return <Vocabulario {...props} />;
       case 'conectores': return <Frases {...props} initialTab="conectores" />;
@@ -17423,7 +17480,7 @@ function App() {
         </div>
       </main>
 
-      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s) => goTo(s)} />
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s, sheetId) => { if (s === 'chuletas' && sheetId) openChuleta(sheetId); goTo(s); }} />
 
       <Toaster />
       <GlobalAudioStop />
