@@ -8184,394 +8184,1363 @@ function Lecturas({ onBack, dark, onSearch }) {
 
 const CONVERSATIONS = [
   {
-    id:'cafe-pedido',
-    level:'A2',
-    emoji:'☕',
-    title:'En la cafetería',
-    titleEn:'At the café',
-    setting:'Una mañana de martes. Un cliente entra en una cafetería del barrio de Ruzafa.',
-    speakers:[
-      { id:'A', name:'Camarero', color:'bg-orange-100 text-orange-700' },
-      { id:'B', name:'Cliente', color:'bg-sky-100 text-sky-700' }
+    "id": "finde-lunes",
+    "level": "A2",
+    "emoji": "🗓️",
+    "title": "El lunes en la ofi",
+    "titleEn": "Monday at the office",
+    "setting": "Lunes por la mañana. Lucía y Dani se toman un café en la oficina y se cuentan qué han hecho el fin de semana.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Lucía",
+        "color": "bg-rose-100 text-rose-700",
+        "gender": "female",
+        "rate": 0.98
+      },
+      {
+        "id": "B",
+        "name": "Dani",
+        "color": "bg-sky-100 text-sky-700",
+        "gender": "male",
+        "rate": 0.9
+      }
     ],
-    lines:[
-      { who:'A', es:'Buenos días, ¿qué le pongo?', en:'Good morning, what can I get you?' },
-      { who:'B', es:'Hola, buenos días. Un café con leche y un cruasán, por favor.', en:'Hi, good morning. A coffee with milk and a croissant, please.' },
-      { who:'A', es:'¿Lo quiere caliente o templado?', en:'Do you want it hot or warm?' },
-      { who:'B', es:'Templado, por favor. Que no esté hirviendo.', en:'Warm, please. Not boiling.' },
-      { who:'A', es:'Muy bien. ¿Para tomar aquí o para llevar?', en:'Perfect. Have here or take away?' },
-      { who:'B', es:'Para aquí. ¿Me pone también un zumo de naranja natural?', en:'Have here. Could you also give me a fresh orange juice?' },
-      { who:'A', es:'Claro. ¿Algo más?', en:'Of course. Anything else?' },
-      { who:'B', es:'No, gracias, eso es todo. ¿Cuánto es?', en:'No thanks, that\'s all. How much is it?' },
-      { who:'A', es:'Son seis euros con cincuenta.', en:'That\'ll be six euros fifty.' },
-      { who:'B', es:'Aquí tiene. Gracias.', en:'Here you go. Thanks.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "¡Buenos días, Dani! ¿Qué tal el finde? Tienes buena cara, eh.",
+        "en": "Morning, Dani! How was the weekend? You look well, eh."
+      },
+      {
+        "who": "B",
+        "es": "Buenas, Lucía. Pues muy bien, la verdad. El sábado fui a la playa con unos amigos y el domingo no hice absolutamente nada. ¿Y tú?",
+        "en": "Hi, Lucía. Really good, honestly. Saturday I went to the beach with some friends and Sunday I did absolutely nothing. And you?"
+      },
+      {
+        "who": "A",
+        "es": "Yo más tranquila. El sábado estuve en casa de mi hermana, que ha tenido un bebé hace poco. Es una monada.",
+        "en": "Quieter for me. Saturday I was at my sister's; she had a baby recently. She's adorable."
+      },
+      {
+        "who": "B",
+        "es": "¡Qué bien! ¿Niño o niña?",
+        "en": "How lovely! Boy or girl?"
+      },
+      {
+        "who": "A",
+        "es": "Una niña. Se llama Vera. Me pasé toda la tarde con ella en brazos, no la solté ni un momento.",
+        "en": "A girl. She's called Vera. I spent the whole afternoon holding her, I didn't put her down for a second."
+      },
+      {
+        "who": "B",
+        "es": "Jaja, típico. ¿Y el domingo qué, descansando?",
+        "en": "Haha, typical. And Sunday, resting?"
+      },
+      {
+        "who": "A",
+        "es": "Total. Me levanté tarde, comí con mis padres y por la tarde vi una serie en el sofá. Nada del otro mundo, pero lo necesitaba.",
+        "en": "Totally. I got up late, had lunch with my parents and watched a series on the sofa in the afternoon. Nothing special, but I needed it."
+      },
+      {
+        "who": "B",
+        "es": "Te entiendo perfectamente. A veces el mejor plan es no tener plan.",
+        "en": "I know exactly what you mean. Sometimes the best plan is no plan."
+      },
+      {
+        "who": "A",
+        "es": "Exacto. Oye, ¿y la playa qué tal? ¿No hacía mucho calor?",
+        "en": "Exactly. Hey, how was the beach? Wasn't it really hot?"
+      },
+      {
+        "who": "B",
+        "es": "Buah, calor a tope. Pero nos metíamos en el agua cada dos por tres, así que se llevaba bien. Lo malo es que me quemé la espalda.",
+        "en": "Ugh, boiling. But we kept getting in the water, so it was bearable. The bad thing is I burnt my back."
+      },
+      {
+        "who": "A",
+        "es": "Ay, madre. ¿No te echaste crema?",
+        "en": "Oh no. Didn't you put on suncream?"
+      },
+      {
+        "who": "B",
+        "es": "Me la eché al principio, pero luego se me olvidó repetir. Una tontería, ya lo sé.",
+        "en": "I put it on at first, but then I forgot to reapply. Silly, I know."
+      },
+      {
+        "who": "A",
+        "es": "Clásico. Bueno, ¿nos ponemos con el trabajo antes de que llegue el jefe?",
+        "en": "Classic. Right, shall we get on with work before the boss arrives?"
+      },
+      {
+        "who": "B",
+        "es": "Venga, va. Pero primero acábate el café, que el lunes sin cafeína no se puede.",
+        "en": "Come on then. But finish your coffee first; Monday without caffeine is impossible."
+      },
+      {
+        "who": "A",
+        "es": "En eso estamos de acuerdo. ¡Feliz lunes!",
+        "en": "On that we agree. Happy Monday!"
+      },
+      {
+        "who": "B",
+        "es": "¡Feliz lunes, anda!",
+        "en": "Happy Monday to you too!"
+      }
     ],
-    vocab:[
-      { es:'¿qué le pongo?', en:'what can I get you? (lit. what shall I put for you)' },
-      { es:'para llevar', en:'to take away' },
-      { es:'zumo natural', en:'fresh-squeezed juice' },
-      { es:'¿cuánto es?', en:'how much is it?' }
+    "vocab": [
+      {
+        "es": "el finde",
+        "en": "the weekend (short for fin de semana)"
+      },
+      {
+        "es": "tener buena cara",
+        "en": "to look well / healthy"
+      },
+      {
+        "es": "una monada",
+        "en": "a cutie / adorable"
+      },
+      {
+        "es": "nada del otro mundo",
+        "en": "nothing special"
+      },
+      {
+        "es": "cada dos por tres",
+        "en": "constantly / all the time"
+      },
+      {
+        "es": "a tope",
+        "en": "full-on / to the max"
+      }
     ],
-    notes:'The camarero uses "le" (usted) – the polite register that\'s standard in Spanish cafés. In very casual places you might hear "tú" instead.'
+    "notes": "Easy A2 catch-up. 'Finde' is everyday spoken Spanish for the weekend. Note 'se me olvidó' - the accidental 'se' that shifts blame off yourself. 'Antes de que llegue' triggers subjunctive after 'antes de que'."
   },
   {
-    id:'restaurante-menu',
-    level:'A2',
-    emoji:'🍽️',
-    title:'En el restaurante',
-    titleEn:'At the restaurant',
-    setting:'Un mediodía en un restaurante del centro de Valencia. Dos amigos piden el menú del día.',
-    speakers:[
-      { id:'A', name:'Camarera', color:'bg-orange-100 text-orange-700' },
-      { id:'B', name:'Cliente', color:'bg-sky-100 text-sky-700' }
+    "id": "plan-finde",
+    "level": "A2",
+    "emoji": "🍖",
+    "title": "Montando una barbacoa",
+    "titleEn": "Planning a barbecue",
+    "setting": "Miércoles por la tarde. Carlos llama a Nacho para organizar una barbacoa con el grupo de amigos el sábado.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Carlos",
+        "color": "bg-green-100 text-green-700",
+        "gender": "male",
+        "rate": 0.9
+      },
+      {
+        "id": "B",
+        "name": "Nacho",
+        "color": "bg-amber-100 text-amber-700",
+        "gender": "male",
+        "rate": 1.0
+      }
     ],
-    lines:[
-      { who:'A', es:'Buenas, ¿ya han decidido?', en:'Hi, have you decided yet?' },
-      { who:'B', es:'Sí, vamos a tomar el menú del día los dos. ¿Qué tienen de primero?', en:'Yes, we\'ll both have the set menu. What do you have for starters?' },
-      { who:'A', es:'De primero tienen ensalada mixta, crema de verduras o paella.', en:'For starters you have mixed salad, cream of vegetables or paella.' },
-      { who:'B', es:'Yo la paella. Mi amigo la ensalada.', en:'I\'ll have the paella. My friend the salad.' },
-      { who:'A', es:'¿Y de segundo?', en:'And for main?' },
-      { who:'B', es:'Para mí el pescado del día. Y él el pollo asado.', en:'The fish of the day for me. And roast chicken for him.' },
-      { who:'A', es:'Muy bien. ¿Para beber?', en:'Perfect. And to drink?' },
-      { who:'B', es:'Una jarra de agua y dos copas de vino tinto.', en:'A jug of water and two glasses of red wine.' },
-      { who:'A', es:'¿El pan y el postre están incluidos en el menú?', en:'Bread and dessert are included in the menu?' },
-      { who:'A', es:'Sí, todo incluido. Café también si quieren.', en:'Yes, all included. Coffee too if you want.' },
-      { who:'B', es:'Perfecto, gracias.', en:'Perfect, thanks.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "¿Qué pasa, Nacho? ¿Tienes planes para el finde o estás libre?",
+        "en": "What's up, Nacho? Got plans for the weekend or are you free?"
+      },
+      {
+        "who": "B",
+        "es": "Hombre, de momento libre. El sábado no tengo nada. ¿Por qué, qué se te ha ocurrido?",
+        "en": "Well, free for now. I've got nothing Saturday. Why, what have you got in mind?"
+      },
+      {
+        "who": "A",
+        "es": "Estaba pensando en montar una barbacoa en casa de mis padres. Tienen un jardín enorme y no lo usa nadie.",
+        "en": "I was thinking of doing a barbecue at my parents' place. They've got a huge garden and nobody uses it."
+      },
+      {
+        "who": "B",
+        "es": "¡Me apunto ya! Hace siglos que no hacemos una barbacoa en condiciones. ¿Llamamos a la gente de siempre?",
+        "en": "I'm in already! It's been ages since we did a proper barbecue. Shall we call the usual crowd?"
+      },
+      {
+        "who": "A",
+        "es": "Sí, a Rubén, a Sara, a Cris... los de siempre. Si somos ocho o nueve, está bien.",
+        "en": "Yeah, Rubén, Sara, Cris... the usual lot. If there's eight or nine of us, that's good."
+      },
+      {
+        "who": "B",
+        "es": "Perfecto. ¿Y qué llevo yo? No quiero llegar con las manos vacías.",
+        "en": "Perfect. And what do I bring? I don't want to turn up empty-handed."
+      },
+      {
+        "who": "A",
+        "es": "Mira, yo me encargo de la carne. Si tú traes las bebidas y algo de picar, vamos que chutamos.",
+        "en": "Look, I'll sort the meat. If you bring the drinks and some nibbles, we're all set."
+      },
+      {
+        "who": "B",
+        "es": "Hecho. Compro cervezas, refrescos y unas patatas. ¿Alguien no come carne, por si acaso?",
+        "en": "Done. I'll get beers, soft drinks and some crisps. Does anyone not eat meat, just in case?"
+      },
+      {
+        "who": "A",
+        "es": "Buena pregunta. Cris es vegetariana, así que compraré también verduras y unas hamburguesas veganas.",
+        "en": "Good question. Cris is vegetarian, so I'll also get veg and some vegan burgers."
+      },
+      {
+        "who": "B",
+        "es": "Mira qué detallista. Oye, ¿y a qué hora quedamos?",
+        "en": "Look at you being thoughtful. Hey, what time shall we meet?"
+      },
+      {
+        "who": "A",
+        "es": "Sobre la una, así comemos con calma y pasamos la tarde allí. Si quieres, te recojo de camino.",
+        "en": "Around one, so we eat at a relaxed pace and spend the afternoon there. If you want, I'll pick you up on the way."
+      },
+      {
+        "who": "B",
+        "es": "Genial, así no cojo el coche. ¿Y si al final llueve? Han dicho que igual cae algo.",
+        "en": "Great, then I won't take the car. And if it ends up raining? They said it might come down."
+      },
+      {
+        "who": "A",
+        "es": "Si llueve, lo hacemos dentro y ya está. Pero el hombre del tiempo casi siempre se equivoca, así que no me preocupa.",
+        "en": "If it rains, we do it inside and that's that. But the weatherman is almost always wrong, so I'm not worried."
+      },
+      {
+        "who": "B",
+        "es": "Jaja, muy cierto. Pues nada, queda organizado. Aviso yo al grupo de WhatsApp.",
+        "en": "Haha, very true. Right, it's sorted. I'll message the WhatsApp group."
+      },
+      {
+        "who": "A",
+        "es": "Perfecto, tú avisa y yo voy comprando. ¡Esto va a estar genial!",
+        "en": "Perfect, you tell them and I'll start buying. This is going to be great!"
+      },
+      {
+        "who": "B",
+        "es": "¡Ya te digo! Nos vemos el sábado, crack.",
+        "en": "You said it! See you Saturday, mate."
+      }
     ],
-    vocab:[
-      { es:'menú del día', en:'set lunch menu (starter, main, dessert, drink – usually €12–15)' },
-      { es:'de primero / de segundo', en:'for starters / for main' },
-      { es:'pescado del día', en:'fish of the day' },
-      { es:'jarra de agua', en:'jug of water (usually free)' }
+    "vocab": [
+      {
+        "es": "los de siempre",
+        "en": "the usual crowd"
+      },
+      {
+        "es": "vamos que chutamos",
+        "en": "we're all set / that'll do nicely"
+      },
+      {
+        "es": "con las manos vacías",
+        "en": "empty-handed"
+      },
+      {
+        "es": "algo de picar",
+        "en": "something to nibble on / snacks"
+      },
+      {
+        "es": "el hombre del tiempo",
+        "en": "the weather forecaster"
+      },
+      {
+        "es": "crack",
+        "en": "legend / star (affectionate for a mate)"
+      }
     ],
-    notes:'The "menú del día" is a Spanish lunchtime institution – 2 or 3 courses, drink and coffee for around €13 in Valencia. Always ask if bread and postre are incluidos.'
+    "notes": "Two friends organising a plan - very natural register. 'Vamos que chutamos' is a colloquial 'we're sorted'. 'Me apunto' = 'I'm in / count me in'. Note 'si llueve, lo hacemos dentro' - real (not hypothetical) condition, so present + present."
   },
   {
-    id:'mercado-ruzafa',
-    level:'A2',
-    emoji:'🥬',
-    title:'En el mercado',
-    titleEn:'At the market',
-    setting:'Comprando verduras en el Mercado de Ruzafa un sábado por la mañana.',
-    speakers:[
-      { id:'A', name:'Frutero', color:'bg-green-100 text-green-700' },
-      { id:'B', name:'Clienta', color:'bg-rose-100 text-rose-700' }
+    "id": "cotilleo-grupo",
+    "level": "B1",
+    "emoji": "👀",
+    "title": "El cotilleo del grupo",
+    "titleEn": "The friend-group gossip",
+    "setting": "Sara y Cris se toman algo en una terraza. Sara tiene un cotilleo fresquito sobre una amiga del grupo.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Sara",
+        "color": "bg-rose-100 text-rose-700",
+        "gender": "female",
+        "rate": 1.0
+      },
+      {
+        "id": "B",
+        "name": "Cris",
+        "color": "bg-violet-100 text-violet-700",
+        "gender": "female",
+        "rate": 0.92
+      }
     ],
-    lines:[
-      { who:'A', es:'¡Buenas! ¿Qué le pongo, guapa?', en:'Hey there! What can I get you, love?' },
-      { who:'B', es:'Póngame un kilo de tomates, pero que estén bien maduros para ensalada.', en:'Give me a kilo of tomatoes, but nice ripe ones for salad.' },
-      { who:'A', es:'Estos de aquí están buenísimos. ¿Algo más?', en:'These here are amazing. Anything else?' },
-      { who:'B', es:'Medio kilo de cebollas y un par de calabacines.', en:'Half a kilo of onions and a couple of courgettes.' },
-      { who:'A', es:'¿Grandes o pequeños los calabacines?', en:'Big or small courgettes?' },
-      { who:'B', es:'Medianos está bien. ¿A cuánto están los aguacates?', en:'Medium is fine. How much are the avocados?' },
-      { who:'A', es:'A dos euros la pieza, pero llévese tres por cinco.', en:'Two euros each, but take three for five.' },
-      { who:'B', es:'Vale, me llevo tres. ¿Cuánto es todo?', en:'OK, I\'ll take three. How much altogether?' },
-      { who:'A', es:'A ver... son once euros con veinte.', en:'Let me see... that\'s eleven twenty.' },
-      { who:'B', es:'Aquí tiene. Muchas gracias.', en:'Here you go. Thank you.' },
-      { who:'A', es:'A ti, guapa. ¡Hasta la próxima!', en:'Thank you, love. See you next time!' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "Tía, no te vas a creer lo que me contaron ayer. Prepárate.",
+        "en": "Girl, you won't believe what I heard yesterday. Brace yourself."
+      },
+      {
+        "who": "B",
+        "es": "Ay, madre. Cuando empiezas así ya sé que viene algo gordo. Suéltalo.",
+        "en": "Oh no. When you start like that I know something big is coming. Spill it."
+      },
+      {
+        "who": "A",
+        "es": "¿Te acuerdas de Laura, la del trabajo de Marta? Pues resulta que está saliendo con el ex de Bea.",
+        "en": "Remember Laura, from Marta's work? Well it turns out she's going out with Bea's ex."
+      },
+      {
+        "who": "B",
+        "es": "¡¿Qué me estás contando?! No me lo puedo creer. ¿En serio?",
+        "en": "What are you telling me?! I can't believe it. Seriously?"
+      },
+      {
+        "who": "A",
+        "es": "Como lo oyes. Llevan como dos meses, pero lo tenían súper escondido.",
+        "en": "As you hear it. They've been together about two months, but they kept it really hidden."
+      },
+      {
+        "who": "B",
+        "es": "Flipo. O sea, flipo en colores. ¿Y Bea lo sabe?",
+        "en": "I'm gobsmacked. I mean, completely blown away. And does Bea know?"
+      },
+      {
+        "who": "A",
+        "es": "Esa es la movida. Se enteró el otro día por una foto de Instagram y se puso hecha una furia.",
+        "en": "That's the drama. She found out the other day from an Instagram photo and went absolutely mad."
+      },
+      {
+        "who": "B",
+        "es": "Normal, tía. Yo también me subiría por las paredes. Menudo panorama.",
+        "en": "Understandable. I'd hit the roof too. What a mess."
+      },
+      {
+        "who": "A",
+        "es": "Ya te digo. El grupo está súper raro ahora. Nadie sabe muy bien de qué lado ponerse.",
+        "en": "Tell me about it. The group's really weird now. Nobody quite knows whose side to take."
+      },
+      {
+        "who": "B",
+        "es": "Uf, qué pereza esas cosas. Al final te acabas comiendo tú el marrón sin tener nada que ver.",
+        "en": "Ugh, that stuff is such a drag. In the end you get lumbered with the fallout without being involved."
+      },
+      {
+        "who": "A",
+        "es": "Exacto. Yo paso de meterme, ¿eh? Bastante tengo con lo mío.",
+        "en": "Exactly. I'm staying out of it, right? I've got enough on my own plate."
+      },
+      {
+        "who": "B",
+        "es": "Haces bien. En estos líos, cuanto más lejos, mejor. ¿Y Laura qué dice?",
+        "en": "Good call. In these messes, the further away the better. And what does Laura say?"
+      },
+      {
+        "who": "A",
+        "es": "Nada, ni confirma ni desmiente. Se hace la loca total.",
+        "en": "Nothing, she neither confirms nor denies. Plays completely dumb."
+      },
+      {
+        "who": "B",
+        "es": "Típico. Bueno, pues nosotras a lo nuestro. Pero vaya culebrón, oye.",
+        "en": "Typical. Well, we'll mind our own business. But what a soap opera, honestly."
+      },
+      {
+        "who": "A",
+        "es": "Un culebrón de manual. Va, ¿pedimos otra y me cuentas tú lo tuyo con el del gimnasio?",
+        "en": "A textbook soap opera. Come on, shall we order another and you tell me about you and the gym guy?"
+      },
+      {
+        "who": "B",
+        "es": "Jaja, eso es otro cotilleo, pero sí. ¡Camarero!",
+        "en": "Haha, that's a whole other bit of gossip, but yes. Waiter!"
+      }
     ],
-    vocab:[
-      { es:'póngame', en:'give me (polite imperative of poner)' },
-      { es:'maduros', en:'ripe' },
-      { es:'¿a cuánto están?', en:'how much are they? (for produce with variable prices)' },
-      { es:'la pieza', en:'each (lit. the piece)' }
+    "vocab": [
+      {
+        "es": "algo gordo",
+        "en": "something big / serious"
+      },
+      {
+        "es": "flipar en colores",
+        "en": "to be totally amazed / blown away"
+      },
+      {
+        "es": "la movida",
+        "en": "the drama / the whole business"
+      },
+      {
+        "es": "ponerse hecho/a una furia",
+        "en": "to go absolutely mad"
+      },
+      {
+        "es": "comerse el marrón",
+        "en": "to get lumbered / take the blame"
+      },
+      {
+        "es": "hacerse el/la loco/a",
+        "en": "to play dumb / act clueless"
+      },
+      {
+        "es": "un culebrón",
+        "en": "a soap opera / long dramatic saga"
+      }
     ],
-    notes:'"Guapa/guapo" from a market vendor is totally normal and friendly – not flirtatious. It\'s the Spanish equivalent of "love" or "mate".'
+    "notes": "Full-on Castilian girl-chat with heavy slang. 'Tía' as address, 'flipar' for amazed, 'movida' for drama, 'paso de + inf.' = 'I can't be bothered to / I'm not getting into'. 'Subirse por las paredes' = to hit the roof."
   },
   {
-    id:'farmacia-dolor',
-    level:'A2',
-    emoji:'💊',
-    title:'En la farmacia',
-    titleEn:'At the pharmacy',
-    setting:'En una farmacia de guardia. El cliente tiene dolor de cabeza y mocos.',
-    speakers:[
-      { id:'A', name:'Farmacéutica', color:'bg-teal-100 text-teal-700' },
-      { id:'B', name:'Cliente', color:'bg-sky-100 text-sky-700' }
+    "id": "resaca-cumple",
+    "level": "B1",
+    "emoji": "🥴",
+    "title": "La resaca del cumpleaños",
+    "titleEn": "The birthday hangover",
+    "setting": "Domingo por la tarde. Javi llama a Marta para reconstruir lo que pasó anoche en el cumpleaños de Rubén.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Javi",
+        "color": "bg-indigo-100 text-indigo-700",
+        "gender": "male",
+        "rate": 0.95
+      },
+      {
+        "id": "B",
+        "name": "Marta",
+        "color": "bg-rose-100 text-rose-700",
+        "gender": "female",
+        "rate": 0.98
+      }
     ],
-    lines:[
-      { who:'A', es:'Buenos días, ¿en qué puedo ayudarle?', en:'Good morning, how can I help you?' },
-      { who:'B', es:'Hola. Llevo dos días con dolor de cabeza y mocos. ¿Me puede recomendar algo?', en:'Hi. I\'ve had a headache and a runny nose for two days. Can you recommend something?' },
-      { who:'A', es:'¿Tiene fiebre?', en:'Do you have a fever?' },
-      { who:'B', es:'No, fiebre no. Solo me encuentro un poco cansado.', en:'No, no fever. I just feel a bit tired.' },
-      { who:'A', es:'Parece un resfriado. Le puedo dar paracetamol y un descongestivo.', en:'Sounds like a cold. I can give you paracetamol and a decongestant.' },
-      { who:'B', es:'¿Necesito receta?', en:'Do I need a prescription?' },
-      { who:'A', es:'No, no hace falta. Tome el paracetamol cada ocho horas si le duele.', en:'No, no need. Take the paracetamol every eight hours if it hurts.' },
-      { who:'B', es:'Vale. ¿Y el descongestivo?', en:'OK. And the decongestant?' },
-      { who:'A', es:'Una pastilla por la mañana y otra por la noche, máximo cinco días.', en:'One pill in the morning and another at night, maximum five days.' },
-      { who:'B', es:'Perfecto. ¿Cuánto es en total?', en:'Perfect. How much altogether?' },
-      { who:'A', es:'Siete euros con sesenta. Que se mejore.', en:'Seven sixty. Get well soon.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "Marta, por favor, dime que tú te acuerdas de algo, porque yo tengo lagunas.",
+        "en": "Marta, please tell me you remember something, because I've got blanks."
+      },
+      {
+        "who": "B",
+        "es": "Jaja, madre mía, Javi. Estás fatal, ¿no? ¿Cómo tienes la cabeza?",
+        "en": "Haha, oh my, Javi. You're in a state, aren't you? How's your head?"
+      },
+      {
+        "who": "A",
+        "es": "Fatal es poco. Me he despertado con un dolor de cabeza que no veas y con los zapatos puestos.",
+        "en": "'State' is an understatement. I woke up with a splitting headache and my shoes still on."
+      },
+      {
+        "who": "B",
+        "es": "Normal, acabamos a las seis de la mañana. ¿De verdad no te acuerdas de nada?",
+        "en": "No wonder, we finished at six in the morning. You really don't remember anything?"
+      },
+      {
+        "who": "A",
+        "es": "Me acuerdo de la cena y de las primeras copas. A partir de ahí, todo borroso.",
+        "en": "I remember the dinner and the first few drinks. After that, all blurry."
+      },
+      {
+        "who": "B",
+        "es": "Pues te perdiste... o mejor dicho, protagonizaste. Te subiste a cantar al karaoke tú solo.",
+        "en": "Well, you missed... or rather, you starred. You got up to sing karaoke all by yourself."
+      },
+      {
+        "who": "A",
+        "es": "No. No, no, no. Dime que es mentira.",
+        "en": "No. No, no, no. Tell me it's a lie."
+      },
+      {
+        "who": "B",
+        "es": "Ojalá. Cantaste 'La Macarena' entera y encima con coreografía. Hay vídeos.",
+        "en": "I wish. You sang the whole of 'La Macarena', with choreography on top. There are videos."
+      },
+      {
+        "who": "A",
+        "es": "Trágame tierra. Bórralos, por lo que más quieras.",
+        "en": "Ground, swallow me up. Delete them, for the love of God."
+      },
+      {
+        "who": "B",
+        "es": "Ni de coña, eso es oro puro. Tranquilo, que estuviste gracioso, no hiciste el ridículo del todo.",
+        "en": "No way, that's pure gold. Relax, you were funny, you didn't totally embarrass yourself."
+      },
+      {
+        "who": "A",
+        "es": "Menos mal. ¿Y cómo llegué a casa? Porque ni idea.",
+        "en": "Thank goodness. And how did I get home? Because I've no clue."
+      },
+      {
+        "who": "B",
+        "es": "Te llevamos Rubén y yo en un taxi. Ibas cantando por la ventanilla, todo hay que decirlo.",
+        "en": "Rubén and I took you in a taxi. You were singing out of the window, it has to be said."
+      },
+      {
+        "who": "A",
+        "es": "Soy un desastre. Os debo una bien grande.",
+        "en": "I'm a disaster. I owe you a big one."
+      },
+      {
+        "who": "B",
+        "es": "No te preocupes, para eso están los amigos. Además, el mes que viene es mi cumple, así que ya me la devuelves.",
+        "en": "Don't worry, that's what friends are for. Besides, next month is my birthday, so you'll pay me back then."
+      },
+      {
+        "who": "A",
+        "es": "Hecho. Aunque después de esto, igual me paso al agua con gas.",
+        "en": "Deal. Although after this, I might switch to sparkling water."
+      },
+      {
+        "who": "B",
+        "es": "Jaja, sí, hombre. Anda, bébete un cola-cao y duerme la mona. Te llamo luego.",
+        "en": "Haha, yeah, right. Go on, have a hot chocolate and sleep it off. I'll call you later."
+      },
+      {
+        "who": "A",
+        "es": "Gracias, Marta. Eres la mejor. Un beso.",
+        "en": "Thanks, Marta. You're the best. Take care."
+      }
     ],
-    vocab:[
-      { es:'llevo dos días con...', en:'I\'ve had... for two days' },
-      { es:'mocos', en:'runny nose / snot' },
-      { es:'no hace falta', en:'no need / it\'s not necessary' },
-      { es:'que se mejore', en:'get well soon (formal)' }
+    "vocab": [
+      {
+        "es": "tener lagunas",
+        "en": "to have memory blanks / gaps"
+      },
+      {
+        "es": "que no veas",
+        "en": "you wouldn't believe / incredibly (intensifier)"
+      },
+      {
+        "es": "trágame tierra",
+        "en": "I want the ground to swallow me up"
+      },
+      {
+        "es": "ni de coña",
+        "en": "no way / not a chance (informal)"
+      },
+      {
+        "es": "dormir la mona",
+        "en": "to sleep off a hangover"
+      },
+      {
+        "es": "deber una",
+        "en": "to owe someone one"
+      }
     ],
-    notes:'Spanish pharmacists are often the first stop for minor illness – they can diagnose basic things and recommend over-the-counter meds without a doctor.'
+    "notes": "Classic morning-after phone call. 'Que no veas' intensifies ('un dolor que no veas' = an unbelievable pain). 'Ni de coña' is a stronger, cheekier 'no way'. 'Duerme la mona' = sleep off the booze."
   },
   {
-    id:'entrevista-trabajo',
-    level:'B1',
-    emoji:'💼',
-    title:'Entrevista de trabajo',
-    titleEn:'Job interview',
-    setting:'Primera ronda de entrevista para un puesto de diseñador en una empresa de Valencia.',
-    speakers:[
-      { id:'A', name:'Entrevistador', color:'bg-indigo-100 text-indigo-700' },
-      { id:'B', name:'Candidato', color:'bg-sky-100 text-sky-700' }
+    "id": "ver-partido",
+    "level": "B1",
+    "emoji": "⚽",
+    "title": "Quedada para el partido",
+    "titleEn": "Meeting up for the match",
+    "setting": "Viernes. Álvaro y Rubén organizan dónde ver el partido del domingo y se pican un poco.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Álvaro",
+        "color": "bg-orange-100 text-orange-700",
+        "gender": "male",
+        "rate": 1.0
+      },
+      {
+        "id": "B",
+        "name": "Rubén",
+        "color": "bg-teal-100 text-teal-700",
+        "gender": "male",
+        "rate": 0.9
+      }
     ],
-    lines:[
-      { who:'A', es:'Gracias por venir. Cuéntame un poco sobre ti.', en:'Thanks for coming. Tell me a bit about yourself.' },
-      { who:'B', es:'Pues soy diseñador con cinco años de experiencia. Trabajé en Dublín antes de mudarme a Valencia el año pasado.', en:'Well, I\'m a designer with five years of experience. I worked in Dublin before moving to Valencia last year.' },
-      { who:'A', es:'¿Por qué te interesa este puesto?', en:'Why are you interested in this role?' },
-      { who:'B', es:'Me atrae mucho vuestro enfoque en proyectos sostenibles. Es algo que quería hacer desde hace tiempo.', en:'I\'m really drawn to your focus on sustainable projects. It\'s something I\'ve wanted to do for a while.' },
-      { who:'A', es:'¿Cuáles dirías que son tus puntos fuertes?', en:'What would you say your strengths are?' },
-      { who:'B', es:'Soy muy organizado y trabajo bien en equipo. Creo que también tengo buen ojo para el detalle.', en:'I\'m very organised and I work well in a team. I think I also have a good eye for detail.' },
-      { who:'A', es:'¿Y algún punto débil?', en:'And any weaknesses?' },
-      { who:'B', es:'A veces me cuesta delegar. Pero estoy trabajando en eso.', en:'Sometimes I find it hard to delegate. But I\'m working on it.' },
-      { who:'A', es:'¿Tienes alguna pregunta para nosotros?', en:'Do you have any questions for us?' },
-      { who:'B', es:'Sí, ¿cómo es el día a día del equipo? ¿Trabajáis en remoto o en oficina?', en:'Yes, what\'s the team\'s day-to-day like? Do you work remotely or in the office?' },
-      { who:'A', es:'Un modelo híbrido. Tres días en oficina, dos en casa.', en:'A hybrid model. Three days in the office, two at home.' },
-      { who:'B', es:'Perfecto. Muchas gracias por vuestro tiempo.', en:'Perfect. Thanks so much for your time.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "¡Rubén, tío! El domingo juega el Valencia contra el Barça. ¿Lo vemos juntos o qué?",
+        "en": "Rubén, mate! Sunday Valencia play Barça. Shall we watch it together or what?"
+      },
+      {
+        "who": "B",
+        "es": "Hombre, claro. Eso no me lo pierdo. ¿En tu casa o nos vamos a un bar?",
+        "en": "Of course. I'm not missing that. At yours or shall we go to a bar?"
+      },
+      {
+        "who": "A",
+        "es": "Yo lo veo mejor en un bar, con ambiente. En casa solos no es lo mismo.",
+        "en": "I reckon a bar's better, with atmosphere. At home on our own it's not the same."
+      },
+      {
+        "who": "B",
+        "es": "Totalmente. Hay uno nuevo cerca de la plaza que ponen todos los partidos en pantalla gigante.",
+        "en": "Totally. There's a new one near the square that shows all the matches on a giant screen."
+      },
+      {
+        "who": "A",
+        "es": "¡Ese! Me han hablado muy bien. Dicen que las bravas están de escándalo, además.",
+        "en": "That one! I've heard great things. They say the patatas bravas are unreal, too."
+      },
+      {
+        "who": "B",
+        "es": "Pues vendido. Quedamos allí un rato antes para pillar sitio, que si no nos quedamos de pie.",
+        "en": "Sold, then. Let's meet there a bit early to grab a spot, otherwise we'll be standing."
+      },
+      {
+        "who": "A",
+        "es": "Buena idea. El partido es a las cuatro, ¿quedamos a las tres y media?",
+        "en": "Good idea. The match is at four; shall we meet at half three?"
+      },
+      {
+        "who": "B",
+        "es": "Perfecto. Oye, ¿tú cómo lo ves? Yo soy optimista, pero el Barça está muy fuerte.",
+        "en": "Perfect. Hey, how do you see it? I'm optimistic, but Barça are on strong form."
+      },
+      {
+        "who": "A",
+        "es": "Sinceramente, lo veo complicado. Pero en casa y con nuestra afición, cualquier cosa puede pasar.",
+        "en": "Honestly, I think it's tough. But at home and with our fans, anything can happen."
+      },
+      {
+        "who": "B",
+        "es": "Eso es. El fútbol no es una ciencia exacta. Un día ganas al líder y al siguiente pierdes con el último.",
+        "en": "That's it. Football isn't an exact science. One day you beat the leaders and the next you lose to the bottom team."
+      },
+      {
+        "who": "A",
+        "es": "Cuánta razón. Si ganamos, la noche se alarga, ¿eh? Lo aviso desde ya.",
+        "en": "So true. If we win, the night gets extended, eh? I'm warning you now."
+      },
+      {
+        "who": "B",
+        "es": "Jaja, y si perdemos, nos consolamos igual con unas cañas. Salimos ganando siempre.",
+        "en": "Haha, and if we lose, we console ourselves with a few beers anyway. We win either way."
+      },
+      {
+        "who": "A",
+        "es": "Esa es la actitud. Aviso a Nacho por si se quiere apuntar.",
+        "en": "That's the attitude. I'll tell Nacho in case he wants to join."
+      },
+      {
+        "who": "B",
+        "es": "Venga, cuantos más, mejor. Nos vemos el domingo. ¡A ver si hay suerte!",
+        "en": "Go on, the more the merrier. See you Sunday. Let's hope for some luck!"
+      },
+      {
+        "who": "A",
+        "es": "¡Eso espero! Hasta el domingo, campeón.",
+        "en": "I hope so! See you Sunday, champ."
+      }
     ],
-    vocab:[
-      { es:'puntos fuertes / débiles', en:'strengths / weaknesses' },
-      { es:'me cuesta + inf', en:'I find it hard to...' },
-      { es:'buen ojo para el detalle', en:'a good eye for detail' },
-      { es:'el día a día', en:'day-to-day, daily routine' }
+    "vocab": [
+      {
+        "es": "no me lo pierdo",
+        "en": "I'm not missing it"
+      },
+      {
+        "es": "pillar sitio",
+        "en": "to grab / bag a spot"
+      },
+      {
+        "es": "estar de escándalo",
+        "en": "to be amazing / unbelievably good"
+      },
+      {
+        "es": "la afición",
+        "en": "the fans / supporters"
+      },
+      {
+        "es": "salir ganando",
+        "en": "to come out on top / win either way"
+      },
+      {
+        "es": "apuntarse",
+        "en": "to join in / sign up"
+      }
     ],
-    notes:'"Trabajé" (indefinido) for completed past jobs. Switch to imperfecto only if describing what you "used to do". Spanish interviewers often use "tú" immediately – formality is dropping fast.'
+    "notes": "Football banter between two mates. 'Estar de escándalo' = amazingly good. 'Una caña' is a small draught beer, the default social order in Spain. Note they discuss the game without predicting the result - Spaniards love hedging with 'cualquier cosa puede pasar'."
   },
   {
-    id:'alquiler-piso',
-    level:'B1',
-    emoji:'🏠',
-    title:'Alquilando un piso',
-    titleEn:'Renting a flat',
-    setting:'Visitando un piso en Benimaclet. El posible inquilino habla con el propietario.',
-    speakers:[
-      { id:'A', name:'Propietario', color:'bg-amber-100 text-amber-700' },
-      { id:'B', name:'Inquilino', color:'bg-sky-100 text-sky-700' }
+    "id": "mudarse-consejo",
+    "level": "B2",
+    "emoji": "✈️",
+    "title": "¿Me voy a vivir fuera?",
+    "titleEn": "Should I move abroad?",
+    "setting": "Elena está pensando en aceptar un trabajo en Berlín. Se lo cuenta a Pablo, su mejor amigo, para que le dé su opinión.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Elena",
+        "color": "bg-amber-100 text-amber-700",
+        "gender": "female",
+        "rate": 0.96
+      },
+      {
+        "id": "B",
+        "name": "Pablo",
+        "color": "bg-blue-100 text-blue-700",
+        "gender": "male",
+        "rate": 0.9
+      }
     ],
-    lines:[
-      { who:'A', es:'Pase, pase. Como ve, el piso es muy luminoso.', en:'Come in, come in. As you can see, the flat is very bright.' },
-      { who:'B', es:'Sí, la verdad es que tiene muy buena luz. ¿Cuántos metros cuadrados tiene?', en:'Yes, it really does have great light. How many square metres is it?' },
-      { who:'A', es:'Unos setenta. Dos habitaciones, salón-comedor, cocina independiente y un balcón.', en:'About seventy. Two bedrooms, living-dining room, separate kitchen and a balcony.' },
-      { who:'B', es:'¿El alquiler incluye los gastos de comunidad?', en:'Does the rent include the building fees?' },
-      { who:'A', es:'Sí, la comunidad está incluida. El agua también. La luz y el gas los pone usted.', en:'Yes, community fees are included. Water too. Electricity and gas are on you.' },
-      { who:'B', es:'¿Y cuánto piden de fianza?', en:'And how much deposit do you want?' },
-      { who:'A', es:'Dos meses de fianza y un mes por adelantado.', en:'Two months\' deposit and one month in advance.' },
-      { who:'B', es:'¿Se permiten mascotas? Tengo un gato pequeño.', en:'Are pets allowed? I have a small cat.' },
-      { who:'A', es:'Un gato no hay problema. Perros sí que no me gustan mucho por los vecinos.', en:'A cat\'s no problem. Dogs I\'m not so keen on because of the neighbours.' },
-      { who:'B', es:'Claro. ¿Y el contrato sería por cuánto tiempo?', en:'Of course. And what length would the contract be?' },
-      { who:'A', es:'Un año mínimo, prorrogable hasta cinco.', en:'One year minimum, extendable up to five.' },
-      { who:'B', es:'Me gusta el piso. ¿Le puedo confirmar mañana?', en:'I like the flat. Can I confirm tomorrow?' },
-      { who:'A', es:'Por supuesto. Tiene mi teléfono.', en:'Of course. You\'ve got my number.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "Pablo, necesito hablar contigo de una cosa importante. Me han ofrecido un puesto en Berlín.",
+        "en": "Pablo, I need to talk to you about something important. I've been offered a job in Berlin."
+      },
+      {
+        "who": "B",
+        "es": "¿En serio? ¡Eso es una noticia enorme! Cuéntame, ¿de qué sería?",
+        "en": "Seriously? That's huge news! Tell me, what would it be?"
+      },
+      {
+        "who": "A",
+        "es": "De lo mío, marketing, pero en una empresa mucho más grande. El sueldo es casi el doble.",
+        "en": "In my field, marketing, but at a much bigger company. The salary's almost double."
+      },
+      {
+        "who": "B",
+        "es": "Madre mía. Pues a bote pronto suena increíble. ¿Cuál es el problema entonces? Te noto dudando.",
+        "en": "Wow. Off the top of my head it sounds incredible. So what's the problem? You seem hesitant."
+      },
+      {
+        "who": "A",
+        "es": "El problema es todo lo demás. Dejar a mi familia, a mis amigos, empezar de cero en un país donde no conozco a nadie...",
+        "en": "The problem is everything else. Leaving my family, my friends, starting from scratch in a country where I know nobody..."
+      },
+      {
+        "who": "B",
+        "es": "Ya. Es normal que te dé vértigo, es un cambio brutal. Pero deja que te pregunte una cosa: ¿te arrepentirías si no lo hicieras?",
+        "en": "Right. It's normal for it to be daunting, it's a massive change. But let me ask you one thing: would you regret it if you didn't do it?"
+      },
+      {
+        "who": "A",
+        "es": "Esa es justo la pregunta que no me deja dormir. Creo que sí, que me quedaría con la espina.",
+        "en": "That's exactly the question keeping me up. I think I would, I'd be left wondering."
+      },
+      {
+        "who": "B",
+        "es": "Pues ahí tienes tu respuesta, ¿no crees? Mira, prefiero que te equivoques haciendo algo a que te quedes con las ganas.",
+        "en": "Well there's your answer, don't you think? Look, I'd rather you got it wrong doing something than be left wishing you had."
+      },
+      {
+        "who": "A",
+        "es": "Lo sé, lo sé. Pero me da miedo que no salga bien y que luego no pueda volver a mi puesto de aquí.",
+        "en": "I know, I know. But I'm scared it won't work out and then I won't be able to come back to my job here."
+      },
+      {
+        "who": "B",
+        "es": "Es lógico que lo pienses, pero un trabajo siempre se encuentra. Lo que no se recupera es una oportunidad como esta.",
+        "en": "It's logical that you'd think that, but you can always find a job. What you can't get back is an opportunity like this."
+      },
+      {
+        "who": "A",
+        "es": "Visto así... Además, siempre he querido vivir fuera, aunque sea una temporada.",
+        "en": "Put like that... Besides, I've always wanted to live abroad, even if just for a while."
+      },
+      {
+        "who": "B",
+        "es": "Exacto. Y no te vas a la otra punta del mundo. Berlín está a dos horas de avión, nos vemos cuando quieras.",
+        "en": "Exactly. And you're not going to the other side of the world. Berlin's two hours by plane, we'll see each other whenever we want."
+      },
+      {
+        "who": "A",
+        "es": "Eso es verdad. Te vendrías a visitarme, ¿no?",
+        "en": "That's true. You'd come and visit me, right?"
+      },
+      {
+        "who": "B",
+        "es": "¡Por supuesto! En cuanto te instales, soy el primero en aparecer. Con la excusa perfecta para conocer la ciudad.",
+        "en": "Of course! As soon as you settle in, I'll be the first to show up. With the perfect excuse to get to know the city."
+      },
+      {
+        "who": "A",
+        "es": "Me estás convenciendo, ¿eh? Creo que en el fondo ya lo tenía decidido, solo necesitaba oírlo de alguien.",
+        "en": "You're convincing me, you know? I think deep down I'd already decided, I just needed to hear it from someone."
+      },
+      {
+        "who": "B",
+        "es": "Para eso estamos. Hagas lo que hagas, yo te apoyo. Pero si quieres mi opinión sincera: vete, y no mires atrás.",
+        "en": "That's what I'm here for. Whatever you do, I've got your back. But if you want my honest opinion: go, and don't look back."
+      },
+      {
+        "who": "A",
+        "es": "Gracias, Pablo. De verdad. No sabes lo que me ayuda hablar contigo.",
+        "en": "Thanks, Pablo. Really. You've no idea how much talking to you helps."
+      },
+      {
+        "who": "B",
+        "es": "Siempre. Ahora invítame a una caña para celebrarlo, que esto hay que brindarlo.",
+        "en": "Always. Now buy me a beer to celebrate, because this calls for a toast."
+      }
     ],
-    vocab:[
-      { es:'luminoso', en:'bright (full of light)' },
-      { es:'gastos de comunidad', en:'community / building fees' },
-      { es:'fianza', en:'deposit' },
-      { es:'prorrogable', en:'extendable / renewable' }
+    "vocab": [
+      {
+        "es": "a bote pronto",
+        "en": "off the top of one's head / at first glance"
+      },
+      {
+        "es": "darle vértigo a alguien",
+        "en": "to feel daunting / dizzying to someone"
+      },
+      {
+        "es": "quedarse con la espina",
+        "en": "to be left with a lingering regret"
+      },
+      {
+        "es": "quedarse con las ganas",
+        "en": "to be left wanting / miss out"
+      },
+      {
+        "es": "en cuanto + subjuntivo",
+        "en": "as soon as (future action)"
+      },
+      {
+        "es": "hagas lo que hagas",
+        "en": "whatever you do"
+      }
     ],
-    notes:'Note the politeness – they use usted throughout. Spanish rental contracts legally extend year-by-year up to 5 years (7 for companies). The tenant has the right to stay.'
+    "notes": "B2 heart-to-heart, packed with subjunctive: 'es normal que te dé', 'prefiero que te equivoques', 'me da miedo que no salga', 'aunque sea', 'en cuanto te instales', 'hagas lo que hagas'. These emotion/reaction and future-time triggers are core B2 grammar."
   },
   {
-    id:'amigos-bar',
-    level:'B1',
-    emoji:'🍻',
-    title:'Con amigos en un bar',
-    titleEn:'With friends at a bar',
-    setting:'Viernes por la noche. Dos amigos se encuentran en un bar de tapas y se ponen al día.',
-    speakers:[
-      { id:'A', name:'Marta', color:'bg-rose-100 text-rose-700' },
-      { id:'B', name:'Álex', color:'bg-violet-100 text-violet-700' }
+    "id": "reunion-equipo",
+    "level": "B2",
+    "emoji": "💼",
+    "title": "Reunión de equipo",
+    "titleEn": "Team meeting",
+    "setting": "Reunión semanal un lunes por la mañana. Fernando, el responsable, hace seguimiento de un proyecto con Raquel.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Fernando",
+        "color": "bg-blue-100 text-blue-700",
+        "gender": "male",
+        "rate": 0.94
+      },
+      {
+        "id": "B",
+        "name": "Raquel",
+        "color": "bg-teal-100 text-teal-700",
+        "gender": "female",
+        "rate": 0.97
+      }
     ],
-    lines:[
-      { who:'A', es:'¡Hombre, cuánto tiempo! ¿Qué tal todo?', en:'Hey, long time no see! How\'s everything?' },
-      { who:'B', es:'Tía, liadísimo con el curro. Pero bueno, ya estoy aquí. ¿Y tú?', en:'Mate, totally swamped with work. But anyway, I\'m here now. And you?' },
-      { who:'A', es:'Tirando. La semana pasada estuve con una gripe que no veas.', en:'Getting by. Last week I had an awful flu.' },
-      { who:'B', es:'Jo, qué rollo. ¿Y ya estás mejor?', en:'Ugh, what a pain. Are you better now?' },
-      { who:'A', es:'Sí, ya se me ha pasado. Oye, ¿pedimos algo?', en:'Yeah, it\'s gone now. Hey, shall we order something?' },
-      { who:'B', es:'Venga, unas bravas y unas cañas, ¿te mola?', en:'Go on, some patatas bravas and a couple of beers, sound good?' },
-      { who:'A', es:'Guay. Por cierto, ¿te has enterado de lo de Javi?', en:'Cool. By the way, have you heard about Javi?' },
-      { who:'B', es:'¡Qué va! Cuenta, cuenta.', en:'No way! Tell me, tell me.' },
-      { who:'A', es:'Se ha mudado a Berlín. De la noche a la mañana.', en:'He\'s moved to Berlin. Out of the blue.' },
-      { who:'B', es:'¿En serio? Flipo. Pero si acababa de empezar el curro nuevo.', en:'Seriously? I can\'t believe it. He\'d only just started the new job.' },
-      { who:'A', es:'Ya ves. Dice que necesitaba un cambio.', en:'I know, right. He says he needed a change.' },
-      { who:'B', es:'Bueno, cada uno a lo suyo. ¡Salud!', en:'Well, each to their own. Cheers!' },
-      { who:'A', es:'¡Salud!', en:'Cheers!' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "Buenos días, Raquel. Antes de nada, ¿cómo va el proyecto de la web nueva? ¿Vamos según lo previsto?",
+        "en": "Morning, Raquel. First of all, how's the new website project going? Are we on schedule?"
+      },
+      {
+        "who": "B",
+        "es": "Buenos días. En general, bien. Hemos terminado el diseño y ahora estamos con el desarrollo. Vamos con un par de días de retraso, pero es asumible.",
+        "en": "Morning. Overall, good. We've finished the design and now we're on development. We're a couple of days behind, but it's manageable."
+      },
+      {
+        "who": "A",
+        "es": "Vale. ¿A qué se debe el retraso? ¿Hay algo que te esté bloqueando?",
+        "en": "OK. What's causing the delay? Is something blocking you?"
+      },
+      {
+        "who": "B",
+        "es": "Sobre todo, estamos esperando los textos definitivos del cliente. Sin ellos no podemos cerrar algunas páginas.",
+        "en": "Mainly, we're waiting on the final copy from the client. Without it we can't finalise some pages."
+      },
+      {
+        "who": "A",
+        "es": "Entiendo. ¿Lo gestionas tú directamente o va a través del comercial?",
+        "en": "I see. Are you handling it directly or does it go through the account manager?"
+      },
+      {
+        "who": "B",
+        "es": "De momento va a través del comercial, pero creo que sería más rápido que yo hablara con ellos directamente. Con tu permiso, claro.",
+        "en": "For now it goes through the account manager, but I think it'd be quicker if I spoke to them directly. With your permission, of course."
+      },
+      {
+        "who": "A",
+        "es": "Me parece bien. A veces el trato directo agiliza mucho las cosas. ¿Qué necesitas por mi parte?",
+        "en": "Fine by me. Sometimes dealing directly speeds things up a lot. What do you need from me?"
+      },
+      {
+        "who": "B",
+        "es": "Con que me des vía libre para contactar con ellos, es suficiente. Y quizás una reunión rápida esta semana para alinearnos todos.",
+        "en": "Just giving me the go-ahead to contact them is enough. And maybe a quick meeting this week to get everyone aligned."
+      },
+      {
+        "who": "A",
+        "es": "Hecho. Organiza tú la reunión y me incluyes. ¿Para cuándo calculas que estará todo listo?",
+        "en": "Done. You set up the meeting and include me. When do you reckon everything will be ready?"
+      },
+      {
+        "who": "B",
+        "es": "Si conseguimos los textos esta semana, para finales de mes lo tendríamos terminado y probado.",
+        "en": "If we get the copy this week, we'd have it finished and tested by the end of the month."
+      },
+      {
+        "who": "A",
+        "es": "Perfecto. Me gusta que lo tengas tan controlado. ¿Algo más que quieras comentar al equipo?",
+        "en": "Perfect. I like that you've got such a good handle on it. Anything else you want to raise with the team?"
+      },
+      {
+        "who": "B",
+        "es": "Solo una cosa. Estaría bien reforzar el equipo con una persona más de desarrollo para los próximos proyectos. Vamos algo justos.",
+        "en": "Just one thing. It'd be good to strengthen the team with one more developer for upcoming projects. We're a bit stretched."
+      },
+      {
+        "who": "A",
+        "es": "Lo tenía en mente. Pásame una propuesta por escrito y lo llevo a dirección. Si lo justificamos bien, hay opciones.",
+        "en": "I had it in mind. Send me a written proposal and I'll take it to management. If we make a good case, there are options."
+      },
+      {
+        "who": "B",
+        "es": "Genial, te la preparo para el jueves. Gracias, Fernando.",
+        "en": "Great, I'll have it ready for Thursday. Thanks, Fernando."
+      },
+      {
+        "who": "A",
+        "es": "A ti. Buen trabajo, de verdad. Seguimos en contacto y cualquier cosa, me dices.",
+        "en": "Thank you. Good work, honestly. We'll stay in touch and anything at all, let me know."
+      },
+      {
+        "who": "B",
+        "es": "Claro que sí. ¡Que tengas buena semana!",
+        "en": "Absolutely. Have a good week!"
+      }
     ],
-    vocab:[
-      { es:'liadísimo', en:'totally swamped / super busy' },
-      { es:'el curro', en:'work, job (slang)' },
-      { es:'tirando', en:'getting by (answer to "how are you?")' },
-      { es:'¿te mola?', en:'do you fancy it? sound good?' },
-      { es:'flipo', en:'I\'m blown away / mind-blown' },
-      { es:'cada uno a lo suyo', en:'each to their own' }
+    "vocab": [
+      {
+        "es": "según lo previsto",
+        "en": "as planned / on schedule"
+      },
+      {
+        "es": "es asumible",
+        "en": "it's manageable / acceptable"
+      },
+      {
+        "es": "¿a qué se debe...?",
+        "en": "what's the reason for...?"
+      },
+      {
+        "es": "dar vía libre",
+        "en": "to give the go-ahead"
+      },
+      {
+        "es": "ir justos",
+        "en": "to be stretched / short-handed"
+      },
+      {
+        "es": "llevar algo a dirección",
+        "en": "to take something to management"
+      }
     ],
-    notes:'Full-on Castilian slang mode. "Tío/tía" as address, "curro" for work, "flipar" for amazed, "guay" for cool. "Venga" is the all-purpose "come on / go on / OK then".'
+    "notes": "Professional register but still warm - Spanish workplaces use 'tú'. Note the softening conditionals ('sería', 'estaría bien', 'lo tendríamos') and 'con que me des...' (with the subjunctive) meaning 'just + verb is enough'. 'Me gusta que lo tengas' - reaction verb + subjunctive."
   },
   {
-    id:'medico-dolor',
-    level:'B1',
-    emoji:'🩺',
-    title:'En el médico',
-    titleEn:'At the doctor',
-    setting:'Consulta del médico de cabecera. El paciente describe un dolor en la espalda.',
-    speakers:[
-      { id:'A', name:'Médica', color:'bg-teal-100 text-teal-700' },
-      { id:'B', name:'Paciente', color:'bg-sky-100 text-sky-700' }
+    "id": "llamada-cliente",
+    "level": "B1",
+    "emoji": "📞",
+    "title": "Llamada de atención al cliente",
+    "titleEn": "A customer-service call",
+    "setting": "Llamada telefónica. Un cliente llama al servicio de atención de su compañía de internet porque se ha quedado sin conexión.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Agente",
+        "color": "bg-teal-100 text-teal-700",
+        "gender": "female",
+        "rate": 0.98
+      },
+      {
+        "id": "B",
+        "name": "Cliente",
+        "color": "bg-sky-100 text-sky-700",
+        "gender": "male",
+        "rate": 0.92
+      }
     ],
-    lines:[
-      { who:'A', es:'Buenos días. Siéntese. Cuénteme qué le pasa.', en:'Good morning. Have a seat. Tell me what\'s wrong.' },
-      { who:'B', es:'Pues llevo una semana con un dolor muy fuerte en la parte baja de la espalda.', en:'Well, I\'ve had a really strong pain in my lower back for a week.' },
-      { who:'A', es:'¿Le empezó después de algo en concreto? ¿Cargó algún peso?', en:'Did it start after something specific? Did you lift something heavy?' },
-      { who:'B', es:'Ahora que lo dice, ayudé a un amigo con una mudanza hace nueve días.', en:'Now that you mention it, I helped a friend with a move nine days ago.' },
-      { who:'A', es:'Eso puede ser. ¿El dolor le baja por la pierna?', en:'That could be it. Does the pain go down your leg?' },
-      { who:'B', es:'Un poco por el lado derecho, sobre todo cuando me agacho.', en:'A bit on the right side, especially when I bend down.' },
-      { who:'A', es:'¿Ha tomado algo?', en:'Have you taken anything?' },
-      { who:'B', es:'Ibuprofeno, pero me alivia solo un rato.', en:'Ibuprofen, but it only helps for a while.' },
-      { who:'A', es:'Le voy a mandar un relajante muscular. Y reposo relativo – nada de cargar peso.', en:'I\'m going to prescribe a muscle relaxant. And relative rest – no heavy lifting.' },
-      { who:'B', es:'¿Puedo seguir yendo al trabajo?', en:'Can I keep going to work?' },
-      { who:'A', es:'Si es de oficina, sí. Levántese cada media hora. Si no mejora en diez días, vuelva.', en:'If it\'s office work, yes. Stand up every half hour. If it doesn\'t improve in ten days, come back.' },
-      { who:'B', es:'Muchas gracias, doctora.', en:'Thank you very much, doctor.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "Atención al cliente, buenos días, le atiende Marta. ¿En qué puedo ayudarle?",
+        "en": "Customer service, good morning, Marta speaking. How can I help you?"
+      },
+      {
+        "who": "B",
+        "es": "Buenos días. Mire, llamo porque llevo desde ayer sin internet en casa y ya no sé qué hacer.",
+        "en": "Good morning. Look, I'm calling because I've had no internet at home since yesterday and I don't know what else to do."
+      },
+      {
+        "who": "A",
+        "es": "Lamento las molestias. Ahora mismo lo miramos. ¿Me puede facilitar su número de cliente o su DNI, por favor?",
+        "en": "I'm sorry for the inconvenience. Let's look into it right now. Can you give me your customer number or ID, please?"
+      },
+      {
+        "who": "B",
+        "es": "Sí, claro. El DNI es 24 567 890, letra M.",
+        "en": "Yes, of course. The ID is 24 567 890, letter M."
+      },
+      {
+        "who": "A",
+        "es": "Muchas gracias. Un momento que compruebo su línea... En efecto, veo que hay una incidencia en su zona.",
+        "en": "Thank you. One moment while I check your line... Indeed, I can see there's an outage in your area."
+      },
+      {
+        "who": "B",
+        "es": "O sea, que no es cosa de mi router. Menos mal, porque ya lo había reiniciado mil veces.",
+        "en": "So it's not my router. Thank goodness, because I'd already restarted it a thousand times."
+      },
+      {
+        "who": "A",
+        "es": "Ha hecho bien en probarlo, pero no, en este caso es una avería general. Nuestros técnicos ya están trabajando en ella.",
+        "en": "You were right to try it, but no, in this case it's a general fault. Our technicians are already working on it."
+      },
+      {
+        "who": "B",
+        "es": "¿Y para cuándo estará solucionado? Es que trabajo desde casa y lo necesito sí o sí.",
+        "en": "And when will it be fixed? The thing is I work from home and I really need it."
+      },
+      {
+        "who": "A",
+        "es": "Le entiendo perfectamente. La previsión es que quede resuelto en las próximas cuatro horas, pero se lo confirmaremos por SMS.",
+        "en": "I completely understand. It's expected to be resolved within the next four hours, but we'll confirm by text."
+      },
+      {
+        "who": "B",
+        "es": "Cuatro horas es un mundo, la verdad. ¿No hay manera de acelerarlo?",
+        "en": "Four hours is ages, honestly. Is there no way to speed it up?"
+      },
+      {
+        "who": "A",
+        "es": "Comprendo su urgencia. Lo que sí puedo hacer es marcar su caso como prioritario por motivos de teletrabajo.",
+        "en": "I understand your urgency. What I can do is flag your case as a priority due to remote working."
+      },
+      {
+        "who": "B",
+        "es": "Se lo agradecería mucho. ¿Y por las molestias no me corresponde algún descuento?",
+        "en": "I'd really appreciate that. And for the inconvenience, aren't I entitled to some discount?"
+      },
+      {
+        "who": "A",
+        "es": "Déjeme revisar... Sí, puedo aplicarle un descuento en la próxima factura por el tiempo sin servicio. Se lo dejo tramitado.",
+        "en": "Let me check... Yes, I can apply a discount on your next bill for the time without service. I'll get it processed for you."
+      },
+      {
+        "who": "B",
+        "es": "Perfecto, eso me deja más tranquilo. Muchas gracias por la ayuda, muy amable.",
+        "en": "Perfect, that puts my mind at ease. Thank you very much for your help, very kind."
+      },
+      {
+        "who": "A",
+        "es": "A usted, por su paciencia. En cuanto se restablezca, le llegará el aviso. ¿Puedo ayudarle en algo más?",
+        "en": "Thank you, for your patience. As soon as it's back up, you'll get the notification. Can I help with anything else?"
+      },
+      {
+        "who": "B",
+        "es": "No, nada más. Ha sido todo. Que tenga buen día.",
+        "en": "No, nothing else. That was everything. Have a good day."
+      },
+      {
+        "who": "A",
+        "es": "Igualmente. Gracias por confiar en nosotros. Buenos días.",
+        "en": "You too. Thank you for trusting us. Good morning."
+      }
     ],
-    vocab:[
-      { es:'me pasa', en:'what\'s wrong with me (lit. what happens to me)' },
-      { es:'la parte baja de la espalda', en:'lower back' },
-      { es:'agacharse', en:'to bend down' },
-      { es:'reposo relativo', en:'relative rest (not strict bed rest)' }
+    "vocab": [
+      {
+        "es": "le atiende...",
+        "en": "...speaking / ...is helping you (phone)"
+      },
+      {
+        "es": "lamento las molestias",
+        "en": "sorry for the inconvenience"
+      },
+      {
+        "es": "una incidencia / avería",
+        "en": "an issue / a fault"
+      },
+      {
+        "es": "sí o sí",
+        "en": "no matter what / definitely"
+      },
+      {
+        "es": "corresponder(le) a alguien",
+        "en": "to be entitled to"
+      },
+      {
+        "es": "dejar tramitado",
+        "en": "to get (something) processed / set in motion"
+      }
     ],
-    notes:'"Llevo + time + con..." is the core structure for describing how long you\'ve had a symptom. Doctors use usted, and "le" throughout. "Ahora que lo dice" = "now that you mention it" is very natural.'
+    "notes": "Formal service Spanish, usted throughout, useful for phone calls and admin. 'Le atiende Marta' is the standard call-centre greeting. 'Un mundo' colloquially = 'ages / a huge amount'. 'Sí o sí' = come what may."
   },
   {
-    id:'aeropuerto-facturacion',
-    level:'A2',
-    emoji:'✈️',
-    title:'En el aeropuerto',
-    titleEn:'At the airport',
-    setting:'Mostrador de facturación en Manises. Un vuelo a Dublín a punto de cerrar.',
-    speakers:[
-      { id:'A', name:'Agente', color:'bg-blue-100 text-blue-700' },
-      { id:'B', name:'Pasajero', color:'bg-sky-100 text-sky-700' }
+    "id": "vecinos-ascensor",
+    "level": "A2",
+    "emoji": "🛗",
+    "title": "Charlando con la vecina",
+    "titleEn": "Chatting with the neighbour",
+    "setting": "En el ascensor de un edificio. Doña Pilar, una vecina mayor, se encuentra con Marcos, un vecino joven que acaba de mudarse.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Doña Pilar",
+        "color": "bg-violet-100 text-violet-700",
+        "gender": "female",
+        "rate": 0.88
+      },
+      {
+        "id": "B",
+        "name": "Marcos",
+        "color": "bg-green-100 text-green-700",
+        "gender": "male",
+        "rate": 1.0
+      }
     ],
-    lines:[
-      { who:'A', es:'Buenos días. ¿Pasaporte o DNI, por favor?', en:'Good morning. Passport or ID, please?' },
-      { who:'B', es:'Aquí tiene el pasaporte.', en:'Here\'s my passport.' },
-      { who:'A', es:'¿Factura alguna maleta?', en:'Are you checking in any luggage?' },
-      { who:'B', es:'Sí, una. ¿Cuánto puede pesar?', en:'Yes, one. How much can it weigh?' },
-      { who:'A', es:'Hasta veintitrés kilos. Póngala aquí encima, por favor.', en:'Up to twenty-three kilos. Put it on here, please.' },
-      { who:'B', es:'¿Cuánto pesa?', en:'How much does it weigh?' },
-      { who:'A', es:'Veinticuatro kilos y medio. Tiene exceso de equipaje.', en:'Twenty-four and a half kilos. You\'ve got excess baggage.' },
-      { who:'B', es:'¡Vaya! ¿Cuánto me cobran?', en:'Oh no! How much will you charge me?' },
-      { who:'A', es:'Son cincuenta euros. O si prefiere, puede sacar algo y ponerlo en la cabina.', en:'That\'s fifty euros. Or if you prefer, you can take something out and put it in your carry-on.' },
-      { who:'B', es:'Voy a sacar los zapatos. Un momento.', en:'I\'ll take the shoes out. One second.' },
-      { who:'A', es:'Perfecto. Ahora pesa veintidós novecientos. Todo correcto.', en:'Perfect. Now it weighs twenty-two nine hundred. All good.' },
-      { who:'B', es:'¡Uf, menos mal! Gracias.', en:'Phew, thank goodness! Thanks.' },
-      { who:'A', es:'Aquí tiene la tarjeta de embarque. Puerta B12, embarque a las once y cuarto.', en:'Here\'s your boarding pass. Gate B12, boarding at eleven fifteen.' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "¡Anda, buenos días! Tú eres el chico nuevo del cuarto, ¿verdad?",
+        "en": "Oh, good morning! You're the new lad on the fourth floor, aren't you?"
+      },
+      {
+        "who": "B",
+        "es": "Buenos días. Sí, me mudé hace un par de semanas. Marcos, encantado.",
+        "en": "Good morning. Yes, I moved in a couple of weeks ago. Marcos, nice to meet you."
+      },
+      {
+        "who": "A",
+        "es": "Yo soy Pilar, la del segundo. Si necesitas cualquier cosa, ya sabes dónde vivo. Aquí somos todos muy majos.",
+        "en": "I'm Pilar, from the second floor. If you need anything, you know where I live. We're all very friendly here."
+      },
+      {
+        "who": "B",
+        "es": "Muchas gracias, qué amable. La verdad es que todavía estoy un poco perdido con el barrio.",
+        "en": "Thank you, how kind. To be honest I'm still a bit lost with the neighbourhood."
+      },
+      {
+        "who": "A",
+        "es": "No te preocupes, en nada te haces a él. ¿Ya sabes dónde está el mercado? Los martes y viernes ponen puestos en la plaza.",
+        "en": "Don't worry, you'll get used to it in no time. Do you know where the market is? Tuesdays and Fridays they set up stalls in the square."
+      },
+      {
+        "who": "B",
+        "es": "No tenía ni idea, me viene genial. ¿Y hay alguna panadería buena por aquí cerca?",
+        "en": "I had no idea, that's really handy. And is there a good bakery near here?"
+      },
+      {
+        "who": "A",
+        "es": "La de la esquina, la de toda la vida. El pan está riquísimo y la dueña es un encanto. Dile que vas de mi parte.",
+        "en": "The one on the corner, the lifelong one. The bread's delicious and the owner's a sweetheart. Tell her I sent you."
+      },
+      {
+        "who": "B",
+        "es": "Lo haré, muchas gracias. Oiga, aprovecho: ¿la basura se saca a alguna hora en concreto?",
+        "en": "I will, thank you. While I'm at it: is there a set time to put the rubbish out?"
+      },
+      {
+        "who": "A",
+        "es": "A partir de las ocho de la tarde. Y el vidrio y el cartón, al contenedor de la otra calle. Aquí somos muy de reciclar.",
+        "en": "From eight in the evening. And glass and cardboard go to the bin on the next street. We're big on recycling here."
+      },
+      {
+        "who": "B",
+        "es": "Perfecto, tomo nota. Con razón vi los contenedores de colores. En mi antiguo barrio no había.",
+        "en": "Perfect, I'll make a note. That explains the coloured bins. In my old neighbourhood there weren't any."
+      },
+      {
+        "who": "A",
+        "es": "Pues aquí sí, hijo. Poco a poco te vas enterando de todo. ¿Y qué tal el piso? ¿Estás a gusto?",
+        "en": "Well here there are, dear. Little by little you'll learn it all. And how's the flat? Are you comfortable?"
+      },
+      {
+        "who": "B",
+        "es": "Muy a gusto, sí. Es pequeñito pero tiene mucha luz. Todavía me falta amueblarlo del todo.",
+        "en": "Very comfortable, yes. It's small but it gets lots of light. I've still got to finish furnishing it."
+      },
+      {
+        "who": "A",
+        "es": "Con paciencia. Lo importante es estar tranquilo, y en esta finca no hay ruido, ya verás.",
+        "en": "With patience. The main thing is to be at peace, and in this building there's no noise, you'll see."
+      },
+      {
+        "who": "B",
+        "es": "Eso es justo lo que buscaba. Bueno, Pilar, ha sido un placer. Nos vemos por aquí.",
+        "en": "That's exactly what I was after. Well, Pilar, it's been a pleasure. See you around."
+      },
+      {
+        "who": "A",
+        "es": "Igualmente, Marcos. Y ya sabes, para lo que necesites. ¡Que tengas buen día!",
+        "en": "Likewise, Marcos. And you know, for whatever you need. Have a good day!"
+      },
+      {
+        "who": "B",
+        "es": "Igualmente, muchas gracias. ¡Hasta luego!",
+        "en": "You too, thank you. See you later!"
+      }
     ],
-    vocab:[
-      { es:'facturar', en:'to check in (luggage)' },
-      { es:'exceso de equipaje', en:'excess baggage' },
-      { es:'la cabina', en:'hand luggage / carry-on' },
-      { es:'menos mal', en:'thank goodness' }
+    "vocab": [
+      {
+        "es": "majo/a",
+        "en": "nice / friendly (very Spanish)"
+      },
+      {
+        "es": "hacerse a algo",
+        "en": "to get used to something"
+      },
+      {
+        "es": "la de toda la vida",
+        "en": "the lifelong / long-standing one"
+      },
+      {
+        "es": "ir de parte de alguien",
+        "en": "to go on someone's recommendation"
+      },
+      {
+        "es": "ser muy de + inf./noun",
+        "en": "to be really into (doing) something"
+      },
+      {
+        "es": "la finca",
+        "en": "the (apartment) building"
+      }
     ],
-    notes:'"Vaya" is the all-purpose exclamation – good, bad, surprise, dismay. "¡Menos mal!" is the go-to "thank goodness" expression.'
+    "notes": "Warm A2 neighbourly small talk. The older neighbour speaks a touch slower (rate 0.88) than the young one - the voices are set per speaker so they sound like different people. 'Majo' is the quintessential Spanish word for a nice person. 'Ir de mi parte' = go on my recommendation."
   },
   {
-    id:'direcciones-perdido',
-    level:'A2',
-    emoji:'🗺️',
-    title:'Pidiendo direcciones',
-    titleEn:'Asking for directions',
-    setting:'Un turista está perdido cerca de la Ciudad de las Artes y las Ciencias y pregunta a un local.',
-    speakers:[
-      { id:'A', name:'Turista', color:'bg-sky-100 text-sky-700' },
-      { id:'B', name:'Local', color:'bg-green-100 text-green-700' }
+    "id": "piso-compartido",
+    "level": "B2",
+    "emoji": "🧹",
+    "title": "Cosas del piso",
+    "titleEn": "Flatmate matters",
+    "setting": "Nerea y Hugo comparten piso. Nerea quiere hablar con Hugo sobre la limpieza y los gastos comunes sin que suene a bronca.",
+    "speakers": [
+      {
+        "id": "A",
+        "name": "Nerea",
+        "color": "bg-rose-100 text-rose-700",
+        "gender": "female",
+        "rate": 0.99
+      },
+      {
+        "id": "B",
+        "name": "Hugo",
+        "color": "bg-indigo-100 text-indigo-700",
+        "gender": "male",
+        "rate": 0.91
+      }
     ],
-    lines:[
-      { who:'A', es:'Perdone, ¿me podría ayudar? Estoy un poco perdido.', en:'Excuse me, could you help me? I\'m a bit lost.' },
-      { who:'B', es:'Claro, dime. ¿Adónde quieres ir?', en:'Sure, tell me. Where do you want to go?' },
-      { who:'A', es:'Busco el Oceanográfico. ¿Está por aquí cerca?', en:'I\'m looking for the Oceanogràfic. Is it around here?' },
-      { who:'B', es:'Sí, muy cerca. Sigue todo recto por esta calle unos cinco minutos.', en:'Yes, very close. Keep going straight down this street for about five minutes.' },
-      { who:'A', es:'¿Y luego?', en:'And then?' },
-      { who:'B', es:'Cuando llegues a una plaza grande, gira a la izquierda. Vas a ver un puente.', en:'When you get to a big square, turn left. You\'ll see a bridge.' },
-      { who:'A', es:'¿Cruzo el puente?', en:'Do I cross the bridge?' },
-      { who:'B', es:'Exacto. Cruzas el puente y ya lo verás a la derecha. No tiene pérdida.', en:'Exactly. Cross the bridge and you\'ll see it on the right. You can\'t miss it.' },
-      { who:'A', es:'¿Se tarda mucho andando?', en:'Does it take long on foot?' },
-      { who:'B', es:'Unos quince minutos como máximo.', en:'About fifteen minutes max.' },
-      { who:'A', es:'Muchísimas gracias, muy amable.', en:'Thanks so much, very kind of you.' },
-      { who:'B', es:'De nada, ¡que lo disfrutes!', en:'You\'re welcome, enjoy it!' }
+    "lines": [
+      {
+        "who": "A",
+        "es": "Hugo, ¿tienes un momento? Quería comentarte un par de cosas del piso, sin agobios, ¿eh?",
+        "en": "Hugo, have you got a sec? I wanted to mention a couple of flat things, no stress, OK?"
+      },
+      {
+        "who": "B",
+        "es": "Claro, dime. ¿Pasa algo?",
+        "en": "Sure, go on. Is something wrong?"
+      },
+      {
+        "who": "A",
+        "es": "Nada grave, pero he notado que la limpieza está un poco descompensada últimamente. Siento que me toca casi todo a mí.",
+        "en": "Nothing serious, but I've noticed the cleaning's a bit uneven lately. I feel like nearly all of it falls on me."
+      },
+      {
+        "who": "B",
+        "es": "Ya... Tienes razón, la verdad. Estas semanas he estado a tope con el trabajo y lo he dejado de lado. Lo siento.",
+        "en": "Yeah... You're right, honestly. These weeks I've been swamped with work and I've let it slide. I'm sorry."
+      },
+      {
+        "who": "A",
+        "es": "No pasa nada, lo entiendo. Solo creo que nos vendría bien organizarnos mejor. ¿Y si hacemos un cuadrante?",
+        "en": "It's fine, I get it. I just think it'd do us good to get more organised. What if we make a rota?"
+      },
+      {
+        "who": "B",
+        "es": "Me parece buena idea. Así cada uno sabe lo que le toca y nos evitamos malentendidos. ¿Lo montamos ahora?",
+        "en": "I think that's a good idea. That way each of us knows what's ours and we avoid misunderstandings. Shall we set it up now?"
+      },
+      {
+        "who": "A",
+        "es": "Venga. Yo puedo encargarme de la cocina una semana y tú del baño, y luego lo vamos rotando. ¿Te parece justo?",
+        "en": "Come on. I can take the kitchen one week and you the bathroom, and then we rotate. Does that seem fair?"
+      },
+      {
+        "who": "B",
+        "es": "Totalmente justo. Y las zonas comunes, como el salón, las hacemos entre los dos el fin de semana.",
+        "en": "Totally fair. And the shared areas, like the living room, we do together at the weekend."
+      },
+      {
+        "who": "A",
+        "es": "Perfecto. Oye, y ya que estamos, el tema de los gastos. La factura de la luz ha venido carísima este mes.",
+        "en": "Perfect. Hey, while we're at it, the bills. The electricity bill came in really pricey this month."
+      },
+      {
+        "who": "B",
+        "es": "¿En serio? ¿Cuánto ha salido?",
+        "en": "Really? How much was it?"
+      },
+      {
+        "who": "A",
+        "es": "Casi noventa euros. Creo que es de tener la calefacción tantas horas. Deberíamos intentar ajustarla un poco.",
+        "en": "Almost ninety euros. I think it's from having the heating on so many hours. We should try to cut it back a bit."
+      },
+      {
+        "who": "B",
+        "es": "Uf, sí, es mucho. Prometo controlarme con la calefacción. Podríamos ponerla con temporizador, así no se queda encendida toda la noche.",
+        "en": "Ugh, yeah, that's a lot. I promise to go easy on the heating. We could put it on a timer, so it doesn't stay on all night."
+      },
+      {
+        "who": "A",
+        "es": "Buenísima idea. Y con lo del agua y el internet, seguimos a medias como siempre, ¿no?",
+        "en": "Brilliant idea. And with the water and internet, we keep splitting it as always, right?"
+      },
+      {
+        "who": "B",
+        "es": "Sí, eso lo veo bien. Oye, gracias por decírmelo de buenas, Nerea. Prefiero mil veces que hablemos las cosas a que se acumulen.",
+        "en": "Yeah, that works for me. Hey, thanks for bringing it up nicely, Nerea. I'd far rather we talk things out than let them build up."
+      },
+      {
+        "who": "A",
+        "es": "Igual yo. Al final, para llevarnos bien viviendo juntos, lo mejor es ser claros desde el principio.",
+        "en": "Same here. In the end, to get along living together, the best thing is to be clear from the start."
+      },
+      {
+        "who": "B",
+        "es": "Cien por cien. Pues apunto yo el cuadrante y lo colgamos en la nevera. Y esta semana empiezo yo con el baño, que lo tengo pendiente.",
+        "en": "A hundred percent. So I'll write up the rota and we'll stick it on the fridge. And this week I'll start with the bathroom, since it's overdue."
+      },
+      {
+        "who": "A",
+        "es": "Trato hecho. ¿Ves qué fácil? Me quedo mucho más tranquila.",
+        "en": "It's a deal. See how easy? I feel much better now."
+      },
+      {
+        "who": "B",
+        "es": "Y yo. Gracias, compañera. Voy a por la fregona ahora mismo, que quede claro que me pongo las pilas.",
+        "en": "Me too. Thanks, flatmate. I'm getting the mop right now, just so it's clear I'm getting my act together."
+      }
     ],
-    vocab:[
-      { es:'todo recto', en:'straight on' },
-      { es:'no tiene pérdida', en:'you can\'t miss it' },
-      { es:'¿se tarda mucho?', en:'does it take long?' },
-      { es:'que lo disfrutes', en:'enjoy it (subjunctive)' }
+    "vocab": [
+      {
+        "es": "sin agobios",
+        "en": "no stress / no pressure"
+      },
+      {
+        "es": "me toca a mí",
+        "en": "it's my turn / it falls to me"
+      },
+      {
+        "es": "un cuadrante",
+        "en": "a rota / schedule"
+      },
+      {
+        "es": "ya que estamos",
+        "en": "while we're at it"
+      },
+      {
+        "es": "decir algo de buenas",
+        "en": "to bring something up nicely / amicably"
+      },
+      {
+        "es": "ponerse las pilas",
+        "en": "to get one's act together / buck up"
+      }
     ],
-    notes:'Note the switch to "tú" – Spaniards drop "usted" fast once the conversation becomes friendly. "Cuando + subjuntivo" ("cuando llegues") is used for future actions.'
-  },
-  {
-    id:'bodega-regalo',
-    level:'B1',
-    emoji:'🍷',
-    title:'En la bodega',
-    titleEn:'At the wine shop',
-    setting:'Una bodega especializada en el Barrio del Carmen de Valencia, un miércoles por la tarde. El cliente busca una botella especial para regalar a su padre por su cumpleaños, con un presupuesto de unos 50-60 euros.',
-    speakers:[
-      { id:'V', name:'Vendedor', color:'bg-red-100 text-red-800' },
-      { id:'C', name:'Cliente', color:'bg-sky-100 text-sky-700' }
-    ],
-    lines:[
-      { who:'V', es:'Buenas tardes. ¿En qué le puedo ayudar?', en:'Good afternoon. How can I help you?' },
-      { who:'C', es:'Buenas. Mire, busco una botella especial para regalar. Es el cumpleaños de mi padre.', en:'Hi. Look, I\'m looking for a special bottle as a gift. It\'s my dad\'s birthday.' },
-      { who:'V', es:'¡Qué bien! ¿Tiene alguna idea de lo que busca, o prefiere que le ayude a elegir?', en:'How nice! Do you have an idea of what you\'re looking for, or would you prefer I help you choose?' },
-      { who:'C', es:'Prefiero que me oriente usted. No soy muy entendido en vinos, la verdad.', en:'I\'d prefer you to guide me. I\'m not very knowledgeable about wine, to be honest.' },
-      { who:'V', es:'No hay problema, para eso estamos. ¿Sabe si su padre tiene alguna preferencia? ¿Tinto, blanco, rosado...?', en:'No problem, that\'s what we\'re here for. Do you know if your dad has any preferences? Red, white, rose...?' },
-      { who:'C', es:'Tinto, casi seguro. Le gustan los tintos con cuerpo. Suele beber rioja, si eso le ayuda.', en:'Red, almost certainly. He likes full-bodied reds. He usually drinks rioja, if that helps.' },
-      { who:'V', es:'Perfecto, eso ya nos dice mucho. ¿Y tiene pensado algún presupuesto?', en:'Perfect, that already tells us a lot. And do you have a budget in mind?' },
-      { who:'C', es:'Sí, sobre los cincuenta o sesenta euros. Quiero que sea algo especial, que no sea lo de siempre.', en:'Yes, around fifty or sixty euros. I want it to be something special, not the usual stuff.' },
-      { who:'V', es:'Entendido. Con ese presupuesto tiene opciones muy interesantes. Puedo llevarle por varios caminos.', en:'Understood. With that budget you have some very interesting options. I can take you in several directions.' },
-      { who:'C', es:'Cuénteme.', en:'Go on.' },
-      { who:'V', es:'La primera opción sería quedarnos en La Rioja pero subir de categoría. ¿Conoce los Rioja Gran Reserva?', en:'The first option would be to stay in La Rioja but go up a level. Are you familiar with Rioja Gran Reserva?' },
-      { who:'C', es:'He oído hablar, pero nunca lo he probado. ¿Qué diferencia hay?', en:'I\'ve heard of it, but I\'ve never tried it. What\'s the difference?' },
-      { who:'V', es:'Los Gran Reserva pasan al menos cinco años de crianza, dos de ellos en barrica de roble. Son vinos muy elegantes, con taninos suavizados y una gran complejidad. Este que tengo aquí, el Marqués de Murrieta Castillo Ygay de 2014, está alrededor de los cincuenta y cinco euros. Un vino excepcional.', en:'Gran Reserva wines age for at least five years, two of them in oak barrels. They\'re very elegant wines, with softened tannins and great complexity. This one here, the Marques de Murrieta Castillo Ygay 2014, is around fifty-five euros. An exceptional wine.' },
-      { who:'C', es:'¿Y está listo para beber ya, o habría que esperar?', en:'And is it ready to drink now, or would you need to wait?' },
-      { who:'V', es:'Está en un momento perfecto ahora mismo. Tiene doce años y está en plena madurez. Si quisiera guardarlo, todavía aguanta otros diez años, pero bebido hoy es una experiencia.', en:'It\'s at a perfect moment right now. Twelve years old and at peak maturity. If you wanted to keep it, it could still hold another ten years, but drunk today it\'s quite an experience.' },
-      { who:'C', es:'Me suena bien. ¿Tiene otras opciones fuera de La Rioja?', en:'Sounds good. Do you have other options outside of La Rioja?' },
-      { who:'V', es:'Sí, si quiere algo diferente pero igual de elegante, le recomendaría mirar hacia Ribera del Duero. Tenemos un Pesquera Reserva de 2016 a cincuenta y dos euros. Es de Alejandro Fernández, un productor histórico. Tempranillo puro, muy frutal pero con mucha estructura.', en:'Yes, if you want something different but equally elegant, I\'d recommend looking towards Ribera del Duero. We have a Pesquera Reserva 2016 at fifty-two euros. From Alejandro Fernandez, a historic producer. Pure Tempranillo, very fruity but with a lot of structure.' },
-      { who:'C', es:'¿Y cuál elegiría usted?', en:'And which one would you choose?' },
-      { who:'V', es:'Honestamente, depende del carácter de su padre. El Ygay es más clásico, más austero, con mucho pasado. El Pesquera es más expresivo, más afrutado, más fácil de apreciar enseguida. ¿Su padre es más de tradición o de cosas nuevas?', en:'Honestly, it depends on your dad\'s character. The Ygay is more classic, more austere, with a lot of history. The Pesquera is more expressive, more fruity, easier to appreciate straight away. Is your dad more of a traditionalist or does he like new things?' },
-      { who:'C', es:'Diría que es de tradición. Le gusta lo clásico.', en:'I\'d say he\'s a traditionalist. He likes the classics.' },
-      { who:'V', es:'Entonces sin dudarlo, el Castillo Ygay. Es un vino con historia, con personalidad. Su padre lo va a apreciar.', en:'Then without hesitation, the Castillo Ygay. A wine with history, with character. Your father will appreciate it.' },
-      { who:'C', es:'Me lo quedo. ¿Me lo puede envolver para regalo?', en:'I\'ll take it. Can you gift-wrap it for me?' },
-      { who:'V', es:'Por supuesto. ¿Quiere que le ponga también una tarjeta?', en:'Of course. Would you like me to include a card as well?' },
-      { who:'C', es:'Sí, por favor. Que ponga: "Feliz cumpleaños, papá. Con cariño."', en:'Yes please. To say: "Happy birthday, dad. With love."' },
-      { who:'V', es:'Encantado. ¿Algo más? Tenemos también cajas de madera si quiere que el regalo tenga más presencia.', en:'My pleasure. Anything else? We also have wooden boxes if you\'d like the gift to make more of an impression.' },
-      { who:'C', es:'¿Cuánto cuesta la caja?', en:'How much is the box?' },
-      { who:'V', es:'Son ocho euros. Le quedaría muy bien al vino, la verdad.', en:'Eight euros. It would really suit the wine, honestly.' },
-      { who:'C', es:'Sí, póngasela. ¿A cuánto asciende todo?', en:'Yes, add it. How much does it all come to?' },
-      { who:'V', es:'El vino son cincuenta y cinco, más ocho de la caja, son sesenta y tres euros en total.', en:'The wine is fifty-five, plus eight for the box, that\'s sixty-three euros altogether.' },
-      { who:'C', es:'Perfecto, aquí tiene. Muchas gracias por la ayuda, no tenía ni idea por dónde empezar.', en:'Perfect, here you go. Thank you so much for the help - I had no idea where to start.' },
-      { who:'V', es:'Para eso estamos. Espero que a su padre le encante. ¡Felicidades a él!', en:'That\'s what we\'re here for. I hope your father loves it. Congratulations to him!' },
-      { who:'C', es:'Gracias. Hasta luego.', en:'Thanks. Goodbye.' },
-      { who:'V', es:'¡Hasta luego, y que disfrute la celebración!', en:'Goodbye, and enjoy the celebration!' }
-    ],
-    vocab:[
-      { es:'entendido/a en vinos', en:'knowledgeable about wine' },
-      { es:'Gran Reserva', en:'top ageing category in Spanish wine - min. 5 years, 2 in oak' },
-      { es:'barrica de roble', en:'oak barrel' },
-      { es:'taninos', en:'tannins (the drying sensation from red wine)' },
-      { es:'en plena madurez', en:'at peak maturity - ready to drink now' },
-      { es:'afrutado/a', en:'fruity' },
-      { es:'envolver para regalo', en:'to gift-wrap' },
-      { es:'¿a cuánto asciende?', en:'how much does it come to? (more formal than ¿cuánto es?)' },
-      { es:'para eso estamos', en:'that\'s what we\'re here for - standard customer-service phrase' },
-      { es:'cuénteme', en:'go on, tell me (polite imperative of contar - inviting someone to elaborate)' }
-    ],
-    notes:'The vendedor uses usted throughout - correct register for a Spanish shop. Notice the conditional used for recommendations: "le recomendaría", "sería" - this softens suggestions and sounds more professional than the imperative. "Cuénteme" is a very natural way to invite someone to continue. The two bottles are real: Marqués de Murrieta Castillo Ygay is one of Spain\'s most iconic Rioja wines; Pesquera Reserva is a classic from Ribera del Duero. Both sit in the 50-60 euro range.'
+    "notes": "B2 flat-share negotiation - practical vocabulary and polite conflict resolution. Note 'nos vendría bien' (conditional for softened advice), 'prefiero que hablemos... a que se acumulen' (preference + subjunctive), and 'que quede claro' (subjunctive of purpose). 'Ponerse las pilas' = to get your act together."
   }
 ];
 
@@ -8587,6 +9556,10 @@ function Conversaciones({ onBack, dark, onSearch }) {
   const lineRefs = useRef([]);      // one DOM node per line, for auto-scroll
   const busIdRef = useRef('dlg-' + Math.random().toString(36).slice(2));
   const stopAllRef = useRef(null);  // points at stopAll so the bus can interrupt us
+
+  // If a persisted selection points at a conversation that no longer exists
+  // (e.g. after the set is refreshed), fall back to the list.
+  useEffect(() => { if (selected && !CONVERSATIONS.find(c => c.id === selected.id)) setSelected(null); }, []);
 
   useEffect(() => {
     // Let any other speech button interrupt this dialogue's auto-play.
@@ -8621,9 +9594,13 @@ function Conversaciones({ onBack, dark, onSearch }) {
       setPlayingIdx(i);
       const line = lines[i];
       // Speaker A = female Castilian, Speaker B = male Castilian – distinct voices
-      const voiceOpts = line.who === 'A'
-        ? { gender:'female', dialect:'es-ES', rate:0.91, pitch:1.0 }
-        : { gender:'male',   dialect:'es-ES', rate:0.93, pitch:1.0 };
+      const sp = selected.speakers.find(s => s.id === line.who) || selected.speakers[0] || {};
+      const voiceOpts = {
+        gender: sp.gender || (line.who === 'A' ? 'female' : 'male'),
+        dialect: 'es-ES',
+        rate: sp.rate || 0.93,
+        pitch: sp.pitch || 1.0,
+      };
       await playSpeakable(line.es, voiceOpts);
       if (stopRef.current || token !== playTokenRef.current) {
         if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); AudioBus.releaseIf(busIdRef.current); }
@@ -8745,7 +9722,7 @@ function Conversaciones({ onBack, dark, onSearch }) {
                     </div>
                     <div className="flex items-start gap-2">
                       <p className="text-base leading-relaxed flex-1">{line.es}</p>
-                      <SpeakBtn text={line.es} size="sm" gender={line.who === 'A' ? 'female' : 'male'} dialect="es-ES" />
+                      <SpeakBtn text={line.es} size="sm" gender={speaker.gender || (line.who === 'A' ? 'female' : 'male')} dialect="es-ES" />
                     </div>
                     {showTranslation && (
                       <p className="text-xs text-stone-500 mt-1">{line.en}</p>
