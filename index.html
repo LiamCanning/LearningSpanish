@@ -1545,7 +1545,7 @@ const CHEAT_SHEETS = [
         ['es seguro','it\'s safe','está seguro','he\'s certain/sure'],
         ['es rico','he\'s wealthy','está rico','it\'s delicious'],
         ['es vivo','he\'s sharp/clever','está vivo','he\'s alive'],
-        ['es muerto','he\'s dead (as noun)','está muerto','he\'s dead (state)']
+        ['es un muerto','he\'s a dead man / corpse (noun)','está muerto','he\'s dead (state)']
       ], examples:[
         {es:'Este jamón está buenísimo, pero el dueño es buena persona también.',en:'This ham is delicious, and the owner is a good person too.'},
         {es:'Ten cuidado, que mi primo es muy listo – y ahora está listo para irse.',en:'Careful, my cousin is really clever – and now he\'s ready to leave.'}
@@ -1553,7 +1553,7 @@ const CHEAT_SHEETS = [
       { heading:'Common mistakes', rows:[
         ['❌ Soy cansado hoy','✅ Estoy cansado hoy','Temporary states (tiredness, emotions, illness) always use ESTAR.'],
         ['❌ Estoy de Valencia','✅ Soy de Valencia','Origin uses SER. "¿De dónde eres?" not "¿De dónde estás?"'],
-        ['❌ La reunión es en la sala 3','✅ La reunión está en la sala 3 / La reunión es en la sala 3','Location: está for physical location of things. BUT events use ser: "La reunión ES a las 3."'],
+        ['❌ La reunión está en la sala 3','✅ La reunión es en la sala 3','An event\'s location uses SER: la reunión/fiesta ES en la sala 3. Estar is only for the physical location of a thing (el libro está en la sala 3).'],
         ['❌ El café está muy bueno aquí','✅ El café está muy bueno aquí','Actually correct! Está rico/bueno = it tastes good. Only wrong if you say "es bueno" meaning "it tastes good."'],
         ['❌ Estoy una profesora','✅ Soy profesora','Profession uses SER, no article needed.'],
         ['❌ Ella es muy cansada de ayer','✅ Ella está muy cansada de ayer','Resultant states use ESTAR.']
@@ -2017,7 +2017,7 @@ const CHEAT_SHEETS = [
         ['❌ El primero de mayo de dos mil veinticinco','✅ El uno de mayo de 2025','Dates after "the first" use cardinal numbers: el dos, el tres… El primero = only for the 1st.'],
         ['❌ Hace dos años que viví aquí','✅ Hace dos años que vivo aquí','Hace + present = ongoing action. Hace + preterite = completed action that happened X ago.'],
         ['❌ Vivo aquí por dos años','✅ Llevo dos años aquí / Vivo aquí desde hace dos años','Duration of ongoing = llevar + gerundio OR desde hace. Not por for ongoing situations.'],
-        ['❌ En el año dos mil veinticinco','✅ En 2025 / En el año veinticinco','Years don\'t need "dos mil" in speech – just say the number.']
+        ['❌ En el año veinticinco (para 2025)','✅ En 2025 = en dos mil veinticinco','Spanish says the full number: dos mil veinticinco. You can\'t clip it to "veinticinco" like English \'25.']
       ], examples:[
         {es:'Llevo dos años viviendo aquí – llegué el uno de marzo de 2023.',en:'I\'ve been living here for two years – I arrived on the 1st of March 2023.'},
         {es:'Son las ocho y cuarto. ¡Date prisa, que llegamos tarde!',en:'It\'s quarter past eight. Hurry up, we\'re running late!'}
@@ -2282,8 +2282,8 @@ const CHEAT_SHEETS = [
       { heading:'The tilde BREAKS the default rule', rows:[
         ['café','ca-FÉ','Without tilde: "cafe" would stress "ca" (ends in vowel). Tilde forces last syllable.'],
         ['teléfono','te-LÉ-fo-no','Without tilde: "telefono" = te-le-FO-no (ends in vowel → penultimate). Tilde forces antepenultimate.'],
-        ['difícil','DÍ-fi-cil','Ends in -l → should stress last. Tilde corrects to first syllable.'],
-        ['también','tam-BIÉN','Ends in -n → default = TAM-bién. Tilde not needed for stress but marks diphthong split.'],
+        ['difícil','di-FÍ-cil','Ends in -l → default stresses the last syllable. Tilde marks the real stress on the penultimate.'],
+        ['también','tam-BIÉN','Ends in -n → default would stress TAM-. Stress is really on the last syllable, breaking the rule → tilde needed.'],
         ['mamá','ma-MÁ','Without tilde: "mama" → stress penultimate = MA-ma. Tilde shifts to last.']
       ], examples:[
         {es:'¿Cuántos cafés has tomado hoy?',en:'How many coffees have you had today?'},
@@ -2372,7 +2372,7 @@ const CHEAT_SHEETS = [
         ['❌ Una perrito (fem.)','✅ Una perrita','Diminutive keeps the gender: el perro → el perrito · la perra → la perrita.'],
         ['❌ Más pequeñito','✅ Pequeñito (alone is fine)','Diminutive already adds smallness – don\'t double with más pequeño.'],
         ['❌ Un éxitón (big success)','✅ Un exitazo','For impressive results use -azo. -ón often implies size/clumsy, not success.'],
-        ['❌ Grandecito','✅ Grandote (or just grande)','Augmentative of grande = grandote or grandullón. Grandecito is odd.']
+        ['For BIG use -ote/-ullón','✅ Grandote / grandullón','The augmentative of grande is grandote or grandullón. (Grandecito exists but is a diminutive - grown-up/fairly big - not an augmentative.)']
       ], examples:[
         {es:'¿Me pones un cafecito? Solo un momentito, que tengo que irme.',en:'Can I get a little coffee? Just a moment, I need to go.'},
         {es:'¡Qué golazo tan increíble! Ha sido el exitazo del año.',en:'What an incredible goal! It\'s been the hit of the year.'}
@@ -2500,7 +2500,7 @@ const CHEAT_SHEETS = [
         ['Imperfecto','me llevaba','te llevabas','se llevaba','nos llevábamos','os llevabais','se llevaban'],
         ['Futuro','me llevaré','te llevarás','se llevará','nos llevaremos','os llevaréis','se llevarán'],
         ['Condicional','me llevaría','te llevarías','se llevaría','nos llevaríamos','os llevaríais','se llevarían'],
-        ['Subjuntivo','me lleve','te lleves','se lleve','nos llevemos','os lleváis','se lleven'],
+        ['Subjuntivo','me lleve','te lleves','se lleve','nos llevemos','os llevéis','se lleven'],
         ['Imperativo','–','llévatelo','lléveselo (ud.)','llevémoslo','llevaoslo','llévenselo']
       ], examples:[
         {es:'Me llevo las sobras – están demasiado buenas para tirarlas.',en:'I\'m taking the leftovers – they\'re too good to throw away.'},
@@ -3000,7 +3000,7 @@ const CHEAT_SHEETS = [
         ['phone numbers','said in pairs','634 12 51 → seis, treinta y cuatro, doce, cincuenta y uno']
       ], examples:[
         {es:'Tres cuartos de los encuestados apoyan la medida - el veinticinco por ciento se opone.', en:'Three quarters of respondents support the measure - twenty-five percent oppose it.'},
-        {es:'Dame tu número - es el seis, cuarenta y dos, once, treinta y ocho.', en:'Give me your number - it\'s 634 211 38.'},
+        {es:'Dame tu número - es el seis, cuarenta y dos, once, treinta y ocho.', en:'Give me your number - it\'s 6 42 11 38.'},
         {es:'Seis por ocho son cuarenta y ocho, dividido entre dos son veinticuatro.', en:'Six times eight is forty-eight, divided by two is twenty-four.'}
       ]}
     ]
@@ -3340,9 +3340,9 @@ const CHEAT_SHEETS = [
     content:[
       { heading:'HOW TO FORM THEM', rows:[
         ['Ending of base word','Suffix','Examples'],
-        ['Most words (end in -o / -a / consonant except n,r)','→ -ito / -ita','café→cafecito, mesa→mesita, gato→gatito'],
+        ['Most words (end in -o / -a / consonant except n,r)','→ -ito / -ita','mesa→mesita, gato→gatito, libro→librito'],
         ['Words ending in -n or -r','→ -cito / -cita','canción→cancioncita, mujer→mujercita'],
-        ['Words ending in -e (2+ syllables)','→ -cito / -cita','nombre→nombrecito, noche→nochercita'],
+        ['Words ending in -e (2+ syllables) or stressed vowel','→ -cito / -cita','nombre→nombrecito, noche→nochecita, café→cafecito'],
         ['One-syllable words','→ -ecito / -ecita','flor→florecita, pan→panecito, pie→piececito'],
         ['Adjectives follow the same rules','→ same','pequeño→pequeñito, solo→solito, tarde→tardecito'],
       ], examples:[
@@ -8195,7 +8195,7 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
 const CONVERSATIONS = [
   {
     "id": "finde-lunes",
-    "level": "A2",
+    "level": "B1",
     "emoji": "🗓️",
     "title": "El lunes en la ofi",
     "titleEn": "Monday at the office",
@@ -8381,7 +8381,7 @@ const CONVERSATIONS = [
   },
   {
     "id": "plan-finde",
-    "level": "A2",
+    "level": "B1",
     "emoji": "🍖",
     "title": "Montando una barbacoa",
     "titleEn": "Planning a barbecue",
@@ -8997,7 +8997,7 @@ const CONVERSATIONS = [
       },
       {
         "who": "A",
-        "es": "Hecho, ahora mismo le escribo y le pico un poco para que no se raje. Entonces quedamos confirmado: domingo, tres y media, en el bar de la plaza.",
+        "es": "Hecho, ahora mismo le escribo y le pico un poco para que no se raje. Entonces queda confirmado: domingo, tres y media, en el bar de la plaza.",
         "en": "Done, I'll message him now and wind him up a bit so he doesn't chicken out. So we're confirmed: Sunday, half three, at the bar in the square."
       },
       {
@@ -9532,7 +9532,7 @@ const CONVERSATIONS = [
   },
   {
     "id": "vecinos-ascensor",
-    "level": "A2",
+    "level": "B1",
     "emoji": "🛗",
     "title": "Charlando con la vecina",
     "titleEn": "Chatting with the neighbour",
@@ -12904,7 +12904,7 @@ const GRAMMAR_LESSONS = [
       { heading:'Reflexive se: the subject acts on itself', text:'This is the one most learners know first. The subject does something to themselves. "Me lavo" (I wash myself), "se peina" (she combs her hair), "nos sentamos" (we sit down). Many daily routines use this: levantarse, ducharse, vestirse, acostarse.', examples:[
         {es:'Me despierto a las siete.',en:'I wake (myself) up at seven.'},
         {es:'Se ducha antes de salir.',en:'She showers before leaving.'},
-        {es:'Nos sentamos en la terraza.',en:'We sat down on the terrace.'},
+        {es:'Nos sentamos en la terraza.',en:'We sit down on the terrace.'},
       ]},
       { heading:'Impersonal se: no specific person', text:'When you want to say "people do X" or "one does X" without naming anyone. English uses "you", "people", or "they" loosely. Spanish uses "se + 3rd person verb". Very common on signs and in general statements.', examples:[
         {es:'Aquí se habla español.',en:'Spanish is spoken here.'},
