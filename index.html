@@ -8043,10 +8043,20 @@ const READING_PASSAGES = [
   }
 ];
 
-function Lecturas({ onBack, dark, onSearch }) {
+function Lecturas({ onBack, dark, onSearch, jump }) {
   const [selected, setSelected] = usePersistedState('aprende.view.lecturas.selected', null);
   const [showAnswers, setShowAnswers] = useState({});
   const [wordPopover, setWordPopover] = useState(null);
+
+  // Open a specific reading when global search deep-links here.
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'lecturas' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      const r = READING_PASSAGES.find(x => x.id === jump.id);
+      if (r) setSelected(r);
+    }
+  }, [jump]);
 
   const handleWordClick = (e, word) => {
     const clean = word.replace(/[¿¡.,;:!?"""''«»\-––()\[\]]/g, '').trim();
@@ -9833,7 +9843,7 @@ const CONVERSATIONS = [
   }
 ];
 
-function Conversaciones({ onBack, dark, onSearch }) {
+function Conversaciones({ onBack, dark, onSearch, jump }) {
   const [selected, setSelected] = usePersistedState('aprende.view.conversaciones.selected', null);
   const [showTranslation, setShowTranslation] = useState(true);
   const [playingIdx, setPlayingIdx] = useState(null);
@@ -9849,6 +9859,16 @@ function Conversaciones({ onBack, dark, onSearch }) {
   // If a persisted selection points at a conversation that no longer exists
   // (e.g. after the set is refreshed), fall back to the list.
   useEffect(() => { if (selected && !CONVERSATIONS.find(c => c.id === selected.id)) setSelected(null); }, []);
+
+  // Open a specific conversation when global search deep-links here.
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'conversaciones' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      const c = CONVERSATIONS.find(x => x.id === jump.id);
+      if (c) setSelected(c);
+    }
+  }, [jump]);
 
   useEffect(() => {
     // Let any other speech button interrupt this dialogue's auto-play.
@@ -11688,12 +11708,13 @@ function Chuletas({ onBack, dark, onSearch, jump }) {
   const [sheetFilter, setSheetFilter] = usePersistedState('aprende.view.chuletas.filter', 'todos');
   const [sheetQuery, setSheetQuery] = useState('');
 
-  // Open a specific sheet when global search deep-links here (once per new jump nonce).
+  // Open a specific sheet or mistake when global search deep-links here (once per nonce).
   const jumpRef = useRef(null);
   useEffect(() => {
-    if (jump && jump.n !== jumpRef.current) {
+    if (jump && jump.section === 'chuletas' && jump.n !== jumpRef.current) {
       jumpRef.current = jump.n;
-      if (CHEAT_SHEETS.find(s => s.id === jump.id)) { setTab('gramatica'); setSelectedSheetId(jump.id); }
+      if (jump.sub === 'mistake') { setTab('errores'); setSelectedMistake(jump.id); }
+      else if (CHEAT_SHEETS.find(s => s.id === jump.id)) { setTab('gramatica'); setSelectedSheetId(jump.id); }
     }
   }, [jump]);
 
@@ -12076,13 +12097,23 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
   );
 }
 
-function Vocabulario({ onBack, dark, initialTab, onSearch }) {
+function Vocabulario({ onBack, dark, initialTab, onSearch, jump }) {
   const [tab, setTab] = useState(initialTab || 'temas');
   const [selectedTheme, setSelectedTheme] = usePersistedState('aprende.view.vocab.theme', null);
   const [themeFilter, setThemeFilter] = useState('all');
 
   const handleSelectTheme = (theme) => { setSelectedTheme(theme); setThemeFilter('all'); };
   const handleBackFromTheme = () => setSelectedTheme(null);
+
+  // Open a specific theme when global search deep-links here.
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'vocabulario' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      const t = VOCAB_THEMES.find(x => x.theme === jump.id);
+      if (t) { setTab('temas'); setSelectedTheme(t); setThemeFilter('all'); }
+    }
+  }, [jump]);
 
   return (
     <div>
@@ -12266,7 +12297,7 @@ const VALENCIAN_PHRASES = [
   { es:'Una orxata, per favor', en:'A horchata, please', es_es:'Una horchata, por favor', when:'Ordering Valencia\'s iconic drink.' },
 ];
 
-function Frases({ onBack, dark, initialTab, onSearch }) {
+function Frases({ onBack, dark, initialTab, onSearch, jump }) {
   const [section, setSection] = usePersistedState('aprende.view.frases.section', null);
   const [selectedSit, setSelectedSit] = usePersistedState('aprende.view.frases.sit', null);
   const [selectedValGroup, setSelectedValGroup] = usePersistedState('aprende.view.frases.valGroup', null);
@@ -12276,6 +12307,21 @@ function Frases({ onBack, dark, initialTab, onSearch }) {
 
   const goSection = (s) => { setSection(s); setSelectedSit(null); setSelectedValGroup(null); setSelectedIdiom(null); setSelectedMandato(null); };
   const goIndex   = ()  => goSection(null);
+
+  // Open the right sub-tab (and item) when global search deep-links here.
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'frases' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      if (jump.sub === 'situaciones') {
+        const g = SITUATIONAL_PHRASES.find(x => x.situation === jump.id);
+        goSection('situaciones'); if (g) setSelectedSit(g);
+      } else if (jump.sub === 'modismos') {
+        const it = IDIOMS.find(x => x.es === jump.id);
+        goSection('modismos'); if (it) setSelectedIdiom(it);
+      }
+    }
+  }, [jump]);
 
   const idiomCategories = ['all','comida','animales','cuerpo','general'];
   const filteredIdioms = idiomsCategory === 'all' ? IDIOMS : IDIOMS.filter(i => i.category === idiomsCategory);
@@ -12953,11 +12999,21 @@ const GRAMMAR_CATEGORIES = [
   { id:'little-words', label:'Little words', emoji:'🧩', color:'from-rose-400 to-pink-500' },
 ];
 
-function GramaticaSection({ onBack, dark, onSearch }) {
+function GramaticaSection({ onBack, dark, onSearch, jump }) {
   const [selectedLesson, setSelectedLesson] = usePersistedState('aprende.view.gramatica.lesson', null);
   const [practiceMode, setPracticeMode] = useState(false);
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState({});
+
+  // Open a specific lesson when global search deep-links here.
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'gramatica' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      const l = GRAMMAR_LESSONS.find(x => x.id === jump.id);
+      if (l) setSelectedLesson(l);
+    }
+  }, [jump]);
 
   const handleAnswer = (qIdx, optIdx) => {
     if (showResults[qIdx] !== undefined) return;
@@ -13801,7 +13857,7 @@ function EscrituraView({ prompt, dark, onBack }) {
 // EQUIVALENTES – type or speak English, get the natural Spanish equivalent
 // 100% accuracy: only returns matches from the curated EQUIVALENTS dictionary
 // =============================================================================
-function Equivalentes({ onBack, dark, onSearch }) {
+function Equivalentes({ onBack, dark, onSearch, jump }) {
   const [query, setQuery] = useState('');
   const [selectedCat, setSelectedCat] = usePersistedState('aprende.view.equivalentes.cat', null);
   const [expandedIdx, setExpandedIdx] = useState(null);
@@ -13820,6 +13876,16 @@ function Equivalentes({ onBack, dark, onSearch }) {
   const [saveFlash, setSaveFlash] = useState(false);
   const azureRecogRef = React.useRef(null);
   const inputRef = React.useRef(null);
+
+  // Pre-fill the search when global search deep-links here.
+  const jumpRef = React.useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'equivalentes' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      setSelectedCat(null);
+      setQuery(jump.id || '');
+    }
+  }, [jump]);
 
   const azCfg = ttsGetAzureConfig();
   const hasAzure = !!(azCfg.apiKey && azCfg.region);
@@ -15061,6 +15127,11 @@ function chuletaSearchText(c) {
   return parts.filter(Boolean).join(' ').toLowerCase();
 }
 
+// Join any number of strings/arrays into one lowercase blob for full-text matching.
+function joinBody(...xs) {
+  return xs.flat(Infinity).filter(Boolean).join(' ').toLowerCase();
+}
+
 function buildSearchIndex() {
   const idx = [];
   // Words of day
@@ -15071,22 +15142,35 @@ function buildSearchIndex() {
   Object.keys(TENSES || {}).forEach(group => {
     (TENSES[group] || []).forEach(t => idx.push({ kind:'Tiempo', section:'tiempos', es:t.title, en:t.subtitle, hint:t.concept }));
   });
-  // Cheat sheets
-  (typeof CHEAT_SHEETS !== 'undefined' ? CHEAT_SHEETS : []).forEach(c => idx.push({ kind:'Chuleta', section:'chuletas', sheetId:c.id, es:c.title || c.titleEs || '', en:c.subtitle || c.titleEn || '', hint:c.concept || c.intro || '', body:chuletaSearchText(c) }));
-  // Vocab themes
+  // Cheat sheets (full content indexed; opens the exact sheet)
+  (typeof CHEAT_SHEETS !== 'undefined' ? CHEAT_SHEETS : []).forEach(c => idx.push({ kind:'Chuleta', section:'chuletas', jumpId:c.id, es:c.title || c.titleEs || '', en:c.subtitle || c.titleEn || '', hint:c.concept || c.intro || '', body:chuletaSearchText(c) }));
+  // Common mistakes (Chuletas → Errores comunes; opens the exact card)
+  (typeof COMMON_MISTAKES !== 'undefined' ? COMMON_MISTAKES : []).forEach((m, i) => idx.push({ kind:'Error', section:'chuletas', jumpId:i, jumpSub:'mistake', es:m.right, en:m.en, hint:m.why, body:joinBody(m.wrong, m.right, m.en, m.why) }));
+  // Vocab themes: one entry per theme + one per word, all open the theme
   (typeof VOCAB_THEMES !== 'undefined' ? VOCAB_THEMES : []).forEach(t => {
-    (t.words || []).forEach(w => idx.push({ kind:'Vocab', section:'vocabulario', es:w.es, en:w.en, hint:w.example }));
+    idx.push({ kind:'Tema', section:'vocabulario', jumpId:t.theme, es:t.titleEs, en:t.titleEn, hint:`${(t.words||[]).length} palabras`, body:joinBody(t.titleEs, t.titleEn, t.theme, (t.words||[]).map(w => [w.es, w.en, w.example])) });
+    (t.words || []).forEach(w => idx.push({ kind:'Vocab', section:'vocabulario', jumpId:t.theme, es:w.es, en:w.en, hint:w.example }));
   });
   // Connectors
   (typeof CONNECTORS !== 'undefined' ? CONNECTORS : []).forEach(g => {
     (g.items || g.connectors || []).forEach(c => idx.push({ kind:'Conector', section:'conectores', es:c.es || c.word, en:c.en, hint:c.example }));
   });
-  // Situational phrases
+  // Situational phrases (Frases → Situaciones): one entry per situation + one per phrase
   (typeof SITUATIONAL_PHRASES !== 'undefined' ? SITUATIONAL_PHRASES : []).forEach(g => {
-    (g.phrases || g.items || []).forEach(p => idx.push({ kind:'Frase', section:'frases', es:p.es, en:p.en, hint:p.example || p.when }));
+    const ph = g.phrases || g.items || [];
+    idx.push({ kind:'Situación', section:'frases', jumpId:g.situation, jumpSub:'situaciones', es:g.situation, en:g.situationEn, hint:`${ph.length} frases`, body:joinBody(g.situation, g.situationEn, ph.map(p => [p.es, p.en, p.when])) });
+    ph.forEach(p => idx.push({ kind:'Frase', section:'frases', jumpId:g.situation, jumpSub:'situaciones', es:p.es, en:p.en, hint:p.when || p.example }));
   });
-  // Idioms
-  (typeof IDIOMS !== 'undefined' ? IDIOMS : []).forEach(i => idx.push({ kind:'Modismo', section:'frases', es:i.es, en:i.meaning || i.en, hint:i.example }));
+  // Idioms (Frases → Modismos)
+  (typeof IDIOMS !== 'undefined' ? IDIOMS : []).forEach(i => idx.push({ kind:'Modismo', section:'frases', jumpId:i.es, jumpSub:'modismos', es:i.es, en:i.meaning || i.en, hint:i.example }));
+  // Conversations (full dialogue indexed; opens the exact conversation)
+  (typeof CONVERSATIONS !== 'undefined' ? CONVERSATIONS : []).forEach(c => idx.push({ kind:'Diálogo', section:'conversaciones', jumpId:c.id, es:c.title, en:c.titleEn, hint:c.setting, body:joinBody(c.title, c.titleEn, c.setting, (c.lines||[]).map(l => [l.es, l.en]), (c.vocab||[]).map(v => [v.es, v.en])) }));
+  // Reading passages (Lecturas)
+  (typeof READING_PASSAGES !== 'undefined' ? READING_PASSAGES : []).forEach(r => idx.push({ kind:'Lectura', section:'lecturas', jumpId:r.id, es:r.title, en:r.titleEn, hint:r.intro, body:joinBody(r.title, r.titleEn, r.intro, r.paragraphs, r.glossary, (r.questions||[]).map(q => [q.q, q.a])) }));
+  // Grammar lessons (Gramática)
+  (typeof GRAMMAR_LESSONS !== 'undefined' ? GRAMMAR_LESSONS : []).forEach(l => idx.push({ kind:'Gramática', section:'gramatica', jumpId:l.id, es:l.title, en:l.titleEn, hint:l.summary, body:joinBody(l.title, l.titleEn, l.summary, l.formula, (l.sections||[]).map(s => [s.heading, s.text, (s.examples||[]).map(e => [e.es, e.en])])) }));
+  // Cómo se dice (Equivalentes): matched entry pre-fills the search there
+  (typeof EQUIVALENTS !== 'undefined' ? EQUIVALENTS : []).forEach(e => idx.push({ kind:'Cómo se dice', section:'equivalentes', jumpId:e.en, es:e.es, en:e.en, hint:e.example, body:joinBody(e.en, e.enAlts, e.es, e.esAlts, e.example, e.explain) }));
   // Business vocab
   (typeof BUSINESS_VOCAB !== 'undefined' ? BUSINESS_VOCAB : []).forEach(g => {
     (g.items || []).forEach(it => idx.push({ kind:'Negocios · Vocab', section:'negocios', es:it.es, en:it.en, hint:it.example }));
@@ -15141,11 +15225,20 @@ function GlobalSearch({ open, onClose, onJump }) {
     'Frase':'bg-rose-100 text-rose-700',
     'Tiempo':'bg-blue-100 text-blue-700',
     'Chuleta':'bg-purple-100 text-purple-700',
+    'Error':'bg-rose-100 text-rose-700',
     'Vocab':'bg-emerald-100 text-emerald-700',
+    'Tema':'bg-emerald-100 text-emerald-700',
     'Conector':'bg-teal-100 text-teal-700',
     'Modismo':'bg-pink-100 text-pink-700',
+    'Situación':'bg-rose-100 text-rose-700',
+    'Diálogo':'bg-cyan-100 text-cyan-700',
+    'Lectura':'bg-amber-100 text-amber-700',
+    'Gramática':'bg-indigo-100 text-indigo-700',
+    'Cómo se dice':'bg-sky-100 text-sky-700',
   };
-  const SECTION_LABEL = { hoy:'Hoy', tiempos:'Tiempos', chuletas:'Chuletas', vocabulario:'Vocabulario', conectores:'Conectores', frases:'Frases', negocios:'Negocios' };
+  const SECTION_LABEL = { hoy:'Hoy', tiempos:'Tiempos', chuletas:'Chuletas', vocabulario:'Vocabulario', conectores:'Conectores', frases:'Frases', conversaciones:'Conversaciones', lecturas:'Lecturas', gramatica:'Gramática', equivalentes:'Cómo se dice', negocios:'Negocios' };
+  // Singular noun for the "open" button when a result deep-links to one item.
+  const OPEN_NOUN = { chuletas:'chuleta', conversaciones:'conversación', lecturas:'lectura', gramatica:'lección', vocabulario:'tema', frases:'frase', equivalentes:'Cómo se dice' };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-20" style={{background:'rgba(0,0,0,0.5)'}} onClick={onClose}>
@@ -15171,7 +15264,10 @@ function GlobalSearch({ open, onClose, onJump }) {
           {results.map((r, i) => {
             const expanded = openIdx === i;
             const snippet = bodySnippet(r);
-            const isChuleta = r.section === 'chuletas' && r.sheetId;
+            const canDeepLink = r.jumpId != null;
+            const openLabel = canDeepLink
+              ? `Abrir ${OPEN_NOUN[r.section] || SECTION_LABEL[r.section] || 'sección'}`
+              : `Abrir ${SECTION_LABEL[r.section] || 'sección'}`;
             return (
             <div key={i} className="border-b border-stone-100">
               <button onClick={() => setOpenIdx(expanded ? null : i)}
@@ -15188,9 +15284,9 @@ function GlobalSearch({ open, onClose, onJump }) {
                 <div className="px-5 pb-4 -mt-1">
                   {snippet && <p className="text-xs text-stone-500 mb-2 break-words">Coincide con: <span className="italic">{snippet}</span></p>}
                   {r.hint && <p className="text-sm text-stone-600 italic mb-3 break-words">{r.hint}</p>}
-                  <button onClick={() => { onJump(r.section, r.sheetId); onClose(); }}
+                  <button onClick={() => { onJump(r.section, r.jumpId, r.jumpSub); onClose(); }}
                     className="text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-full px-3.5 py-1.5 transition-colors">
-                    {isChuleta ? 'Abrir chuleta' : `Abrir ${SECTION_LABEL[r.section] || 'sección'}`} →
+                    {openLabel} →
                   </button>
                 </div>
               )}
@@ -18647,10 +18743,11 @@ function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
   const [searchOpen, setSearchOpen] = useState(false);
-  // Deep-link target for opening a specific cheat sheet from global search.
-  // The nonce (n) lets Chuletas re-open even if it's already the active section.
-  const [chuletaJump, setChuletaJump] = useState(null);
-  const openChuleta = (id) => setChuletaJump(prev => ({ id, n: (prev ? prev.n : 0) + 1 }));
+  // Deep-link target for opening a specific item from global search. Each section
+  // reads `jump` and acts on it when jump.section matches; the nonce (n) lets it
+  // re-open even if that section is already the active one.
+  const [jump, setJump] = useState(null);
+  const doJump = (section, id, sub) => setJump(prev => ({ section, id, sub, n: (prev ? prev.n : 0) + 1 }));
   const lastNonInicio = getStorage('aprende.lastNonInicio', 'pronunciacion');
 
   const NAV_ITEMS = [
@@ -18672,13 +18769,13 @@ function App() {
   ];
 
   const renderSection = () => {
-    const props = { dark, onBack: goBack, onSearch: () => setSearchOpen(true) };
+    const props = { dark, onBack: goBack, onSearch: () => setSearchOpen(true), jump };
     switch(section) {
       case 'inicio': return <Inicio dark={dark} section={section} setSection={goTo} />;
       case 'hoy': return <Hoy {...props} />;
       case 'tiempos': return <Tiempos {...props} />;
       case 'conjugador': return <ConjugadorSection {...props} />;
-      case 'chuletas': return <Chuletas {...props} jump={chuletaJump} />;
+      case 'chuletas': return <Chuletas {...props} />;
       case 'gramatica': return <GramaticaSection {...props} />;
       case 'vocabulario': return <Vocabulario {...props} />;
       case 'conectores': return <Frases {...props} initialTab="conectores" />;
@@ -18746,7 +18843,7 @@ function App() {
         </div>
       </main>
 
-      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s, sheetId) => { if (s === 'chuletas' && sheetId) openChuleta(sheetId); goTo(s); }} />
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s, id, sub) => { if (id != null) doJump(s, id, sub); goTo(s); }} />
 
       <Toaster />
       <GlobalAudioStop />
