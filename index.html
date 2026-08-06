@@ -7137,7 +7137,7 @@ function Inicio({ dark, section, setSection }) {
     vocabulario:'Vocabulario', frases:'Frases', equivalentes:'Cómo se dice',
     lecturas:'Lecturas', conversaciones:'Conversaciones', negocios:'Negocios',
     ejercicios:'Ejercicios', dictado:'Dictado', pronunciacion:'Pronunciación',
-    ajustes:'Ajustes', hoy:'Palabra del día'
+    ajustes:'Ajustes', hoy:'Palabra del día', diario:'Diario'
   };
   const lastNonInicio = getStorage('aprende.lastNonInicio', null);
   const continueLabel = lastNonInicio ? NAV_LABELS[lastNonInicio] : 'Pronunciación';
@@ -7195,6 +7195,7 @@ function Inicio({ dark, section, setSection }) {
       {id:'vocabulario', label:'Vocabulario', sub:'Themes & glossary'},
       {id:'frases', label:'Frases', sub:'Idioms & expressions'},
       {id:'equivalentes', label:'Cómo se dice', sub:'EN → ES natural'},
+      {id:'diario', label:'Diario', sub:'Daily bite-size'},
       {id:'hoy', label:'Palabra del día', sub:"Today's archive"},
     ]},
     { title: 'Práctica',    items: [
@@ -7295,6 +7296,13 @@ function Inicio({ dark, section, setSection }) {
 
         {/* Practice TOC - magazine-style list with right-aligned counts */}
         <div className="space-y-1">
+          <button onClick={() => setSection('diario')}
+            className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
+            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">El Diario de hoy</span>
+            <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
+            <span className="font-mono text-sm font-bold text-orange-600">~5 min</span>
+            <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+          </button>
           {dueCards > 0 && (
             <button onClick={() => setSection('vocabulario')}
               className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
@@ -7378,6 +7386,438 @@ function Inicio({ dark, section, setSection }) {
           <button onClick={() => setSection('ajustes')} className="text-sm font-medium text-dust hover:text-orange-600 transition-colors">Ajustes ⚙</button>
         </div>
       </section>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION: Diario - la edición diaria
+// Content is written fresh every morning at 08:00 by
+// scripts/generate_diario.py on the iMac and published to
+// daily/latest.json. If that fetch fails we keep showing the last
+// cached edition; if there is no cache at all we build a
+// deterministic edition from the app's own content banks, so the
+// section is never empty and always works offline.
+// ============================================================
+
+const DIARIO_ORDER = ['verbo','palabra','expresion','frase','matiz','error','cultura','pensamiento','lectura','reto'];
+
+const DIARIO_META = {
+  verbo:       { eyebrow:'Verbo del día',   accent:'text-orange-600' },
+  palabra:     { eyebrow:'Palabra del día', accent:'text-ochre-600'  },
+  expresion:   { eyebrow:'Expresión',       accent:'text-sienna-700' },
+  frase:       { eyebrow:'Frase para hoy',  accent:'text-orange-600' },
+  matiz:       { eyebrow:'Matiz',           accent:'text-anil-600'   },
+  error:       { eyebrow:'Error común',     accent:'text-orange-600' },
+  cultura:     { eyebrow:'España',          accent:'text-oliva-700'  },
+  pensamiento: { eyebrow:'Pensamiento',     accent:'text-ochre-600'  },
+  lectura:     { eyebrow:'Micro-lectura',   accent:'text-anil-600'   },
+  reto:        { eyebrow:'Reto del día',    accent:'text-orange-600' },
+};
+
+function diarioPick(arr, dateStr, salt) {
+  if (!arr || !arr.length) return null;
+  return arr[hashDate(dateStr + salt) % arr.length];
+}
+
+// Offline safety net - assembled from content already in the app.
+function buildFallbackEdition(dateStr) {
+  const w  = diarioPick(WORDS_OF_DAY, dateStr, 'w');
+  const ex = diarioPick(IDIOMS, dateStr, 'x');
+  const eq = diarioPick(EQUIVALENTS, dateStr, 'q');
+  const mk = diarioPick(COMMON_MISTAKES, dateStr, 'm');
+  const va = diarioPick(VALENCIAN_PHRASES, dateStr, 'v');
+  const ed = { date: dateStr, offline: true, titular: 'Edición sin conexión' };
+  if (w) {
+    ed.palabra = { es:w.es, en:w.en, ejemplo:w.example, ejemploEn:w.exampleEn, nota:w.tip };
+    ed.reto = { texto:'Usa "' + w.es + '" en una conversación real antes de acostarte.',
+                en:'Use "' + w.es + '" in a real conversation before bed.' };
+  }
+  if (ex) ed.expresion = { es:ex.es, literal:ex.literal, en:ex.meaning, ejemplo:ex.example, ejemploEn:ex.exampleEn };
+  if (eq) ed.frase = { es:eq.es, en:eq.en, cuando:eq.explain };
+  if (mk) ed.error = { mal:mk.wrong, bien:mk.right, en:mk.en, porque:mk.why };
+  if (va) ed.cultura = { titulo:'Valenciano del día',
+                         texto:'"' + va.es + '" es "' + va.es_es + '" en castellano: ' + va.en + '.',
+                         dato:va.when };
+  return ed;
+}
+
+function DiarioEs({ text, size }) {
+  const cls = size === 'lg' ? 'text-2xl' : size === 'md' ? 'text-xl' : 'text-3xl';
+  return (
+    <div className="flex items-start gap-3">
+      <p className={'font-serif font-bold leading-tight flex-1 ' + cls} lang="es">{text}</p>
+      <SpeakBtn text={text} size="md" />
+    </div>
+  );
+}
+
+function DiarioEx({ es, en, showEn }) {
+  if (!es) return null;
+  return (
+    <div className="mt-3">
+      <p className="text-sm italic text-ink/80 leading-relaxed"><span className="text-orange-500 mr-1">-</span>{es}</p>
+      {showEn && en && <p className="text-xs text-dust mt-1 ml-3">{en}</p>}
+    </div>
+  );
+}
+
+function DiarioNote({ children }) {
+  if (!children) return null;
+  return <p className="mt-3 text-xs leading-relaxed text-sienna-700 bg-cream/70 rounded-xl px-3 py-2">{children}</p>;
+}
+
+function DiarioBody({ id, d, showEn }) {
+  if (!d) return null;
+  switch (id) {
+    case 'verbo':
+      return (
+        <div>
+          <DiarioEs text={d.infinitivo} />
+          <p className="text-sm text-dust mt-1">{d.en}{d.tipo ? ' · ' + d.tipo : ''}</p>
+          {Array.isArray(d.formas) && d.formas.length > 0 && (
+            <div className="mt-3 sm:grid sm:grid-cols-2 sm:gap-x-5">
+              {d.formas.map((f, i) => (
+                <div key={i} className="flex items-baseline gap-2 py-1.5 border-b border-ink/10">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-dust w-[5.5rem] flex-shrink-0">{f.label}</span>
+                  <span className="font-serif text-base flex-1" lang="es">{f.es}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <DiarioEx es={d.ejemplo} en={d.ejemploEn} showEn={showEn} />
+          <DiarioNote>{d.nota}</DiarioNote>
+        </div>
+      );
+    case 'palabra':
+      return (
+        <div>
+          <DiarioEs text={d.es} />
+          <p className="text-sm text-dust mt-1">{d.en}{d.tipo ? ' · ' + d.tipo : ''}</p>
+          <DiarioEx es={d.ejemplo} en={d.ejemploEn} showEn={showEn} />
+          <DiarioNote>{d.nota}</DiarioNote>
+        </div>
+      );
+    case 'expresion':
+      return (
+        <div>
+          <DiarioEs text={d.es} size="lg" />
+          <p className="text-sm text-dust mt-1">{d.en}</p>
+          {d.literal && <p className="text-xs text-dust/80 italic mt-0.5">Literal: {d.literal}</p>}
+          <DiarioEx es={d.ejemplo} en={d.ejemploEn} showEn={showEn} />
+          <DiarioNote>{d.cuando}</DiarioNote>
+        </div>
+      );
+    case 'frase':
+      return (
+        <div>
+          <DiarioEs text={d.es} size="lg" />
+          {showEn && <p className="text-sm text-dust mt-1">{d.en}</p>}
+          <DiarioNote>{d.cuando}</DiarioNote>
+        </div>
+      );
+    case 'matiz':
+      return (
+        <div>
+          <p className="font-serif font-bold text-xl leading-tight">{d.titulo}</p>
+          <div className="mt-3 space-y-2">
+            {[d.a, d.b].filter(Boolean).map((s, i) => (
+              <div key={i} className="rounded-xl border border-ink/10 p-3">
+                <div className="flex items-center gap-2">
+                  <p className="font-serif font-bold text-base text-anil-600" lang="es">{s.forma}</p>
+                  <SpeakBtn text={s.forma} size="sm" />
+                </div>
+                <p className="text-xs text-dust mt-0.5">{s.uso}</p>
+                {s.ejemplo && <p className="text-sm italic mt-1.5 text-ink/80" lang="es">{s.ejemplo}</p>}
+              </div>
+            ))}
+          </div>
+          <DiarioNote>{d.regla}</DiarioNote>
+        </div>
+      );
+    case 'error':
+      return (
+        <div>
+          <p className="font-serif text-lg line-through text-orange-500/70" lang="es">{d.mal}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="font-serif font-bold text-xl text-oliva-700" lang="es">{d.bien}</p>
+            <SpeakBtn text={d.bien} size="sm" />
+          </div>
+          {showEn && d.en && <p className="text-xs text-dust mt-1">{d.en}</p>}
+          <DiarioNote>{d.porque}</DiarioNote>
+        </div>
+      );
+    case 'cultura':
+      return (
+        <div>
+          <p className="font-serif font-bold text-xl leading-tight">{d.titulo}</p>
+          <p className="text-sm mt-2 leading-relaxed text-ink/85">{d.texto}</p>
+          <DiarioNote>{d.dato}</DiarioNote>
+        </div>
+      );
+    case 'pensamiento':
+      return (
+        <div>
+          <div className="flex items-start gap-3">
+            <p className="font-serif font-bold text-xl lg:text-2xl leading-snug text-sienna-700 flex-1" lang="es">"{d.es}"</p>
+            <SpeakBtn text={d.es} size="md" />
+          </div>
+          {d.autor && <p className="text-xs font-semibold uppercase tracking-wide text-dust mt-2">— {d.autor}</p>}
+          {showEn && d.en && <p className="text-sm italic text-dust mt-2">{d.en}</p>}
+          <DiarioNote>{d.nota}</DiarioNote>
+        </div>
+      );
+    case 'lectura':
+      return (
+        <div>
+          <div className="flex items-start gap-3">
+            <p className="font-serif font-bold text-lg leading-tight flex-1">{d.titulo}</p>
+            <SpeakBtn text={d.texto} size="md" />
+          </div>
+          <p className="text-sm mt-2 leading-relaxed text-ink/85" lang="es">{d.texto}</p>
+          {showEn && d.textoEn && <p className="text-xs text-dust mt-2 leading-relaxed">{d.textoEn}</p>}
+          {Array.isArray(d.palabrasClave) && d.palabrasClave.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {d.palabrasClave.map((k, i) => (
+                <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-cream text-sienna-700">
+                  <span className="font-semibold" lang="es">{k.es}</span> · {k.en}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    case 'reto':
+      return (
+        <div>
+          <p className="font-serif font-bold text-xl leading-snug" lang="es">{d.texto}</p>
+          {showEn && d.en && <p className="text-sm text-dust mt-2">{d.en}</p>}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+function DiarioCard({ id, data, dark, showEn, done, onToggle }) {
+  const meta = DIARIO_META[id] || { eyebrow: id, accent: 'text-orange-600' };
+  return (
+    <Card dark={dark} className={'p-5 transition-opacity ' + (done ? 'opacity-55' : '')}>
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <p className={'text-[10px] font-bold tracking-widest uppercase ' + meta.accent}>{meta.eyebrow}</p>
+        {onToggle && (
+          <button onClick={onToggle} aria-label={done ? 'Marcar como pendiente' : 'Marcar como leído'}
+            className={'flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ' +
+              (done ? 'bg-orange-500 border-orange-500 text-paper' : 'border-ink/20 text-transparent hover:border-orange-400')}>
+            ✓
+          </button>
+        )}
+      </div>
+      <DiarioBody id={id} d={data} showEn={showEn} />
+    </Card>
+  );
+}
+
+function Diario({ onBack, dark, onSearch }) {
+  const today = todayStr();
+  const [tab, setTab]         = useState('hoy');
+  const [edition, setEdition] = useState(null);
+  const [status, setStatus]   = useState('loading');
+  const [showEn, setShowEn]   = useState(() => getStorage('aprende.diario.showEn', true));
+  const [done, setDone]       = useState(() => getStorage('aprende.diario.done.' + today, []));
+  const [archive, setArchive] = useState(null);
+  const [openDay, setOpenDay] = useState(null);
+  const [openEd, setOpenEd]   = useState(null);
+
+  // Show the cached edition instantly, then refresh from the published one.
+  useEffect(() => {
+    const cached = getStorage('aprende.diario.cache', null);
+    const hasCache = !!(cached && cached.date);
+    if (hasCache) { setEdition(cached); setStatus(cached.date === today ? 'ready' : 'stale'); }
+    let cancelled = false;
+    fetch('daily/latest.json?v=' + today, { cache: 'no-cache' })
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
+      .then(data => {
+        if (cancelled || !data || !data.date) return;
+        setStorage('aprende.diario.cache', data);
+        setEdition(data);
+        setStatus(data.date === today ? 'ready' : 'stale');
+      })
+      .catch(() => {
+        if (cancelled || hasCache) return;   // keep whatever is already on screen
+        setEdition(buildFallbackEdition(today));
+        setStatus('offline');
+      });
+    return () => { cancelled = true; };
+  }, [today]);
+
+  // Keep the per-day tick lists from piling up in localStorage.
+  useEffect(() => {
+    try {
+      Object.keys(localStorage).forEach(k => {
+        if (!k.startsWith('aprende.diario.done.')) return;
+        if (diffDays(k.slice(20), today) > 14) localStorage.removeItem(k);
+      });
+    } catch (e) {}
+  }, [today]);
+
+  useEffect(() => {
+    if (tab !== 'archivo' || archive !== null) return;
+    fetch('daily/index.json?v=' + today, { cache: 'no-cache' })
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error('http'))))
+      .then(d => setArchive(Array.isArray(d.dates) ? d.dates.filter(x => x !== today) : []))
+      .catch(() => setArchive([]));
+  }, [tab, archive, today]);
+
+  const openArchiveDay = (date) => {
+    if (openDay === date) { setOpenDay(null); return; }
+    setOpenDay(date); setOpenEd(null);
+    fetch('daily/' + date + '.json')
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error('http'))))
+      .then(d => setOpenEd(d))
+      .catch(() => setOpenEd({ error: true }));
+  };
+
+  const toggleDone = (id) => setDone(prev => {
+    const next = prev.includes(id) ? prev.filter(x => x !== id) : prev.concat([id]);
+    setStorage('aprende.diario.done.' + today, next);
+    return next;
+  });
+
+  const toggleEn = () => setShowEn(v => { setStorage('aprende.diario.showEn', !v); return !v; });
+
+  const cards   = edition ? DIARIO_ORDER.filter(id => edition[id]) : [];
+  const doneN   = cards.filter(id => done.includes(id)).length;
+  const pct     = cards.length ? Math.round((doneN / cards.length) * 100) : 0;
+  const dateStr = new Date(today + 'T12:00:00').toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+
+  // The 30-second glance: just the Spanish, before the full cards.
+  const glance = edition ? [
+    edition.verbo     && { k:'Verbo',    v:edition.verbo.infinitivo },
+    edition.palabra   && { k:'Palabra',  v:edition.palabra.es },
+    edition.expresion && { k:'Expresión',v:edition.expresion.es },
+    edition.frase     && { k:'Frase',    v:edition.frase.es },
+  ].filter(Boolean) : [];
+
+  return (
+    <div>
+      <BackHeader title="Diario" subtitle="Tu edición de hoy" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto pb-28 lg:pb-12">
+
+        <div className="mb-5">
+          <p className="eyebrow">{dateStr}</p>
+          <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mt-1">El Diario</h2>
+          {edition && edition.titular && (
+            <p className="text-sm text-dust mt-2 italic" lang="es">{edition.titular}</p>
+          )}
+        </div>
+
+        <ViewToggle dark={dark}
+          options={[{id:'hoy',emoji:'📰',label:'Hoy'},{id:'archivo',emoji:'📅',label:'Archivo'}]}
+          active={tab} onChange={setTab} />
+
+        {tab === 'hoy' && (
+          <div>
+            {status === 'loading' && !edition && (
+              <p className="text-sm text-dust py-10 text-center">Cargando la edición de hoy…</p>
+            )}
+
+            {status === 'stale' && (
+              <div className="mb-4 rounded-xl px-3 py-2 text-xs bg-ochre-50 text-ochre-700 border border-ochre-200">
+                No se pudo cargar la edición de hoy. Esta es la del {edition && edition.date}.
+              </div>
+            )}
+            {status === 'offline' && (
+              <div className="mb-4 rounded-xl px-3 py-2 text-xs bg-ochre-50 text-ochre-700 border border-ochre-200">
+                Sin conexión. Edición de repaso generada desde el contenido de la app.
+              </div>
+            )}
+
+            {edition && cards.length > 0 && (
+              <React.Fragment>
+                {/* En 30 segundos */}
+                {glance.length > 0 && (
+                  <div className="mb-6 rounded-2xl bg-cream/70 border border-ink/10 p-4">
+                    <p className="eyebrow mb-3">En 30 segundos</p>
+                    <div className="space-y-1.5">
+                      {glance.map((g, i) => (
+                        <div key={i} className="flex items-baseline gap-3">
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-dust w-[4.5rem] flex-shrink-0">{g.k}</span>
+                          <span className="font-serif font-semibold text-base text-ink flex-1" lang="es">{g.v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Progress + English toggle */}
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex-1 h-1.5 rounded-full bg-ink/10 overflow-hidden">
+                    <div className="h-full bg-orange-500 transition-all duration-300" style={{ width: pct + '%' }} />
+                  </div>
+                  <span className="text-xs font-mono font-bold text-dust flex-shrink-0">{doneN}/{cards.length}</span>
+                  <button onClick={toggleEn}
+                    className={'text-xs font-semibold px-3 py-1.5 rounded-full transition-colors flex-shrink-0 ' +
+                      (showEn ? 'bg-orange-500 text-paper' : 'bg-cream text-dust hover:bg-ochre-100')}>
+                    EN
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {cards.map(id => (
+                    <DiarioCard key={id} id={id} data={edition[id]} dark={dark} showEn={showEn}
+                      done={done.includes(id)} onToggle={() => toggleDone(id)} />
+                  ))}
+                </div>
+
+                {pct === 100 && (
+                  <p className="text-center text-sm font-serif font-bold text-oliva-700 mt-6">
+                    Edición completa. Hasta mañana. 🎉
+                  </p>
+                )}
+              </React.Fragment>
+            )}
+          </div>
+        )}
+
+        {tab === 'archivo' && (
+          <div className="space-y-3">
+            {archive === null && <p className="text-sm text-dust py-8 text-center">Cargando el archivo…</p>}
+            {archive !== null && archive.length === 0 && (
+              <p className="text-sm text-dust py-8 text-center">Todavía no hay ediciones anteriores.</p>
+            )}
+            {(archive || []).map(date => {
+              const isOpen = openDay === date;
+              const label = new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+              return (
+                <Card key={date} dark={dark} className="overflow-hidden">
+                  <button onClick={() => openArchiveDay(date)}
+                    className="w-full px-5 py-4 flex items-center justify-between gap-3 text-left">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-dust">{date}</p>
+                      <p className="font-serif font-bold text-base mt-0.5 capitalize">{label}</p>
+                    </div>
+                    <span className={'text-lg transition-transform flex-shrink-0 ' + (isOpen ? 'rotate-180' : '')}>▾</span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-4 pb-4">
+                      {!openEd && <p className="text-sm text-dust py-4 text-center">Cargando…</p>}
+                      {openEd && openEd.error && <p className="text-sm text-dust py-4 text-center">No se pudo cargar esta edición.</p>}
+                      {openEd && !openEd.error && (
+                        <div className="space-y-3">
+                          {DIARIO_ORDER.filter(id => openEd[id]).map(id => (
+                            <DiarioCard key={id} id={id} data={openEd[id]} dark={dark} showEn={showEn} done={false} onToggle={null} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -15235,7 +15675,7 @@ function GlobalSearch({ open, onClose, onJump }) {
     'Gramática':'bg-indigo-100 text-indigo-700',
     'Cómo se dice':'bg-sky-100 text-sky-700',
   };
-  const SECTION_LABEL = { hoy:'Hoy', tiempos:'Tiempos', chuletas:'Chuletas', vocabulario:'Vocabulario', conectores:'Conectores', frases:'Frases', conversaciones:'Conversaciones', lecturas:'Lecturas', gramatica:'Gramática', equivalentes:'Cómo se dice', negocios:'Negocios' };
+  const SECTION_LABEL = { diario:'Diario', hoy:'Hoy', tiempos:'Tiempos', chuletas:'Chuletas', vocabulario:'Vocabulario', conectores:'Conectores', frases:'Frases', conversaciones:'Conversaciones', lecturas:'Lecturas', gramatica:'Gramática', equivalentes:'Cómo se dice', negocios:'Negocios' };
   // Singular noun for the "open" button when a result deep-links to one item.
   const OPEN_NOUN = { chuletas:'chuleta', conversaciones:'conversación', lecturas:'lectura', gramatica:'lección', vocabulario:'tema', frases:'frase', equivalentes:'Cómo se dice' };
 
@@ -18693,7 +19133,7 @@ function XPToast({ xp, onDone }) {
 
 function App() {
   const dark = false;
-  const SECTION_IDS = ['inicio','tiempos','conjugador','chuletas','gramatica','vocabulario','frases','equivalentes','lecturas','conversaciones','negocios','ejercicios','dictado','pronunciacion','ajustes'];
+  const SECTION_IDS = ['inicio','diario','tiempos','conjugador','chuletas','gramatica','vocabulario','frases','equivalentes','lecturas','conversaciones','negocios','ejercicios','dictado','pronunciacion','ajustes'];
   const [section, setSection] = useState(() => {
     const hash = window.location.hash.replace('#', '').trim();
     if (hash && SECTION_IDS.includes(hash)) return hash;
@@ -18751,6 +19191,7 @@ function App() {
 
   const NAV_ITEMS = [
     { id: 'inicio', label: 'Inicio', emoji: '🏠' },
+    { id: 'diario', label: 'Diario', emoji: '📰' },
     { id: 'tiempos', label: 'Tiempos', emoji: '🕐' },
     { id: 'conjugador', label: 'Conjugador', emoji: '🔤' },
     { id: 'chuletas', label: 'Chuletas', emoji: '📋' },
@@ -18771,6 +19212,7 @@ function App() {
     const props = { dark, onBack: goBack, onSearch: () => setSearchOpen(true), jump };
     switch(section) {
       case 'inicio': return <Inicio dark={dark} section={section} setSection={goTo} />;
+      case 'diario': return <Diario {...props} />;
       case 'hoy': return <Hoy {...props} />;
       case 'tiempos': return <Tiempos {...props} />;
       case 'conjugador': return <ConjugadorSection {...props} />;
