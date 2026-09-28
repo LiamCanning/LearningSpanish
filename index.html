@@ -12513,6 +12513,19 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
               </Card>
             ))}
           </div>
+          {(() => {
+            const mine = palabraWords().filter(w => palabraTheme(w) === selectedTheme.theme);
+            if (!mine.length) return null;
+            return (
+              <div className="mt-10">
+                <h3 className="font-serif font-bold text-lg mb-1">🔖 Tus palabras</h3>
+                <p className={`text-sm mb-4 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Saved with Palabra, and a fit for this theme.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mine.map(w => <PalabraWordCard key={w.es} word={w} dark={dark} />)}
+                </div>
+              </div>
+            );
+          })()}
         </div>
     );
   }
@@ -12532,6 +12545,83 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
           </button>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── Mis palabras: words saved with the Palabra browser extension ──
+// Palabra adds them to aprende.glossary with source "web:<site>" (double-click/right-click)
+// or "palabra" (its popup). Each is placed in the theme whose words it shares most with.
+const PALABRA_STOP = new Set('para como pero porque cuando donde este esta estos estas todo toda todos todas otro otra muy mucho mucha tiene tengo hacer with that this have from your what when where they them there their which would about some into more than also been were will just only very like make over such after'.split(' '));
+const palabraTokens = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .split(/[^a-zñ]+/).filter(t => t.length >= 4 && !PALABRA_STOP.has(t));
+let PALABRA_THEME_INDEX = null;
+function palabraTheme(entry) {
+  if (!PALABRA_THEME_INDEX) PALABRA_THEME_INDEX = VOCAB_THEMES.map(t => ({
+    theme: t.theme,
+    exact: new Set(t.words.map(w => w.es.toLowerCase())),
+    toks: new Set(t.words.flatMap(w => palabraTokens(w.es + ' ' + w.en)).concat(palabraTokens(t.titleEs + ' ' + t.titleEn))),
+  }));
+  const es = (entry.es || '').toLowerCase();
+  const hit = PALABRA_THEME_INDEX.find(t => t.exact.has(es));
+  if (hit) return hit.theme;
+  const mine = new Set(palabraTokens(entry.es + ' ' + entry.en));
+  let best = null, score = 0;
+  PALABRA_THEME_INDEX.forEach(t => {
+    let n = 0; mine.forEach(x => { if (t.toks.has(x)) n++; });
+    if (n > score) { best = t.theme; score = n; }
+  });
+  return score >= 1 ? best : null;
+}
+const isPalabraWord = (e) => /^web:/.test(e.source || '') || e.source === 'palabra';
+const palabraWords = () => (getStorage('aprende.glossary', []) || []).filter(isPalabraWord);
+
+function PalabraWordCard({ word, dark }) {
+  const site = /^web:/.test(word.source || '') ? word.source.slice(4) : 'Palabra';
+  return (
+    <Card dark={dark} className="p-5 flex flex-col min-h-[140px]">
+      <div className="flex items-center gap-1.5 mb-2">
+        <TypeBadge type={word.type} />
+        <SpeakBtn text={word.es} size="sm" />
+      </div>
+      <p className="font-serif font-bold text-xl leading-tight mb-1">{word.es}</p>
+      <p className={`text-sm font-medium mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{word.en}</p>
+      {word.example && <p className="text-sm italic pt-2 text-stone-500">"{word.example}"</p>}
+      <p className={`text-xs mt-auto pt-3 ${dark ? 'text-stone-600' : 'text-stone-400'}`}>{site}{word.id ? ' · ' + new Date(word.id).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : ''}</p>
+    </Card>
+  );
+}
+
+function MisPalabras({ dark, onOpenTheme }) {
+  const [words] = useState(palabraWords);
+  if (!words.length) {
+    return (
+      <div className="px-4 lg:px-8 py-10 max-w-xl mx-auto text-center">
+        <p className="font-serif text-xl font-bold mb-2">Nada guardado todavía</p>
+        <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Words you save with Palabra in Edge (double-click a word, then Save to Aprende) appear here, sorted into the theme they fit. Open Aprende in Edge once after saving so Palabra can hand them over.</p>
+      </div>
+    );
+  }
+  const groups = {};
+  words.forEach(w => { const t = palabraTheme(w) || 'otras'; (groups[t] = groups[t] || []).push(w); });
+  const order = [...VOCAB_THEMES.map(t => t.theme).filter(t => groups[t]), ...(groups.otras ? ['otras'] : [])];
+  return (
+    <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
+      <p className={`text-sm mb-6 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{words.length} {words.length === 1 ? 'palabra guardada' : 'palabras guardadas'} con Palabra, por tema.</p>
+      {order.map(key => {
+        const theme = VOCAB_THEMES.find(t => t.theme === key);
+        return (
+          <section key={key} className="mb-8">
+            <div className="flex items-baseline gap-3 mb-3">
+              <h3 className="font-serif font-bold text-lg">{theme ? `${theme.emoji} ${theme.titleEs}` : 'Otras palabras'}</h3>
+              {theme && <button onClick={() => onOpenTheme(theme)} className={`text-xs font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Ver tema →</button>}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {groups[key].map(w => <PalabraWordCard key={w.es} word={w} dark={dark} />)}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
@@ -12565,7 +12655,7 @@ function Vocabulario({ onBack, dark, initialTab, onSearch, jump }) {
       {!selectedTheme && (
         <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
           <ViewToggle dark={dark}
-            options={[{id:'temas',emoji:'🗂️',label:'Temas'},{id:'glosario',emoji:'📖',label:'Glosario'}]}
+            options={[{id:'temas',emoji:'🗂️',label:'Temas'},{id:'palabras',emoji:'🔖',label:'Mis palabras'},{id:'glosario',emoji:'📖',label:'Glosario'}]}
             active={tab} onChange={setTab} />
         </div>
       )}
@@ -12575,6 +12665,7 @@ function Vocabulario({ onBack, dark, initialTab, onSearch, jump }) {
           filter={themeFilter} setFilter={setThemeFilter} />
       )}
       {tab === 'glosario' && !selectedTheme && <GlosarioInner dark={dark} />}
+      {tab === 'palabras' && !selectedTheme && <MisPalabras dark={dark} onOpenTheme={t => { setTab('temas'); handleSelectTheme(t); }} />}
     </div>
   );
 }
