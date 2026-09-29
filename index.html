@@ -12655,7 +12655,7 @@ function Vocabulario({ onBack, dark, initialTab, onSearch, jump }) {
       {!selectedTheme && (
         <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
           <ViewToggle dark={dark}
-            options={[{id:'temas',emoji:'🗂️',label:'Temas'},{id:'palabras',emoji:'🔖',label:'Mis palabras'},{id:'glosario',emoji:'📖',label:'Glosario'}]}
+            options={[{id:'temas',emoji:'🗂️',label:'Temas'},{id:'palabras',emoji:'🔖',label:'Mis palabras' + (palabraWords().length ? ` (${palabraWords().length})` : '')},{id:'glosario',emoji:'📖',label:'Glosario'}]}
             active={tab} onChange={setTab} />
         </div>
       )}
