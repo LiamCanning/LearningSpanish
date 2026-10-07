@@ -6034,8 +6034,9 @@ async function aiTranslate(query, apiKey) {
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 900,
+      model: 'claude-haiku-5-5',
+      max_tokens: 2000,
+      output_config: { effort: 'low' },
       system: AI_TRANSLATE_PROMPT,
       messages: [{ role: 'user', content: `English phrase to translate: "${query}"` }],
     }),
@@ -6049,7 +6050,7 @@ async function aiTranslate(query, apiKey) {
   }
 
   const data = await resp.json();
-  const text = data?.content?.[0]?.text || '';
+  const text = (data?.content || []).find(b => b.type === 'text')?.text || '';
   // Extract JSON from response (handles cases where model adds whitespace/fences)
   let jsonStr = text.trim();
   const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
@@ -6084,8 +6085,8 @@ function aiIncrementTranslationCount() {
   return n;
 }
 
-// Estimated cost per translation in USD (Haiku input ~715 tok + output ~250 tok)
-const AI_COST_PER_CALL = 0.00157;
+// Estimated cost per translation in USD (Haiku 5.5: input ~930 tok @ $0.10/M + output incl. thinking ~550 tok @ $0.50/M)
+const AI_COST_PER_CALL = 0.0004;
 // Free credit threshold - Anthropic gives ~$5 on new accounts
 const AI_FREE_CREDIT = 5.00;
 
@@ -6211,7 +6212,7 @@ async function aiExplainSpanish(phrase, apiKey) {
     headers: { 'Content-Type':'application/json', 'x-api-key': apiKey,
       'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5', max_tokens: 600,
+      model: 'claude-haiku-5-5', max_tokens: 1500, output_config: { effort: 'low' },
       system: AI_EXPLAIN_PROMPT,
       messages: [{ role:'user', content: `Spanish phrase to explain: "${phrase}"` }],
     }),
@@ -6225,7 +6226,7 @@ async function aiExplainSpanish(phrase, apiKey) {
   }
 
   const data = await resp.json();
-  const text = data?.content?.[0]?.text || '';
+  const text = (data?.content || []).find(b => b.type === 'text')?.text || '';
   let jsonStr = text.trim();
   const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
   if (fenceMatch) jsonStr = fenceMatch[1].trim();
@@ -18269,7 +18270,7 @@ function Ajustes({ dark, onBack }) {
                 <li>Las traducciones se cachean - solo paga la primera vez</li>
               </ol>
               <p className={`text-[11px] ${dark?'text-stone-500':'text-stone-400'}`}>
-                Coste: ~$0.00025 por frase con Claude Haiku. 1000 frases ≈ $0.25.
+                Coste: ~$0.0004 por frase con Claude Haiku 5.5. 1000 frases ≈ $0.40.
               </p>
             </Card>
 
