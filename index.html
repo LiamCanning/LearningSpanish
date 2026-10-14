@@ -1366,7 +1366,7 @@ const TENSES = {
   ]
 };
 
-const CHEAT_SHEETS = [
+const CHEAT_SHEETS_SRC = [
   {
     id:"cuenta-monton",
     added:"2026-10-14",
@@ -7167,6 +7167,141 @@ const CHEAT_SHEETS = [
   }
 ];
 
+// ── Merged sheets (14 Oct 2026) ─────────────────────────────────
+// Sheets that covered the same ground now open as one page. Each source sheet
+// keeps its own sections and wording; the merged page shows them as parts.
+// Old ids stay valid (search, saved views, sheet status) through SHEET_ALIASES.
+const SHEET_MERGES = [
+  { id:'diminutivos',   parts:['diminutivos','diminutivos-uso'] },
+  { id:'falsos-amigos', title:'Falsos amigos', parts:['falsos-amigos','false-friends'] },
+  { id:'pronouns',      parts:['pronouns','pronombres-objeto'] },
+  { id:'numeros',       title:'Números, horas y fechas', titleEn:'Numbers, the time and dates', parts:['numbers-time','la-hora','anos-fechas','numbers'] },
+  { id:'indefinidos',   title:'Indefinidos y conectores', titleEn:'Someone, anything, never, and the words that link ideas', parts:['indefinidos','indefinites-connectors'] },
+  { id:'slang-dossier', title:'Argot y tacos', titleEn:'Spanish slang, fillers and swearing', parts:['slang-dossier','tacos-expresiones'] },
+];
+const SHEET_ALIASES = {};
+SHEET_MERGES.forEach(m => m.parts.forEach(p => { if (p !== m.id) SHEET_ALIASES[p] = m.id; }));
+const sheetId = (id) => SHEET_ALIASES[id] || id;
+
+// Cross-links between sheets that overlap without merging, plus the sheets the Argot page points to.
+const SHEET_LINKS = {
+  'verbos-cotidianos':   ['llevar-uses','sacar','quedar-dejar-llevar','salir-verb'],
+  'llevar-uses':         ['verbos-cotidianos','quedar-dejar-llevar'],
+  'sacar':               ['verbos-cotidianos'],
+  'quedar-dejar-llevar': ['verbos-cotidianos','llevar-uses'],
+  'salir-verb':          ['verbos-cotidianos'],
+  'imperativos':         ['vosotros-d'],
+  'vosotros-d':          ['imperativos'],
+  'verb-prepositions':   ['verb-chains'],
+  'verb-chains':         ['verb-prepositions'],
+  'se-constructions':    ['verbos-reflexivos'],
+  'verbos-reflexivos':   ['se-constructions'],
+  'slang-dossier':       ['conversation-friends','animo-apoyo','muletillas'],
+  'conversation-friends':['slang-dossier'],
+  'animo-apoyo':         ['slang-dossier'],
+};
+
+// Related lesson (Gramática > Lecciones) and exercise set (Practica > Ejercicios) per sheet.
+const SHEET_RELATED = {
+  'ser-estar':        { lessons:['ser-estar'] },
+  'por-para':         { lessons:['por-para'] },
+  'pronouns':         { lessons:['pronouns','gustar'] },
+  'se-constructions': { lessons:['se-constructions'] },
+  'verbos-reflexivos':{ lessons:['se-constructions'] },
+  'comparatives':     { lessons:['comparatives'] },
+  'reported-speech':  { lessons:['reported-speech'] },
+  'lo-que':           { lessons:['lo-que','que-connector'] },
+  'construir-frases': { lessons:['word-order','adjective-placement','que-connector'] },
+  'past-tenses':      { exercises:['Pasado'] },
+  'haber':            { exercises:['Pasado'] },
+  'imperativos':      { exercises:['Presente'] },
+  'numeros':          { exercises:['Vocabulario'] },
+};
+
+// Ponte a prueba: multiple-choice checks written for the sheets people get wrong most.
+const SHEET_QUIZZES = {
+  'ser-estar': [
+    { q:'Mi hermana ___ médica en el Hospital La Fe.', opts:['es','está'], correct:0, why:'A job is what someone is: ser. (O for Occupation in DOCTOR.)' },
+    { q:'La paella ___ fría, caliéntala un poco.', opts:['es','está'], correct:1, why:'How the paella is right now is a state: estar.' },
+    { q:'¿Dónde ___ la estación del Norte?', opts:['es','está'], correct:1, why:'Where a thing or place is located: estar.' },
+    { q:'La fiesta ___ en casa de Marta.', opts:['es','está'], correct:0, why:'Where an event takes place uses ser: la fiesta es en mi casa.' },
+    { q:'Hoy ___ lunes y ___ muy cansado.', opts:['es · estoy','está · soy','es · soy','está · estoy'], correct:0, why:'Days and dates take ser; feeling tired is a state, so estar.' },
+    { q:'Este chico ___ muy listo, saca sobresalientes en todo.', opts:['es','está'], correct:0, why:'Ser listo means clever. Estar listo means ready.' },
+    { q:'¿___ listos? Nos vamos ya.', opts:['Sois','Estáis'], correct:1, why:'Ready to go is estar listo.' },
+    { q:'Mi abuelo ___ muerto desde 2015.', opts:['es','está'], correct:1, why:'Dead is the state he ended up in, so estar, even though it is permanent.' },
+    { q:'La mesa ___ de madera.', opts:['es','está'], correct:0, why:'What something is made of: ser de (O for Origin and material).' },
+    { q:'¡Qué guapa ___ hoy con ese vestido!', opts:['eres','estás'], correct:1, why:'Hoy, with that dress: how she looks right now compared with normal, so estar.' },
+  ],
+  'por-para': [
+    { q:'Gracias ___ todo.', opts:['por','para'], correct:0, why:'Thanking someone for something is always por: it is the reason.' },
+    { q:'Este regalo es ___ ti.', opts:['por','para'], correct:1, why:'The person something is meant for: para.' },
+    { q:'Salgo ___ Madrid mañana a las nueve.', opts:['por','para'], correct:1, why:'Destination, where you are heading: para.' },
+    { q:'Paseamos ___ el Turia todas las tardes.', opts:['por','para'], correct:0, why:'Moving through or along a place: por.' },
+    { q:'Estudio español ___ hablar con mis vecinos.', opts:['por','para'], correct:1, why:'Purpose, in order to: para + infinitive.' },
+    { q:'Te lo cambio ___ diez euros.', opts:['por','para'], correct:0, why:'Exchange and price: por.' },
+    { q:'Necesito el informe ___ el viernes.', opts:['por','para'], correct:1, why:'A deadline: para el viernes, by Friday.' },
+    { q:'Te llamo ___ la tarde.', opts:['por','para','en'], correct:0, why:'In Spain parts of the day take por: por la mañana, por la tarde, por la noche.' },
+    { q:'___ ser extranjero, hablas muy bien.', opts:['Por','Para'], correct:1, why:'Para here means considering that, for someone who is: para ser extranjero.' },
+    { q:'Lo hago ___ ti, porque me lo pediste.', opts:['por','para'], correct:0, why:'Because of you, on your behalf: por. Para ti would mean it is a present for you.' },
+  ],
+  'past-tenses': [
+    { q:'Cuando ___ pequeño, ___ al pueblo cada verano.', opts:['era · iba','fui · fui','era · fui','fui · iba'], correct:0, why:'Description of the past (era) and a repeated habit (iba): both imperfecto.' },
+    { q:'Ayer ___ a Marta en el mercado.', opts:['vi','veía'], correct:0, why:'One finished event at a point in time: indefinido.' },
+    { q:'___ las diez cuando llegó la policía.', opts:['Eran','Fueron'], correct:0, why:'The time in the past is background: imperfecto, eran las diez.' },
+    { q:'Mientras yo ___, sonó el teléfono.', opts:['cocinaba','cociné'], correct:0, why:'The ongoing action that gets interrupted takes imperfecto; the interruption takes indefinido.' },
+    { q:'El año pasado ___ tres veces a Londres.', opts:['fui','iba'], correct:0, why:'A counted number of times in a closed period: indefinido.' },
+    { q:'La casa ___ grande y ___ un jardín precioso.', opts:['era · tenía','fue · tuvo'], correct:0, why:'Describing how something was: imperfecto.' },
+    { q:'De repente, ___ a llover.', opts:['empezó','empezaba'], correct:0, why:'De repente marks a sudden event: indefinido.' },
+    { q:'Antes no me ___ el café, pero ahora me encanta.', opts:['gustaba','gustó'], correct:0, why:'A past state that has since changed (antes...): imperfecto.' },
+    { q:'Ayer ___ todo el día en casa porque llovía.', opts:['estuve','estaba'], correct:0, why:'Todo el día is a closed block of time, so indefinido, even though it lasted a while.' },
+    { q:'¿Qué ___ cuando te llamé? No contestaste.', opts:['hacías','hiciste'], correct:0, why:'What was in progress when something else happened: imperfecto.' },
+  ],
+  'se-constructions': [
+    { q:'En este bar ___ muy bien.', opts:['se come','come','se comen'], correct:0, why:'Impersonal se: people in general eat well here. No noun to agree with, so singular.' },
+    { q:'___ pisos (cartel en un portal).', opts:['Se alquila','Se alquilan'], correct:1, why:'Passive se agrees with the thing: pisos is plural, so se alquilan.' },
+    { q:'Se me ___ las llaves en casa.', opts:['olvidó','olvidaron'], correct:1, why:'Accidental se: the keys are the subject, so the verb is plural.' },
+    { q:'¿Cómo ___ dice "spoon" en español?', opts:['se','le','lo'], correct:0, why:'Impersonal se: how does one say...' },
+    { q:'Le di el libro a Ana. → ___ di.', opts:['Le lo','Se lo','La lo'], correct:1, why:'Le and lo cannot sit together: le becomes se. Se lo di.' },
+    { q:'Marta y Pablo ___ quieren mucho.', opts:['se','les','los'], correct:0, why:'Reciprocal se: they love each other.' },
+    { q:'Ayer ___ el vaso y se rompió.', opts:['se me cayó','me cayó','me se cayó'], correct:0, why:'Accidental se goes first, then the person: se me cayó.' },
+    { q:'___ prohíbe fumar.', opts:['Se','Le'], correct:0, why:'Impersonal se on signs and rules: se prohíbe, se ruega, se vende.' },
+    { q:'Tenía tanta hambre que ___ toda la pizza.', opts:['me comí','comí'], correct:0, why:'Comerse adds the sense of eating it all up. Both are grammatical, but me comí is what a Spaniard says here.' },
+  ],
+  'pronouns': [
+    { q:'¿Me pasas la sal? - Sí, ahora ___ paso.', opts:['te la','la te','se la'], correct:0, why:'Person before thing: te la.' },
+    { q:'Le doy el regalo a mi madre. → ___ doy.', opts:['Le lo','Se lo','Lo le'], correct:1, why:'Le + lo becomes se lo.' },
+    { q:'Quiero comprarlo. → ___ quiero comprar.', opts:['Lo','Le','Se'], correct:0, why:'With a verb + infinitive the pronoun goes either on the end (comprarlo) or before the conjugated verb (lo quiero comprar).' },
+    { q:'Give it to me! (tú, the book)', opts:['¡Dámelo!','¡Me lo da!','¡Lo me da!'], correct:0, why:'Positive commands take the pronouns on the end, person first, and add an accent to keep the stress: dámelo.' },
+    { q:'Don\'t tell him! (tú, the secret)', opts:['¡No se lo digas!','¡No díselo!','¡No le lo digas!'], correct:0, why:'Negative commands put the pronouns before the verb, and le + lo becomes se lo.' },
+    { q:'Estoy leyéndolo. → ___ estoy leyendo.', opts:['Lo','Le','Se'], correct:0, why:'With estar + gerund it can go on the end (leyéndolo) or before estar.' },
+    { q:'A mí ___ gusta el fútbol.', opts:['me','mi','yo'], correct:0, why:'Gustar always needs the object pronoun; a mí only adds emphasis.' },
+    { q:'¿Vienes ___ al concierto?', opts:['conmigo','con mí','con yo'], correct:0, why:'Con + mí is always conmigo (and contigo for ti).' },
+    { q:'Los libros, ¿___ diste a Juan?', opts:['se los','le los','se le'], correct:0, why:'The thing is plural (los) and le becomes se before it: se los.' },
+    { q:'No ___ he dicho nada a ellos.', opts:['les','los','se'], correct:0, why:'Only one pronoun here, the indirect one for them: les. The swap to se only happens before lo, la, los, las.' },
+  ],
+};
+
+// Fold merged parts together and attach the quizzes. Runs once at load.
+const CHEAT_SHEETS = (() => {
+  const byId = {};
+  CHEAT_SHEETS_SRC.forEach(s => { byId[s.id] = s; });
+  const out = [];
+  CHEAT_SHEETS_SRC.forEach(s => {
+    if (SHEET_ALIASES[s.id] && !SHEET_MERGES.find(m => m.parts[0] === s.id)) return;
+    const m = SHEET_MERGES.find(x => x.parts[0] === s.id);
+    if (!m) { out.push({ ...s, quiz: SHEET_QUIZZES[s.id] }); return; }
+    const parts = m.parts.map(p => byId[p]).filter(Boolean);
+    const content = [];
+    parts.forEach((p, pi) => p.content.forEach((sec, si) => content.push(si === 0
+      ? { ...sec, partTitle: p.title, partIntro: pi > 0 ? p.intro : null, partNo: pi + 1 }
+      : sec)));
+    out.push({ ...s, id: m.id, title: m.title || s.title, titleEn: m.titleEn || s.titleEn,
+      added: parts.map(p => p.added || '').sort().pop(), mergedFrom: m.parts, content,
+      quiz: SHEET_QUIZZES[m.id] });
+  });
+  return out;
+})();
+
 const VOCAB_THEMES = [
   {
     theme:'restaurante',
@@ -9949,7 +10084,7 @@ function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
   return (
     <div className="sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center gap-3 glass-light border-b border-ink/10">
       <button onClick={onBack} aria-label="Volver"
-        className="flex items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
+        className="flex lg:hidden items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
         <span aria-hidden>←</span>
         <span className="hidden sm:inline">Volver</span>
       </button>
@@ -10100,12 +10235,30 @@ function SectionIndex({ sections, dark }) {
   );
 }
 
+// Wide tables (3+ columns with long cells) turn into stacked cards below 640px, where the
+// columns would otherwise be crushed; narrow ones (conjugation tables) stay as tables.
 function DataTable({ data, dark }) {
   if (!data || !data.length) return null;
   const headers = data[0];
   const rows = data.slice(1);
+  const stack = headers.length >= 3 && rows.some(r => r.join('').length > 40);
   return (
-    <div className="overflow-x-auto rounded-xl">
+    <>
+    {stack && (
+      <div className="sm:hidden space-y-2">
+        {rows.map((row, ri) => (
+          <div key={ri} className="rounded-xl border border-ink/10 bg-white/70 px-3.5 py-2.5">
+            <p className="font-semibold text-sm text-ink leading-snug">{row[0]}</p>
+            {row.slice(1).map((cell, ci) => cell ? (
+              <p key={ci} className="text-sm mt-1 leading-snug text-stone-700">
+                {headers[ci + 1] && <span className="text-[10px] font-bold uppercase tracking-wide text-dust mr-1.5">{headers[ci + 1]}</span>}{cell}
+              </p>
+            ) : null)}
+          </div>
+        ))}
+      </div>
+    )}
+    <div className={`${stack ? 'hidden sm:block ' : ''}overflow-x-auto rounded-xl`}>
       <table className="w-full text-base">
         <thead>
           <tr className={dark ? 'bg-white/[0.08]' : 'bg-stone-100'}>
@@ -10125,6 +10278,7 @@ function DataTable({ data, dark }) {
         </tbody>
       </table>
     </div>
+    </>
   );
 }
 
@@ -10176,30 +10330,138 @@ function ChuletaSection({ section, dark }) {
 
 
 // ============================================================
-// SECTION: Inicio
+// NAVIGATION - five areas, each with its own tabs (14 Oct 2026)
+// Routes are "area/tab" in the hash (#gramatica/chuletas). Old
+// single-section ids (#chuletas, saved aprende.lastSection, search
+// section ids) map onto the new homes through LEGACY_ROUTES.
 // ============================================================
+const AREAS = [
+  { id:'hoy',       label:'Hoy',           emoji:'🏠', tabs:[] },
+  { id:'gramatica', label:'Gramática',     emoji:'📐', tabs:[
+    { id:'tiempos', label:'Tiempos' }, { id:'conjugador', label:'Conjugador' }, { id:'lecciones', label:'Lecciones' },
+    { id:'chuletas', label:'Chuletas' }, { id:'errores', label:'Errores' } ] },
+  { id:'palabras',  label:'Palabras',      emoji:'📚', tabs:[
+    { id:'temas', label:'Temas' }, { id:'expresiones', label:'Expresiones' }, { id:'comosedice', label:'Cómo se dice' }, { id:'glosario', label:'Mi glosario' } ] },
+  { id:'escucha',   label:'Escucha y lee', short:'Escucha', emoji:'🎧', tabs:[
+    { id:'lecturas', label:'Lecturas' }, { id:'conversaciones', label:'Conversaciones' } ] },
+  { id:'practica',  label:'Practica',      emoji:'✏️', tabs:[
+    { id:'repaso', label:'Repaso' }, { id:'ejercicios', label:'Ejercicios' }, { id:'dictado', label:'Dictado' },
+    { id:'habla', label:'Habla' }, { id:'escribe', label:'Escribe' } ] },
+];
+const HOY_VIEWS = ['diario', 'archivo', 'palabra'];
+const LEGACY_ROUTES = {
+  inicio:'hoy', diario:'hoy/diario', tiempos:'gramatica/tiempos', conjugador:'gramatica/conjugador',
+  chuletas:'gramatica/chuletas', errores:'gramatica/errores', vocabulario:'palabras/temas', glosario:'palabras/glosario',
+  conectores:'palabras/expresiones', frases:'palabras/expresiones', equivalentes:'palabras/comosedice',
+  lecturas:'escucha/lecturas', conversaciones:'escucha/conversaciones', negocios:'escucha/conversaciones',
+  ejercicios:'practica/ejercicios', dictado:'practica/dictado', pronunciacion:'practica/habla',
+  escritura:'practica/escribe', tarjetas:'practica/repaso', ajustes:'ajustes',
+};
+// Old ids that also need a sub-view opened inside their new tab.
+const LEGACY_SIDE = {
+  conectores: () => setStorage('aprende.view.frases.section', 'conectores'),
+  negocios:   () => setStorage('aprende.view.conversaciones.filter', 'trabajo'),
+};
+// Unknown ids return null; callers fall back to Hoy.
+function parseRoute(raw) {
+  const s = String(raw || '').replace(/^#/, '').trim();
+  if (!s) return null;
+  if (s === 'ajustes') return { area:'ajustes', tab:null };
+  const [a, t] = s.split('/');
+  const area = AREAS.find(x => x.id === a);
+  if (area) {
+    if (area.id === 'hoy') return { area:'hoy', tab: HOY_VIEWS.includes(t) ? t : null };
+    const saved = getStorage('aprende.area.' + area.id, null);
+    const tab = area.tabs.find(x => x.id === t) ? t : area.tabs.find(x => x.id === saved) ? saved : area.tabs[0].id;
+    return { area: area.id, tab };
+  }
+  if (LEGACY_ROUTES[s]) { if (LEGACY_SIDE[s]) LEGACY_SIDE[s](); return parseRoute(LEGACY_ROUTES[s]); }
+  return null;
+}
+const routeStr = (r) => r.area === 'ajustes' ? 'ajustes' : r.tab ? `${r.area}/${r.tab}` : r.area;
 
-function Inicio({ dark, section, setSection }) {
+// Saved "where you were" keys per tab: tapping the active tab clears them to get back to its list.
+const TAB_ROOT_KEYS = {
+  'gramatica/tiempos':      ['aprende.view.tiempos.tense'],
+  'gramatica/lecciones':    ['aprende.view.gramatica.lesson', 'aprende.view.gramatica.mandato'],
+  'gramatica/chuletas':     ['aprende.view.chuletas.sheetId'],
+  'gramatica/errores':      ['aprende.view.chuletas.mistake'],
+  'palabras/temas':         ['aprende.view.vocab.theme', 'aprende.view.trabajo.vocab'],
+  'palabras/expresiones':   ['aprende.view.frases.section', 'aprende.view.frases.sit', 'aprende.view.frases.valGroup', 'aprende.view.frases.idiom', 'aprende.view.trabajo.phrases', 'aprende.view.vocab.group'],
+  'palabras/comosedice':    ['aprende.view.equivalentes.cat'],
+  'escucha/lecturas':       ['aprende.view.lecturas.selected'],
+  'escucha/conversaciones': ['aprende.view.conversaciones.selected'],
+  'practica/ejercicios':    ['aprende.view.ejercicios.category'],
+  'practica/escribe':       ['aprende.view.escribe.prompt'],
+};
+
+// "Continúa" target: the exact area, tab and open item, read from each tab's saved view state.
+function describePlace(str) {
+  const r = parseRoute(str);
+  if (!r || r.area === 'hoy' || r.area === 'ajustes') return null;
+  const area = AREAS.find(a => a.id === r.area);
+  const tab = area.tabs.find(t => t.id === r.tab);
+  const g = (k) => getStorage(k, null);
+  const key = r.area + '/' + r.tab;
+  let item = null;
+  if (key === 'gramatica/chuletas') { const id = g('aprende.view.chuletas.sheetId'); const sh = id && CHEAT_SHEETS.find(x => x.id === sheetId(id)); item = sh ? sh.title : null; }
+  else if (key === 'gramatica/tiempos') { const t = g('aprende.view.tiempos.tense'); item = t && t.title; }
+  else if (key === 'gramatica/lecciones') { const l = g('aprende.view.gramatica.lesson') || g('aprende.view.gramatica.mandato'); item = l && l.title; }
+  else if (key === 'gramatica/errores') { const i = g('aprende.view.chuletas.mistake'); item = i != null && COMMON_MISTAKES[i] ? COMMON_MISTAKES[i].right : null; }
+  else if (key === 'palabras/temas') { const t = g('aprende.view.vocab.theme'); item = t && t.titleEs; }
+  else if (key === 'palabras/expresiones') { item = { situaciones:'Situaciones', modismos:'Modismos', argot:'Argot', valencia:'Valencià', conectores:'Conectores' }[g('aprende.view.frases.section')] || null; }
+  else if (key === 'escucha/lecturas') { const x = g('aprende.view.lecturas.selected'); item = x && x.title; }
+  else if (key === 'escucha/conversaciones') { const x = g('aprende.view.conversaciones.selected'); item = x && x.title; }
+  else if (key === 'practica/ejercicios') { const x = g('aprende.view.ejercicios.category'); item = x && x.categoryEs; }
+  return { str: routeStr(r), areaLabel: area.label, tabLabel: tab ? tab.label : '', item };
+}
+
+// Today's Diario edition for the Hoy glance and the nav badge (same fallback chain as Diario).
+function useDiarioToday() {
+  const today = todayStr();
+  const [ed, setEd] = useState(() => { const c = getStorage('aprende.diario.cache', null); return c && c.date ? c : null; });
+  const [status, setStatus] = useState(() => ed ? (ed.date === today ? 'ready' : 'stale') : 'loading');
+  useEffect(() => {
+    let off = false;
+    fetch('daily/latest.json?v=' + today, { cache: 'no-cache' })
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
+      .then(d => { if (off || !d || !d.date) return; setStorage('aprende.diario.cache', d); setEd(d); setStatus(d.date === today ? 'ready' : 'stale'); })
+      .catch(() => { if (off || getStorage('aprende.diario.cache', null)) return; setEd(buildFallbackEdition(today)); setStatus('offline'); });
+    return () => { off = true; };
+  }, [today]);
+  return { ed, status, today };
+}
+function diarioLeftToday() {
+  const today = todayStr();
+  const c = getStorage('aprende.diario.cache', null);
+  if (!c || c.date !== today) return 0;
+  const done = getStorage('aprende.diario.done.' + today, []) || [];
+  return DIARIO_ORDER.filter(id => c[id] && !done.includes(id)).length;
+}
+function tarjetasDue() {
+  const entries = getStorage('aprende.glossary', []) || [];
+  const srs = getStorage('aprende.srs', {}) || {};
+  const now = Date.now();
+  return entries.filter(e => { const r = srs[e.id]; return !r || (r.due || 0) <= now; }).length;
+}
+
+// ============================================================
+// SECTION: Hoy - the home page (replaces Inicio)
+// ============================================================
+function HoyPage({ goTo, go, onSearch }) {
   const word = getWordOfDay();
   const phrase = getPhraseOfDay();
   const [streak, setStreak] = useState(() => getStreak());
   useEffect(() => { setStreak(tickStreak()); }, []);
   const [xpState] = useState(() => xpGetState());
   const level = xpGetLevel(xpState.total);
-
-  // Continue-where-you-left-off
-  const NAV_LABELS = {
-    tiempos:'Tiempos verbales', conjugador:'Conjugador', chuletas:'Chuletas',
-    vocabulario:'Vocabulario', frases:'Frases', equivalentes:'Cómo se dice',
-    lecturas:'Lecturas', conversaciones:'Conversaciones', negocios:'Negocios',
-    ejercicios:'Ejercicios', dictado:'Dictado', pronunciacion:'Pronunciación',
-    ajustes:'Ajustes', hoy:'Palabra del día', diario:'Diario'
-  };
-  const lastNonInicio = getStorage('aprende.lastNonInicio', null);
-  const continueLabel = lastNonInicio ? NAV_LABELS[lastNonInicio] : 'Pronunciación';
-  const continueId = lastNonInicio || 'pronunciacion';
-
-  // Weak areas
+  const { ed, status, today } = useDiarioToday();
+  const done = getStorage('aprende.diario.done.' + today, []) || [];
+  const cards = ed ? DIARIO_ORDER.filter(id => ed[id]) : [];
+  const doneN = cards.filter(id => done.includes(id)).length;
+  const place = describePlace(getStorage('aprende.lastPlace', null) || LEGACY_ROUTES[getStorage('aprende.lastNonInicio', '')] || '');
+  const dueCards = React.useMemo(() => tarjetasDue(), []);
+  const dueSheets = React.useMemo(() => sheetsDue(), []);
   const weakAreas = React.useMemo(() => {
     const history = getStorage('aprende.exercise_history', []);
     if (!history.length) return [];
@@ -10209,237 +10471,142 @@ function Inicio({ dark, section, setSection }) {
       const last10 = entries.slice(-10);
       if (last10.length < 3) return acc;
       const accuracy = last10.filter(h => h.correct).length / last10.length;
-      if (accuracy < 0.6) acc.push({ category: cat, acc: accuracy, count: last10.length });
+      if (accuracy < 0.6) acc.push({ category: cat, acc: accuracy });
       return acc;
     }, []).sort((a, b) => a.acc - b.acc);
   }, []);
+  const dateStr = new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
+  const glance = ed ? [
+    ed.verbo && { k:'Verbo', v:ed.verbo.infinitivo },
+    ed.palabra && { k:'Palabra', v:ed.palabra.es },
+    ed.expresion && { k:'Expresión', v:ed.expresion.es },
+    ed.frase && { k:'Frase', v:ed.frase.es },
+  ].filter(Boolean) : [];
 
-  // Tarjetas due today
-  const dueCards = React.useMemo(() => {
-    const entries = getStorage('aprende.glossary', []) || [];
-    const srs = getStorage('aprende.srs', {});
-    const now = Date.now();
-    return entries.filter(e => { const r = srs[e.id]; return !r || (r.due || 0) <= now; }).length;
-  }, []);
-
-  // Streak dot strip - last 7 days. Approximation: today is filled if practiced;
-  // previous (count-1) days are filled (this is what a streak guarantees).
-  const dotStrip = React.useMemo(() => {
-    const arr = [];
-    const days = ['L','M','X','J','V','S','D'];
-    const today = new Date();
-    const dow = (today.getDay() + 6) % 7; // Mon=0
-    for (let i = 6; i >= 0; i--) {
-      const idx = (dow - i + 7) % 7;
-      arr.push({ label: days[idx], filled: i < (streak.count || 0), today: i === 0 });
-    }
-    return arr;
-  }, [streak.count]);
-
-  const dateStr = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-
-  // ── Editorial section groups (no flat tile grid) ──
-  const GROUPS = [
-    { title: 'Referencia',  items: [
-      {id:'tiempos', label:'Tiempos verbales', sub:'Verb tenses'},
-      {id:'conjugador', label:'Conjugador', sub:'Any verb, any tense'},
-      {id:'frases', label:'Conectores', sub:'Linking words', _alt:'frases'},
-      {id:'chuletas', label:'Chuletas', sub:'Cheat sheets'},
-      {id:'gramatica', label:'Gramática', sub:'Learn sentence patterns'},
-    ]},
-    { title: 'Vocabulario', items: [
-      {id:'vocabulario', label:'Vocabulario', sub:'Themes & glossary'},
-      {id:'frases', label:'Frases', sub:'Idioms & expressions'},
-      {id:'equivalentes', label:'Cómo se dice', sub:'EN → ES natural'},
-      {id:'diario', label:'Diario', sub:'Daily bite-size'},
-      {id:'hoy', label:'Palabra del día', sub:"Today's archive"},
-    ]},
-    { title: 'Práctica',    items: [
-      {id:'ejercicios', label:'Ejercicios', sub:'Quizzes & drills'},
-      {id:'pronunciacion', label:'Pronunciación', sub:'Speak & improve'},
-      {id:'dictado', label:'Dictado', sub:'Listen & write'},
-      {id:'vocabulario', label:'Tarjetas', sub:'Spaced repetition', _alt:'glosario'},
-    ]},
-    { title: 'Lectura y escucha', items: [
-      {id:'lecturas', label:'Lecturas', sub:'Reading passages'},
-      {id:'conversaciones', label:'Conversaciones', sub:'Dialogues'},
-      {id:'negocios', label:'Negocios', sub:'Business Spanish'},
-    ]},
-  ];
+  const Row = ({ label, value, onClick, strong }) => (
+    <button onClick={onClick}
+      className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left min-h-11">
+      <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors min-w-0">{label}</span>
+      <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5 min-w-[1rem]" />
+      <span className={`font-mono text-sm font-bold flex-shrink-0 ${strong ? 'text-orange-600' : 'text-dust'}`}>{value}</span>
+      <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+    </button>
+  );
 
   return (
     <div className="min-h-screen">
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* COVER - word of the day as the hero                            */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="px-5 lg:px-12 pt-6 lg:pt-12 pb-10 lg:pb-16 max-w-4xl mx-auto fade-stagger">
-
-        {/* Eyebrow: date + streak */}
-        <div>
-          <p className="eyebrow flex items-center flex-wrap gap-x-3 gap-y-1">
-            <span>{dateStr}</span>
-            <span className="text-ink/20">·</span>
-            <span className="text-orange-600">Día {streak.count || 1} de tu racha</span>
-            <span className="text-ink/20">·</span>
-            <span className="text-dust">Liam</span>
-          </p>
-        </div>
-
-        {/* Massive serif word-of-day */}
-        <div className="mt-8 lg:mt-10">
-          <h1 className="display text-[3.5rem] sm:text-[5rem] lg:text-[7.5rem]" style={{wordBreak:'break-word', hyphens:'auto'}} lang="es">
-            {word.es}
-          </h1>
-          <div className="flex items-baseline gap-3 mt-4">
-            <SpeakBtn text={word.es} size="lg" />
-            <p className="font-sans text-sm uppercase tracking-[0.2em] text-dust">{word.en}</p>
-          </div>
-        </div>
-
-        {/* Example */}
-        <div className="mt-8 lg:mt-10 max-w-xl">
-          <div className="rule-thin mb-4" />
-          <p className="font-serif text-lg lg:text-xl italic text-ink/80 leading-snug">
-            <span className="text-orange-500 mr-1">-</span>{word.example}
-          </p>
-          {word.exampleEn && <p className="text-xs text-dust mt-2 ml-3">{word.exampleEn}</p>}
-          {word.tip && (
-            <p className="mt-5 text-sm text-sienna-700 leading-relaxed">
-              <span className="font-bold text-ochre-600 mr-1">✱</span>{word.tip}
+      <section className="px-5 lg:px-12 pt-5 lg:pt-10 pb-12 max-w-4xl mx-auto">
+        <div className="flex items-start gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="eyebrow flex items-center flex-wrap gap-x-3 gap-y-1">
+              <span>{dateStr}</span><span className="text-ink/20">·</span>
+              <span className="text-orange-600">Día {streak.count || 1} de tu racha</span>
             </p>
-          )}
+            <h1 className="font-serif font-bold text-4xl lg:text-5xl text-sienna-700 leading-none mt-3">Hoy</h1>
+          </div>
+          <button onClick={onSearch} aria-label="Buscar"
+            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+          </button>
+          <button onClick={() => goTo('ajustes')} aria-label="Ajustes" title="Ajustes"
+            className="w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0 text-lg">⚙</button>
         </div>
 
-        {/* Continúa CTA */}
-        <div className="mt-10 lg:mt-12">
-          <button onClick={() => setSection(continueId)}
-            className="group inline-flex items-center gap-3 px-6 py-3.5 min-h-12 rounded-full bg-orange-500 text-paper font-semibold text-sm hover:bg-orange-600 active:scale-[0.98] transition-all shadow-md hover:shadow-lg">
-            <span className="font-serif text-base">Continúa con</span>
-            <span className="font-bold tracking-tight">{continueLabel}</span>
-            <span className="text-base transition-transform group-hover:translate-x-0.5">→</span>
-          </button>
-          <button onClick={() => setSection('hoy')}
-            className="ml-3 sm:ml-5 inline-flex items-center gap-1.5 text-sm font-medium text-sienna-700 hover:text-orange-600 transition-colors py-2">
-            <span>o explora la palabra del día</span>
-          </button>
-        </div>
-      </section>
+        {/* Continúa: the exact area, tab and item you were on; a fresh start points at the Diario */}
+        <button onClick={() => goTo(place ? place.str : 'hoy/diario')}
+          className="group mt-6 w-full text-left rounded-3xl bg-orange-500 hover:bg-orange-600 text-paper p-5 lg:p-6 shadow-md hover:shadow-lg transition-all flex items-center gap-4 active:scale-[0.99]">
+          <div className="flex-1 min-w-0">
+            <p className="eyebrow" style={{ color:'rgba(250,246,238,0.75)' }}>{place ? 'Continúa donde lo dejaste' : 'Empieza aquí'}</p>
+            <p className="font-serif font-bold text-2xl lg:text-3xl leading-tight mt-1.5 line-clamp-2">{place ? (place.item || place.tabLabel) : 'Empieza con el Diario'}</p>
+            <p className="text-sm mt-1.5" style={{ color:'rgba(250,246,238,0.85)' }}>{place ? `${place.areaLabel} › ${place.tabLabel}` : 'Diez tarjetas cortas · unos 5 minutos'}</p>
+          </div>
+          <span className="text-2xl transition-transform group-hover:translate-x-1 flex-shrink-0">→</span>
+        </button>
 
-      <div className="rule-accent max-w-4xl mx-auto" />
-
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* HOY EN APRENDE - streak + practice prompts                     */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="px-5 lg:px-12 py-10 lg:py-14 max-w-4xl mx-auto">
-        <p className="eyebrow mb-6">Hoy en Aprende</p>
-
-        {/* Streak dot strip */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex items-center gap-2.5">
-            {dotStrip.map((d, i) => (
-              <div key={i} className="flex flex-col items-center gap-1.5">
-                <span className={`w-3 h-3 rounded-full transition-all ${d.filled ? 'bg-orange-500' : 'border-2 border-ink/20'} ${d.today ? 'ring-2 ring-orange-500/30 ring-offset-2 ring-offset-paper scale-110' : ''}`} />
-                <span className={`text-[10px] font-bold ${d.today ? 'text-orange-600' : 'text-dust'}`}>{d.label}</span>
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+          {/* Today's Diario at a glance */}
+          <div>
+            <div className="flex items-baseline gap-3 mb-3">
+              <p className="eyebrow flex-1">El Diario de hoy</p>
+              {cards.length > 0 && <span className="font-mono text-xs font-bold text-orange-600">{doneN}/{cards.length}</span>}
+            </div>
+            <Card className="p-5">
+              {status === 'loading' && !ed && <p className="text-sm text-dust py-4 text-center">Cargando la edición de hoy…</p>}
+              {status === 'offline' && <p className="text-xs rounded-lg px-3 py-2 mb-3 bg-ochre-50 text-ochre-700 border border-ochre-200">Sin conexión: edición de repaso.</p>}
+              {status === 'stale' && ed && <p className="text-xs rounded-lg px-3 py-2 mb-3 bg-ochre-50 text-ochre-700 border border-ochre-200">Aún no ha llegado la de hoy. Esta es la del {ed.date}.</p>}
+              {ed && ed.titular && <p className="font-serif italic text-base text-ink/80 leading-snug mb-3" lang="es">{ed.titular}</p>}
+              {glance.length > 0 && (
+                <div className="space-y-1.5">
+                  {glance.map((g, i) => (
+                    <div key={i} className="flex items-baseline gap-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wide text-dust w-[4.5rem] flex-shrink-0">{g.k}</span>
+                      <span className="font-serif font-semibold text-base text-ink flex-1 min-w-0" lang="es">{g.v}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {cards.length > 0 && (
+                <div className="mt-4 h-1.5 rounded-full bg-ink/10 overflow-hidden">
+                  <div className="h-full bg-orange-500 transition-all" style={{ width: Math.round(doneN / cards.length * 100) + '%' }} />
+                </div>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={() => goTo('hoy/diario')} className="min-h-11 px-4 rounded-xl bg-ink text-paper text-sm font-semibold hover:bg-sienna-700 transition-colors">
+                  {doneN === 0 ? 'Abrir el Diario →' : doneN < cards.length ? 'Seguir con el Diario →' : 'Volver a leerlo →'}
+                </button>
+                <button onClick={() => goTo('hoy/archivo')} className="min-h-11 px-4 rounded-xl bg-cream text-sienna-700 text-sm font-semibold hover:bg-ochre-100 transition-colors">Archivo</button>
               </div>
-            ))}
+            </Card>
           </div>
-          <div className="flex-1 min-w-0 hidden sm:block">
-            <p className="text-2xl font-serif font-bold text-sienna-700 leading-none">{streak.count} <span className="text-base font-medium text-dust">días</span></p>
-            <p className="text-xs text-dust mt-1">Mejor: {streak.best || streak.count}</p>
-          </div>
-        </div>
 
-        {/* Practice TOC - magazine-style list with right-aligned counts */}
-        <div className="space-y-1">
-          <button onClick={() => setSection('diario')}
-            className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
-            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">El Diario de hoy</span>
-            <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
-            <span className="font-mono text-sm font-bold text-orange-600">~5 min</span>
-            <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
-          </button>
-          {dueCards > 0 && (
-            <button onClick={() => setSection('vocabulario')}
-              className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
-              <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Tarjetas debido hoy</span>
-              <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
-              <span className="font-mono text-sm font-bold text-orange-600">{dueCards}</span>
-              <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
-            </button>
-          )}
-          {weakAreas.length > 0 && weakAreas.slice(0, 2).map(w => (
-            <button key={w.category} onClick={() => setSection('ejercicios')}
-              className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
-              <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Área débil - {w.category}</span>
-              <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
-              <span className="font-mono text-sm font-bold text-orange-600">{Math.round(w.acc*100)}%</span>
-              <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
-            </button>
-          ))}
-          <button onClick={() => setSection('ejercicios')}
-            className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
-            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Ejercicios de esta semana</span>
-            <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
-            <span className="font-mono text-xs font-bold text-dust/70">S{weekSeed() % 52 + 1}</span>
-            <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
-          </button>
-          <button onClick={() => setSection('pronunciacion')}
-            className="w-full group flex items-baseline gap-3 py-3 border-b border-ink/10 hover:border-orange-500/40 transition-colors text-left">
-            <span className="font-serif text-lg text-ink group-hover:text-orange-600 transition-colors">Practicar pronunciación</span>
-            <span className="flex-1 border-b border-dotted border-ink/15 mb-1.5" />
-            <span className="font-mono text-sm font-bold text-dust">~3 min</span>
-            <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
-          </button>
-        </div>
-
-        {/* Frase del día - small editorial pull-quote */}
-        <div className="mt-12 lg:mt-14 max-w-2xl">
-          <p className="eyebrow mb-3">Frase del día</p>
-          <div className="flex items-start gap-3">
-            <div className="flex-1">
-              <p className="font-serif font-bold text-2xl lg:text-3xl text-sienna-700 leading-tight">"{phrase.es}"</p>
-              <p className="text-sm text-dust mt-2 italic">{phrase.en}</p>
-              {phrase.example && <p className="text-sm text-ink/70 mt-3 leading-relaxed"><span className="text-orange-500">-</span> {phrase.example}</p>}
+          {/* What's waiting today */}
+          <div>
+            <p className="eyebrow mb-3">Para hoy</p>
+            <div>
+              <Row label="Tarjetas para repasar" value={dueCards > 0 ? dueCards : 'al día'} strong={dueCards > 0} onClick={() => goTo('practica/repaso')} />
+              {dueSheets.slice(0, 3).map(d => (
+                <Row key={d.sheet.id} label={`Repasa: ${d.sheet.title}`} value="chuleta" strong onClick={() => go('chuletas', d.sheet.id)} />
+              ))}
+              {weakAreas.slice(0, 2).map(w => (
+                <Row key={w.category} label={`Área débil: ${w.category}`} value={Math.round(w.acc * 100) + '%'} strong onClick={() => go('ejercicios', w.category)} />
+              ))}
+              <Row label="Ejercicios de esta semana" value="~10 min" onClick={() => goTo('practica/ejercicios')} />
+              <Row label="Habla: pronunciación" value="~3 min" onClick={() => goTo('practica/habla')} />
             </div>
-            <SpeakBtn text={phrase.es} size="lg" />
           </div>
         </div>
-      </section>
 
-      <div className="rule-thin max-w-4xl mx-auto" />
+        <div className="rule-accent mt-12" />
 
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* EXPLORA - editorial 4-column section index                     */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      <section className="px-5 lg:px-12 py-10 lg:py-14 max-w-4xl mx-auto">
-        <p className="eyebrow mb-6">Explora</p>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
-          {GROUPS.map(group => (
-            <div key={group.title}>
-              <p className="font-serif font-bold text-sm text-orange-600 mb-3 pb-2 border-b border-orange-500/30 tracking-tight">{group.title}</p>
-              <ul className="space-y-2.5">
-                {group.items.map((item, i) => (
-                  <li key={i}>
-                    <button onClick={() => setSection(item._alt || item.id)}
-                      className="group text-left w-full">
-                      <p className="font-serif font-semibold text-base text-ink leading-tight group-hover:text-orange-600 transition-colors">
-                        {item.label}
-                      </p>
-                      <p className="text-[11px] text-dust group-hover:text-sienna-700 transition-colors mt-0.5">{item.sub}</p>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+        {/* Palabra y frase del día */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+          <div>
+            <p className="eyebrow mb-3">Palabra del día</p>
+            <div className="flex items-center gap-3">
+              <p className="display text-5xl lg:text-6xl" lang="es" style={{ wordBreak:'break-word', hyphens:'auto' }}>{word.es}</p>
+              <SpeakBtn text={word.es} size="lg" />
             </div>
-          ))}
+            <p className="font-sans text-sm uppercase tracking-[0.2em] text-dust mt-2">{word.en}</p>
+            <p className="font-serif text-lg italic text-ink/80 leading-snug mt-4"><span className="text-orange-500 mr-1">-</span>{word.example}</p>
+            {word.exampleEn && <p className="text-xs text-dust mt-1.5 ml-3">{word.exampleEn}</p>}
+            <button onClick={() => goTo('hoy/palabra')} className="mt-4 text-sm font-semibold text-sienna-700 hover:text-orange-600 transition-colors min-h-11">Palabras de días anteriores →</button>
+          </div>
+          <div>
+            <p className="eyebrow mb-3">Frase del día</p>
+            <div className="flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="font-serif font-bold text-2xl lg:text-3xl text-sienna-700 leading-tight" lang="es">"{phrase.es}"</p>
+                <p className="text-sm text-dust mt-2 italic">{phrase.en}</p>
+                {phrase.example && <p className="text-sm text-ink/70 mt-3 leading-relaxed"><span className="text-orange-500">-</span> {phrase.example}</p>}
+              </div>
+              <SpeakBtn text={phrase.es} size="lg" />
+            </div>
+          </div>
         </div>
 
-        {/* Footer link to ajustes */}
-        <div className="mt-10 pt-6 border-t border-ink/10 flex items-center justify-between">
-          <p className="text-xs text-dust">{xpState.total} XP · {level.label} {level.emoji}</p>
-          <button onClick={() => setSection('ajustes')} className="text-sm font-medium text-dust hover:text-orange-600 transition-colors">Ajustes ⚙</button>
+        <div className="mt-12 pt-6 border-t border-ink/10 flex items-center justify-between gap-3">
+          <p className="text-xs text-dust">{xpState.total} XP · {level.label} {level.emoji} · Mejor racha: {streak.best || streak.count} días</p>
+          <button onClick={() => goTo('ajustes')} className="text-sm font-medium text-dust hover:text-orange-600 transition-colors min-h-11">Ajustes ⚙</button>
         </div>
       </section>
     </div>
@@ -10674,9 +10841,9 @@ function DiarioCard({ id, data, dark, showEn, done, onToggle }) {
   );
 }
 
-function Diario({ onBack, dark, onSearch }) {
+function Diario({ onBack, dark, onSearch, initialTab }) {
   const today = todayStr();
-  const [tab, setTab]         = useState('hoy');
+  const [tab, setTab]         = useState(initialTab || 'hoy');
   const [edition, setEdition] = useState(null);
   const [status, setStatus]   = useState('loading');
   const [showEn, setShowEn]   = useState(() => getStorage('aprende.diario.showEn', true));
@@ -11153,11 +11320,11 @@ function Tiempos({ onBack, dark, onSearch }) {
           <div className="grid grid-cols-2 gap-4">
             {(TENSES[tab] || []).map(card => (
               <button key={card.id} onClick={() => setSelectedTense(card)}
-                className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
+                className={`min-w-0 text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
                 {/* Colour strip */}
                 <div className={`h-1.5 w-full bg-gradient-to-r ${tabColors.tile}`} />
                 <div className="p-4 flex flex-col flex-1">
-                  <p className="font-serif font-bold text-base lg:text-lg mb-1 leading-snug">{card.title}</p>
+                  <p className="font-serif font-bold text-base lg:text-lg mb-1 leading-snug break-words" lang="es" style={{hyphens:'auto', WebkitHyphens:'auto'}}>{card.title}</p>
                   {card.subtitle && (
                     <p className={`text-xs lg:text-sm mb-2 font-medium ${dark ? 'text-orange-300' : 'text-orange-600'}`}>{card.subtitle}</p>
                   )}
@@ -13353,7 +13520,9 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
 
   // If a persisted selection points at a conversation that no longer exists
   // (e.g. after the set is refreshed), fall back to the list.
-  useEffect(() => { if (selected && !CONVERSATIONS.find(c => c.id === selected.id)) setSelected(null); }, []);
+  useEffect(() => { if (selected && !CONVERSATIONS.concat(BUSINESS_DIALOGS).find(c => c.id === selected.id)) setSelected(null); }, []);
+  // Trabajo shows the business dialogues that used to live in Negocios.
+  const [filter, setFilter] = usePersistedState('aprende.view.conversaciones.filter', 'todas');
 
   // Open a specific conversation when global search deep-links here.
   const jumpRef = useRef(null);
@@ -13361,7 +13530,9 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
     if (jump && jump.section === 'conversaciones' && jump.n !== jumpRef.current) {
       jumpRef.current = jump.n;
       const c = CONVERSATIONS.find(x => x.id === jump.id);
-      if (c) setSelected(c);
+      const b = BUSINESS_DIALOGS.find(x => x.id === jump.id);
+      if (c) { setFilter('todas'); setSelected(c); }
+      else if (b) { setFilter('trabajo'); setSelected(b); }
     }
   }, [jump]);
 
@@ -13605,8 +13776,14 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
           <h2 className="text-2xl font-serif font-bold">Conversaciones</h2>
           <p className="text-sm text-stone-500 mt-1">Diálogos reales con dos voces, audio y vocabulario</p>
         </div>
+        <div className="flex gap-2 mb-5">
+          {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
+            <button key={o.id} onClick={() => setFilter(o.id)}
+              className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${filter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
+          ))}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CONVERSATIONS.map(c => (
+          {(filter === 'trabajo' ? BUSINESS_DIALOGS : CONVERSATIONS).map(c => (
             <button key={c.id} onClick={() => setSelected(c)} className="text-left">
               <Card dark={dark} className="p-5 hover:shadow-md transition-shadow h-full">
                 <div className="flex items-center gap-2 mb-2">
@@ -15018,7 +15195,7 @@ function Conjugador({ dark }) {
           )}
 
           {/* ── Layer 1: uniform conjugation grid ── */}
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
             {tenseGroups.map(g => {
               const forms = data[g.key];
               if (!forms) return null;
@@ -15028,7 +15205,7 @@ function Conjugador({ dark }) {
                   <div className="space-y-1.5">
                     {forms.map((form, i) => (
                       <div key={i} className="grid items-center gap-x-2 text-sm"
-                           style={{gridTemplateColumns:'3rem 1fr 1.25rem'}}>
+                           style={{gridTemplateColumns:'3.25rem minmax(0,1fr) 2.25rem'}}>
                         <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{persons[i]}</span>
                         <span className={`font-bold break-words ${dark ? 'text-stone-100' : 'text-stone-900'}`}>{form}</span>
                         <SpeakBtn text={form} size="sm" />
@@ -15186,6 +15363,16 @@ const PRONUNCIATION_GUIDE = [
   { letter:'d (between vowels)', sound:'/ð/ soft th', example:'nada, todo, ciudad', tip:'Like English "th" in "this". In "ciudad" the final d is barely pronounced.' },
 ];
 
+// The pronunciation rules (once a card on the Chuletas hub) are a normal sheet now.
+CHEAT_SHEETS.push({
+  id:'pronunciacion', added:'2026-10-14', category:'conversacion', color:'rose', noRecall:true,
+  title:'Pronunciación', titleEn:'Spanish sounds, letter by letter (Castilian)',
+  intro:'How each letter sounds in Spain. Vowels are short and never change; c and z before e/i sound like English "th"; h is always silent; b and v are the same sound. Tap the audio on any example to hear it.',
+  content:[{ heading:'Letter by letter',
+    rows:[['Letra','Sonido','Ejemplos','Consejo']].concat(PRONUNCIATION_GUIDE.map(p => [p.letter, p.sound, p.example, p.tip])),
+    examples: PRONUNCIATION_GUIDE.map(p => ({ es:p.example, en:p.letter + ' · ' + p.sound })) }],
+});
+
 // Format a YYYY-MM-DD sheet date for the Recientes view (e.g. "6 jun 2026")
 function fmtSheetDate(iso) {
   if (!iso) return '';
@@ -15194,256 +15381,683 @@ function fmtSheetDate(iso) {
   return `${d} ${meses[m - 1]} ${y}`;
 }
 
-function Chuletas({ onBack, dark, onSearch, jump }) {
-  const [tab, setTab] = usePersistedState('aprende.view.chuletas.tab', null);
-  const [selectedSheetId, setSelectedSheetId] = usePersistedState('aprende.view.chuletas.sheetId', null);
-  const selectedSheet = selectedSheetId ? CHEAT_SHEETS.find(s => s.id === selectedSheetId) : null;
-  const setSelectedSheet = (sheet) => setSelectedSheetId(sheet ? sheet.id : null);
+// ============================================================
+// CHULETA PROGRESS - read ticks, status (Nueva / Leída / Dominada)
+// and spaced resurfacing on Hoy at 1, 3, 7 and 21 days after reading.
+// Stored in aprende.chuletas.progress, keyed by (merged) sheet id.
+// ============================================================
+const SHEET_REVIEW_DAYS = [1, 3, 7, 21];
+const SHEET_STATUS_META = {
+  nueva:    { label:'Nueva',    cls:'bg-cream text-sienna-700 border-sienna-200' },
+  leida:    { label:'Leída',    cls:'bg-anil-50 text-anil-700 border-anil-200' },
+  dominada: { label:'Dominada', cls:'bg-oliva-50 text-oliva-700 border-oliva-200' },
+};
+function sheetProgressAll() { return getStorage('aprende.chuletas.progress', {}) || {}; }
+function sheetProgress(id) { return { read: [], status: 'nueva', ...(sheetProgressAll()[sheetId(id)] || {}) }; }
+function saveSheetProgress(id, patch) {
+  const all = sheetProgressAll();
+  const key = sheetId(id);
+  all[key] = { read: [], status: 'nueva', ...(all[key] || {}), ...patch };
+  setStorage('aprende.chuletas.progress', all);
+  return all[key];
+}
+// A finished review moves the sheet one step along 1 → 3 → 7 → 21 days; after the last step it is Dominada.
+function sheetReviewDone(id) {
+  const p = sheetProgress(id);
+  const stage = (p.stage || 0) + 1;
+  if (stage >= SHEET_REVIEW_DAYS.length) return saveSheetProgress(id, { status:'dominada', stage, next:null, reviewedAt:Date.now() });
+  return saveSheetProgress(id, { status: p.status === 'dominada' ? 'dominada' : 'leida', stage, next: Date.now() + SHEET_REVIEW_DAYS[stage] * 86400000, reviewedAt:Date.now() });
+}
+function sheetsDue() {
+  const all = sheetProgressAll(); const now = Date.now();
+  return Object.keys(all).filter(id => all[id].next && all[id].next <= now)
+    .map(id => ({ sheet: CHEAT_SHEETS.find(s => s.id === id), p: all[id] }))
+    .filter(x => x.sheet).sort((a, b) => a.p.next - b.p.next);
+}
+function sheetDueLabel(p) {
+  if (p.status === 'dominada') return 'Dominada';
+  if (!p.next) return null;
+  const days = Math.ceil((p.next - Date.now()) / 86400000);
+  return days <= 0 ? 'Repaso pendiente' : days === 1 ? 'Próximo repaso mañana' : `Próximo repaso en ${days} días`;
+}
+function SheetStatusBadge({ status }) {
+  const m = SHEET_STATUS_META[status] || SHEET_STATUS_META.nueva;
+  return <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${m.cls}`}>{m.label}</span>;
+}
+
+// Send chuleta examples to Tarjetas (the glossary SRS behind Practica > Repaso). Skips ones already there.
+function addExamplesToTarjetas(sheet, examples) {
+  const existing = getStorage('aprende.glossary', []) || [];
+  const have = new Set(existing.map(e => (e.es || '').toLowerCase()));
+  const toAdd = examples.filter(ex => ex.es && !have.has(ex.es.toLowerCase()))
+    .map((ex, i) => ({ id: Date.now() + i, es: ex.es, en: ex.en, type: 'phrase', source: 'chuleta:' + sheet.id }));
+  if (toAdd.length) setStorage('aprende.glossary', [...toAdd, ...existing]);
+  return toAdd.length;
+}
+function glossaryHas(es) {
+  const k = (es || '').toLowerCase();
+  return (getStorage('aprende.glossary', []) || []).some(e => (e.es || '').toLowerCase() === k);
+}
+
+// Plays a list of Spanish lines one after another (Escuchar todo). Any other audio interrupts it.
+function useSequencePlayer() {
+  const [playing, setPlaying] = useState(null); // { key, idx }
+  const tokenRef = useRef(0);
+  const idRef = useRef('seq-' + Math.random().toString(36).slice(2));
+  useEffect(() => AudioBus.registerStopper(idRef.current, () => { tokenRef.current++; setPlaying(null); }), []);
+  useEffect(() => () => { tokenRef.current++; }, []);
+  const stop = () => { tokenRef.current++; setPlaying(null); AudioBus.stopAll(); };
+  const play = async (key, texts) => {
+    const tok = ++tokenRef.current;
+    AudioBus.claim(idRef.current);
+    for (let i = 0; i < texts.length; i++) {
+      if (tok !== tokenRef.current) return;
+      setPlaying({ key, idx: i });
+      await playSpeakable(texts[i], { dialect: 'es-ES', onStart: () => AudioBus.setPlaying(idRef.current) });
+      if (tok !== tokenRef.current) return;
+      await new Promise(r => setTimeout(r, 450));
+    }
+    if (tok === tokenRef.current) { setPlaying(null); AudioBus.releaseIf(idRef.current); }
+  };
+  return { playing, play, stop };
+}
+
+// Ponte a prueba: a section's examples as recall cards. English shown, say the Spanish, reveal, grade.
+// Otra vez puts the card back at the end of the round.
+function RecallDeck({ examples, onFinish }) {
+  const [queue, setQueue] = useState(() => examples.map((_, i) => i));
+  const [shown, setShown] = useState(false);
+  const [tally, setTally] = useState({ bien: 0, casi: 0, otra: 0 });
+  const [done, setDone] = useState(false);
+  const restart = () => { setQueue(examples.map((_, i) => i)); setTally({ bien: 0, casi: 0, otra: 0 }); setDone(false); setShown(false); };
+  const grade = (k) => {
+    const t = { ...tally, [k]: tally[k] + 1 };
+    const rest = queue.slice(1);
+    const next = k === 'otra' ? [...rest, queue[0]] : rest;
+    setTally(t); setShown(false); setQueue(next);
+    if (!next.length) { setDone(true); if (onFinish) onFinish(t); }
+  };
+  if (done) {
+    return (
+      <div className="rounded-2xl border border-ink/10 bg-paper p-4 text-center">
+        <p className="font-serif font-bold text-lg text-sienna-700">Ronda terminada</p>
+        <p className="text-sm text-dust mt-1">{tally.bien} bien · {tally.casi} casi · {tally.otra} otra vez</p>
+        <button onClick={restart} className="mt-3 text-sm font-semibold text-orange-600 hover:text-orange-700">↻ Otra ronda</button>
+      </div>
+    );
+  }
+  const cur = examples[queue[0]];
+  return (
+    <div className="rounded-2xl border border-ink/10 bg-paper p-4">
+      <div className="flex items-center justify-between mb-2">
+        <p className="eyebrow">¿Cómo se dice en español?</p>
+        <span className="text-xs font-mono font-bold text-dust">{tally.bien + tally.casi + 1}/{examples.length}</span>
+      </div>
+      <p className="font-serif text-lg text-ink leading-snug">{cur.en}</p>
+      {shown && (
+        <div className="mt-3 pt-3 border-t border-ink/10 flex items-start gap-2">
+          <p className="font-serif italic text-base text-sienna-700 flex-1" lang="es">"{cur.es}"</p>
+          <SpeakBtn text={cur.es} size="sm" />
+        </div>
+      )}
+      {!shown ? (
+        <button onClick={() => setShown(true)} className="mt-4 w-full min-h-11 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-semibold transition-colors">Mostrar</button>
+      ) : (
+        <div className="grid grid-cols-3 gap-2 mt-4">
+          <button onClick={() => grade('otra')} className="min-h-11 rounded-xl text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-800 transition-colors">Otra vez</button>
+          <button onClick={() => grade('casi')} className="min-h-11 rounded-xl text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-800 transition-colors">Casi</button>
+          <button onClick={() => grade('bien')} className="min-h-11 rounded-xl text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 transition-colors">Bien</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Multiple-choice test at the end of a sheet (SHEET_QUIZZES). 80% or better counts as a review.
+function SheetQuiz({ items, onPass }) {
+  const [ans, setAns] = useState({});
+  const answered = Object.keys(ans).length;
+  const score = items.filter((q, i) => ans[i] === q.correct).length;
+  const finished = answered === items.length;
+  const firedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !firedRef.current && score / items.length >= 0.8) { firedRef.current = true; if (onPass) onPass(score); }
+  }, [finished]);
+  return (
+    <div className="space-y-3">
+      {items.map((q, qi) => {
+        const a = ans[qi];
+        const isAns = a !== undefined;
+        return (
+          <div key={qi} className={`rounded-2xl border bg-white/70 p-4 ${isAns ? (a === q.correct ? 'border-emerald-300' : 'border-rose-300') : 'border-ink/10'}`}>
+            <p className="font-semibold text-base text-ink mb-3"><span className="font-mono text-xs text-dust mr-2">{qi + 1}</span><span lang="es">{q.q}</span></p>
+            <div className="flex flex-wrap gap-2">
+              {q.opts.map((o, oi) => {
+                let cls = 'bg-paper text-ink border-ink/15 hover:border-orange-500/50';
+                if (isAns && oi === q.correct) cls = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+                else if (isAns && oi === a) cls = 'bg-rose-50 text-rose-800 border-rose-300 line-through';
+                else if (isAns) cls = 'bg-paper text-dust border-ink/10';
+                return (
+                  <button key={oi} disabled={isAns} onClick={() => setAns(s => ({ ...s, [qi]: oi }))}
+                    className={`min-h-11 px-4 rounded-xl border text-sm transition-colors ${cls}`} lang="es">{o}</button>
+                );
+              })}
+            </div>
+            {isAns && <p className={`mt-3 text-sm leading-relaxed ${a === q.correct ? 'text-emerald-800' : 'text-rose-800'}`}><span className="font-bold">{a === q.correct ? '✓ ' : '✗ '}</span>{q.why}</p>}
+          </div>
+        );
+      })}
+      {finished && (
+        <div className={`rounded-2xl p-4 text-center ${score / items.length >= 0.8 ? 'bg-oliva-50 text-oliva-700' : 'bg-ochre-50 text-ochre-700'}`}>
+          <p className="font-serif font-bold text-lg">{score} / {items.length}</p>
+          <p className="text-sm mt-0.5">{score / items.length >= 0.8 ? 'Muy bien. Cuenta como repaso.' : 'Repasa las secciones y vuelve a intentarlo.'}</p>
+          <button onClick={() => { setAns({}); firedRef.current = false; }} className="mt-2 text-sm font-semibold text-orange-600">↻ Reintentar</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const sheetHeadingShort = (h) => String(h || '').replace(/^\d+\s*·\s*/, '');
+
+// One section of a chuleta: lead, table, Clave/Ojo, examples (audio, hide-English, send to Tarjetas,
+// Escuchar todo) and the Ponte a prueba recall round.
+function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone }) {
+  const [revealed, setRevealed] = useState({});
+  const [recallOpen, setRecallOpen] = useState(false);
+  const [, bump] = useState(0);
+  const toast = useToast();
+  const ex = Array.isArray(section.examples) ? section.examples : [];
+  const playingHere = seq.playing && seq.playing.key === index;
+  const addOne = (e) => {
+    const n = addExamplesToTarjetas(sheet, [e]);
+    toast({ tone: n ? 'success' : 'info', title: n ? 'Añadida a Tarjetas' : 'Ya está en Tarjetas', body: n ? 'La verás en Practica > Repaso.' : null });
+    bump(x => x + 1);
+  };
+  return (
+    <section data-sheet-sec={index} className="scroll-mt-40">
+      {section.partTitle && sheet.mergedFrom && (
+        <div className={`${section.partNo > 1 ? 'mt-4 pt-6 border-t-2 border-orange-500/20' : ''} mb-5`}>
+          <p className="eyebrow text-orange-600">Parte {section.partNo}</p>
+          <p className="font-serif font-bold text-xl lg:text-2xl text-sienna-700 leading-tight mt-1">{section.partTitle}</p>
+          {section.partIntro && <p className="text-base leading-relaxed text-stone-600 mt-2">{section.partIntro}</p>}
+        </div>
+      )}
+      {section.heading && (
+        <p className="text-base font-bold uppercase tracking-wide mb-3 text-stone-700 flex items-start gap-2">
+          <span className="flex-1">{section.heading}</span>
+          {isRead && <span className="text-oliva-600 text-sm normal-case font-semibold flex-shrink-0" title="Leída">✓</span>}
+        </p>
+      )}
+      {section.lead && <p className="text-base leading-relaxed mb-3 text-stone-700">{section.lead}</p>}
+      {section.rows && Array.isArray(section.rows) && <DataTable data={section.rows} />}
+      {section.text && <p className="text-base leading-relaxed text-stone-700 mt-3">{section.text}</p>}
+      {section.note && (
+        <div className="mt-3 rounded-xl px-4 py-3 border-l-4 bg-teal-50 border-teal-500 text-teal-900">
+          <p className="text-sm leading-relaxed"><span className="font-bold">Clave: </span>{section.note}</p>
+        </div>
+      )}
+      {section.trap && (
+        <div className="mt-3 rounded-xl px-4 py-3 border-l-4 bg-amber-50 border-amber-500 text-amber-900">
+          <p className="text-sm leading-relaxed"><span className="font-bold">Ojo: </span>{section.trap}</p>
+        </div>
+      )}
+      {ex.length > 0 && (
+        <div className="mt-3 rounded-xl p-4 bg-orange-50/50">
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-orange-600 flex-1">Ejemplos reales</p>
+            {ex.length > 1 && (
+              <button onClick={() => playingHere ? seq.stop() : seq.play(index, ex.map(e => e.es))}
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 min-h-9 rounded-full transition-colors ${playingHere ? 'bg-orange-500 text-paper' : 'bg-paper text-orange-600 hover:bg-orange-100 border border-orange-500/30'}`}>
+                {playingHere ? '■ Parar' : '▶ Escuchar todo'}
+              </button>
+            )}
+          </div>
+          <div className="space-y-2.5">
+            {ex.map((e, ei) => {
+              const showEn = !hideEn || revealed[ei];
+              const isCur = playingHere && seq.playing.idx === ei;
+              const saved = glossaryHas(e.es);
+              return (
+                <div key={ei} className={`rounded-lg transition-colors ${isCur ? 'bg-amber-50 ring-2 ring-amber-300 -mx-2 px-2 py-1' : ''}`}>
+                  <div className="flex items-start gap-2">
+                    <p className="font-serif italic text-base flex-1" lang="es">"{e.es}"</p>
+                    <SpeakBtn text={e.es} size="sm" />
+                    <button onClick={() => addOne(e)} title={saved ? 'Ya está en Tarjetas' : 'Añadir a Tarjetas'} aria-label={saved ? 'Ya está en Tarjetas' : 'Añadir a Tarjetas'}
+                      className={`w-9 h-9 flex-shrink-0 inline-flex items-center justify-center rounded-full border-2 text-sm font-bold transition-colors ${saved ? 'border-oliva-500/50 text-oliva-600 bg-oliva-50' : 'border-ink/15 text-dust hover:border-orange-500/60 hover:text-orange-600 bg-paper'}`}>
+                      {saved ? '✓' : '+'}
+                    </button>
+                  </div>
+                  {showEn ? (
+                    <p className="text-xs mt-0.5 text-stone-500">{e.en}</p>
+                  ) : (
+                    <button onClick={() => setRevealed(r => ({ ...r, [ei]: true }))} className="text-xs mt-0.5 text-dust underline decoration-dotted underline-offset-2 hover:text-orange-600">Toca para ver el inglés</button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {!sheet.noRecall && ex.length >= 2 && (
+            <div className="mt-4">
+              {!recallOpen ? (
+                <button onClick={() => setRecallOpen(true)}
+                  className="w-full min-h-11 rounded-xl border-2 border-dashed border-orange-500/30 text-sm font-semibold text-orange-600 hover:bg-orange-50 transition-colors">
+                  Ponte a prueba · {ex.length} frases
+                </button>
+              ) : (
+                <RecallDeck examples={ex} onFinish={t => onRecallDone && onRecallDone(index, t)} />
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      <div data-sheet-end={index} className="h-px" />
+    </section>
+  );
+}
+
+// Full interactive chuleta page. Used by Gramática > Chuletas and Palabras > Expresiones > Argot.
+function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
+  const [prog, setProg] = useState(() => sheetProgress(sheet.id));
+  const [hideEn, setHideEn] = useState(() => getStorage('aprende.chuletas.hideEn', false));
+  const [resumenOpen, setResumenOpen] = useState(() => sheetProgress(sheet.id).status !== 'nueva');
+  const [active, setActive] = useState(0);
+  const [, bump] = useState(0);
+  const seq = useSequencePlayer();
+  const toast = useToast();
+  const stripRef = useRef(null);
+  const total = sheet.content.length;
+  const readSet = new Set(prog.read || []);
+
+  useEffect(() => { window.scrollTo(0, 0); setProg(sheetProgress(sheet.id)); }, [sheet.id]);
+
+  // Tick a section as read once its end scrolls into view; all read → Leída, first review due tomorrow.
+  useEffect(() => {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const i = Number(en.target.getAttribute('data-sheet-end'));
+        const cur = sheetProgress(sheet.id);
+        if ((cur.read || []).includes(i)) return;
+        const read = [...(cur.read || []), i];
+        let patch = { read };
+        if (read.length >= total && cur.status === 'nueva') {
+          patch = { ...patch, status: 'leida', stage: 0, next: Date.now() + SHEET_REVIEW_DAYS[0] * 86400000, readAt: Date.now() };
+          toast({ tone: 'celebrate', title: 'Chuleta leída', body: 'Te la recordaré en Hoy mañana para repasarla.' });
+        }
+        setProg(saveSheetProgress(sheet.id, patch));
+      });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('[data-sheet-end]').forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, [sheet.id]);
+
+  // Highlight the section currently at the top, and keep its chip visible in the strip.
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const secs = document.querySelectorAll('[data-sheet-sec]');
+        let cur = 0;
+        secs.forEach(el => { if (el.getBoundingClientRect().top < 200) cur = Number(el.getAttribute('data-sheet-sec')); });
+        setActive(cur);
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
+  }, [sheet.id]);
+  useEffect(() => {
+    const chip = stripRef.current && stripRef.current.querySelector(`[data-chip="${active}"]`);
+    if (chip && chip.scrollIntoView) chip.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }, [active]);
+
+  const jumpTo = (i) => {
+    const el = document.querySelector(`[data-sheet-sec="${i}"]`);
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 150, behavior: 'smooth' });
+  };
+  const toggleEn = () => setHideEn(v => { setStorage('aprende.chuletas.hideEn', !v); return !v; });
+  const allExamples = sheet.content.flatMap(s => Array.isArray(s.examples) ? s.examples : []);
+  const addAll = () => {
+    const n = addExamplesToTarjetas(sheet, allExamples);
+    toast({ tone: n ? 'success' : 'info', title: n ? `${n} frases añadidas a Tarjetas` : 'Ya están todas en Tarjetas', body: n ? 'Repásalas en Practica > Repaso.' : null });
+    bump(x => x + 1);
+  };
+  const reviewDone = () => { setProg(sheetReviewDone(sheet.id)); toast({ tone: 'success', title: 'Repaso hecho' }); };
+  const isDue = prog.next && prog.next <= Date.now();
+  const onRecallDone = (i, t) => {
+    const recall = { ...(sheetProgress(sheet.id).recall || {}), [i]: { ...t, at: Date.now() } };
+    setProg(saveSheetProgress(sheet.id, { recall }));
+  };
+  const resumen = sheet.content.map((s, i) => ({ i, h: sheetHeadingShort(s.heading), note: s.note, trap: s.trap })).filter(x => x.note || x.trap);
+  const links = (SHEET_LINKS[sheet.id] || []).map(id => CHEAT_SHEETS.find(s => s.id === sheetId(id))).filter(Boolean);
+  const rel = SHEET_RELATED[sheet.id] || {};
+  const relLessons = (rel.lessons || []).map(id => GRAMMAR_LESSONS.find(l => l.id === id)).filter(Boolean);
+  const relEx = rel.exercises || [];
+  const tileColorMap = {
+    orange:'from-orange-400 to-orange-500', blue:'from-blue-400 to-blue-500', purple:'from-purple-400 to-purple-500',
+    green:'from-green-400 to-green-500', teal:'from-teal-400 to-teal-500', amber:'from-amber-400 to-amber-500',
+    rose:'from-rose-400 to-rose-500', stone:'from-stone-400 to-stone-500', violet:'from-violet-400 to-violet-500',
+  };
+  const dueLabel = sheetDueLabel(prog);
+
+  return (
+    <div>
+      {/* Sticky header: Volver, title, EN toggle, print + section strip with read ticks */}
+      <div className="sticky top-0 z-30 glass-light border-b border-ink/10">
+        <div className="px-4 lg:px-8 pt-3 pb-2 flex items-center gap-3">
+          {onBack && (
+            <button onClick={onBack} aria-label="Volver"
+              className="flex lg:hidden items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
+              <span aria-hidden>←</span><span className="hidden sm:inline">Volver</span>
+            </button>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="font-serif font-bold text-base text-ink leading-tight truncate">{sheet.title}</p>
+            <p className="text-[11px] text-dust mt-0.5 font-mono">{readSet.size}/{total} secciones leídas</p>
+          </div>
+          <button onClick={toggleEn} aria-pressed={hideEn} title={hideEn ? 'Mostrar el inglés' : 'Ocultar el inglés'}
+            className={`flex-shrink-0 text-xs font-semibold px-3 min-h-11 rounded-full transition-colors ${hideEn ? 'bg-cream text-dust hover:bg-ochre-100 line-through' : 'bg-orange-500 text-paper'}`}>
+            EN
+          </button>
+          <button onClick={() => window.print()} className="no-print hidden sm:inline-flex items-center flex-shrink-0 text-xs px-3 min-h-11 rounded-xl font-semibold bg-stone-100 text-stone-600 hover:bg-stone-200">🖨️ Imprimir</button>
+        </div>
+        <div ref={stripRef} className="overflow-x-auto hide-scroll">
+          <div className="flex gap-1.5 px-4 lg:px-8 pb-2.5 w-max">
+            {sheet.content.map((s, i) => (
+              <button key={i} data-chip={i} onClick={() => jumpTo(i)}
+                className={`flex-shrink-0 max-w-[13rem] truncate text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${i === active ? 'bg-ink text-paper border-ink' : readSet.has(i) ? 'bg-oliva-50 text-oliva-700 border-oliva-200' : 'bg-paper text-sienna-700 border-ink/10 hover:border-orange-500/40'}`}>
+                {readSet.has(i) && i !== active ? '✓ ' : ''}{sheetHeadingShort(s.heading) || `Sección ${i + 1}`}
+              </button>
+            ))}
+            {sheet.quiz && (
+              <button onClick={() => { const el = document.getElementById('sheet-quiz'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 150, behavior: 'smooth' }); }}
+                className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full border border-orange-500/40 text-orange-600 bg-paper">Test</button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+        <Card dark={dark} className="overflow-hidden">
+          <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[sheet.color] || tileColorMap.stone} text-white`}>
+            <p className="font-serif font-bold text-2xl lg:text-3xl">{sheet.title}</p>
+            <p className="text-base opacity-90 mt-1">{sheet.titleEn}</p>
+          </div>
+          <div className="px-6 py-3 border-b border-stone-100 flex flex-wrap items-center gap-2">
+            <SheetStatusBadge status={prog.status} />
+            {dueLabel && prog.status !== 'dominada' && <span className={`text-xs ${isDue ? 'font-semibold text-orange-600' : 'text-dust'}`}>{dueLabel}</span>}
+            <div className="flex-1" />
+            {allExamples.length > 0 && (() => {
+              const missing = allExamples.filter(ex => !glossaryHas(ex.es)).length;
+              return missing ? (
+                <button onClick={addAll} className="text-xs font-semibold px-3 min-h-9 rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">
+                  + Añadir {missing} frases a Tarjetas
+                </button>
+              ) : <span className="text-xs font-semibold text-oliva-700">✓ Todas en Tarjetas</span>;
+            })()}
+          </div>
+          {sheet.intro && (
+            <div className="px-6 py-4 border-b bg-stone-50 border-stone-100">
+              <p className="text-base leading-relaxed text-stone-600">{sheet.intro}</p>
+            </div>
+          )}
+
+          {/* Resumen: every Clave and Ojo line on the sheet, for a two-minute revision */}
+          {resumen.length > 0 && (
+            <div className="px-6 py-4 border-b border-stone-100">
+              <button onClick={() => setResumenOpen(o => !o)} className="w-full flex items-center gap-2 text-left">
+                <p className="eyebrow flex-1">Resumen · {(n => `${n} ${n === 1 ? 'clave' : 'claves'}`)(resumen.filter(r => r.note).length)}, {(n => `${n} ${n === 1 ? 'trampa' : 'trampas'}`)(resumen.filter(r => r.trap).length)}</p>
+                <span className={`text-dust transition-transform ${resumenOpen ? 'rotate-180' : ''}`}>▾</span>
+              </button>
+              {resumenOpen && (
+                <ul className="mt-3 space-y-2.5">
+                  {resumen.map(r => (
+                    <li key={r.i}>
+                      <button onClick={() => jumpTo(r.i)} className="text-left w-full group">
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-dust group-hover:text-orange-600">{r.h}</p>
+                        {r.note && <p className="text-sm leading-snug text-teal-900 mt-0.5"><span className="font-bold">Clave: </span>{r.note}</p>}
+                        {r.trap && <p className="text-sm leading-snug text-amber-900 mt-0.5"><span className="font-bold">Ojo: </span>{r.trap}</p>}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {links.length > 0 && (
+            <div className="px-6 py-3 border-b border-stone-100 flex flex-wrap items-center gap-2">
+              <span className="eyebrow mr-1">Ver también</span>
+              {links.map(l => (
+                <button key={l.id} onClick={() => onOpenSheet && onOpenSheet(l.id)}
+                  className="text-xs font-semibold px-3 min-h-9 rounded-full border border-ink/10 bg-paper text-sienna-700 hover:border-orange-500/40 hover:text-orange-600 transition-colors">{l.title} →</button>
+              ))}
+            </div>
+          )}
+
+          <div className="px-6 pb-6 pt-5 space-y-8">
+            {sheet.content.map((section, si) => (
+              <SheetSection key={sheet.id + si} sheet={sheet} section={section} index={si} hideEn={hideEn}
+                isRead={readSet.has(si)} seq={seq} onRecallDone={onRecallDone} />
+            ))}
+          </div>
+        </Card>
+
+        {sheet.quiz && (
+          <div id="sheet-quiz" className="mt-8 scroll-mt-40">
+            <p className="eyebrow mb-1">Ponte a prueba</p>
+            <p className="font-serif font-bold text-2xl text-sienna-700 mb-4">Test: {sheet.quiz.length} preguntas</p>
+            <SheetQuiz key={sheet.id} items={sheet.quiz} onPass={() => { if (prog.status === 'nueva' || isDue) reviewDone(); }} />
+          </div>
+        )}
+
+        {/* Status and next steps */}
+        <div className="mt-8 rounded-2xl border border-ink/10 bg-white/60 p-5">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <p className="eyebrow">Tu progreso</p>
+            <SheetStatusBadge status={prog.status} />
+            {dueLabel && prog.status !== 'dominada' && <span className="text-xs text-dust">{dueLabel}</span>}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {isDue && prog.status !== 'nueva' && (
+              <button onClick={reviewDone} className="min-h-11 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-semibold transition-colors">Repaso hecho</button>
+            )}
+            {prog.status !== 'dominada' && (
+              <button onClick={() => setProg(saveSheetProgress(sheet.id, { status:'dominada', next:null }))} className="min-h-11 px-4 rounded-xl bg-oliva-50 text-oliva-700 border border-oliva-200 hover:bg-oliva-100 text-sm font-semibold transition-colors">Marcar como dominada</button>
+            )}
+            {prog.status !== 'nueva' && (
+              <button onClick={() => setProg(saveSheetProgress(sheet.id, { status:'nueva', read:[], stage:0, next:null }))} className="min-h-11 px-4 rounded-xl bg-cream text-dust hover:bg-ochre-100 text-sm font-semibold transition-colors">Empezar de cero</button>
+            )}
+          </div>
+          {(relLessons.length > 0 || relEx.length > 0) && (
+            <div className="mt-5 pt-4 border-t border-ink/10">
+              <p className="eyebrow mb-2">Sigue practicando</p>
+              <div className="flex flex-wrap gap-2">
+                {relLessons.map(l => (
+                  <button key={l.id} onClick={() => go && go('gramatica', l.id)}
+                    className="text-sm font-semibold px-4 min-h-11 rounded-xl border border-ink/10 bg-paper text-ink hover:border-orange-500/40 hover:text-orange-600 transition-colors">Lección · {l.title}</button>
+                ))}
+                {relEx.map(c => {
+                  const cat = EXERCISES.find(x => x.category === c);
+                  return (
+                    <button key={c} onClick={() => go && go('ejercicios', c)}
+                      className="text-sm font-semibold px-4 min-h-11 rounded-xl border border-ink/10 bg-paper text-ink hover:border-orange-500/40 hover:text-orange-600 transition-colors">Ejercicios · {cat ? cat.categoryEs : c}</button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const CHULETA_FILTERS = [
+  {id:'repasar', label:'🔁 Para repasar'},
+  {id:'recientes', label:'🆕 Recientes'},
+  {id:'todos', label:'Todos'},
+  {id:'verbos', label:'⚡ Verbos'},
+  {id:'tiempos', label:'📅 Tiempos'},
+  {id:'gramatica', label:'📐 Gramática'},
+  {id:'lexico', label:'📚 Léxico'},
+  {id:'conversacion', label:'💬 Conversación'},
+  {id:'trabajo', label:'💼 Trabajo'},
+];
+
+// Gramática > Chuletas (fixedTab 'gramatica') and Gramática > Errores (fixedTab 'errores').
+function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
+  const [rawSheetId, setSelectedSheetId] = usePersistedState('aprende.view.chuletas.sheetId', null);
+  const selectedSheet = rawSheetId ? CHEAT_SHEETS.find(s => s.id === sheetId(rawSheetId)) : null;
   const [selectedMistake, setSelectedMistake] = usePersistedState('aprende.view.chuletas.mistake', null);
   const [sheetFilter, setSheetFilter] = usePersistedState('aprende.view.chuletas.filter', 'todos');
   const [sheetQuery, setSheetQuery] = useState('');
 
-  // Open a specific sheet or mistake when global search deep-links here (once per nonce).
+  // Open a specific sheet or mistake when search (or a link) deep-links here (once per nonce).
   const jumpRef = useRef(null);
   useEffect(() => {
     if (jump && jump.section === 'chuletas' && jump.n !== jumpRef.current) {
       jumpRef.current = jump.n;
-      if (jump.sub === 'mistake') { setTab('errores'); setSelectedMistake(jump.id); }
-      else if (CHEAT_SHEETS.find(s => s.id === jump.id)) { setTab('gramatica'); setSelectedSheetId(jump.id); }
+      if (jump.sub === 'mistake') { if (fixedTab === 'errores') setSelectedMistake(jump.id); }
+      else if (fixedTab === 'gramatica' && CHEAT_SHEETS.find(s => s.id === sheetId(jump.id))) setSelectedSheetId(sheetId(jump.id));
     }
   }, [jump]);
 
   const tileColorMap = {
-    orange:'from-orange-400 to-orange-500',
-    blue:'from-blue-400 to-blue-500',
-    purple:'from-purple-400 to-purple-500',
-    green:'from-green-400 to-green-500',
-    teal:'from-teal-400 to-teal-500',
-    amber:'from-amber-400 to-amber-500',
-    rose:'from-rose-400 to-rose-500',
-    stone:'from-stone-400 to-stone-500',
+    orange:'from-orange-400 to-orange-500', blue:'from-blue-400 to-blue-500', purple:'from-purple-400 to-purple-500',
+    green:'from-green-400 to-green-500', teal:'from-teal-400 to-teal-500', amber:'from-amber-400 to-amber-500',
+    rose:'from-rose-400 to-rose-500', stone:'from-stone-400 to-stone-500', violet:'from-violet-400 to-violet-500',
   };
 
-  // ---- INDEX VIEW (no tab selected) ----
-  if (!tab) {
-    return (
-      <div>
-        <BackHeader title="Chuletas" subtitle="Cheat sheets" onBack={onBack} dark={dark} onSearch={onSearch} />
-        <div className="px-4 lg:px-8 py-8 max-w-5xl mx-auto">
-          <SectionIndex dark={dark} sections={[
-            { id:'gramatica',    emoji:'📋', label:'Todas las chuletas', sub:'Verbs, tenses, grammar & slang',     color:'from-blue-400 to-blue-500',    onClick:() => setTab('gramatica') },
-            { id:'errores',      emoji:'⚠️', label:'Errores comunes', sub:'Common mistakes & corrections',        color:'from-rose-400 to-rose-500',    onClick:() => setTab('errores') },
-            { id:'pronunciacion',emoji:'🎤', label:'Pronunciación',   sub:'Sounds, stress & regional rules',      color:'from-violet-400 to-violet-500', onClick:() => setTab('pronunciacion') },
-          ]} />
-        </div>
-      </div>
-    );
-  }
-
-  const SECTION_META = {
-    gramatica:    { label:'Gramática',       sub:'Cheat sheets' },
-    errores:      { label:'Errores comunes', sub:'Common mistakes' },
-    pronunciacion:{ label:'Pronunciación',   sub:'Sounds & rules' },
-  };
-  const goBackToIndex = () => { setTab(null); setSelectedSheet(null); setSelectedMistake(null); };
-
-  // ---- DETAIL VIEWS ----
-
-  // Gramática sheet detail (full-width page)
-  if (selectedSheet) {
-    return (
-      <div>
-        <div className="flex items-center">
-          <div className="flex-1"><BackHeader title={selectedSheet.title} subtitle={selectedSheet.titleEn} onBack={() => setSelectedSheet(null)} dark={dark} /></div>
-          <button onClick={() => window.print()} className={`no-print mr-4 text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>🖨️ Imprimir</button>
-        </div>
-        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-          <Card dark={dark} className="overflow-hidden">
-            <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[selectedSheet.color] || tileColorMap.stone} text-white`}>
-              <p className="font-serif font-bold text-2xl lg:text-3xl">{selectedSheet.title}</p>
-              <p className="text-base opacity-90 mt-1">{selectedSheet.titleEn}</p>
-            </div>
-            {selectedSheet.intro && (
-              <div className={`px-6 py-4 border-b ${dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-stone-50 border-stone-100'}`}>
-                <p className={`text-base leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{selectedSheet.intro}</p>
+  // ---- ERRORES ----
+  if (fixedTab === 'errores') {
+    const m = selectedMistake !== null ? COMMON_MISTAKES[selectedMistake] : null;
+    if (m) {
+      return (
+        <div>
+          <BackHeader title="Errores comunes" subtitle="Error detail" onBack={() => setSelectedMistake(null)} dark={dark} />
+          <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
+            <Card dark={dark} className="overflow-hidden">
+              <div className="px-6 py-5 bg-gradient-to-br from-rose-400 to-rose-500 text-white">
+                <p className="text-xs font-bold uppercase tracking-wider opacity-90 mb-1">Error común</p>
+                <p className="font-serif font-bold text-xl lg:text-2xl line-through opacity-90">{m.wrong}</p>
               </div>
-            )}
-            <div className="px-6 pb-6 pt-5 space-y-6">
-              {selectedSheet.content.map((section, si) => (
-                <ChuletaSection key={si} section={section} dark={dark} />
-              ))}
-            </div>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Errores mistake detail (dedicated page)
-  if (selectedMistake !== null) {
-    const m = COMMON_MISTAKES[selectedMistake];
-    return (
-      <div>
-        <BackHeader title="Errores comunes" subtitle="Error detail" onBack={() => setSelectedMistake(null)} dark={dark} />
-        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
-          <Card dark={dark} className="overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-br from-rose-400 to-rose-500 text-white">
-              <p className="text-xs font-bold uppercase tracking-wider opacity-90 mb-1">Error común</p>
-              <p className="font-serif font-bold text-xl lg:text-2xl line-through opacity-90">{m.wrong}</p>
-            </div>
-            <div className="p-6 space-y-5">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-emerald-500 text-xl">✓</span>
-                  <p className={`text-sm font-bold uppercase tracking-wider ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}>Lo correcto</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <p className="font-serif font-bold text-2xl flex-1">{m.right}</p>
-                  {m.right && m.right !== '(correct!)' && m.right !== '(correct, but...)' && (
-                    <SpeakBtn text={m.right} size="md" />
-                  )}
-                </div>
-                <p className={`text-base mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{m.en}</p>
-              </div>
-              <div className={`rounded-xl p-4 ${dark ? 'bg-blue-900/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-100'}`}>
-                <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${dark ? 'text-blue-300' : 'text-blue-700'}`}>💡 ¿Por qué?</p>
-                <p className={`text-base leading-relaxed ${dark ? 'text-blue-100' : 'text-blue-900'}`}>{m.why}</p>
-              </div>
-              {m.examples && Array.isArray(m.examples) && (
-                <div className={`rounded-xl p-4 ${dark ? 'bg-white/[0.04]' : 'bg-orange-50/50'}`}>
-                  <p className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Ejemplos reales</p>
-                  <div className="space-y-2.5">
-                    {m.examples.map((ex, ei) => (
-                      <div key={ei}>
-                        <div className="flex items-start gap-2">
-                          <p className="font-serif italic text-base flex-1">"{ex.es}"</p>
-                          <SpeakBtn text={ex.es} size="sm" />
-                        </div>
-                        <p className={`text-xs mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{ex.en}</p>
-                      </div>
-                    ))}
+              <div className="p-6 space-y-5">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-emerald-500 text-xl">✓</span>
+                    <p className="text-sm font-bold uppercase tracking-wider text-emerald-600">Lo correcto</p>
                   </div>
+                  <div className="flex items-start gap-3">
+                    <p className="font-serif font-bold text-2xl flex-1">{m.right}</p>
+                    {m.right && m.right !== '(correct!)' && m.right !== '(correct, but...)' && <SpeakBtn text={m.right} size="md" />}
+                  </div>
+                  <p className="text-base mt-1 text-stone-500">{m.en}</p>
                 </div>
-              )}
-            </div>
-          </Card>
+                <div className="rounded-xl p-4 bg-blue-50 border border-blue-100">
+                  <p className="text-sm font-bold uppercase tracking-wider mb-2 text-blue-700">💡 ¿Por qué?</p>
+                  <p className="text-base leading-relaxed text-blue-900">{m.why}</p>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
-      </div>
-    );
-  }
-
-  // ---- LIST / GRID VIEW ----
-  const meta = SECTION_META[tab] || { label:'Chuletas', sub:'Cheat sheets' };
-  // Sheets shown in the "Todas las chuletas" grid: category pill + full-text query.
-  const sheetQ = sheetQuery.trim().toLowerCase();
-  const gramaticaSheets = (sheetFilter === 'recientes'
-    ? [...CHEAT_SHEETS].filter(s => s.added).sort((a, b) => (b.added || '').localeCompare(a.added || ''))
-    : CHEAT_SHEETS.filter(s => sheetFilter === 'todos' || s.category === sheetFilter)
-  ).filter(s => !sheetQ || chuletaSearchText(s).includes(sheetQ));
-  return (
-    <div>
-      <BackHeader title={meta.label} subtitle={meta.sub} onBack={goBackToIndex} dark={dark} onSearch={onSearch} />
+      );
+    }
+    return (
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        {tab === 'gramatica' && (
-          <div>
-            {/* Category filter pills */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {[
-                {id:'recientes', label:'🆕 Recientes'},
-                {id:'todos', label:'Todos'},
-                {id:'verbos', label:'⚡ Verbos'},
-                {id:'tiempos', label:'📅 Tiempos'},
-                {id:'gramatica', label:'📐 Gramática'},
-                {id:'lexico', label:'📚 Léxico'},
-                {id:'conversacion', label:'💬 Conversación'},
-              ].map(cat => (
-                <button key={cat.id} onClick={() => setSheetFilter(cat.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${sheetFilter === cat.id ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300 hover:bg-white/[0.14]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-            {/* Full-text search across every cheat sheet's title and content */}
-            <div className={`flex items-center gap-2 mb-5 px-3.5 py-2.5 rounded-xl border ${dark ? 'bg-white/[0.04] border-white/10' : 'bg-white border-stone-200'}`}>
-              <span className="text-stone-400">🔍</span>
-              <input value={sheetQuery} onChange={e => setSheetQuery(e.target.value)}
-                placeholder="Buscar en las chuletas (título o contenido)..."
-                className={`flex-1 outline-none text-sm bg-transparent ${dark ? 'text-stone-200 placeholder-stone-500' : 'text-stone-700 placeholder-stone-400'}`} />
-              {sheetQuery && <button onClick={() => setSheetQuery('')} className="text-stone-400 text-xl leading-none">×</button>}
-            </div>
-            {gramaticaSheets.length === 0 && (
-              <p className="text-center text-sm text-stone-400 py-10">Ninguna chuleta coincide con "{sheetQuery}".</p>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {gramaticaSheets.map((sheet, idx) => (
-              <button key={sheet.id} onClick={() => setSelectedSheet(sheet)} className="text-left">
-                <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
-                  <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
-                  <div className="p-5">
-                    {sheetFilter === 'recientes' && idx < 3 && (
-                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 mb-2">Nuevo</span>
-                    )}
-                    <p className="font-serif font-bold text-lg leading-tight">{sheet.title}</p>
-                    <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sheet.titleEn}</p>
-                    {sheet.intro && <p className={`text-xs mt-2 line-clamp-2 leading-relaxed ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{sheet.intro}</p>}
-                    <p className={`text-xs mt-2 ${dark ? 'text-stone-600' : 'text-stone-400'}`}>
-                      {sheet.content.length} {sheet.content.length === 1 ? 'sección' : 'secciones'}
-                      {sheetFilter === 'recientes' && sheet.added ? ` · Añadida ${fmtSheetDate(sheet.added)}` : ' · Toca para abrir →'}
-                    </p>
+        <Card dark={dark} className="p-4 bg-amber-50 border-amber-200 mb-5">
+          <p className="text-sm text-amber-800 font-medium">⚠️ Errores comunes que cometen los anglohablantes al aprender español. Toca una tarjeta para ver la explicación completa.</p>
+        </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {COMMON_MISTAKES.map((mm, i) => (
+            <button key={i} onClick={() => setSelectedMistake(i)} className="text-left">
+              <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
+                <div className="h-2 bg-gradient-to-r from-rose-400 to-rose-500" />
+                <div className="p-4">
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className="text-rose-500 font-bold flex-shrink-0 mt-0.5">✗</span>
+                    <p className="font-serif text-sm line-through text-stone-400 leading-snug line-clamp-2">{mm.wrong}</p>
                   </div>
-                </Card>
-              </button>
-            ))}
-            </div>
-          </div>
-        )}
-        {tab === 'errores' && (
-          <div>
-            <Card dark={dark} className="p-4 bg-amber-50 border-amber-200 mb-5">
-              <p className="text-sm text-amber-800 font-medium">⚠️ Errores comunes que cometen los anglohablantes al aprender español. Toca una tarjeta para ver la explicación completa.</p>
-            </Card>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {COMMON_MISTAKES.map((m, i) => (
-                <button key={i} onClick={() => setSelectedMistake(i)} className="text-left">
-                  <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
-                    <div className="h-2 bg-gradient-to-r from-rose-400 to-rose-500" />
-                    <div className="p-4">
-                      <div className="flex items-start gap-2 mb-2">
-                        <span className="text-rose-500 font-bold flex-shrink-0 mt-0.5">✗</span>
-                        <p className="font-serif text-sm line-through text-stone-400 leading-snug line-clamp-2">{m.wrong}</p>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-emerald-500 font-bold flex-shrink-0 mt-0.5">✓</span>
-                        <p className="font-serif font-bold text-base leading-snug line-clamp-2">{m.right}</p>
-                      </div>
-                      <p className={`text-xs mt-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{m.en}</p>
-                    </div>
-                  </Card>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        {tab === 'pronunciacion' && (
-          <div className="space-y-3">
-            <Card dark={dark} className="p-4 bg-blue-50 border-blue-200">
-              <p className="text-sm text-blue-800 font-medium">🗣️ Spanish phonetics – Castilian (Spain) variant. Toca 🔊 para escuchar los ejemplos.</p>
-            </Card>
-            {PRONUNCIATION_GUIDE.map((p, i) => (
-              <Card key={i} dark={dark} className="p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <p className="font-serif font-bold text-2xl text-orange-500 min-w-[3rem]">{p.letter}</p>
-                  <p className="text-sm font-bold uppercase tracking-wider text-stone-500">{p.sound}</p>
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold flex-shrink-0 mt-0.5">✓</span>
+                    <p className="font-serif font-bold text-base leading-snug line-clamp-2">{mm.right}</p>
+                  </div>
+                  <p className="text-xs mt-2 text-stone-400">{mm.en}</p>
                 </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <p className="font-serif italic text-base flex-1">{p.example}</p>
-                  <SpeakBtn text={p.example} size="sm" />
-                </div>
-                <p className="text-sm text-stone-600">{p.tip}</p>
               </Card>
-            ))}
-          </div>
-        )}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ---- ONE SHEET ----
+  if (selectedSheet) {
+    return <SheetView sheet={selectedSheet} onBack={() => setSelectedSheetId(null)} onOpenSheet={id => setSelectedSheetId(sheetId(id))} go={go} dark={dark} />;
+  }
+
+  // ---- LIST ----
+  const progAll = sheetProgressAll();
+  const due = sheetsDue();
+  const filters = CHULETA_FILTERS.filter(f => f.id !== 'repasar' || due.length);
+  const activeFilter = filters.find(f => f.id === sheetFilter) ? sheetFilter : 'todos';
+  const sheetQ = sheetQuery.trim().toLowerCase();
+  const list = (activeFilter === 'recientes'
+    ? [...CHEAT_SHEETS].filter(s => s.added).sort((a, b) => (b.added || '').localeCompare(a.added || ''))
+    : activeFilter === 'repasar' ? due.map(d => d.sheet)
+    : CHEAT_SHEETS.filter(s => activeFilter === 'todos' ? s.category !== 'trabajo' : s.category === activeFilter)
+  ).filter(s => !sheetQ || chuletaSearchText(s).includes(sheetQ));
+
+  return (
+    <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+      <div className="flex flex-wrap gap-2 mb-5">
+        {filters.map(cat => (
+          <button key={cat.id} onClick={() => setSheetFilter(cat.id)}
+            className={`px-3 min-h-9 rounded-full text-sm font-semibold transition-colors ${activeFilter === cat.id ? 'bg-orange-500 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
+            {cat.label}{cat.id === 'repasar' ? ` (${due.length})` : ''}
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-2 mb-5 px-3.5 py-2.5 rounded-xl border bg-white border-stone-200">
+        <span className="text-stone-400">🔍</span>
+        <input value={sheetQuery} onChange={e => setSheetQuery(e.target.value)}
+          placeholder="Buscar en las chuletas (título o contenido)..."
+          className="flex-1 min-w-0 outline-none text-sm bg-transparent text-stone-700 placeholder-stone-400" />
+        {sheetQuery && <button onClick={() => setSheetQuery('')} className="text-stone-400 text-xl leading-none">×</button>}
+      </div>
+      {list.length === 0 && <p className="text-center text-sm text-stone-400 py-10">Ninguna chuleta coincide con "{sheetQuery}".</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {list.map((sheet, idx) => {
+          const p = { read: [], status: 'nueva', ...(progAll[sheet.id] || {}) };
+          const pct = Math.round(((p.read || []).length / sheet.content.length) * 100);
+          return (
+            <button key={sheet.id} onClick={() => setSelectedSheetId(sheet.id)} className="text-left">
+              <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
+                <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
+                <div className="p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <SheetStatusBadge status={p.status} />
+                    {activeFilter === 'recientes' && idx < 3 && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Nuevo</span>}
+                    {sheet.quiz && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">Test</span>}
+                  </div>
+                  <p className="font-serif font-bold text-lg leading-tight">{sheet.title}</p>
+                  <p className="text-sm mt-1 text-stone-500">{sheet.titleEn}</p>
+                  {sheet.intro && <p className="text-xs mt-2 line-clamp-2 leading-relaxed text-stone-500">{sheet.intro}</p>}
+                  {p.status === 'nueva' && pct > 0 && (
+                    <div className="mt-3 h-1 rounded-full bg-ink/10 overflow-hidden"><div className="h-full bg-orange-500" style={{ width: pct + '%' }} /></div>
+                  )}
+                  <p className="text-xs mt-2 text-stone-400">
+                    {sheet.content.length} {sheet.content.length === 1 ? 'sección' : 'secciones'}
+                    {activeFilter === 'recientes' && sheet.added ? ` · Añadida ${fmtSheetDate(sheet.added)}` : sheetDueLabel(p) && p.status !== 'dominada' ? ` · ${sheetDueLabel(p)}` : ' · Toca para abrir →'}
+                  </p>
+                </div>
+              </Card>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -15476,11 +16090,11 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
         source: `tema:${theme.theme}`,
       }));
     if (toAdd.length === 0) {
-      alert(`Todas las palabras de "${theme.titleEs}" ya están en tu glosario. ¡Ve a Vocabulario → Glosario → Tarjetas para repasar!`);
+      alert(`Todas las palabras de "${theme.titleEs}" ya están en tu glosario. Repásalas en Practica → Repaso.`);
       return;
     }
     setStorage('aprende.glossary', [...toAdd, ...existing]);
-    alert(`Añadidas ${toAdd.length} palabras nuevas al glosario (${theme.words.length - toAdd.length} ya existían). ¡Ve a Glosario → Tarjetas para empezar a repasar!`);
+    alert(`Añadidas ${toAdd.length} palabras nuevas al glosario (${theme.words.length - toAdd.length} ya existían). Repásalas en Practica → Repaso.`);
   };
 
   const handleThemeAnki = (theme) => {
@@ -15656,46 +16270,65 @@ function MisPalabras({ dark, onOpenTheme }) {
   );
 }
 
-function Vocabulario({ onBack, dark, initialTab, onSearch, jump }) {
-  const [tab, setTab] = useState(initialTab || 'temas');
+// Palabras > Temas (only='temas', with a Trabajo filter for the business vocabulary)
+// and Palabras > Mi glosario (only='glosario': your glossary plus the words saved with Palabra).
+function Vocabulario({ onBack, dark, only = 'temas', onSearch, jump }) {
   const [selectedTheme, setSelectedTheme] = usePersistedState('aprende.view.vocab.theme', null);
   const [themeFilter, setThemeFilter] = useState('all');
+  const [temasFilter, setTemasFilter] = usePersistedState('aprende.view.vocab.filter', 'todos');
+  const [glosView, setGlosView] = usePersistedState('aprende.view.vocab.glosView', 'glosario');
+  const [pendingTheme, setPendingTheme] = useState(null);
 
   const handleSelectTheme = (theme) => { setSelectedTheme(theme); setThemeFilter('all'); };
-  const handleBackFromTheme = () => setSelectedTheme(null);
 
-  // Open a specific theme when global search deep-links here.
+  // Open a specific theme (or the Trabajo list) when global search deep-links here.
   const jumpRef = useRef(null);
   useEffect(() => {
     if (jump && jump.section === 'vocabulario' && jump.n !== jumpRef.current) {
       jumpRef.current = jump.n;
+      if (jump.sub === 'trabajo') { setSelectedTheme(null); setTemasFilter('trabajo'); return; }
       const t = VOCAB_THEMES.find(x => x.theme === jump.id);
-      if (t) { setTab('temas'); setSelectedTheme(t); setThemeFilter('all'); }
+      if (t) { setTemasFilter('todos'); handleSelectTheme(t); }
     }
   }, [jump]);
 
+  if (only === 'glosario') {
+    const n = palabraWords().length;
+    return (
+      <div>
+        <div className="px-4 lg:px-8 pt-6 max-w-6xl mx-auto">
+          <div className="flex gap-2">
+            {[{id:'glosario', label:'Mi glosario'}, {id:'palabras', label:'Mis palabras' + (n ? ` (${n})` : '')}].map(o => (
+              <button key={o.id} onClick={() => setGlosView(o.id)}
+                className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${glosView === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
+            ))}
+          </div>
+        </div>
+        {glosView === 'palabras'
+          ? <MisPalabras dark={dark} onOpenTheme={t => { setSelectedTheme(t); setThemeFilter('all'); location.hash = 'palabras/temas'; }} />
+          : <GlosarioInner dark={dark} mode="lista" />}
+      </div>
+    );
+  }
+
   return (
     <div>
-      <BackHeader
-        title={selectedTheme ? selectedTheme.titleEs : 'Vocabulario'}
-        subtitle={selectedTheme ? selectedTheme.titleEn : 'Vocab + Glosario'}
-        onBack={selectedTheme ? handleBackFromTheme : onBack}
-        dark={dark} onSearch={onSearch}
-      />
+      {selectedTheme && (
+        <BackHeader title={selectedTheme.titleEs} subtitle={selectedTheme.titleEn} onBack={() => setSelectedTheme(null)} dark={dark} onSearch={onSearch} />
+      )}
       {!selectedTheme && (
-        <div className="px-4 lg:px-8 pt-4 max-w-3xl mx-auto">
-          <ViewToggle dark={dark}
-            options={[{id:'temas',emoji:'🗂️',label:'Temas'},{id:'palabras',emoji:'🔖',label:'Mis palabras' + (palabraWords().length ? ` (${palabraWords().length})` : '')},{id:'glosario',emoji:'📖',label:'Glosario'}]}
-            active={tab} onChange={setTab} />
+        <div className="px-4 lg:px-8 pt-6 max-w-5xl mx-auto">
+          <div className="flex gap-2">
+            {[{id:'todos', label:'Todos los temas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
+              <button key={o.id} onClick={() => setTemasFilter(o.id)}
+                className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${temasFilter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
+            ))}
+          </div>
         </div>
       )}
-      {tab === 'temas' && (
-        <VocabTemas dark={dark}
-          selectedTheme={selectedTheme} setSelectedTheme={handleSelectTheme}
-          filter={themeFilter} setFilter={setThemeFilter} />
-      )}
-      {tab === 'glosario' && !selectedTheme && <GlosarioInner dark={dark} />}
-      {tab === 'palabras' && !selectedTheme && <MisPalabras dark={dark} onOpenTheme={t => { setTab('temas'); handleSelectTheme(t); }} />}
+      {temasFilter === 'trabajo' && !selectedTheme
+        ? <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto"><Negocios dark={dark} only="vocabulario" /></div>
+        : <VocabTemas dark={dark} selectedTheme={selectedTheme} setSelectedTheme={handleSelectTheme} filter={themeFilter} setFilter={setThemeFilter} />}
     </div>
   );
 }
@@ -15857,8 +16490,12 @@ const VALENCIAN_PHRASES = [
   { es:'Una orxata, per favor', en:'A horchata, please', es_es:'Una horchata, por favor', when:'Ordering Valencia\'s iconic drink.' },
 ];
 
-function Frases({ onBack, dark, initialTab, onSearch, jump }) {
-  const [section, setSection] = usePersistedState('aprende.view.frases.section', null);
+// Palabras > Expresiones: Situaciones (with a Trabajo filter), Modismos, Argot, Valencià, Conectores.
+// Mandatos moved to Gramática > Lecciones.
+function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
+  const [sectionRaw, setSection] = usePersistedState('aprende.view.frases.section', null);
+  const section = sectionRaw === 'mandatos' ? null : sectionRaw;
+  const [sitFilter, setSitFilter] = usePersistedState('aprende.view.frases.sitFilter', 'todas');
   const [selectedSit, setSelectedSit] = usePersistedState('aprende.view.frases.sit', null);
   const [selectedValGroup, setSelectedValGroup] = usePersistedState('aprende.view.frases.valGroup', null);
   const [idiomsCategory, setIdiomsCategory] = useState('all');
@@ -15871,9 +16508,15 @@ function Frases({ onBack, dark, initialTab, onSearch, jump }) {
   // Open the right sub-tab (and item) when global search deep-links here.
   const jumpRef = useRef(null);
   useEffect(() => {
+    if (jump && jump.section === 'conectores' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      goSection('conectores');
+    }
     if (jump && jump.section === 'frases' && jump.n !== jumpRef.current) {
       jumpRef.current = jump.n;
-      if (jump.sub === 'situaciones') {
+      if (jump.sub === 'trabajo') { goSection('situaciones'); setSitFilter('trabajo'); }
+      else if (jump.sub === 'situaciones') {
+        setSitFilter('todas');
         const g = SITUATIONAL_PHRASES.find(x => x.situation === jump.id);
         goSection('situaciones'); if (g) setSelectedSit(g);
       } else if (jump.sub === 'modismos') {
@@ -16017,6 +16660,11 @@ function Frases({ onBack, dark, initialTab, onSearch, jump }) {
     );
   }
 
+  // Argot is the merged slang + swearing chuleta, with the full interactive sheet view.
+  if (section === 'argot' && slangDoc) {
+    return <SheetView sheet={slangDoc} onBack={goIndex} onOpenSheet={id => go && go('chuletas', id)} go={go} dark={dark} />;
+  }
+
   // ── Level 1: Section content ─────────────────────────────────────────────
   if (section) {
     const SECTION_META = {
@@ -16035,6 +16683,15 @@ function Frases({ onBack, dark, initialTab, onSearch, jump }) {
         <div className={`px-4 lg:px-8 py-6 ${wide ? 'max-w-5xl' : 'max-w-3xl'} mx-auto`}>
 
           {section === 'situaciones' && (
+            <div className="flex gap-2 mb-5">
+              {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
+                <button key={o.id} onClick={() => setSitFilter(o.id)}
+                  className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${sitFilter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
+              ))}
+            </div>
+          )}
+          {section === 'situaciones' && sitFilter === 'trabajo' && <Negocios dark={dark} only="frases" />}
+          {section === 'situaciones' && sitFilter !== 'trabajo' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {SITUATIONAL_PHRASES.map((sit, si) => {
                 const meta = sitMeta(sit.situation);
@@ -16139,9 +16796,8 @@ function Frases({ onBack, dark, initialTab, onSearch, jump }) {
       <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
         <SectionIndex dark={dark} sections={[
           { id:'situaciones', emoji:'💬', label:'Situaciones', sub:`Phrases for ${SITUATIONAL_PHRASES.length} real-life contexts`,  color:'from-orange-400 to-rose-500',  onClick:()=>goSection('situaciones') },
-          { id:'mandatos',    emoji:'📢', label:'Mandatos',    sub:'Commands - tú, usted & nosotros',                              color:'from-amber-400 to-orange-500', onClick:()=>goSection('mandatos') },
           { id:'modismos',    emoji:'🎭', label:'Modismos',    sub:`${IDIOMS.length} Spanish idioms & expressions`,                color:'from-violet-400 to-purple-500',onClick:()=>goSection('modismos') },
-          { id:'argot',       emoji:'🗣️', label:'Argot',       sub:'Slang & colloquial speech',                                   color:'from-stone-400 to-stone-600',  onClick:()=>goSection('argot') },
+          { id:'argot',       emoji:'🗣️', label:'Argot',       sub:'Slang, fillers & swearing',                                   color:'from-stone-400 to-stone-600',  onClick:()=>goSection('argot') },
           { id:'valencia',    emoji:'🍊', label:'Valencià',    sub:'Basics for Valencia & the levant',                             color:'from-amber-400 to-yellow-500', onClick:()=>goSection('valencia') },
           { id:'conectores',  emoji:'🔗', label:'Conectores',  sub:'Connectors & discourse markers',                               color:'from-teal-400 to-cyan-500',    onClick:()=>goSection('conectores') },
         ]} />
@@ -16554,8 +17210,30 @@ const GRAMMAR_CATEGORIES = [
   { id:'little-words', label:'Little words', emoji:'🧩', color:'from-rose-400 to-pink-500' },
 ];
 
+// Subjuntivo triggers: extra Practica items (14 Oct 2026). There is no subjunctive
+// chuleta, so these live on the lesson that teaches the triggers.
+const SUBJUNCTIVE_TRIGGER_QUIZ = [
+  { q:'Creo que ___ razón.', opts:['tienes','tengas'], correct:0, why:'Creer que in the affirmative states what you believe: indicative.' },
+  { q:'No creo que ___ razón.', opts:['tienes','tengas'], correct:1, why:'No creer que expresses doubt, which triggers the subjunctive.' },
+  { q:'Cuando ___ a Valencia, siempre como paella.', opts:['llego','llegue'], correct:0, why:'Cuando + a habit or fact takes the indicative. Only cuando + the future takes the subjunctive.' },
+  { q:'Es importante que ___ temprano. (vosotros)', opts:['llegáis','lleguéis'], correct:1, why:'Es importante / necesario / mejor que + another subject: subjunctive.' },
+  { q:'Busco un piso que ___ terraza.', opts:['tiene','tenga'], correct:1, why:'You do not know if such a flat exists yet, so the subjunctive.' },
+  { q:'Me alegra que ___ venido.', opts:['has','hayas'], correct:1, why:'Emotions about someone else (me alegra que, me molesta que) take the subjunctive.' },
+  { q:'Ojalá ___ sol mañana.', opts:['hace','haga'], correct:1, why:'Ojalá always takes the subjunctive.' },
+  { q:'Aunque ___ caro, lo voy a comprar. (no sabes el precio)', opts:['es','sea'], correct:1, why:'Aunque + something you do not know or do not care about: subjunctive. Aunque es caro means you know it is expensive.' },
+  { q:'Te lo digo para que lo ___.', opts:['sabes','sepas'], correct:1, why:'Para que always takes the subjunctive.' },
+];
+(() => { const l = GRAMMAR_LESSONS.find(x => x.id === 'subjunctive-intro'); if (l) l.practice = (l.practice || []).concat(SUBJUNCTIVE_TRIGGER_QUIZ); })();
+
+function mandatoNotaBadge(nota) {
+  if (!nota) return null;
+  const map = { 'tú':'bg-orange-100 text-orange-700','neg. tú':'bg-rose-100 text-rose-700','usted':'bg-blue-100 text-blue-700','ustedes':'bg-indigo-100 text-indigo-700','nosotros':'bg-emerald-100 text-emerald-700' };
+  return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${map[nota] || 'bg-stone-100 text-stone-600'}`}>{nota}</span>;
+}
+
 function GramaticaSection({ onBack, dark, onSearch, jump }) {
   const [selectedLesson, setSelectedLesson] = usePersistedState('aprende.view.gramatica.lesson', null);
+  const [selectedMandato, setSelectedMandato] = usePersistedState('aprende.view.gramatica.mandato', null);
   const [practiceMode, setPracticeMode] = useState(false);
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState({});
@@ -16714,6 +17392,28 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
     );
   }
 
+  // ── Mandatos group (moved here from Frases) ──
+  if (selectedMandato) {
+    return (
+      <div>
+        <BackHeader title={selectedMandato.title} subtitle={selectedMandato.titleEn} onBack={() => setSelectedMandato(null)} dark={dark} />
+        <div className="px-4 lg:px-8 py-6 max-w-2xl mx-auto space-y-3">
+          {selectedMandato.phrases.map((phrase, pi) => (
+            <Card key={pi} dark={dark} className="p-5">
+              <div className="flex items-start gap-2 mb-1">
+                <p className="font-serif font-bold text-lg lg:text-xl flex-1">{phrase.es}</p>
+                <SpeakBtn text={phrase.es} size="sm" />
+                {mandatoNotaBadge(phrase.nota)}
+              </div>
+              <p className="text-sm mb-1 text-stone-600">{phrase.en}</p>
+              {phrase.when && <p className="text-xs italic text-stone-500">{phrase.when}</p>}
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // ── Index view ──
   return (
     <div>
@@ -16753,6 +17453,25 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
             </div>
           );
         })}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xl">📢</span>
+            <p className="text-sm font-bold uppercase tracking-widest text-stone-500">Mandatos en contexto</p>
+          </div>
+          <p className="text-sm text-stone-500 mb-3">Commands you'd actually use, tú, usted and nosotros. The rules are in Chuletas: El imperativo.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {MANDATOS_DATA.map(group => (
+              <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left">
+                <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 flex flex-col">
+                  <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${group.color} flex items-center justify-center text-xl mb-3 shadow-sm`}>{group.emoji}</div>
+                  <p className="font-bold text-base leading-tight mb-1">{group.title}</p>
+                  <p className="text-xs text-stone-500">{group.titleEn}</p>
+                  <p className="text-[11px] mt-auto pt-3 font-semibold text-stone-400">{group.phrases.length} mandatos →</p>
+                </Card>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -17337,7 +18056,7 @@ const WRITING_PROMPTS = [
   { id:'w5', level:'B1', title:'Comparar ciudades', prompt:'Compara Madrid y Valencia. ¿Cuál te parece mejor para vivir? Da al menos tres razones con comparativos y superlativos.', minWords:80, tips:['Usa "más / menos + adjetivo + que" para comparar','Usa "el / la más + adjetivo" para superlativos','Usa sin embargo / por otro lado / aunque para estructurar tu argumento'] },
 ];
 
-function EscrituraView({ prompt, dark, onBack }) {
+function EscrituraView({ prompt, dark, onBack, onSearch }) {
   const [text, setText] = useState('');
   const [showTips, setShowTips] = useState(false);
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
@@ -17500,7 +18219,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
   // Back: in a category → go to grid. At grid → exit to nav.
   const handleBack = () => {
     if (selectedCat) { setSelectedCat(null); setExpandedIdx(null); }
-    else onBack();
+    else if (onBack) onBack();
   };
 
   const handleSpeak = async () => {
@@ -17904,7 +18623,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
 
   return (
     <div>
-      <BackHeader title="Cómo se dice" subtitle="English → Spanish · Spanish → explained" onBack={handleBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Cómo se dice" subtitle="English → Spanish · Spanish → explained" onBack={selectedCat || onBack ? handleBack : null} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
 
         {/* ── Search bar ────────────────────────────────────────────────── */}
@@ -18075,7 +18794,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
   );
 }
 
-function Ejercicios({ onBack, dark, onSearch }) {
+function Ejercicios({ onBack, dark, onSearch, jump }) {
   const [selectedCategory, setSelectedCategory] = usePersistedState('aprende.view.ejercicios.category', null);
   const [currentExerciseIdx, setCurrentExerciseIdx] = useState(null);
   const [score, setScore] = useState(0);
@@ -18090,6 +18809,16 @@ function Ejercicios({ onBack, dark, onSearch }) {
     ...cat,
     exercises: seededShuffle(cat.exercises, seed + cat.category.charCodeAt(0)).slice(0, 8)
   }));
+
+  // Open a category when a chuleta's "Sigue practicando" link or a weak area on Hoy points here.
+  const jumpRef = useRef(null);
+  useEffect(() => {
+    if (jump && jump.section === 'ejercicios' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      const cat = weeklyExercises.find(c => c.category === jump.id || c.categoryEs === jump.id);
+      if (cat) { setSelectedCategory(cat); setCurrentExerciseIdx(null); }
+    }
+  }, [jump]);
 
   if (timedMode) {
     return <TimedQuiz onExit={() => setTimedMode(false)} dark={dark} />;
@@ -18237,18 +18966,7 @@ function Ejercicios({ onBack, dark, onSearch }) {
               </div>
             </Card>
           </button>
-          <button onClick={() => setEscrituraMode(true)} className="text-left">
-            <Card dark={dark} className="p-5 bg-gradient-to-br from-teal-500 to-cyan-500 text-white border-0 hover:shadow-lg transition-shadow h-full">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">📝</div>
-                <div className="flex-1">
-                  <p className="font-bold text-base">Escritura Libre</p>
-                  <p className="text-xs opacity-90">{WRITING_PROMPTS.length} prompts · A2–B1 · contador de palabras</p>
-                </div>
-                <span className="text-white/70">→</span>
-              </div>
-            </Card>
-          </button>
+{/* Escritura libre now lives in Practica > Escribe */}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -18283,8 +19001,8 @@ async function autoTranslate(word) {
   } catch { return ''; }
 }
 
-function GlosarioInner({ dark }) {
-  const onBack = null; // embedded inside Vocabulario – no standalone back needed
+function GlosarioInner({ dark, mode }) {
+  const onBack = null; // embedded inside Palabras / Practica – no standalone back needed
   const [entries, setEntries] = useState(() => {
     const saved = getStorage('aprende.glossary', null);
     if (saved && saved.length > 0) return saved;
@@ -18292,7 +19010,8 @@ function GlosarioInner({ dark }) {
     setStorage('aprende.glossary', seeded);
     return seeded;
   });
-  const [tab, setTab] = useState('lista');
+  const [tabState, setTab] = useState('lista');
+  const tab = mode || tabState;
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('reciente');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -18458,7 +19177,7 @@ function GlosarioInner({ dark }) {
       <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-4 lg:mb-6">
           <div>
-            <h2 className={`text-lg font-serif font-bold ${dark ? 'text-white' : 'text-stone-800'}`}>Mi glosario personal</h2>
+            <h2 className={`text-lg font-serif font-bold ${dark ? 'text-white' : 'text-stone-800'}`}>{mode === 'tarjetas' ? 'Repaso' : 'Mi glosario personal'}</h2>
             <p className={`text-sm mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{dueDeck.length} para repasar</p>
           </div>
           <div className="hidden lg:flex items-center gap-2">
@@ -18473,7 +19192,7 @@ function GlosarioInner({ dark }) {
           </div>
         </div>
 
-        <ViewToggle dark={dark} options={[{id:'lista',emoji:'📋',label:'Lista'},{id:'tarjetas',emoji:'🃏',label:`Tarjetas (${dueDeck.length})`}]} active={tab} onChange={(t) => { setTab(t); setCardFlipped(false); setCardIdx(0); }} />
+        {!mode && <ViewToggle dark={dark} options={[{id:'lista',emoji:'📋',label:'Lista'},{id:'tarjetas',emoji:'🃏',label:`Tarjetas (${dueDeck.length})`}]} active={tab} onChange={(t) => { setTab(t); setCardFlipped(false); setCardIdx(0); }} />}
 
         {tab === 'lista' && (<>
         {/* Type filter pills (doubles as stats) */}
@@ -18731,20 +19450,17 @@ function buildSearchIndex() {
   (typeof EQUIVALENTS !== 'undefined' ? EQUIVALENTS : []).forEach(e => idx.push({ kind:'Cómo se dice', section:'equivalentes', jumpId:e.en, es:e.es, en:e.en, hint:e.example, body:joinBody(e.en, e.enAlts, e.es, e.esAlts, e.example, e.explain) }));
   // Business vocab
   (typeof BUSINESS_VOCAB !== 'undefined' ? BUSINESS_VOCAB : []).forEach(g => {
-    (g.items || []).forEach(it => idx.push({ kind:'Negocios · Vocab', section:'negocios', es:it.es, en:it.en, hint:it.example }));
+    (g.items || []).forEach(it => idx.push({ kind:'Trabajo · Vocab', section:'vocabulario', jumpId:g.id, jumpSub:'trabajo', es:it.es, en:it.en, hint:it.example }));
   });
   // Business phrases
   (typeof BUSINESS_PHRASES !== 'undefined' ? BUSINESS_PHRASES : []).forEach(g => {
-    (g.items || []).forEach(it => idx.push({ kind:'Negocios · Frase', section:'negocios', es:it.es, en:it.en, hint:it.when }));
+    (g.items || []).forEach(it => idx.push({ kind:'Trabajo · Frase', section:'frases', jumpId:g.id, jumpSub:'trabajo', es:it.es, en:it.en, hint:it.when }));
   });
   // Business dialogs
   (typeof BUSINESS_DIALOGS !== 'undefined' ? BUSINESS_DIALOGS : []).forEach(d => {
-    idx.push({ kind:'Negocios · Diálogo', section:'negocios', es:d.title, en:d.titleEn, hint:d.setting });
+    idx.push({ kind:'Diálogo', section:'conversaciones', jumpId:d.id, es:d.title, en:d.titleEn, hint:d.setting });
   });
-  // Business cheat sheets
-  (typeof BUSINESS_SHEETS !== 'undefined' ? BUSINESS_SHEETS : []).forEach(s => {
-    idx.push({ kind:'Negocios · Chuleta', section:'negocios', es:s.title, en:s.titleEn, hint:s.intro });
-  });
+  // Business cheat sheets are in CHEAT_SHEETS (Trabajo filter), so they are indexed above.
   return idx;
 }
 
@@ -18794,7 +19510,7 @@ function GlobalSearch({ open, onClose, onJump }) {
     'Gramática':'bg-indigo-100 text-indigo-700',
     'Cómo se dice':'bg-sky-100 text-sky-700',
   };
-  const SECTION_LABEL = { diario:'Diario', hoy:'Hoy', tiempos:'Tiempos', chuletas:'Chuletas', vocabulario:'Vocabulario', conectores:'Conectores', frases:'Frases', conversaciones:'Conversaciones', lecturas:'Lecturas', gramatica:'Gramática', equivalentes:'Cómo se dice', negocios:'Negocios' };
+  const SECTION_LABEL = { diario:'Hoy · Diario', hoy:'Hoy · Palabra del día', tiempos:'Gramática · Tiempos', chuletas:'Gramática · Chuletas', vocabulario:'Palabras · Temas', conectores:'Palabras · Expresiones', frases:'Palabras · Expresiones', conversaciones:'Escucha · Conversaciones', lecturas:'Escucha · Lecturas', gramatica:'Gramática · Lecciones', equivalentes:'Palabras · Cómo se dice' };
   // Singular noun for the "open" button when a result deep-links to one item.
   const OPEN_NOUN = { chuletas:'chuleta', conversaciones:'conversación', lecturas:'lectura', gramatica:'lección', vocabulario:'tema', frases:'frase', equivalentes:'Cómo se dice' };
 
@@ -20285,10 +21001,16 @@ const BUSINESS_SHEETS = [
   }
 ];
 
-function Negocios({ onBack, dark, onSearch }) {
-  const [tab, setTab] = usePersistedState('aprende.view.negocios.tab', null);
-  const [selectedVocab, setSelectedVocab] = usePersistedState('aprende.view.negocios.vocab', null);
-  const [selectedPhrases, setSelectedPhrases] = usePersistedState('aprende.view.negocios.phrases', null);
+// Negocios is dissolved (14 Oct 2026): its reference sheets live in Chuletas under the Trabajo filter.
+BUSINESS_SHEETS.forEach(bs => CHEAT_SHEETS.push({ ...bs, category:'trabajo' }));
+
+// `only` ('vocabulario' | 'frases') renders just that list, embedded as the Trabajo
+// filter of Palabras > Temas and Expresiones > Situaciones.
+function Negocios({ onBack, dark, onSearch, only }) {
+  const [tabState, setTab] = usePersistedState('aprende.view.negocios.tab', null);
+  const tab = only || tabState;
+  const [selectedVocab, setSelectedVocab] = usePersistedState('aprende.view.trabajo.vocab', null);
+  const [selectedPhrases, setSelectedPhrases] = usePersistedState('aprende.view.trabajo.phrases', null);
   const [selectedDialog, setSelectedDialog] = usePersistedState('aprende.view.negocios.dialog', null);
   const [selectedSheet, setSelectedSheet] = usePersistedState('aprende.view.negocios.sheet', null);
   const [showTranslation, setShowTranslation] = useState(true);
@@ -20606,8 +21328,8 @@ function Negocios({ onBack, dark, onSearch }) {
   const negMeta = NEG_SECTION_META[tab] || { label:'Negocios', sub:'Business Spanish' };
   return (
     <div>
-      <BackHeader title={negMeta.label} subtitle={negMeta.sub} onBack={() => setTab(null)} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+      {!only && <BackHeader title={negMeta.label} subtitle={negMeta.sub} onBack={() => setTab(null)} dark={dark} onSearch={onSearch} />}
+      <div className={only ? '' : 'px-4 lg:px-8 py-6 max-w-5xl mx-auto'}>
 
         {tab === 'vocabulario' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -22250,112 +22972,176 @@ function XPToast({ xp, onDone }) {
 // MAIN APP
 // ============================================================
 
+// Practica > Escribe: the free-writing prompts (were Escritura libre inside Ejercicios).
+function Escribe({ dark }) {
+  const [promptId, setPromptId] = usePersistedState('aprende.view.escribe.prompt', null);
+  const prompt = promptId ? WRITING_PROMPTS.find(p => p.id === promptId) : null;
+  if (prompt) return <EscrituraView prompt={prompt} dark={dark} onBack={() => setPromptId(null)} />;
+  return (
+    <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+      <p className="text-base leading-relaxed text-stone-600 mb-5">Escribe un texto corto sobre cada tema. El contador te dice cuándo llegas al objetivo de palabras.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {WRITING_PROMPTS.map(p => (
+          <button key={p.id} onClick={() => setPromptId(p.id)} className="text-left">
+            <Card dark={dark} className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all h-full">
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${p.level === 'A2' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{p.level}</span>
+                <span className="text-xs text-stone-400">{p.minWords}+ palabras</span>
+              </div>
+              <p className="font-bold text-base mb-2">📝 {p.title}</p>
+              <p className="text-sm line-clamp-3 text-stone-500">{p.prompt}</p>
+            </Card>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Area title and its segmented tab row. The row scrolls sideways on narrow screens, never clips.
+// Tapping the tab you are already on takes you back to that tab's list.
+function AreaHeader({ area, tab, onTab, onSearch }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const centre = () => {
+      const box = ref.current, el = box && box.querySelector('[data-active="1"]');
+      if (!el || box.scrollWidth <= box.clientWidth) return;
+      const b = box.getBoundingClientRect(), r = el.getBoundingClientRect();
+      box.scrollLeft += (r.left + r.width / 2) - (b.left + b.width / 2);
+    };
+    centre();
+    const t = setTimeout(centre, 300);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(centre);
+    return () => clearTimeout(t);
+  }, [tab]);
+  return (
+    <div className="px-4 lg:px-8 pt-4 lg:pt-8 max-w-5xl mx-auto">
+      <div className="flex items-center gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="eyebrow">Aprende</p>
+          <h1 className="font-serif font-bold text-3xl lg:text-4xl text-sienna-700 leading-tight mt-0.5">{area.label}</h1>
+        </div>
+        <button onClick={onSearch} aria-label="Buscar"
+          className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+        </button>
+      </div>
+      <div ref={ref} className="mt-4 -mx-4 px-4 lg:mx-0 lg:px-0 overflow-x-auto hide-scroll">
+        <div role="tablist" aria-label={area.label} className="flex gap-1 p-1 rounded-2xl bg-cream/70 border border-ink/10 w-max">
+          {area.tabs.map(t => {
+            const on = t.id === tab;
+            return (
+              <a key={t.id} role="tab" aria-selected={on} data-active={on ? '1' : '0'} href={`#${area.id}/${t.id}`}
+                onClick={e => { e.preventDefault(); onTab(t.id); }}
+                className={`flex-shrink-0 whitespace-nowrap inline-flex items-center px-4 min-h-10 rounded-xl text-sm font-semibold transition-colors no-underline ${on ? 'bg-orange-500 text-paper shadow-sm' : 'text-sienna-700 hover:bg-paper'}`}>
+                {t.label}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const dark = false;
-  const SECTION_IDS = ['inicio','diario','tiempos','conjugador','chuletas','gramatica','vocabulario','frases','equivalentes','lecturas','conversaciones','negocios','ejercicios','dictado','pronunciacion','ajustes'];
-  const [section, setSection] = useState(() => {
-    const hash = window.location.hash.replace('#', '').trim();
-    if (hash && SECTION_IDS.includes(hash)) return hash;
-    const saved = getStorage('aprende.lastSection', 'inicio');
-    const snapToParent = { hoy:'inicio', conectores:'frases' };
-    return snapToParent[saved] || saved;
-  });
+  const [route, setRoute] = useState(() =>
+    parseRoute(window.location.hash) || parseRoute(getStorage('aprende.route', '')) ||
+    parseRoute(getStorage('aprende.lastSection', '')) || { area:'hoy', tab:null });
+  const [nonce, setNonce] = useState(0);
+  const rs = routeStr(route);
 
-  // Navigation history stack - lets Volver go back one section at a time
-  const [navHistory, setNavHistory] = useState([]);
-
-  const goTo = (sec) => {
-    history.replaceState(null, '', '#' + sec);
-    setSection(prev => {
-      if (sec === 'inicio') {
-        setNavHistory([]);
-      } else {
-        setNavHistory(h => [...h, prev]);
-      }
-      return sec;
-    });
-    setStorage('aprende.lastSection', sec);
-    if (sec !== 'inicio') setStorage('aprende.lastNonInicio', sec);
-  };
-
-  const goBack = () => {
-    setNavHistory(h => {
-      if (h.length === 0) return h; // already at root
-      const prev = h[h.length - 1];
-      const next = h.slice(0, -1);
-      setSection(prev);
-      setStorage('aprende.lastSection', prev);
-      return next;
-    });
-  };
   useEffect(() => {
-    const onHashChange = () => {
-      const hash = window.location.hash.replace('#', '').trim();
-      if (hash && SECTION_IDS.includes(hash)) {
-        setSection(hash);
-        setNavHistory([]);
-        setStorage('aprende.lastSection', hash);
-      }
-    };
+    if (window.location.hash !== '#' + rs) history.replaceState(null, '', '#' + rs);
+    setStorage('aprende.route', rs);
+    if (route.area !== 'hoy' && route.area !== 'ajustes') {
+      setStorage('aprende.lastPlace', rs);
+      setStorage('aprende.area.' + route.area, route.tab);
+    }
+    window.scrollTo(0, 0);
+  }, [rs]);
+
+  useEffect(() => {
+    const onHashChange = () => { const r = parseRoute(window.location.hash); if (r) setRoute(r); };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
+
+  const goTo = (str) => setRoute(parseRoute(str) || { area:'hoy', tab:null });
+  // Same tab again: clear its open item and remount, so you land back on the list.
+  const goTab = (area, tab) => {
+    const target = area + '/' + tab;
+    if (target === rs) { (TAB_ROOT_KEYS[target] || []).forEach(k => setStorage(k, null)); setNonce(n => n + 1); window.scrollTo(0, 0); }
+    else goTo(target);
+  };
+  const goArea = (id) => {
+    if (id === route.area && route.tab && id !== 'hoy') goTab(id, route.tab);
+    else goTo(id);
+  };
+
   const [searchOpen, setSearchOpen] = useState(false);
-  // Deep-link target for opening a specific item from global search. Each section
-  // reads `jump` and acts on it when jump.section matches; the nonce (n) lets it
-  // re-open even if that section is already the active one.
+  // Deep-link target for opening a specific item (global search, chuleta links, Hoy).
+  // Each component reads `jump` and acts when jump.section matches; the nonce (n)
+  // lets it re-open even if that tab is already the active one.
   const [jump, setJump] = useState(null);
-  const doJump = (section, id, sub) => setJump(prev => ({ section, id, sub, n: (prev ? prev.n : 0) + 1 }));
-  const lastNonInicio = getStorage('aprende.lastNonInicio', 'pronunciacion');
+  const go = (section, id, sub) => {
+    let target = LEGACY_ROUTES[section];
+    if (section === 'chuletas' && sub === 'mistake') target = 'gramatica/errores';
+    if (section === 'gramatica') target = 'gramatica/lecciones';
+    if (section === 'hoy') target = 'hoy/palabra';
+    setJump(prev => ({ section, id, sub, n: (prev ? prev.n : 0) + 1 }));
+    goTo(target || 'hoy');
+  };
 
-  const NAV_ITEMS = [
-    { id: 'inicio', label: 'Inicio', emoji: '🏠' },
-    { id: 'diario', label: 'Diario', emoji: '📰' },
-    { id: 'tiempos', label: 'Tiempos', emoji: '🕐' },
-    { id: 'conjugador', label: 'Conjugador', emoji: '🔤' },
-    { id: 'chuletas', label: 'Chuletas', emoji: '📋' },
-    { id: 'gramatica', label: 'Gramática', emoji: '📐' },
-    { id: 'vocabulario', label: 'Vocabulario', emoji: '📚' },
-    { id: 'frases', label: 'Frases', emoji: '💬' },
-    { id: 'equivalentes', label: 'Cómo se dice', emoji: '🗣️' },
-    { id: 'lecturas', label: 'Lecturas', emoji: '📖' },
-    { id: 'conversaciones', label: 'Conversaciones', emoji: '🎧' },
-    { id: 'negocios', label: 'Negocios', emoji: '💼' },
-    { id: 'ejercicios', label: 'Ejercicios', emoji: '✏️' },
-    { id: 'dictado', label: 'Dictado', emoji: '✍️' },
-    { id: 'pronunciacion', label: 'Pronunciación', emoji: '🎤' },
-    { id: 'ajustes', label: 'Ajustes', emoji: '⚙️' },
-  ];
+  const [isWide, setIsWide] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const on = () => setIsWide(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  const diarioLeft = diarioLeftToday();
+  const dueCards = tarjetasDue();
+  const badgeFor = (id) => id === 'hoy' ? diarioLeft : id === 'practica' ? dueCards : 0;
+  const badgeTitle = (id) => id === 'hoy' ? `Diario: ${diarioLeft} tarjetas por leer` : id === 'practica' ? `${dueCards} tarjetas para repasar` : '';
+  const area = AREAS.find(a => a.id === route.area);
 
-  const renderSection = () => {
-    const props = { dark, onBack: goBack, onSearch: () => setSearchOpen(true), jump };
-    switch(section) {
-      case 'inicio': return <Inicio dark={dark} section={section} setSection={goTo} />;
-      case 'diario': return <Diario {...props} />;
-      case 'hoy': return <Hoy {...props} />;
-      case 'tiempos': return <Tiempos {...props} />;
-      case 'conjugador': return <ConjugadorSection {...props} />;
-      case 'chuletas': return <Chuletas {...props} />;
-      case 'gramatica': return <GramaticaSection {...props} />;
-      case 'vocabulario': return <Vocabulario {...props} />;
-      case 'conectores': return <Frases {...props} initialTab="conectores" />;
-      case 'frases': return <Frases {...props} />;
-      case 'equivalentes': return <Equivalentes {...props} />;
-      case 'lecturas': return <Lecturas {...props} />;
-      case 'conversaciones': return <Conversaciones {...props} />;
-      case 'negocios': return <Negocios {...props} />;
-      case 'ejercicios': return <Ejercicios {...props} />;
-      case 'dictado': return <Dictado {...props} />;
-      case 'pronunciacion': return <Pronunciacion {...props} />;
-      case 'ajustes': return <Ajustes {...props} />;
-      case 'glosario': return <Vocabulario {...props} initialTab="glosario" />;
-      default: return <Inicio dark={dark} section={section} setSection={goTo} />;
+  const renderBody = () => {
+    const props = { dark, onBack: null, onSearch: () => setSearchOpen(true), jump, go };
+    const back = () => goTo('hoy');
+    if (route.area === 'ajustes') return <Ajustes dark={dark} onBack={isWide ? null : back} />;
+    if (route.area === 'hoy') {
+      if (route.tab === 'diario' || route.tab === 'archivo') return <Diario {...props} onBack={back} initialTab={route.tab === 'archivo' ? 'archivo' : 'hoy'} />;
+      if (route.tab === 'palabra') return <Hoy {...props} onBack={back} />;
+      return <HoyPage goTo={goTo} go={go} onSearch={() => setSearchOpen(true)} />;
+    }
+    switch (rs) {
+      case 'gramatica/tiempos':      return <Tiempos {...props} />;
+      case 'gramatica/conjugador':   return <ConjugadorSection {...props} />;
+      case 'gramatica/lecciones':    return <GramaticaSection {...props} />;
+      case 'gramatica/chuletas':     return <Chuletas {...props} fixedTab="gramatica" />;
+      case 'gramatica/errores':      return <Chuletas {...props} fixedTab="errores" />;
+      case 'palabras/temas':         return <Vocabulario {...props} only="temas" />;
+      case 'palabras/expresiones':   return <Frases {...props} />;
+      case 'palabras/comosedice':    return <Equivalentes {...props} />;
+      case 'palabras/glosario':      return <Vocabulario {...props} only="glosario" />;
+      case 'escucha/lecturas':       return <Lecturas {...props} />;
+      case 'escucha/conversaciones': return <Conversaciones {...props} />;
+      case 'practica/repaso':        return <GlosarioInner dark={dark} mode="tarjetas" />;
+      case 'practica/ejercicios':    return <Ejercicios {...props} />;
+      case 'practica/dictado':       return <Dictado {...props} />;
+      case 'practica/habla':         return <Pronunciacion {...props} />;
+      case 'practica/escribe':       return <Escribe dark={dark} />;
+      default: return <HoyPage goTo={goTo} go={go} onSearch={() => setSearchOpen(true)} />;
     }
   };
 
+  const showAreaHeader = area && area.tabs.length > 0;
+
   return (
     <div className="min-h-screen mesh-light text-ink">
-      {/* Desktop sidebar - editorial column */}
+      {/* Desktop sidebar: the five areas, with Ajustes at the foot */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 border-r border-ink/10 glass-light">
         <div className="p-6 border-b border-ink/10">
           <p className="eyebrow mb-2">Aprende</p>
@@ -22369,106 +23155,62 @@ function App() {
             <span className="flex-1 text-left">Buscar…</span>
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-          {NAV_ITEMS.map(item => (
-            <a key={item.id} href={`#${item.id}`} onClick={e => { e.preventDefault(); goTo(item.id); }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl text-left transition-all font-medium text-sm sidebar-item no-underline
-                ${section === item.id
-                  ? 'bg-orange-500 text-paper shadow-sm'
-                  : 'text-ink hover:bg-cream'
-                }`}>
-              <span className="text-base flex-shrink-0">{item.emoji}</span>
-              <span>{item.label}</span>
-            </a>
-          ))}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+          {AREAS.map(a => {
+            const on = route.area === a.id;
+            const badge = badgeFor(a.id);
+            return (
+              <a key={a.id} href={`#${a.id}`} onClick={e => { e.preventDefault(); goArea(a.id); }} aria-current={on ? 'page' : undefined}
+                className={`w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl text-left transition-all font-semibold text-[15px] sidebar-item no-underline ${on ? 'bg-orange-500 text-paper shadow-sm' : 'text-ink hover:bg-cream'}`}>
+                <span className="text-lg flex-shrink-0">{a.emoji}</span>
+                <span className="flex-1">{a.label}</span>
+                {badge > 0 && (
+                  <span title={badgeTitle(a.id)} className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${on ? 'bg-paper/25 text-paper' : 'bg-orange-50 text-orange-600 border border-orange-200'}`}>{badge}</span>
+                )}
+              </a>
+            );
+          })}
         </nav>
+        <div className="p-3 border-t border-ink/10">
+          <a href="#ajustes" onClick={e => { e.preventDefault(); goTo('ajustes'); }}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl text-sm font-medium no-underline transition-colors ${route.area === 'ajustes' ? 'bg-orange-500 text-paper' : 'text-dust hover:bg-cream hover:text-ink'}`}>
+            <span className="text-base">⚙️</span><span>Ajustes</span>
+          </a>
+        </div>
       </aside>
 
-      {/* Main content */}
       <main className="lg:ml-64 min-h-screen">
-        {/* Mobile header – only on inicio (sub-sections use BackHeader instead) */}
-        <header className={`${section === 'inicio' ? 'flex' : 'hidden'} lg:hidden sticky top-0 z-30 px-4 py-3 items-center justify-between glass-light border-b border-ink/10`}>
-          <div>
-            <p className="eyebrow leading-none">Aprende</p>
-            <h1 className="font-serif font-bold text-lg text-sienna-700 leading-tight mt-0.5">La Vida Español</h1>
-          </div>
-          <button onClick={() => setSearchOpen(true)} aria-label="Buscar"
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
-          </button>
-        </header>
-
-        <div className="pb-24 lg:pb-8">
-          {renderSection()}
+        {showAreaHeader && <AreaHeader area={area} tab={route.tab} onTab={t => goTab(area.id, t)} onSearch={() => setSearchOpen(true)} />}
+        <div className="pb-24 lg:pb-8" key={rs + ':' + nonce}>
+          {renderBody()}
         </div>
       </main>
 
-      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s, id, sub) => { if (id != null) doJump(s, id, sub); goTo(s); }} />
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(s, id, sub) => go(s, id, sub)} />
 
       <Toaster />
       <GlobalAudioStop />
 
-      {/* ── Mobile bottom nav - three breathable destinations ── */}
-      {(() => {
-        const [moreOpen, setMoreOpen] = React.useState(false);
-        const continueItem = NAV_ITEMS.find(n => n.id === lastNonInicio) || NAV_ITEMS.find(n => n.id === 'pronunciacion');
-
-        const NavBtn = ({ active, emoji, label, href, onClick, ariaLabel }) => (
-          <a href={href || '#'} onClick={e => { e.preventDefault(); onClick && onClick(); }} aria-label={ariaLabel || label}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 min-h-14 py-2.5 transition-all no-underline
-              ${active ? 'text-orange-500' : 'text-dust'}`}>
-            <span className="text-xl leading-none">{emoji}</span>
-            <span className="text-[10px] font-semibold leading-none tracking-wide">{label}</span>
-          </a>
-        );
-
-        return (
-          <>
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-ink/10 glass-light"
-              style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-              <div className="flex">
-                <NavBtn active={section === 'inicio'} emoji="🏠" label="Inicio" href="#inicio"
-                  onClick={() => { goTo('inicio'); setMoreOpen(false); }} />
-                <NavBtn
-                  active={section === continueItem.id && section !== 'inicio'}
-                  emoji={section !== 'inicio' && section === continueItem.id ? continueItem.emoji : '↻'}
-                  label={section !== 'inicio' && section === continueItem.id ? continueItem.label.split(' ')[0] : 'Continuar'}
-                  href={`#${continueItem.id}`}
-                  ariaLabel={`Continuar con ${continueItem.label}`}
-                  onClick={() => { goTo(continueItem.id); setMoreOpen(false); }} />
-                <NavBtn active={moreOpen} emoji="⋯" label="Más"
-                  onClick={() => setMoreOpen(o => !o)} />
-              </div>
-            </nav>
-
-            {/* More drawer - full nav menu */}
-            {moreOpen && (
-              <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setMoreOpen(false)}>
-                <div className="absolute inset-0 bg-ink/30" />
-                <div className="relative rounded-t-3xl border-t border-ink/10 bg-paper shadow-2xl p-5 pb-8 toast-in"
-                  style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
-                  onClick={e => e.stopPropagation()}>
-                  <div className="w-10 h-1 rounded-full mx-auto mb-5 bg-ink/15" />
-                  <p className="eyebrow text-center mb-4">Todas las secciones</p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {NAV_ITEMS.map(item => (
-                      <a key={item.id} href={`#${item.id}`} onClick={e => { e.preventDefault(); goTo(item.id); setMoreOpen(false); }}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all min-h-[68px] no-underline
-                          ${section === item.id
-                            ? 'bg-orange-500 text-paper shadow-md'
-                            : 'bg-cream text-ink hover:bg-ochre-100 active:scale-[0.98]'
-                          }`}>
-                        <span className="text-2xl leading-none">{item.emoji}</span>
-                        <span className="text-[10px] font-semibold leading-tight text-center">{item.label}</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        );
-      })()}
+      {/* Phone: five-tab bottom bar, one per area */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-ink/10 glass-light" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="flex">
+          {AREAS.map(a => {
+            const on = route.area === a.id;
+            const badge = badgeFor(a.id);
+            return (
+              <a key={a.id} href={`#${a.id}`} onClick={e => { e.preventDefault(); goArea(a.id); }} aria-label={a.label} aria-current={on ? 'page' : undefined}
+                className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 min-h-14 py-2.5 transition-colors no-underline ${on ? 'text-orange-500' : 'text-dust'}`}>
+                {on && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-orange-500" />}
+                <span className="text-xl leading-none">{a.emoji}</span>
+                <span className="text-[10px] font-semibold leading-none tracking-wide truncate max-w-full px-0.5">{a.short || a.label}</span>
+                {badge > 0 && (
+                  <span className="absolute top-1 left-1/2 ml-2 min-w-[1.15rem] h-[1.15rem] px-1 rounded-full bg-orange-500 text-paper text-[10px] font-bold leading-[1.15rem] text-center">{badge > 99 ? '99+' : badge}</span>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
