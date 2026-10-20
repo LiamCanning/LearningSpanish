@@ -10165,8 +10165,12 @@ function TypeBadge({ type }) {
     phrase: 'bg-ochre-50 text-ochre-700 border-ochre-200',
     other:  'bg-cream text-sienna-700 border-sienna-200'
   };
-  return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${map[type] || map.other}`}>{type}</span>;
+  return <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${map[type] || map.other}`}>{TYPE_ES[type] || type || 'otro'}</span>;
 }
+// Word types shown in Spanish (data keeps the English ids).
+const TYPE_ES = { noun:'sustantivo', verb:'verbo', adj:'adjetivo', adjective:'adjetivo', phrase:'frase', other:'otro' };
+const TYPE_ES_PLURAL = { noun:'Sustantivos', verb:'Verbos', adj:'Adjetivos', phrase:'Frases' };
+const EXERCISE_TYPE_ES = { fill:'Rellena el hueco', mcq:'Elige la respuesta', translation:'Traduce', match:'Empareja' };
 
 function TabBar({ tabs, active, onChange, dark }) {
   return (
@@ -10455,11 +10459,97 @@ function diarioLeftToday() {
   const done = getStorage('aprende.diario.done.' + today, []) || [];
   return DIARIO_ORDER.filter(id => c[id] && !done.includes(id)).length;
 }
-function tarjetasDue() {
-  const entries = getStorage('aprende.glossary', []) || [];
-  const srs = getStorage('aprende.srs', {}) || {};
+// What was done today: Tarjetas met (id -> 'new' | 'rev'), Dictado sentences and exercises answered.
+// Drives the daily Tarjetas cap and the session card on Hoy. Resets itself at midnight.
+function dayLog() {
+  const t = todayStr();
+  const l = getStorage('aprende.daylog', null);
+  return l && l.date === t ? { cards: {}, dictado: 0, ejercicios: 0, ...l } : { date: t, cards: {}, dictado: 0, ejercicios: 0 };
+}
+function dayLogBump(field, n = 1) { const l = dayLog(); l[field] = (l[field] || 0) + n; setStorage('aprende.daylog', l); }
+function dayLogCard(id, kind) { const l = dayLog(); if (!l.cards[id]) { l.cards[id] = kind; setStorage('aprende.daylog', l); } }
+
+// Daily cap so a big backlog never turns into a 65-card wall: due reviews up to the cap,
+// a few new cards, and anything you got wrong today comes back at the end.
+const TARJETAS_DAILY = { review: 20, fresh: 5 };
+function tarjetasCap() { return { ...TARJETAS_DAILY, ...(getStorage('aprende.tarjetas.cap', null) || {}) }; }
+function tarjetasQueue(entries, srs) {
+  // Before Repaso is first opened the starter deck is not saved yet; count it as new cards.
+  entries = entries || getStorage('aprende.glossary', null) || GLOSSARY_SEED.map((e, i) => ({ ...e, id: 'seed' + i }));
+  srs = srs || getStorage('aprende.srs', {}) || {};
+  const cap = tarjetasCap();
   const now = Date.now();
-  return entries.filter(e => { const r = srs[e.id]; return !r || (r.due || 0) <= now; }).length;
+  const seen = dayLog().cards;
+  const kinds = Object.values(seen);
+  const revLeft = Math.max(0, cap.review - kinds.filter(k => k === 'rev').length);
+  const newLeft = Math.max(0, cap.fresh - kinds.filter(k => k === 'new').length);
+  const due = entries.filter(e => srs[e.id] && (srs[e.id].due || 0) <= now);
+  const again = due.filter(e => seen[e.id]);
+  const reviews = due.filter(e => !seen[e.id]).sort((a, b) => (srs[a.id].due || 0) - (srs[b.id].due || 0)).slice(0, revLeft);
+  const fresh = entries.filter(e => !srs[e.id]).slice(0, newLeft);
+  return [...reviews, ...fresh, ...again];
+}
+function tarjetasDue() { return tarjetasQueue().length; }
+
+// Finished items per list ('lecturas', 'conversaciones', 'lecciones'): { id: timestamp }.
+function doneMap(kind) { return getStorage('aprende.done.' + kind, {}) || {}; }
+function useDone(kind) {
+  const [map, setMap] = useState(() => doneMap(kind));
+  const mark = (id, on = true) => {
+    const m = { ...doneMap(kind) };
+    if (on) m[id] = m[id] || Date.now(); else delete m[id];
+    setStorage('aprende.done.' + kind, m);
+    setMap(m);
+  };
+  return [map, mark];
+}
+function DoneBadge({ on, label = 'Hecha' }) {
+  if (!on) return null;
+  return <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-oliva-50 text-oliva-700 border border-oliva-200">✓ {label}</span>;
+}
+// Rail button: mark an item finished, or undo it.
+function DoneToggle({ on, onToggle, label, doneLabel }) {
+  return (
+    <button onClick={onToggle}
+      className={`w-full min-h-11 px-4 rounded-xl text-sm font-semibold border transition-colors ${on ? 'bg-oliva-50 text-oliva-700 border-oliva-200 hover:bg-oliva-100' : 'bg-paper text-sienna-700 border-ink/15 hover:border-orange-500/50 hover:text-orange-600'}`}>
+      {on ? `✓ ${doneLabel} · deshacer` : label}
+    </button>
+  );
+}
+
+// Your level, set in Ajustes; lists use it to pick the next item for you.
+function userLevel() { return getStorage('aprende.nivel', 'B1'); }
+function LevelChips({ value, onChange, levels }) {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Nivel">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-dust mr-1">Nivel</span>
+      {[{ id:'all', label:'Todos' }, ...levels.map(l => ({ id:l, label:l }))].map(o => (
+        <button key={o.id} onClick={() => onChange(o.id)} aria-pressed={value === o.id}
+          className={`px-3.5 min-h-9 rounded-full text-[13px] font-semibold transition-colors ${value === o.id ? 'bg-ink text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>{o.label}</button>
+      ))}
+    </div>
+  );
+}
+// First unfinished item at the chosen level (or your level when the filter is Todos).
+function pickNext(items, done, filter) {
+  const lvl = filter && filter !== 'all' ? filter : userLevel();
+  const open = items.filter(x => !done[x.id]);
+  return open.find(x => x.level === lvl) || open[0] || null;
+}
+function NextForYou({ item, meta, onOpen }) {
+  if (!item) return null;
+  return (
+    <button onClick={onOpen}
+      className="group w-full text-left mb-6 rounded-2xl border border-orange-500/30 bg-orange-50/60 hover:bg-orange-50 px-5 py-4 flex items-center gap-4 transition-colors">
+      <div className="flex-1 min-w-0">
+        <p className="eyebrow text-orange-600">Siguiente para ti</p>
+        <p className="font-serif font-bold text-lg lg:text-xl text-ink leading-snug mt-1">{item.title}</p>
+        {meta && <p className="text-sm text-dust mt-0.5">{meta}</p>}
+      </div>
+      <LevelBadge level={item.level} />
+      <span className="text-xl text-orange-600 transition-transform group-hover:translate-x-1">→</span>
+    </button>
+  );
 }
 
 // ============================================================
@@ -10477,8 +10567,6 @@ function HoyPage({ goTo, go, onSearch }) {
   const cards = ed ? DIARIO_ORDER.filter(id => ed[id]) : [];
   const doneN = cards.filter(id => done.includes(id)).length;
   const place = describePlace(getStorage('aprende.lastPlace', null) || LEGACY_ROUTES[getStorage('aprende.lastNonInicio', '')] || '');
-  const dueCards = React.useMemo(() => tarjetasDue(), []);
-  const dueSheets = React.useMemo(() => sheetsDue(), []);
   const weakAreas = React.useMemo(() => {
     const history = getStorage('aprende.exercise_history', []);
     if (!history.length) return [];
@@ -10492,6 +10580,39 @@ function HoyPage({ goTo, go, onSearch }) {
       return acc;
     }, []).sort((a, b) => a.acc - b.acc);
   }, []);
+  // Tu sesión de hoy: one ordered run through everything that is due, about 15 minutes.
+  const session = React.useMemo(() => {
+    const log = dayLog();
+    const steps = [];
+    const cardsLeft = tarjetasDue();
+    const cardsDone = Object.keys(log.cards).length;
+    if (cardsLeft + cardsDone > 0) steps.push({ id:'tarjetas', label:'Repasa tus tarjetas',
+      detail: cardsLeft ? `${cardsLeft} ${cardsLeft === 1 ? 'pendiente' : 'pendientes'}` : `${cardsDone} hechas`,
+      mins: Math.max(2, Math.round(Math.min(cardsLeft || cardsDone, 25) / 4)), done: cardsLeft === 0, open: () => goTo('practica/repaso') });
+    const sheets = sheetsDue();
+    const midnight = new Date().setHours(0, 0, 0, 0);
+    const sheetsToday = Object.values(sheetProgressAll()).filter(p => (p.reviewedAt || 0) >= midnight).length;
+    if (sheets.length || sheetsToday) steps.push({ id:'chuletas',
+      label: sheets.length ? `Repasa: ${sheets[0].sheet.title}` : 'Chuletas repasadas',
+      detail: sheets.length > 1 ? `y ${sheets.length - 1} más` : 'chuleta', mins: 3,
+      done: sheets.length === 0 || sheetsToday >= 2, open: () => sheets.length ? go('chuletas', sheets[0].sheet.id) : goTo('gramatica/chuletas') });
+    const dStats = dictadoStatsGet();
+    const weakBy = Object.keys(DICTADO_SENTENCES).map(lvl => ({ lvl, n: DICTADO_SENTENCES[lvl].filter(x => {
+      const st = dStats[x.slice(0, 30)]; return st && st.totalWords > 0 && st.correctWords / st.totalWords < 0.85; }).length }))
+      .sort((a, b) => b.n - a.n)[0];
+    const hasWeak = weakBy && weakBy.n > 0;
+    steps.push({ id:'dictado', label: hasWeak ? 'Dictado: tus frases difíciles' : 'Dictado: cinco frases',
+      detail: `${Math.min(log.dictado, 5)}/5`, mins: 3, done: log.dictado >= 5,
+      open: () => go('dictado', hasWeak ? weakBy.lvl : 'medio', hasWeak ? 'weak' : '') });
+    const w = weakAreas[0];
+    steps.push({ id:'ejercicios', label: w ? `Refuerza: ${w.category}` : 'Ejercicios de la semana',
+      detail: `${Math.min(log.ejercicios, 8)}/8`, mins: 4, done: log.ejercicios >= 8,
+      open: () => w ? go('ejercicios', w.category) : goTo('practica/ejercicios') });
+    return steps;
+  }, []);
+  const sessionNext = session.find(x => !x.done);
+  const sessionDoneN = session.filter(x => x.done).length;
+  const sessionMins = session.filter(x => !x.done).reduce((a, x) => a + x.mins, 0);
   const dateStr = new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' }).toUpperCase();
   const glance = ed ? [
     ed.verbo && { k:'Verbo', v:ed.verbo.infinitivo },
@@ -10576,20 +10697,41 @@ function HoyPage({ goTo, go, onSearch }) {
             </Card>
           </div>
 
-          {/* What's waiting today */}
-          <div>
-            <p className="eyebrow mb-3">Para hoy</p>
-            <div>
-              <Row label="Tarjetas para repasar" value={dueCards > 0 ? dueCards : 'al día'} strong={dueCards > 0} onClick={() => goTo('practica/repaso')} />
-              {dueSheets.slice(0, 3).map(d => (
-                <Row key={d.sheet.id} label={`Repasa: ${d.sheet.title}`} value="chuleta" strong onClick={() => go('chuletas', d.sheet.id)} />
-              ))}
-              {weakAreas.slice(0, 2).map(w => (
-                <Row key={w.category} label={`Área débil: ${w.category}`} value={Math.round(w.acc * 100) + '%'} strong onClick={() => go('ejercicios', w.category)} />
-              ))}
-              <Row label="Ejercicios de esta semana" value="~10 min" onClick={() => goTo('practica/ejercicios')} />
-              <Row label="Habla: pronunciación" value="~3 min" onClick={() => goTo('practica/habla')} />
+          {/* Tu sesión de hoy: Tarjetas, chuletas, Dictado and weak exercises, in that order. First on phones. */}
+          <div className="order-first lg:order-none">
+            <div className="flex items-baseline gap-3 mb-3">
+              <p className="eyebrow flex-1">Tu sesión de hoy</p>
+              <span className="font-mono text-xs font-bold text-orange-600">{sessionDoneN}/{session.length}</span>
             </div>
+            <Card className="p-5">
+              <ol className="space-y-1">
+                {session.map((st, i) => (
+                  <li key={st.id}>
+                    <button onClick={st.open}
+                      className="w-full group flex items-center gap-3 py-2 text-left min-h-11 rounded-lg">
+                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${st.done ? 'bg-oliva-100 text-oliva-700' : st === sessionNext ? 'bg-orange-500 text-paper' : 'bg-cream text-sienna-700'}`}>{st.done ? '✓' : i + 1}</span>
+                      <span className="flex-1 min-w-0">
+                        <span className={`block font-serif text-base leading-snug truncate ${st.done ? 'text-dust line-through decoration-ink/20' : 'text-ink group-hover:text-orange-600'} transition-colors`}>{st.label}</span>
+                        <span className="block text-xs text-dust">{st.detail}{!st.done && ` · ~${st.mins} min`}</span>
+                      </span>
+                      <span className="text-dust group-hover:text-orange-600 group-hover:translate-x-0.5 transition-all">→</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-4 h-1.5 rounded-full bg-ink/10 overflow-hidden">
+                <div className="h-full bg-orange-500 transition-all" style={{ width: Math.round(sessionDoneN / Math.max(session.length, 1) * 100) + '%' }} />
+              </div>
+              {sessionNext ? (
+                <button onClick={sessionNext.open}
+                  className="mt-4 w-full min-h-11 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-bold transition-colors">
+                  {sessionDoneN === 0 ? `Empezar · unos ${sessionMins} min` : `Seguir: ${sessionNext.label} →`}
+                </button>
+              ) : (
+                <p className="mt-4 text-sm font-semibold text-oliva-700">Sesión completada. Mañana hay más.</p>
+              )}
+              <p className="mt-3 text-xs text-dust">Si te sobra tiempo: <button onClick={() => goTo('practica/habla')} className="font-semibold text-sienna-700 hover:text-orange-600">Habla</button> · <button onClick={() => goTo('practica/escribe')} className="font-semibold text-sienna-700 hover:text-orange-600">Escribe</button> · <button onClick={() => goTo('escucha/lecturas')} className="font-semibold text-sienna-700 hover:text-orange-600">Lecturas</button></p>
+            </Card>
           </div>
         </div>
 
@@ -11204,7 +11346,7 @@ function TenseCard({ card, dark }) {
       {/* ── 3. ✅ Key Points (green) ─────────────────────────── */}
       {card.keyPoints && card.keyPoints.length > 0 && (
         <div className={`rounded-xl p-4 mb-4 ${dark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>✅ Key Points</p>
+          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>✅ Claves</p>
           <ul className="space-y-2">
             {card.keyPoints.map((pt, i) => (
               <li key={i} className={`text-sm flex gap-2 leading-snug ${dark ? 'text-emerald-100' : 'text-emerald-900'}`}>
@@ -11218,7 +11360,7 @@ function TenseCard({ card, dark }) {
       {/* ── 4. ⚠️ Must Remember (amber) ──────────────────────── */}
       {card.mustRemember && card.mustRemember.length > 0 && (
         <div className={`rounded-xl p-4 mb-4 ${dark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ Must Remember</p>
+          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ No lo olvides</p>
           <ul className="space-y-2">
             {card.mustRemember.map((pt, i) => (
               <li key={i} className={`text-sm flex gap-2 leading-snug ${dark ? 'text-amber-100' : 'text-amber-900'}`}>
@@ -11720,6 +11862,29 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
   const [selected, setSelected] = usePersistedState('aprende.view.lecturas.selected', null);
   const [showAnswers, setShowAnswers] = useState({});
   const [wordPopover, setWordPopover] = useState(null);
+  const [done, markDone] = useDone('lecturas');
+  const [lvl, setLvl] = usePersistedState('aprende.view.lecturas.level', 'all');
+  const [para, setPara] = useState(-1);
+  useEffect(() => { setPara(-1); }, [selected && selected.id]);
+  useEffect(() => {
+    if (!selected) return;
+    const h = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target && e.target.closest && e.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      const n = selected.paragraphs.length;
+      const speakAt = (i) => { setPara(i); speakES(selected.paragraphs[i], { gender:'female' }); };
+      if (e.key === 'ArrowRight') { e.preventDefault(); speakAt(Math.min(n - 1, para + 1)); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); speakAt(Math.max(0, para - 1)); }
+      else if (e.key === ' ') {
+        e.preventDefault();
+        const busy = (typeof ttsCurrentAudio !== 'undefined' && ttsCurrentAudio && !ttsCurrentAudio.paused) || (window.speechSynthesis && window.speechSynthesis.speaking);
+        if (busy) AudioBus.stopAll(); else speakAt(para < 0 ? 0 : para);
+      } else if (e.key === 'Escape') setWordPopover(null);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  });
+  const openReading = (r) => { setSelected(r); setShowAnswers({}); setWordPopover(null); window.scrollTo(0, 0); };
 
   // Open a specific reading when global search deep-links here.
   const jumpRef = useRef(null);
@@ -11731,19 +11896,23 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
     }
   }, [jump]);
 
-  const handleWordClick = (e, word) => {
+  const handleWordClick = (e, word, start) => {
     const clean = word.replace(/[¿¡.,;:!?"""''«»\-––()\[\]]/g, '').trim();
     if (!clean) return;
     e.stopPropagation();
     const rect = e.target.getBoundingClientRect();
-    setWordPopover({ word: clean, x: rect.left + rect.width / 2, y: rect.bottom + window.scrollY + 4 });
+    setWordPopover({ word: clean, start, x: rect.left + rect.width / 2, y: rect.bottom + 6 });
   };
 
   const renderClickableText = (text) => {
-    return text.split(/(\s+)/).map((token, i) => {
+    const tokens = text.split(/(\s+)/);
+    return tokens.map((token, i) => {
       if (/^\s+$/.test(token)) return token;
+      // Only a sentence-initial capital is dropped, so names like Valencia keep theirs.
+      const prev = i >= 2 ? tokens[i - 2] : '';
+      const start = !prev || /[.!?…:»"]$/.test(prev) || /^[¿¡«"]/.test(token);
       return (
-        <span key={i} onMouseDown={e => e.preventDefault()} onClick={e => handleWordClick(e, token)}
+        <span key={i} onMouseDown={e => e.preventDefault()} onClick={e => handleWordClick(e, token, start)}
           className={`cursor-pointer rounded px-0.5 transition-colors ${dark ? 'hover:bg-orange-900/40' : 'hover:bg-orange-100'}`}>
           {token}
         </span>
@@ -11752,21 +11921,19 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
   };
 
   if (selected) {
-    const vocabCard = (
-      <Card dark={dark} className="p-4">
-        <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1">Vocabulario clave</p>
-        <div className="divide-y divide-ink/5">
-          {selected.glossary.map((g, i) => (
-            <div key={i} className="flex items-start gap-3 py-2.5">
-              <div className="flex-1 min-w-0">
-                <p className="font-serif font-bold text-[15px] leading-snug text-ink" lang="es">{g[0]}</p>
-                <p className="text-[13px] leading-snug text-dust mt-0.5">{g[1]}</p>
-              </div>
-              <SpeakBtn text={g[0]} size="xs" />
-            </div>
-          ))}
-        </div>
-      </Card>
+    const vocabCard = <VocabCard items={selected.glossary.map(g => ({ es: g[0], en: g[1] }))} source={'lectura:' + selected.id} dark={dark} />;
+    const isDone = !!done[selected.id];
+    const nextUp = pickNext(READING_PASSAGES.filter(r => r.id !== selected.id), done, lvl);
+    const doneCard = (
+      <div className="space-y-2">
+        <DoneToggle on={isDone} onToggle={() => markDone(selected.id, !isDone)} label="Marcar como leída" doneLabel="Leída" />
+        {isDone && nextUp && (
+          <button onClick={() => openReading(nextUp)} className="w-full text-left rounded-xl bg-cream hover:bg-ochre-100 px-4 py-3 transition-colors">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-dust">Siguiente lectura</span>
+            <span className="block font-serif font-bold text-[15px] text-ink leading-snug mt-0.5">{nextUp.title} →</span>
+          </button>
+        )}
+      </div>
     );
     return (
       <div onClick={() => setWordPopover(null)}>
@@ -11779,36 +11946,19 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
               <div className="flex-1" />
               <SpeakBtn text={selected.paragraphs.join(' ')} size="sm" />
             </div>
-            <p className="text-xs text-stone-500">Pulsa el altavoz para escuchar y una palabra para traducirla.</p>
+            <p className="text-xs text-dust">Pulsa el altavoz para escuchar y una palabra para traducirla y guardarla.</p>
+            <p className="hidden lg:block text-[11px] text-dust">Teclado: ← → párrafo anterior o siguiente · espacio para parar o seguir</p>
+            <div className="hidden lg:block">{doneCard}</div>
             <div className="hidden lg:block">{vocabCard}</div>
           </aside>
           <div className="min-w-0 lg:order-1">
 
-          {wordPopover && (
-            <div onClick={e => e.stopPropagation()}
-              style={{ position:'fixed', left: Math.min(wordPopover.x, window.innerWidth - 220), top: wordPopover.y, zIndex:9999, minWidth:'200px' }}
-              className={`rounded-2xl shadow-xl border p-3 ${dark ? 'bg-stone-900 border-white/10 text-white' : 'bg-white border-stone-200 text-stone-900'}`}>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="font-serif font-bold text-base">{wordPopover.word}</span>
-                <button onClick={() => setWordPopover(null)} className="text-stone-400 hover:text-stone-600 text-xs">✕</button>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => speakES(wordPopover.word, { gender:'female' })}
-                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 text-xs font-semibold transition-colors">
-                  🔊 Escuchar
-                </button>
-                <a href={`https://www.wordreference.com/es/en/translation.asp?spen=${encodeURIComponent(wordPopover.word)}`} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 bg-sky-100 hover:bg-sky-200 text-sky-700 text-xs font-semibold transition-colors">
-                  📖 Buscar
-                </a>
-              </div>
-            </div>
-          )}
+          {wordPopover && <WordPopover pop={wordPopover} source={'lectura:' + selected.id} onClose={() => setWordPopover(null)} />}
 
           <Card dark={dark} className="p-5 mb-5">
             <p className="text-sm italic text-stone-500 mb-4">{selected.intro}</p>
             {selected.paragraphs.map((p, i) => (
-              <div key={i} className="mb-4 group">
+              <div key={i} className={`mb-4 group rounded-lg transition-colors ${para === i ? 'bg-ochre-50 -mx-2 px-2 py-1' : ''}`}>
                 <div className="flex items-start gap-2">
                   <p className="text-base leading-relaxed flex-1">{renderClickableText(p)}</p>
                   <SpeakBtn text={p} size="sm" />
@@ -11828,7 +11978,7 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
                   {showAnswers[i] ? (
                     <p className="text-sm text-emerald-700 bg-emerald-50 rounded-lg p-2">✓ {q.a}</p>
                   ) : (
-                    <button onClick={() => setShowAnswers(prev => ({ ...prev, [i]: true }))}
+                    <button onClick={() => setShowAnswers(prev => { const nx = { ...prev, [i]: true }; if (Object.keys(nx).length === selected.questions.length) markDone(selected.id); return nx; })}
                       className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-lg font-semibold">
                       Mostrar respuesta
                     </button>
@@ -11837,25 +11987,34 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
               ))}
             </div>
           </Card>
+          <div className="lg:hidden mt-5">{doneCard}</div>
           </div>
         </div>
       </div>
     );
   }
 
+  const shownReadings = lvl === 'all' ? READING_PASSAGES : READING_PASSAGES.filter(p => p.level === lvl);
+  const nextReading = pickNext(READING_PASSAGES, done, lvl);
+  const readN = READING_PASSAGES.filter(p => done[p.id]).length;
   return (
     <div>
       <BackHeader title="Lecturas" subtitle="Lecturas con audio" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <p className="text-sm text-dust mb-5">Mini textos con audio, vocabulario y preguntas.</p>
+        <div className="flex flex-wrap items-center gap-3 mb-5">
+          <p className="text-sm text-dust flex-1 min-w-[12rem]">Mini textos con audio, vocabulario y preguntas. {readN}/{READING_PASSAGES.length} leídas.</p>
+          <LevelChips value={lvl} onChange={setLvl} levels={['A2', 'B1']} />
+        </div>
+        <NextForYou item={nextReading} meta={nextReading && nextReading.titleEn} onOpen={() => openReading(nextReading)} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-          {READING_PASSAGES.map(p => (
-            <button key={p.id} onClick={() => setSelected(p)} className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 min-h-[220px] flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
+          {shownReadings.map(p => (
+            <button key={p.id} onClick={() => openReading(p)} className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 min-h-[220px] flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
               <div className="h-1.5 w-full bg-gradient-to-r from-anil-400 to-anil-500" />
               <div className="p-5 flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{p.level}</span>
                   <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{p.paragraphs.length} párrafos</span>
+                  <span className="ml-auto"><DoneBadge on={!!done[p.id]} label="Leída" /></span>
                 </div>
                 <p className="font-serif font-bold text-lg mb-1 leading-snug">{p.title}</p>
                 <p className={`text-sm mb-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{p.titleEn}</p>
@@ -13536,12 +13695,15 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
   const lineRefs = useRef([]);      // one DOM node per line, for auto-scroll
   const busIdRef = useRef('dlg-' + Math.random().toString(36).slice(2));
   const stopAllRef = useRef(null);  // points at stopAll so the bus can interrupt us
+  const cursorRef = useRef(-1);     // last line played, for the arrow keys
 
   // If a persisted selection points at a conversation that no longer exists
   // (e.g. after the set is refreshed), fall back to the list.
   useEffect(() => { if (selected && !CONVERSATIONS.concat(BUSINESS_DIALOGS).find(c => c.id === selected.id)) setSelected(null); }, []);
   // Trabajo shows the business dialogues that used to live in Negocios.
   const [filter, setFilter] = usePersistedState('aprende.view.conversaciones.filter', 'todas');
+  const [done, markDone] = useDone('conversaciones');
+  const [lvl, setLvl] = usePersistedState('aprende.view.conversaciones.level', 'all');
 
   // Open a specific conversation when global search deep-links here.
   const jumpRef = useRef(null);
@@ -13583,9 +13745,11 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
     const next = async () => {
       if (stopRef.current || token !== playTokenRef.current || i >= endIdx) {
         if (token === playTokenRef.current) { setPlayingIdx(null); setPlayMode(null); AudioBus.releaseIf(busIdRef.current); }
+        if (!stopRef.current && token === playTokenRef.current && endIdx === lines.length && endIdx - startIdx > 1) markDone(selected.id);
         return;
       }
       setPlayingIdx(i);
+      cursorRef.current = i;
       const line = lines[i];
       // Speaker A = female Castilian, Speaker B = male Castilian – distinct voices
       const sp = selected.speakers.find(s => s.id === line.who) || selected.speakers[0] || {};
@@ -13645,24 +13809,32 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
     }
   };
 
+  // Desktop keys in a conversation: space plays, pauses or resumes; left and right play the previous or next line.
+  useEffect(() => { cursorRef.current = -1; }, [selected && selected.id]);
+  useEffect(() => {
+    if (!selected) return;
+    const h = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target && e.target.closest && e.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      const n = selected.lines.length;
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (playMode === 'normal' || playMode === 'shadow') pauseAll();
+        else if (playMode === 'paused-normal' || playMode === 'paused-shadow') resumeAll();
+        else playAll(selected.lines, 'normal', cursorRef.current >= 0 && cursorRef.current < n - 1 ? cursorRef.current + 1 : 0);
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const i = e.key === 'ArrowRight' ? Math.min(n - 1, cursorRef.current + 1) : Math.max(0, cursorRef.current - 1);
+        playAll(selected.lines, 'normal', i, i + 1);
+      }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  });
+
   if (selected) {
     const extras = (<>
-      {selected.vocab && selected.vocab.length > 0 && (
-        <Card dark={dark} className="p-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1">Vocabulario clave</p>
-          <div className="divide-y divide-ink/5">
-            {selected.vocab.map((v, i) => (
-              <div key={i} className="flex items-start gap-3 py-2.5">
-                <div className="flex-1 min-w-0">
-                  <p className="font-serif font-bold text-[15px] leading-snug text-ink" lang="es">{v.es}</p>
-                  <p className="text-[13px] leading-snug text-dust mt-0.5">{v.en}</p>
-                </div>
-                <SpeakBtn text={v.es} size="xs" />
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+      {selected.vocab && selected.vocab.length > 0 && <VocabCard items={selected.vocab} source={'conversacion:' + selected.id} dark={dark} />}
       {selected.notes && (
         <Card dark={dark} className="p-4">
           <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-2">Notas culturales</p>
@@ -13726,6 +13898,8 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
             {(playMode === 'shadow' || playMode === 'paused-shadow') && (
               <p className={`text-xs italic ${dark ? 'text-violet-300' : 'text-violet-600'}`}>Modo sombra: repite cada línea en voz alta durante la pausa.</p>
             )}
+            <DoneToggle on={!!done[selected.id]} onToggle={() => markDone(selected.id, !done[selected.id])} label="Marcar como escuchada" doneLabel="Escuchada" />
+            <p className="hidden lg:block text-[11px] text-dust">Teclado: espacio reproduce o pausa · ← → línea anterior o siguiente</p>
             <div className="hidden lg:block space-y-4">{extras}</div>
           </aside>
 
@@ -13798,15 +13972,21 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
     <div>
       <BackHeader title="Conversaciones" subtitle="Escucha y lee" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <p className="text-sm text-dust mb-5">Diálogos reales con dos voces, audio y vocabulario.</p>
-        <div className="flex gap-2 mb-5">
-          {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
-            <button key={o.id} onClick={() => setFilter(o.id)}
-              className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${filter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
-          ))}
+        <p className="text-sm text-dust mb-5">Diálogos reales con dos voces, audio y vocabulario. {CONVERSATIONS.concat(BUSINESS_DIALOGS).filter(c => done[c.id]).length}/{CONVERSATIONS.length + BUSINESS_DIALOGS.length} escuchadas.</p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 mb-5">
+          <div className="flex gap-2">
+            {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'Trabajo'}].map(o => (
+              <button key={o.id} onClick={() => setFilter(o.id)}
+                className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${filter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
+            ))}
+          </div>
+          <span className="hidden sm:block w-px h-6 bg-ink/10" />
+          <LevelChips value={lvl} onChange={setLvl} levels={['B1', 'B2']} />
         </div>
+        {(() => { const pool = filter === 'trabajo' ? BUSINESS_DIALOGS : CONVERSATIONS; const nx = pickNext(pool, done, lvl);
+          return <NextForYou item={nx} meta={nx && nx.titleEn} onOpen={() => { setSelected(nx); window.scrollTo(0, 0); }} />; })()}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(filter === 'trabajo' ? BUSINESS_DIALOGS : CONVERSATIONS).map(c => (
+          {(filter === 'trabajo' ? BUSINESS_DIALOGS : CONVERSATIONS).filter(c => lvl === 'all' || c.level === lvl).map(c => (
             <button key={c.id} onClick={() => setSelected(c)} className="text-left">
               <Card dark={dark} className="p-5 hover:shadow-md transition-shadow h-full">
                 <div className="flex items-center gap-2 mb-2">
@@ -13814,6 +13994,7 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{c.level}</span>
                   <span className="text-xs text-stone-400 ml-auto">{c.lines.length} líneas</span>
                 </div>
+                {done[c.id] && <div className="mb-1.5"><DoneBadge on label="Escuchada" /></div>}
                 <p className="font-serif font-bold text-lg mb-1">{c.title}</p>
                 <p className="text-xs text-stone-500 mb-2">{c.titleEn}</p>
                 <p className="text-xs italic text-stone-600 line-clamp-3">{c.setting}</p>
@@ -15461,6 +15642,95 @@ function glossaryHas(es) {
   const k = (es || '').toLowerCase();
   return (getStorage('aprende.glossary', []) || []).some(e => (e.es || '').toLowerCase() === k);
 }
+// One word or phrase into Tarjetas. Returns false when it is already there.
+function addToTarjetas({ es, en, type, source, example }) {
+  if (!es || glossaryHas(es)) return false;
+  const existing = getStorage('aprende.glossary', []) || [];
+  const t = type || (/\s/.test(es.trim()) ? 'phrase' : 'other');
+  setStorage('aprende.glossary', [{ id: Date.now() + Math.floor(Math.random() * 1000), es: es.trim(), en: (en || '').trim(), type: t, source, example }, ...existing]);
+  return true;
+}
+function AddCardBtn({ es, en, source }) {
+  const [have, setHave] = useState(() => glossaryHas(es));
+  const tip = have ? 'Ya está en Tarjetas' : 'Añadir a Tarjetas';
+  return (
+    <button onClick={(e) => { e.stopPropagation(); if (!have && addToTarjetas({ es, en, source })) setHave(true); }}
+      aria-label={tip} title={tip} disabled={have}
+      className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-colors ${have ? 'bg-oliva-50 text-oliva-700' : 'bg-cream text-sienna-700 hover:bg-ochre-100 hover:text-orange-600'}`}>
+      {have ? '✓' : '+'}
+    </button>
+  );
+}
+// Vocabulario clave for Lecturas and Conversaciones: listen to each item and send it to Tarjetas.
+function VocabCard({ items, source, dark }) {
+  const [n, setN] = useState(0);
+  const missing = items.filter(v => !glossaryHas(v.es)).length;
+  const addAll = () => { items.forEach(v => addToTarjetas({ es: v.es, en: v.en, source })); setN(x => x + 1); };
+  return (
+    <Card dark={dark} className="p-4">
+      <div className="flex items-baseline gap-2 mb-1">
+        <p className="text-xs font-bold uppercase tracking-wider text-orange-500 flex-1">Vocabulario clave</p>
+        {missing > 0
+          ? <button onClick={addAll} className="text-[11px] font-semibold text-sienna-700 hover:text-orange-600 transition-colors">+ Todo a Tarjetas</button>
+          : <span className="text-[11px] font-semibold text-oliva-700">En Tarjetas ✓</span>}
+      </div>
+      <div className="divide-y divide-ink/5">
+        {items.map((v, i) => (
+          <div key={i + '-' + n} className="flex items-start gap-2 py-2.5">
+            <div className="flex-1 min-w-0">
+              <p className="font-serif font-bold text-[15px] leading-snug text-ink" lang="es">{v.es}</p>
+              <p className="text-[13px] leading-snug text-dust mt-0.5">{v.en}</p>
+            </div>
+            <AddCardBtn es={v.es} en={v.en} source={source} />
+            <SpeakBtn text={v.es} size="xs" />
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+// Tap-a-word popover in Lecturas: a quick translation, audio, Tarjetas and the dictionary.
+function WordPopover({ pop, source, onClose }) {
+  const word = pop.start === false ? pop.word : pop.word.charAt(0).toLowerCase() + pop.word.slice(1);
+  const [tr, setTr] = useState('');
+  const [state, setState] = useState(() => glossaryHas(word) ? 'have' : 'idle');
+  useEffect(() => {
+    let off = false;
+    setTr(''); setState(glossaryHas(word) ? 'have' : 'idle');
+    autoTranslate(word).then(t => { if (!off) setTr(t && t.toLowerCase() !== word.toLowerCase() ? t : '__none'); }).catch(() => { if (!off) setTr('__none'); });
+    return () => { off = true; };
+  }, [word]);
+  // A fixed popover would drift away from its word, so scrolling closes it.
+  useEffect(() => { const h = () => onClose(); window.addEventListener('scroll', h, { passive: true }); return () => window.removeEventListener('scroll', h); }, []);
+  const add = async () => {
+    setState('busy');
+    const en = (tr && tr !== '__none') ? tr : await autoTranslate(word);
+    addToTarjetas({ es: word, en, source });
+    setState('have');
+  };
+  return (
+    <div onClick={e => e.stopPropagation()}
+      style={{ position:'fixed', left: Math.max(12, Math.min(pop.x - 140, window.innerWidth - 292)), top: pop.y, zIndex:9999, width:'280px' }}
+      className="rounded-2xl shadow-xl border border-ink/10 bg-paper p-3.5">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="font-serif font-bold text-lg leading-tight text-ink" lang="es">{word}</p>
+          <p className="text-sm text-dust mt-0.5 min-h-5">{tr === '__none' ? 'Sin traducción: prueba WordReference.' : (tr || 'Traduciendo…')}</p>
+        </div>
+        <button onClick={onClose} aria-label="Cerrar" className="text-dust hover:text-ink text-sm w-7 h-7 flex items-center justify-center rounded-full hover:bg-cream">✕</button>
+      </div>
+      <div className="flex flex-wrap gap-1.5 mt-3">
+        <button onClick={() => speakES(word, { gender:'female' })}
+          className="min-h-9 px-3 rounded-lg bg-cream hover:bg-ochre-100 text-sienna-700 text-xs font-semibold transition-colors">Escuchar</button>
+        <button onClick={add} disabled={state !== 'idle'}
+          className={`min-h-9 px-3 rounded-lg text-xs font-semibold transition-colors ${state === 'have' ? 'bg-oliva-50 text-oliva-700' : 'bg-orange-500 hover:bg-orange-600 text-paper'}`}>
+          {state === 'have' ? '✓ En Tarjetas' : state === 'busy' ? 'Añadiendo…' : '+ Tarjetas'}</button>
+        <a href={`https://www.wordreference.com/es/en/translation.asp?spen=${encodeURIComponent(word)}`} target="_blank" rel="noopener noreferrer"
+          className="min-h-9 px-3 rounded-lg bg-cream hover:bg-ochre-100 text-sienna-700 text-xs font-semibold transition-colors inline-flex items-center">WordReference ↗</a>
+      </div>
+    </div>
+  );
+}
 
 // Plays a list of Spanish lines one after another (Escuchar todo). Any other audio interrupts it.
 function useSequencePlayer() {
@@ -15971,10 +16241,101 @@ const CHULETA_FILTERS = [
 ];
 
 // Gramática > Chuletas (fixedTab 'gramatica') and Gramática > Errores (fixedTab 'errores').
+// Errores › ¿Cuál es correcto?: pick the right version of each common mistake. Misses are remembered and come back first.
+function ErroresDrill({ dark, onExit }) {
+  const pool = React.useMemo(() => COMMON_MISTAKES.map((m, i) => ({ ...m, i }))
+    .filter(m => m.right && m.wrong && !m.right.startsWith('(') && m.right !== m.wrong), []);
+  const build = () => {
+    const missed = new Set(getStorage('aprende.errores.missed', []) || []);
+    const mixed = pool.slice().sort(() => Math.random() - 0.5);
+    return [...mixed.filter(m => missed.has(m.i)), ...mixed.filter(m => !missed.has(m.i))].slice(0, 10)
+      .map(m => ({ ...m, rightFirst: Math.random() < 0.5 }));
+  };
+  const [round, setRound] = useState(build);
+  const [pos, setPos] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [score, setScore] = useState(0);
+  const q = round[pos];
+  const opts = q ? (q.rightFirst ? [['right', q.right], ['wrong', q.wrong]] : [['wrong', q.wrong], ['right', q.right]]) : [];
+  const choose = (which) => {
+    if (pick || !q) return;
+    setPick(which);
+    const missed = new Set(getStorage('aprende.errores.missed', []) || []);
+    if (which === 'right') { setScore(s => s + 1); missed.delete(q.i); } else missed.add(q.i);
+    setStorage('aprende.errores.missed', [...missed]);
+  };
+  const next = () => { setPick(null); setPos(p => p + 1); };
+  const again = () => { setRound(build()); setPos(0); setScore(0); setPick(null); };
+  useEffect(() => {
+    const h = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!q) return;
+      if (!pick && (e.key === '1' || e.key === '2')) { e.preventDefault(); choose(opts[Number(e.key) - 1][0]); }
+      else if (pick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  });
+  return (
+    <div>
+      <BackHeader title="¿Cuál es correcto?" subtitle="Errores comunes" onBack={onExit} dark={dark} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+        <div className="max-w-2xl">
+          {q ? (<>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-1.5 rounded-full bg-ink/10 overflow-hidden"><div className="h-full bg-orange-500 transition-all" style={{ width: (pos / round.length * 100) + '%' }} /></div>
+              <span className="font-mono text-xs font-bold text-dust">{pos + 1}/{round.length}</span>
+            </div>
+            <p className="hidden lg:block eyebrow mb-1">¿Cuál es correcto?</p>
+            <p className="text-base text-dust mb-5">{q.en}</p>
+            <div className="space-y-3">
+              {opts.map(([kind, txt], k) => {
+                const tone = !pick ? 'bg-paper border-ink/15 hover:border-orange-500/60 hover:bg-orange-50/40'
+                  : kind === 'right' ? 'bg-oliva-50 border-oliva-300' : kind === pick ? 'bg-orange-50 border-orange-300' : 'bg-paper border-ink/10 opacity-60';
+                return (
+                  <button key={kind} onClick={() => choose(kind)} disabled={!!pick}
+                    className={`w-full text-left rounded-2xl border-2 px-5 py-4 flex items-start gap-4 transition-colors ${tone}`}>
+                    <span className="hidden lg:flex w-7 h-7 rounded-full bg-cream text-sienna-700 text-xs font-bold items-center justify-center flex-shrink-0 mt-0.5">{k + 1}</span>
+                    <span className="font-serif font-bold text-lg lg:text-xl leading-snug text-ink flex-1" lang="es">{txt}</span>
+                    {pick && kind === 'right' && <span className="text-oliva-700 font-bold">✓</span>}
+                    {pick && kind === pick && kind === 'wrong' && <span className="text-orange-600 font-bold">✗</span>}
+                  </button>
+                );
+              })}
+            </div>
+            {pick && (
+              <div className="mt-5 rounded-2xl border border-ink/10 bg-cream/60 p-5">
+                <div className="flex items-start gap-3">
+                  <p className={`font-semibold flex-1 ${pick === 'right' ? 'text-oliva-700' : 'text-orange-700'}`}>{pick === 'right' ? '¡Eso es!' : 'Casi. La buena es la otra.'}</p>
+                  <SpeakBtn text={q.right} size="sm" />
+                </div>
+                <p className="text-[15px] leading-relaxed text-ink/80 mt-2">{q.why}</p>
+                <button onClick={next} className="mt-4 min-h-11 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-bold transition-colors">{pos + 1 < round.length ? 'Siguiente →' : 'Ver resultado'}</button>
+                <span className="hidden lg:inline text-[11px] text-dust ml-3">Teclado: 1 o 2 para elegir, Enter para seguir</span>
+              </div>
+            )}
+          </>) : (
+            <div className="rounded-3xl border border-ink/10 bg-paper p-8 text-center">
+              <p className="eyebrow">Resultado</p>
+              <p className="font-serif font-bold text-5xl text-ink mt-2">{score}/{round.length}</p>
+              <p className="text-sm text-dust mt-2">{score === round.length ? 'Perfecto.' : 'Los que has fallado saldrán primero en la próxima ronda.'}</p>
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                <button onClick={again} className="min-h-11 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-bold">Otra ronda</button>
+                <button onClick={onExit} className="min-h-11 px-5 rounded-xl bg-cream hover:bg-ochre-100 text-sienna-700 text-sm font-semibold">Volver a Errores</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
   const [rawSheetId, setSelectedSheetId] = usePersistedState('aprende.view.chuletas.sheetId', null);
   const selectedSheet = rawSheetId ? CHEAT_SHEETS.find(s => s.id === sheetId(rawSheetId)) : null;
   const [selectedMistake, setSelectedMistake] = usePersistedState('aprende.view.chuletas.mistake', null);
+  const [errDrill, setErrDrill] = useState(false);
   const [sheetFilter, setSheetFilter] = usePersistedState('aprende.view.chuletas.filter', 'todos');
   const [sheetQuery, setSheetQuery] = useState('');
 
@@ -15983,7 +16344,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
   useEffect(() => {
     if (jump && jump.section === 'chuletas' && jump.n !== jumpRef.current) {
       jumpRef.current = jump.n;
-      if (jump.sub === 'mistake') { if (fixedTab === 'errores') setSelectedMistake(jump.id); }
+      if (jump.sub === 'mistake') { if (fixedTab === 'errores') { setErrDrill(false); setSelectedMistake(jump.id); } }
       else if (fixedTab === 'gramatica' && CHEAT_SHEETS.find(s => s.id === sheetId(jump.id))) setSelectedSheetId(sheetId(jump.id));
     }
   }, [jump]);
@@ -15996,6 +16357,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
 
   // ---- ERRORES ----
   if (fixedTab === 'errores') {
+    if (errDrill) return <ErroresDrill dark={dark} onExit={() => setErrDrill(false)} />;
     const m = selectedMistake !== null ? COMMON_MISTAKES[selectedMistake] : null;
     if (m) {
       return (
@@ -16032,6 +16394,15 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
     return (
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <p className="text-sm text-dust mb-5">Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
+        <button onClick={() => { setErrDrill(true); window.scrollTo(0, 0); }}
+          className="group w-full text-left mb-6 rounded-2xl bg-ink hover:bg-sienna-700 text-paper px-5 py-4 flex items-center gap-4 transition-colors">
+          <div className="flex-1 min-w-0">
+            <p className="eyebrow" style={{ color:'rgba(250,246,238,0.7)' }}>Ponte a prueba</p>
+            <p className="font-serif font-bold text-xl mt-1">¿Cuál es correcto?</p>
+            <p className="text-sm mt-0.5" style={{ color:'rgba(250,246,238,0.8)' }}>Diez preguntas rápidas. Los errores que falles vuelven primero.</p>
+          </div>
+          <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
+        </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {COMMON_MISTAKES.map((mm, i) => (
             <button key={i} onClick={() => setSelectedMistake(i)} className="text-left">
@@ -16193,13 +16564,13 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
               🃏 Anki
             </button>
           </div>
-          <p className={`text-xs mb-5 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>🃏 <strong>Anki</strong> is a free spaced-repetition flashcard app. Tap the button to export these words, then open Anki → File → Import to load them.</p>
+          <p className={`text-xs mb-5 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>🃏 <strong>Anki</strong> es una app gratuita de repaso espaciado. Pulsa el botón para exportar estas palabras y luego, en Anki, Archivo → Importar.</p>
           <div className="mb-5 overflow-x-auto hide-scroll">
             <div className="flex gap-2">
               {types.map(t => (
                 <button key={t} onClick={() => setFilter(t)}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${filter === t ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>
-                  {t === 'all' ? 'Todos' : t}
+                  {t === 'all' ? 'Todos' : (TYPE_ES_PLURAL[t] || t)}
                 </button>
               ))}
             </div>
@@ -17142,7 +17513,7 @@ const GRAMMAR_LESSONS = [
     level:'A2', category:'connecting', icon:'🔗', color:'from-sky-400 to-blue-500',
     summary:'English drops "that" constantly: "the book I bought." Spanish NEVER can: "el libro QUE compré."',
     formula:'"que" = that / which / who, the universal connector\nEnglish drops it. Spanish NEVER does.',
-    video:{ id:'OB3pJR_VDXY', title:'How to use QUE in Spanish', channel:'SpanishPod101' },
+    video:{ id:'neR3lunqwb0', title:'Spanish Grammar: The Relative Pronoun "Que"', channel:'The EverLearner' },
     sections:[
       { heading:'What "que" does', text:'"Que" is the glue that connects two ideas into one sentence. In English you use "that", "which", "who", or often nothing at all ("the book I bought"). In Spanish, it\'s ALWAYS "que" and you can NEVER leave it out.' },
       { heading:'Connecting to a thing', examples:[
@@ -17172,7 +17543,7 @@ const GRAMMAR_LESSONS = [
     level:'B1', category:'tricky-verbs', icon:'🪞', color:'from-teal-400 to-emerald-500',
     summary:'"Se" does four completely different jobs in Spanish. Reflexive, impersonal, passive, and accidental. Once you see the pattern, it clicks.',
     formula:'Reflexive: Se lava (he washes himself)\nImpersonal: Se habla español (Spanish is spoken)\nAccidental: Se me cayó (I dropped it, by accident)',
-    video:{ id:'OB3pJR_VDXY', title:'How to use SE in Spanish', channel:'SpanishPod101' },
+    video:{ id:'e-pf2BP0c5U', title:'What is "SE" in Spanish? Learn everything about "SE"', channel:'Butterfly Spanish' },
     sections:[
       { heading:'Reflexive se: the subject acts on itself', text:'This is the one most learners know first. The subject does something to themselves. "Me lavo" (I wash myself), "se peina" (she combs her hair), "nos sentamos" (we sit down). Many daily routines use this: levantarse, ducharse, vestirse, acostarse.', examples:[
         {es:'Me despierto a las siete.',en:'I wake (myself) up at seven.'},
@@ -17266,10 +17637,10 @@ const GRAMMAR_LESSONS = [
 ];
 
 const GRAMMAR_CATEGORIES = [
-  { id:'building', label:'Building sentences', emoji:'🏗️', color:'from-orange-400 to-amber-500' },
-  { id:'connecting', label:'Connecting ideas', emoji:'🔗', color:'from-blue-400 to-indigo-500' },
-  { id:'tricky-verbs', label:'Tricky verbs', emoji:'⚖️', color:'from-emerald-400 to-green-500' },
-  { id:'little-words', label:'Little words', emoji:'🧩', color:'from-rose-400 to-pink-500' },
+  { id:'building', label:'Construir frases', emoji:'🏗️', color:'from-orange-400 to-amber-500' },
+  { id:'connecting', label:'Unir ideas', emoji:'🔗', color:'from-blue-400 to-indigo-500' },
+  { id:'tricky-verbs', label:'Verbos con truco', emoji:'⚖️', color:'from-emerald-400 to-green-500' },
+  { id:'little-words', label:'Palabras pequeñas', emoji:'🧩', color:'from-rose-400 to-pink-500' },
 ];
 
 // Subjuntivo triggers: extra Practica items (14 Oct 2026). There is no subjunctive
@@ -17299,6 +17670,9 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
   const [practiceMode, setPracticeMode] = useState(false);
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState({});
+  const [done, markDone] = useDone('lecciones');
+  const [lvl, setLvl] = usePersistedState('aprende.view.gramatica.level', 'all');
+  const openLesson = (l) => { setSelectedLesson(l); setPracticeMode(false); setAnswers({}); setShowResults({}); window.scrollTo(0, 0); };
 
   // Open a specific lesson when global search deep-links here.
   const jumpRef = useRef(null);
@@ -17325,6 +17699,8 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
     const practiceScore = lesson.practice ? Object.keys(showResults).filter(k => showResults[k] === lesson.practice[k]?.correct).length : 0;
     const practiceTotal = lesson.practice ? lesson.practice.length : 0;
     const allAnswered = practiceTotal > 0 && Object.keys(showResults).length === practiceTotal;
+    if (allAnswered && !done[lesson.id]) setTimeout(() => markDone(lesson.id), 0);
+    const nextLesson = pickNext(GRAMMAR_LESSONS.filter(l => l.id !== lesson.id), done, lvl);
 
     return (
       <div>
@@ -17345,6 +17721,10 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
             )}
           </div>
 
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex-1 min-w-0"><DoneBadge on={!!done[lesson.id]} label="Hecha" /></div>
+            <button onClick={() => markDone(lesson.id, !done[lesson.id])} className="text-xs font-semibold text-sienna-700 hover:text-orange-600 min-h-9">{done[lesson.id] ? 'Desmarcar' : 'Marcar como hecha'}</button>
+          </div>
           {/* Toggle: Learn / Practice */}
           <div className="flex gap-2">
             <button onClick={() => { setPracticeMode(false); }} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${!practiceMode ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
@@ -17409,7 +17789,10 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
                   <p className={`font-bold text-lg ${practiceScore === practiceTotal ? (dark ? 'text-emerald-300' : 'text-emerald-700') : (dark ? 'text-amber-300' : 'text-amber-700')}`}>
                     {practiceScore} / {practiceTotal} {practiceScore === practiceTotal ? '¡Perfecto!' : '- Sigue practicando'}
                   </p>
-                  <button onClick={resetPractice} className="mt-3 text-sm font-semibold text-orange-600 hover:text-orange-800">↻ Reintentar</button>
+                  <div className="mt-3 flex flex-wrap justify-center gap-2">
+                    <button onClick={resetPractice} className="min-h-10 px-4 rounded-xl text-sm font-semibold text-orange-600 hover:bg-orange-50">↻ Reintentar</button>
+                    {nextLesson && <button onClick={() => openLesson(nextLesson)} className="min-h-10 px-4 rounded-xl bg-ink text-paper text-sm font-semibold hover:bg-sienna-700">Siguiente: {nextLesson.title} →</button>}
+                  </div>
                 </div>
               )}
               {lesson.practice.map((p, qi) => {
@@ -17481,13 +17864,15 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
     <div>
       <BackHeader title="Gramática" subtitle="Cómo funcionan las frases" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <div className="mb-6">
-          <p className={`text-base leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>
-            Sin jerga. Cada lección explica un patrón en términos sencillos, con ejemplos reales y audio, y luego te deja practicar hasta que encaje.
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <p className={`text-base leading-relaxed flex-1 min-w-[16rem] ${dark ? 'text-stone-300' : 'text-stone-600'}`}>
+            Sin jerga. Cada lección explica un patrón en términos sencillos, con ejemplos reales y audio, y luego te deja practicar hasta que encaje. {GRAMMAR_LESSONS.filter(l => done[l.id]).length}/{GRAMMAR_LESSONS.length} hechas.
           </p>
+          <LevelChips value={lvl} onChange={setLvl} levels={['A2', 'B1']} />
         </div>
+        {(() => { const nx = pickNext(GRAMMAR_LESSONS, done, lvl); return <NextForYou item={nx} meta={nx && nx.summary} onOpen={() => openLesson(nx)} />; })()}
         {GRAMMAR_CATEGORIES.map(cat => {
-          const lessons = GRAMMAR_LESSONS.filter(l => l.category === cat.id);
+          const lessons = GRAMMAR_LESSONS.filter(l => l.category === cat.id && (lvl === 'all' || l.level === lvl));
           if (!lessons.length) return null;
           return (
             <div key={cat.id} className="mb-8">
@@ -17497,13 +17882,14 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {lessons.map(lesson => (
-                  <button key={lesson.id} onClick={() => { setSelectedLesson(lesson); setPracticeMode(false); resetPractice(); }}
+                  <button key={lesson.id} onClick={() => openLesson(lesson)}
                     className={`text-left rounded-2xl overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] border ${dark ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 hover:shadow-md shadow-sm'}`}>
                     <div className={`h-1.5 bg-gradient-to-r ${lesson.color}`} />
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-2xl">{lesson.icon}</span>
                         <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${lesson.level === 'A2' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{lesson.level}</span>
+                        <span className="ml-auto"><DoneBadge on={!!done[lesson.id]} label="Hecha" /></span>
                       </div>
                       <p className="font-serif font-bold text-lg leading-tight mb-1">{lesson.title}</p>
                       <p className={`text-sm line-clamp-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{lesson.summary}</p>
@@ -17572,6 +17958,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
       const _hist = getStorage('aprende.exercise_history', []);
       const _cat = category || '';
       setStorage('aprende.exercise_history', [..._hist.slice(-300), { id: exercise.id || '', category: _cat, correct: isCorrect, date: Date.now() }]);
+      dayLogBump('ejercicios');
     } catch(e) {}
   };
 
@@ -17585,13 +17972,22 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
       const _hist = getStorage('aprende.exercise_history', []);
       const _cat = category || '';
       setStorage('aprende.exercise_history', [..._hist.slice(-300), { id: exercise.id || '', category: _cat, correct: isCorrect, date: Date.now() }]);
+      dayLogBump('ejercicios');
     } catch(e) {}
   };
 
+  const logDone = () => {
+    try {
+      const _hist = getStorage('aprende.exercise_history', []);
+      setStorage('aprende.exercise_history', [..._hist.slice(-300), { id: exercise.id || '', category: category || '', correct: true, date: Date.now() }]);
+      dayLogBump('ejercicios');
+    } catch(e) {}
+  };
   const handleTranslationSubmit = () => {
     if (!userAnswer.trim()) return;
     setSubmitted(true);
     setCorrect(true);
+    logDone();
   };
 
   const handleLeftClick = (item) => {
@@ -17609,6 +18005,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
       setSelectedLeft(null);
       if (newMatched.size === exercise.pairs.length) {
         setMatchComplete(true);
+        logDone();
       }
     } else {
       setWrongPair({ left: selectedLeft.idx, right: item.idx });
@@ -17632,7 +18029,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
     }
     return (
       <div>
-        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{exercise.type} · Emparejar</p>
+        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Empareja</p>
         <p className="font-bold text-lg mb-4">{exercise.title}</p>
         <p className={`text-xs mb-4 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Toca un elemento de la izquierda, luego el correspondiente de la derecha.</p>
         <div className="grid grid-cols-2 gap-3">
@@ -17679,7 +18076,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
   if (exercise.type === 'fill') {
     return (
       <div>
-        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{exercise.type} · Rellena el hueco</p>
+        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Rellena el hueco</p>
         <LevelBadge level={exercise.level} />
         <p className="font-bold text-lg mt-2 mb-4">{exercise.title}</p>
         <p className={`text-base mb-4 leading-relaxed ${dark ? 'text-stone-200' : 'text-stone-700'}`}>
@@ -18118,13 +18515,71 @@ const WRITING_PROMPTS = [
   { id:'w5', level:'B1', title:'Comparar ciudades', prompt:'Compara Madrid y Valencia. ¿Cuál te parece mejor para vivir? Da al menos tres razones con comparativos y superlativos.', minWords:80, tips:['Usa "más / menos + adjetivo + que" para comparar','Usa "el / la más + adjetivo" para superlativos','Usa sin embargo / por otro lado / aunque para estructurar tu argumento'] },
 ];
 
+const AI_WRITING_PROMPT = `You are a warm but exacting Spanish teacher from Spain. You are correcting a short text written by an English-speaking learner (around B1) who lives in Valencia. Correct towards natural Castilian Spanish as spoken in Spain.
+
+Respond with ONLY a valid JSON object: no markdown fences, no commentary. Schema:
+{
+  "corrected": "the whole text, corrected; keep the learner's meaning, voice and paragraphing; change only what is wrong or clearly unnatural",
+  "level": "the CEFR level the text shows: A2, B1, B2 or C1",
+  "summary": "two short sentences in British English: what went well, then the one thing to work on next",
+  "errors": [ { "original": "the exact wrong fragment as written", "fix": "the corrected fragment", "why": "one short sentence in British English", "type": "gramática | vocabulario | ortografía | concordancia | tiempo verbal | preposición" } ],
+  "natural": [ { "original": "a correct but stiff fragment", "better": "how a Spaniard would put it", "why": "one short sentence in British English" } ]
+}
+List every real error, most important first, at most 12. Missing or wrong accents are ortografía errors. "natural" holds 0 to 4 style upgrades that are not errors. If the text has no errors, return an empty "errors" array and say so in the summary.`;
+
+async function aiCorrectWriting(text, prompt, apiKey) {
+  if (!apiKey) throw new Error('no-key');
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'x-api-key': apiKey,
+      'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-5-5', max_tokens: 4000,
+      system: AI_WRITING_PROMPT,
+      messages: [{ role:'user', content: `Task (${prompt.level}): ${prompt.prompt}\n\nLearner's text:\n${text}` }],
+    }),
+  });
+  if (!resp.ok) {
+    if (resp.status === 401) throw new Error('invalid-key');
+    if (resp.status === 429) throw new Error('rate-limit');
+    throw new Error('api-error: ' + resp.status);
+  }
+  const data = await resp.json();
+  let j = ((data?.content || []).find(b => b.type === 'text')?.text || '').trim();
+  const fence = j.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (fence) j = fence[1].trim();
+  const a = j.indexOf('{'), b = j.lastIndexOf('}');
+  if (a >= 0 && b > a) j = j.slice(a, b + 1);
+  try { return JSON.parse(j); } catch (e) { throw new Error('parse-failed'); }
+}
+
 function EscrituraView({ prompt, dark, onBack, onSearch }) {
-  const [text, setText] = useState('');
+  // Drafts and Claude's last correction are kept per prompt, so leaving the page loses nothing.
+  const [text, setText] = usePersistedState('aprende.escribe.draft.' + prompt.id, '');
+  const [fb, setFb] = usePersistedState('aprende.escribe.feedback.' + prompt.id, null);
+  const [busy, setBusy] = useState(false);
+  const [aiErr, setAiErr] = useState('');
+  const [, markDone] = useDone('escribe');
   const [showTips, setShowTips] = useState(false);
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
   const target = prompt.minWords;
   const pct = Math.min((wordCount / target) * 100, 100);
   const done = wordCount >= target;
+  const aiKey = aiGetAnthropicKey();
+  useEffect(() => { if (done) markDone(prompt.id); }, [done]);
+  const runCorrect = async () => {
+    setBusy(true); setAiErr('');
+    try {
+      const result = await aiCorrectWriting(text.trim(), prompt, aiKey);
+      setFb({ text: text.trim(), result, at: Date.now() });
+      markDone(prompt.id);
+    } catch (e) {
+      const m = e.message || '';
+      setAiErr(m.includes('invalid-key') ? 'La clave de Anthropic no es válida.' : m.includes('rate-limit') ? 'Demasiadas peticiones. Espera un momento.' : m.includes('parse') ? 'Respuesta rara de Claude. Inténtalo otra vez.' : 'Error de red. Inténtalo otra vez.');
+    }
+    setBusy(false);
+  };
+  const res = fb && fb.result;
 
   return (
     <div>
@@ -18173,7 +18628,63 @@ function EscrituraView({ prompt, dark, onBack, onSearch }) {
           </span>
         </div>
 
-        {done && (
+        <div className="flex flex-wrap items-center gap-3 mb-5">
+          <button onClick={runCorrect} disabled={!aiKey || wordCount < 10 || busy}
+            className="min-h-11 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-40 text-paper text-sm font-bold transition-colors">
+            {busy ? 'Corrigiendo…' : res ? 'Corregir de nuevo' : 'Corregir con Claude'}
+          </button>
+          {!aiKey && <span className="text-xs text-dust">Añade tu clave de Anthropic en <a href="#ajustes" onClick={() => setStorage('aprende.view.ajustes.sec', 'traduccion')} className="font-semibold text-sienna-700 underline">Ajustes › Traducción</a>.</span>}
+          {aiKey && wordCount < 10 && <span className="text-xs text-dust">Escribe al menos 10 palabras.</span>}
+          {aiErr && <span className="text-xs font-semibold text-orange-700">{aiErr}</span>}
+        </div>
+
+        {res && (
+          <Card dark={dark} className="p-5 mb-5">
+            <div className="flex items-center gap-3 mb-2">
+              <p className="eyebrow flex-1">Corrección de Claude</p>
+              {res.level && <LevelBadge level={res.level} />}
+            </div>
+            {fb.text !== text.trim() && <p className="text-xs rounded-lg px-3 py-2 mb-3 bg-ochre-50 text-ochre-700 border border-ochre-200">Has cambiado el texto desde esta corrección.</p>}
+            {res.summary && <p className="text-[15px] leading-relaxed text-ink/80 mb-4">{res.summary}</p>}
+            {res.corrected && (<>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-dust mb-1.5">Texto corregido</p>
+              <div className="flex items-start gap-3 rounded-xl bg-cream/60 p-4 mb-2">
+                <p className="font-serif text-[17px] leading-relaxed text-ink flex-1 whitespace-pre-line" lang="es">{res.corrected}</p>
+                <SpeakBtn text={res.corrected} size="sm" />
+              </div>
+              <button onClick={() => setText(res.corrected)} className="text-xs font-semibold text-sienna-700 hover:text-orange-600 mb-4 min-h-9">Usar el texto corregido</button>
+            </>)}
+            {Array.isArray(res.errors) && res.errors.length > 0 && (<>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-dust mb-1">Errores ({res.errors.length})</p>
+              <ul className="divide-y divide-ink/5 mb-4">
+                {res.errors.map((e, i) => (
+                  <li key={i} className="py-3">
+                    <p className="text-[15px] leading-snug" lang="es">
+                      <span className="line-through decoration-orange-500/70 text-dust">{e.original}</span>
+                      <span className="text-dust mx-2">→</span>
+                      <span className="font-semibold text-ink">{e.fix}</span>
+                      {e.type && <span className="ml-2 align-middle text-[10px] font-bold uppercase tracking-wider text-sienna-700 bg-cream px-2 py-0.5 rounded-full">{e.type}</span>}
+                    </p>
+                    {e.why && <p className="text-[13px] text-dust mt-1">{e.why}</p>}
+                  </li>
+                ))}
+              </ul>
+            </>)}
+            {Array.isArray(res.natural) && res.natural.length > 0 && (<>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-dust mb-1">Más natural</p>
+              <ul className="divide-y divide-ink/5">
+                {res.natural.map((e, i) => (
+                  <li key={i} className="py-3">
+                    <p className="text-[15px] leading-snug" lang="es"><span className="text-dust">{e.original}</span><span className="text-dust mx-2">→</span><span className="font-semibold text-oliva-700">{e.better}</span></p>
+                    {e.why && <p className="text-[13px] text-dust mt-1">{e.why}</p>}
+                  </li>
+                ))}
+              </ul>
+            </>)}
+          </Card>
+        )}
+
+        {done && !res && (
           <div className={`rounded-xl p-4 ${dark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
             <p className={`text-sm font-semibold mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>✅ ¡Bien hecho! Repasa tu texto:</p>
             <ul className={`text-sm space-y-1 ${dark ? 'text-emerald-100' : 'text-emerald-900'}`}>
@@ -18867,6 +19378,7 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
 
   const seed = weekSeed();
+  const answered = React.useMemo(() => new Set((getStorage('aprende.exercise_history', []) || []).filter(h => h.correct).map(h => h.id)), [selectedCategory, currentExerciseIdx]);
   const weeklyExercises = EXERCISES.map(cat => ({
     ...cat,
     exercises: seededShuffle(cat.exercises, seed + cat.category.charCodeAt(0)).slice(0, 8)
@@ -18978,8 +19490,9 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-sm">{ex.title}</p>
                       <LevelBadge level={ex.level} />
+                      <DoneBadge on={answered.has(ex.id)} label="Hecho" />
                     </div>
-                    <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{ex.type}</p>
+                    <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{EXERCISE_TYPE_ES[ex.type] || ex.type}</p>
                   </div>
                   <span className="text-stone-400">→</span>
                 </div>
@@ -19023,6 +19536,16 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
 {/* Escritura libre now lives in Practica > Escribe */}
         </div>
 
+        {(() => {
+          const hist = getStorage('aprende.exercise_history', []) || [];
+          const accOf = (cat) => { const h = hist.filter(x => x.category === cat.categoryEs || x.category === cat.category).slice(-10); return h.length >= 3 ? h.filter(x => x.correct).length / h.length : 1; };
+          const left = (cat) => cat.exercises.filter(e => !answered.has(e.id)).length;
+          const ranked = weeklyExercises.filter(c => left(c) > 0).sort((a, b) => (accOf(a) - accOf(b)) || (left(b) - left(a)));
+          const nx = ranked[0];
+          if (!nx) return null;
+          const weak = accOf(nx) < 0.6;
+          return <NextForYou item={{ title: nx.categoryEs, level: nx.level }} meta={weak ? `Tu área más débil · ${Math.round(accOf(nx) * 100)}% de aciertos` : `${left(nx)} sin hacer esta semana`} onOpen={() => setSelectedCategory(nx)} />;
+        })()}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {weeklyExercises.map(cat => (
             <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border-stone-200/80 shadow-sm">
@@ -19033,7 +19556,7 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
                   <LevelBadge level={cat.level} />
                 </div>
                 <p className="font-bold text-sm mb-1">{cat.categoryEs}</p>
-                <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.exercises.length} ejercicios</p>
+                <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.exercises.filter(e => answered.has(e.id)).length}/{cat.exercises.length} hechos esta semana</p>
               </div>
             </button>
           ))}
@@ -19084,19 +19607,24 @@ function GlosarioInner({ dark, mode }) {
 
   useEffect(() => { setStorage('aprende.srs', srs); }, [srs]);
 
-  // Build a due deck (cards never reviewed OR due today)
-  const now = Date.now();
-  const dueDeck = entries.filter(e => {
-    const r = srs[e.id];
-    if (!r) return true;
-    return (r.due || 0) <= now;
-  });
-  const deck = dueDeck.length > 0 ? dueDeck : entries;
-  const currentCard = deck[cardIdx % Math.max(deck.length, 1)];
+  // Today's queue is fixed when you open Repaso (capped, see tarjetasQueue) and walked in order;
+  // Otra vez sends the card to the back. A finished queue offers an extra round.
+  const dueDeck = React.useMemo(() => tarjetasQueue(entries, srs), [entries, srs]);
+  const [queue, setQueue] = useState(() => tarjetasQueue(entries, getStorage('aprende.srs', {})).map(e => e.id));
+  const [extra, setExtra] = useState(false);
+  const currentCard = entries.find(e => e.id === queue[cardIdx]) || null;
+  const remaining = Math.max(0, queue.length - cardIdx);
+  const startExtra = () => {
+    const due = (e) => (srs[e.id] && srs[e.id].due) || 0;
+    setQueue(entries.slice().sort((a, b) => due(a) - due(b)).slice(0, 20).map(e => e.id));
+    setCardIdx(0); setCardFlipped(false); setExtra(true);
+  };
 
   const recordReview = (quality) => {
     // quality: 0 (again), 1 (hard), 2 (good), 3 (easy)
     if (!currentCard) return;
+    if (!extra) dayLogCard(currentCard.id, srs[currentCard.id] ? 'rev' : 'new');
+    if (quality === 0) setQueue(q => [...q, currentCard.id]);
     const prev = srs[currentCard.id] || { ease: 2.5, interval: 0, reps: 0 };
     let { ease, interval, reps } = prev;
     if (quality === 0) {
@@ -19120,6 +19648,20 @@ function GlosarioInner({ dark, mode }) {
   useEffect(() => {
     setStorage('aprende.glossary', entries);
   }, [entries]);
+
+  // Keyboard on desktop: space or Enter turns the card, 1 to 4 grade it.
+  useEffect(() => {
+    if (tab !== 'tarjetas') return;
+    const h = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target && e.target.closest && e.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+      if (!currentCard) return;
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setCardFlipped(f => !f); }
+      else if (cardFlipped && ['1','2','3','4'].includes(e.key)) { e.preventDefault(); recordReview(Number(e.key) - 1); }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  });
 
   const matchesType = (e) => {
     if (typeFilter === 'all') return true;
@@ -19232,7 +19774,7 @@ function GlosarioInner({ dark, mode }) {
         <div className="flex items-center justify-between mb-4 lg:mb-6">
           <div>
             <p className="text-sm text-dust">{mode === 'tarjetas' ? 'Tus tarjetas, con repaso espaciado.' : 'Las palabras y frases que has guardado.'}</p>
-            <p className="font-serif font-bold text-lg text-ink mt-0.5">{dueDeck.length} para repasar</p>
+            <p className="font-serif font-bold text-lg text-ink mt-0.5">{mode === 'tarjetas' ? remaining : dueDeck.length} para repasar{mode === 'tarjetas' && !extra && <span className="font-sans font-normal text-xs text-dust ml-2">máximo {tarjetasCap().review} repasos y {tarjetasCap().fresh} nuevas al día</span>}</p>
           </div>
           <div className="hidden lg:flex items-center gap-2">
             <div className="flex flex-col items-end gap-0.5">
@@ -19311,11 +19853,11 @@ function GlosarioInner({ dark, mode }) {
                   <label className={`text-xs font-semibold mb-1 block ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Tipo</label>
                   <select value={newType} onChange={e => setNewType(e.target.value)}
                     className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white' : 'bg-white border-stone-200 text-stone-900'}`}>
-                    <option value="noun">Noun</option>
-                    <option value="verb">Verb</option>
-                    <option value="adj">Adjective</option>
-                    <option value="phrase">Phrase</option>
-                    <option value="other">Other</option>
+                    <option value="noun">Sustantivo</option>
+                    <option value="verb">Verbo</option>
+                    <option value="adj">Adjetivo</option>
+                    <option value="phrase">Frase</option>
+                    <option value="other">Otro</option>
                   </select>
                 </div>
                 <div>
@@ -19362,11 +19904,18 @@ function GlosarioInner({ dark, mode }) {
         {tab === 'tarjetas' && (
           <div>
             {entries.length === 0 ? (
-              <p className="text-center py-12 text-sm text-stone-500">Añade palabras para empezar a repasar.</p>
+              <p className="text-center py-12 text-sm text-dust">Añade palabras para empezar a repasar.</p>
+            ) : !currentCard ? (
+              <div className="text-center py-12 rounded-3xl border border-ink/10 bg-paper">
+                <p className="eyebrow text-oliva-700">{extra ? 'Ronda extra terminada' : 'Al día'}</p>
+                <p className="font-serif font-bold text-2xl lg:text-3xl text-ink mt-2">{extra ? 'Buen trabajo.' : 'Repaso de hoy hecho.'}</p>
+                <p className="text-sm text-dust mt-2 max-w-sm mx-auto">{Object.keys(dayLog().cards).length} tarjetas hoy. Las siguientes vuelven cuando toque.</p>
+                <button onClick={startExtra} className="mt-5 min-h-11 px-5 rounded-xl bg-cream text-sienna-700 text-sm font-semibold hover:bg-ochre-100 transition-colors">Repasar 20 más</button>
+              </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs text-stone-500">Tarjeta {(cardIdx % deck.length) + 1} / {deck.length}</p>
+                  <p className="text-xs text-dust">{extra ? 'Ronda extra · ' : ''}Tarjeta {cardIdx + 1} / {queue.length}</p>
                   <button onClick={() => setCardDir(d => d === 'es-en' ? 'en-es' : 'es-en')}
                     className="text-xs bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-lg font-semibold transition-colors">
                     {cardDir === 'es-en' ? 'ES → EN' : 'EN → ES'} ↔
@@ -19403,6 +19952,7 @@ function GlosarioInner({ dark, mode }) {
                 </div>
 
                 {cardFlipped && (
+                  <>
                   <div className="grid grid-cols-4 gap-2 mt-5">
                     <button onClick={() => recordReview(0)} className="bg-rose-100 hover:bg-rose-200 text-rose-800 py-3 rounded-xl text-xs font-bold transition-colors">
                       Otra vez
@@ -19421,6 +19971,8 @@ function GlosarioInner({ dark, mode }) {
                       <span className="block text-[10px] opacity-70 mt-0.5">~7 días</span>
                     </button>
                   </div>
+                  <p className="hidden lg:block text-center text-[11px] text-dust mt-3">Teclado: 1 Otra vez · 2 Difícil · 3 Bien · 4 Fácil · espacio para girar</p>
+                  </>
                 )}
 
                 {!cardFlipped && (
@@ -19525,8 +20077,11 @@ let SEARCH_INDEX = [];
 function GlobalSearch({ open, onClose, onJump }) {
   const [q, setQ] = useState('');
   const [openIdx, setOpenIdx] = useState(null);
+  const [active, setActive] = useState(0);
+  const rowRefs = useRef([]);
   useEffect(() => { if (!open) { setQ(''); setOpenIdx(null); } }, [open]);
-  useEffect(() => { setOpenIdx(null); }, [q]);
+  useEffect(() => { setOpenIdx(null); setActive(0); }, [q]);
+  useEffect(() => { const el = rowRefs.current[active]; if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' }); }, [active]);
   if (!open) return null;
   const query = q.trim().toLowerCase();
   const results = query.length < 2 ? [] : SEARCH_INDEX.filter(r =>
@@ -19567,6 +20122,13 @@ function GlobalSearch({ open, onClose, onJump }) {
   const SECTION_LABEL = { diario:'Hoy · Diario', hoy:'Hoy · Palabra del día', tiempos:'Gramática · Tiempos', chuletas:'Gramática · Chuletas', vocabulario:'Palabras · Temas', conectores:'Palabras · Expresiones', frases:'Palabras · Expresiones', conversaciones:'Escucha · Conversaciones', lecturas:'Escucha · Lecturas', gramatica:'Gramática · Lecciones', equivalentes:'Palabras · Cómo se dice' };
   // Singular noun for the "open" button when a result deep-links to one item.
   const OPEN_NOUN = { chuletas:'chuleta', conversaciones:'conversación', lecturas:'lectura', gramatica:'lección', vocabulario:'tema', frases:'frase', equivalentes:'Cómo se dice' };
+  const openResult = (r) => { if (!r) return; onJump(r.section, r.jumpId, r.jumpSub); onClose(); };
+  const onKey = (e) => {
+    if (e.key === 'Escape') onClose();
+    else if (e.key === 'ArrowDown') { e.preventDefault(); setActive(a => Math.min(results.length - 1, a + 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(a => Math.max(0, a - 1)); }
+    else if (e.key === 'Enter') { e.preventDefault(); openResult(results[active]); }
+  };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-20" style={{background:'rgba(0,0,0,0.5)'}} onClick={onClose}>
@@ -19577,7 +20139,7 @@ function GlobalSearch({ open, onClose, onJump }) {
             autoFocus
             value={q}
             onChange={e => setQ(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Escape') onClose(); }}
+            onKeyDown={onKey}
             placeholder="Buscar en todo el contenido..."
             className="flex-1 outline-none text-base placeholder-stone-400" />
           <button onClick={onClose} className="text-stone-400 text-2xl leading-none">×</button>
@@ -19597,31 +20159,39 @@ function GlobalSearch({ open, onClose, onJump }) {
               ? `Abrir ${OPEN_NOUN[r.section] || SECTION_LABEL[r.section] || 'sección'}`
               : `Abrir ${SECTION_LABEL[r.section] || 'sección'}`;
             return (
-            <div key={i} className="border-b border-stone-100">
-              <button onClick={() => setOpenIdx(expanded ? null : i)}
-                className="w-full text-left px-5 py-3 hover:bg-stone-50 transition-colors">
+            <React.Fragment key={i}>
+            <div ref={el => { rowRefs.current[i] = el; }} className={`border-b border-stone-100 flex items-stretch ${i === active ? 'bg-orange-50/60' : ''}`}>
+              <button onClick={() => openResult(r)} onMouseEnter={() => setActive(i)} title={openLabel}
+                className="flex-1 min-w-0 text-left pl-5 pr-2 py-3 hover:bg-stone-50/60 transition-colors">
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${KIND_COLOR[r.kind] || 'bg-stone-100 text-stone-700'}`}>{r.kind}</span>
-                  <p className="font-serif font-bold text-base flex-1">{r.es}</p>
-                  <span className={`text-stone-300 text-xl leading-none transition-transform ${expanded ? 'rotate-90' : ''}`}>›</span>
+                  <p className="font-serif font-bold text-base flex-1 min-w-0">{r.es}</p>
                 </div>
                 {r.en && <p className="text-xs text-stone-500">{r.en}</p>}
                 {!expanded && (snippet || r.hint) && <p className="text-xs text-stone-400 italic mt-0.5 truncate">{snippet || r.hint}</p>}
               </button>
-              {expanded && (
-                <div className="px-5 pb-4 -mt-1">
+              <button onClick={() => setOpenIdx(expanded ? null : i)} aria-label={expanded ? 'Ocultar detalle' : 'Ver detalle'} title={expanded ? 'Ocultar detalle' : 'Ver detalle'}
+                className="w-11 flex-shrink-0 flex items-start justify-center pt-3.5 text-stone-300 hover:text-orange-600 transition-colors">
+                <span className={`text-xl leading-none transition-transform ${expanded ? 'rotate-90' : ''}`}>›</span>
+              </button>
+            </div>
+            {expanded && (
+              <div className="border-b border-stone-100">
+                <div className="px-5 pb-4 pt-1">
                   {snippet && <p className="text-xs text-stone-500 mb-2 break-words">Coincide con: <span className="italic">{snippet}</span></p>}
                   {r.hint && <p className="text-sm text-stone-600 italic mb-3 break-words">{r.hint}</p>}
-                  <button onClick={() => { onJump(r.section, r.jumpId, r.jumpSub); onClose(); }}
+                  <button onClick={() => openResult(r)}
                     className="text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-full px-3.5 py-1.5 transition-colors">
                     {openLabel} →
                   </button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+            </React.Fragment>
             );
           })}
         </div>
+        {results.length > 0 && <p className="hidden lg:block px-5 py-2.5 text-[11px] text-stone-400 border-t border-stone-100">↑ ↓ para moverte · Enter para abrir · › para ver el detalle · Esc para cerrar</p>}
       </div>
     </div>
   );
@@ -21466,7 +22036,314 @@ SEARCH_INDEX = buildSearchIndex();
 // SECTION: Ajustes (Settings – TTS config)
 // ============================================================
 
+// Ajustes › Datos: copy API keys and settings to another device with a pasted code.
+function TransferSettingsCard({ dark }) {
+          const TRANSFER_KEYS = [
+            'aprende.tts.provider','aprende.tts.apiKey','aprende.tts.voiceFemale','aprende.tts.voiceMale',
+            'aprende.tts.googleKey','aprende.tts.googleVoiceFemale','aprende.tts.googleVoiceMale',
+            'aprende.tts.azureKey','aprende.tts.azureRegion','aprende.tts.azureVoiceFemale','aprende.tts.azureVoiceMale',
+            'aprende.tts.speechRate',
+            'aprende.ai.anthropicKey',
+            'aprende.slack.botToken','aprende.slack.channelId',
+            'aprende.custom_equiv',
+            // Learning data - glossary/SRS/streak/XP live only in this
+            // browser's localStorage; without these in the transfer there is
+            // no backup at all.
+            'aprende.glossary','aprende.srs','aprende.streak','aprende.xp',
+            'aprende.achievements','aprende.exercise_history','aprende.saved_verbs',
+            'aprende.dictado.stats','aprende.dictado.count',
+            'aprende.gist.token','aprende.gist.id','aprende.nivel','aprende.tarjetas.cap',
+          ];
+          const [copied, setCopied] = React.useState(false);
+          const [exportCode, setExportCode] = React.useState('');
+          const [importVal, setImportVal] = React.useState('');
+          const [importMsg, setImportMsg] = React.useState('');
+
+          const handleExport = () => {
+            const data = {};
+            TRANSFER_KEYS.forEach(k => {
+              const v = localStorage.getItem(k);
+              if (v) data[k] = v;
+            });
+            const str = btoa(unescape(encodeURIComponent(JSON.stringify(data)))); // UTF-8-safe: plain btoa throws on curly quotes/emoji
+            setExportCode(str);
+            try {
+              navigator.clipboard.writeText(str).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 3000);
+              }).catch(() => {});
+            } catch(e) {}
+          };
+
+          const handleImport = () => {
+            try {
+              const raw = atob(importVal.trim());
+              let json;
+              try { json = decodeURIComponent(escape(raw)); } catch (e) { json = raw; }
+              const data = JSON.parse(json);
+              let count = 0;
+              TRANSFER_KEYS.forEach(k => {
+                if (data[k] !== undefined) { localStorage.setItem(k, data[k]); count++; }
+              });
+              setImportMsg(`✅ ${count} ajustes importados. Recargando...`);
+              setImportVal('');
+              setTimeout(() => window.location.reload(), 1200);
+            } catch(e) {
+              setImportMsg('❌ Código inválido. Cópialo de nuevo desde el otro dispositivo.');
+            }
+          };
+
+          return (
+            <Card dark={dark} className="p-5" id="transfer-card">
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Transferir claves entre dispositivos</p>
+              <p className={`text-xs mb-4 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
+                Copia tus API keys al móvil (o viceversa) sin escribirlas de nuevo. En el dispositivo que ya funciona: genera el código. En el otro: pégalo.
+              </p>
+              <div className="grid grid-cols-1 gap-4">
+                {/* Export */}
+                <div>
+                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>En este dispositivo → Generar código</p>
+                  <button onClick={handleExport}
+                    className={`w-full rounded-xl py-3 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
+                    {copied ? '✅ Copiado al portapapeles' : '📋 Generar código de ajustes'}
+                  </button>
+                  {exportCode ? (
+                    <div className="mt-3">
+                      <p className={`text-[11px] mb-1.5 font-semibold ${dark ? 'text-stone-400' : 'text-stone-600'}`}>
+                        En móvil: pulsa el cuadro → Seleccionar todo → Copiar
+                      </p>
+                      <textarea readOnly value={exportCode} rows={3}
+                        onClick={e => e.target.select()}
+                        onFocus={e => e.target.select()}
+                        className={`w-full rounded-xl px-3 py-2.5 text-xs border font-mono break-all resize-none ${dark ? 'bg-white/[0.06] border-white/10 text-stone-300' : 'bg-stone-50 border-stone-200 text-stone-700'} focus:outline-none focus:border-[#C4202E]`} />
+                    </div>
+                  ) : null}
+                </div>
+                {/* Import */}
+                <div>
+                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>En este dispositivo → Pegar código</p>
+                  <div className="flex gap-2">
+                    <input value={importVal} onChange={e => setImportVal(e.target.value)}
+                      placeholder="Pega el código aquí..."
+                      className={`flex-1 rounded-xl px-3 py-2.5 text-sm border font-mono ${dark ? 'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500' : 'bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-[#C4202E]`} />
+                    <button onClick={handleImport} disabled={!importVal.trim()}
+                      className="rounded-xl px-4 py-2.5 bg-[#C4202E] hover:bg-red-700 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
+                      Importar
+                    </button>
+                  </div>
+                  {importMsg && <p className={`text-xs mt-2 font-medium ${importMsg.startsWith('✅') ? 'text-emerald-600' : 'text-red-500'}`}>{importMsg}</p>}
+                </div>
+              </div>
+            </Card>
+          );
+}
+
+// ── Backup: every aprende.* key except caches, view state and secrets ──
+const BACKUP_SECRET = /(apiKey|googleKey|azureKey|anthropicKey|botToken|gist\.token)$/;
+const BACKUP_SKIP = /^aprende\.(tts\.cache|ai\.cache\.|ai\.explain\.|view\.|diario\.cache|gist\.|route$|lastPlace$|lastSection$|lastNonInicio$|area\.)/;
+function backupKeys() {
+  return Object.keys(localStorage).filter(k => k.startsWith('aprende.') && !BACKUP_SKIP.test(k) && !BACKUP_SECRET.test(k)).sort();
+}
+function backupCollect() {
+  const keys = {};
+  backupKeys().forEach(k => { keys[k] = localStorage.getItem(k); });
+  return { app: 'aprende', version: 1, exportedAt: new Date().toISOString(), keys };
+}
+function backupRestore(obj) {
+  if (!obj || obj.app !== 'aprende' || !obj.keys || typeof obj.keys !== 'object') throw new Error('formato');
+  let n = 0;
+  Object.entries(obj.keys).forEach(([k, v]) => {
+    if (k.startsWith('aprende.') && typeof v === 'string' && !BACKUP_SECRET.test(k)) { localStorage.setItem(k, v); n++; }
+  });
+  return n;
+}
+function fmtStamp(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const p = (x) => String(x).padStart(2, '0');
+  return `${p(d.getDate())}-${p(d.getMonth() + 1)}-${String(d.getFullYear()).slice(2)} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+const AJUSTES_SECS = [
+  { id:'voz', label:'Voz' }, { id:'traduccion', label:'Traducción' }, { id:'estudio', label:'Estudio' }, { id:'datos', label:'Datos' },
+];
+function AjustesNav({ sec, setSec }) {
+  return (
+    <div className="flex gap-1 p-1 rounded-2xl border border-ink/10 bg-cream/70 w-max max-w-full overflow-x-auto hide-scroll" role="tablist">
+      {AJUSTES_SECS.map(x => (
+        <button key={x.id} role="tab" aria-selected={sec === x.id} onClick={() => setSec(x.id)}
+          className={`px-4 min-h-10 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${sec === x.id ? 'bg-orange-500 text-paper shadow-sm' : 'text-sienna-700 hover:bg-paper'}`}>{x.label}</button>
+      ))}
+    </div>
+  );
+}
+
+// Ajustes › Estudio: your level and the daily Tarjetas cap.
+function EstudioSettings({ dark }) {
+  const [nivel, setNivel] = useState(() => userLevel());
+  const [cap, setCap] = useState(() => tarjetasCap());
+  useEffect(() => { setStorage('aprende.nivel', nivel); }, [nivel]);
+  useEffect(() => { setStorage('aprende.tarjetas.cap', cap); }, [cap]);
+  const num = (k, min, max) => (e) => {
+    const v = parseInt(e.target.value, 10);
+    setCap(c => ({ ...c, [k]: isNaN(v) ? min : Math.max(min, Math.min(max, v)) }));
+  };
+  const field = 'mt-1 w-full rounded-xl px-3 py-2.5 border border-ink/15 bg-paper text-ink text-base focus:outline-none focus:border-orange-500';
+  return (<>
+    <Card dark={dark} className="p-5">
+      <p className="eyebrow mb-1">Tu nivel</p>
+      <p className="text-sm text-dust mb-4">Lecturas, Conversaciones y Lecciones lo usan para proponerte lo siguiente.</p>
+      <div className="flex gap-2">
+        {['A2', 'B1', 'B2'].map(l => (
+          <button key={l} onClick={() => setNivel(l)} aria-pressed={nivel === l}
+            className={`min-h-11 px-5 rounded-xl text-sm font-bold transition-colors ${nivel === l ? 'bg-ink text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>{l}</button>
+        ))}
+      </div>
+    </Card>
+    <Card dark={dark} className="p-5">
+      <p className="eyebrow mb-1">Tarjetas por día</p>
+      <p className="text-sm text-dust mb-4">Un tope diario evita que el repaso se acumule. Lo que no cabe hoy pasa a mañana; las que fallas vuelven en la misma sesión.</p>
+      <div className="grid grid-cols-2 gap-4 max-w-sm">
+        <label className="block"><span className="text-xs font-semibold text-sienna-700">Repasos al día</span>
+          <input type="number" inputMode="numeric" min="5" max="200" value={cap.review} onChange={num('review', 5, 200)} className={field} /></label>
+        <label className="block"><span className="text-xs font-semibold text-sienna-700">Nuevas al día</span>
+          <input type="number" inputMode="numeric" min="0" max="50" value={cap.fresh} onChange={num('fresh', 0, 50)} className={field} /></label>
+      </div>
+    </Card>
+  </>);
+}
+
+// Ajustes › Datos: download or restore a backup file of your progress.
+function BackupCard({ dark }) {
+  const [msg, setMsg] = useState('');
+  const fileRef = useRef(null);
+  const n = backupKeys().length;
+  const download = () => {
+    const blob = new Blob([JSON.stringify(backupCollect(), null, 1)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `aprende-progreso-${todayStr()}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setMsg('Copia descargada.');
+  };
+  const restore = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const obj = JSON.parse(r.result);
+        if (!window.confirm(`¿Restaurar la copia del ${fmtStamp(obj.exportedAt)}? Sustituye el progreso de este dispositivo.`)) return;
+        const k = backupRestore(obj);
+        setMsg(`Restaurado: ${k} datos. Recargando…`);
+        setTimeout(() => window.location.reload(), 900);
+      } catch (err) { setMsg('Ese archivo no es una copia de Aprende.'); }
+    };
+    r.readAsText(f);
+    e.target.value = '';
+  };
+  return (
+    <Card dark={dark} className="p-5">
+      <p className="eyebrow mb-1">Copia de seguridad</p>
+      <p className="text-sm text-dust mb-4">Todo tu progreso vive solo en este navegador: tarjetas, repasos, chuletas, racha, XP, lecturas hechas y borradores ({n} datos). Descárgalo como archivo y restáuralo cuando quieras. Las claves API no se incluyen.</p>
+      <div className="flex flex-wrap gap-2">
+        <button onClick={download} className="min-h-11 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-bold transition-colors">Descargar copia</button>
+        <button onClick={() => fileRef.current && fileRef.current.click()} className="min-h-11 px-5 rounded-xl bg-cream hover:bg-ochre-100 text-sienna-700 text-sm font-semibold transition-colors">Restaurar desde archivo</button>
+        <input ref={fileRef} type="file" accept="application/json,.json" onChange={restore} className="hidden" />
+      </div>
+      {msg && <p className="text-xs font-semibold text-sienna-700 mt-3">{msg}</p>}
+    </Card>
+  );
+}
+
+// Ajustes › Datos: push and pull the same backup to a private GitHub gist, so phone and Mac share progress.
+const GIST_FILE = 'aprende-progreso.json';
+const GIST_DESC = 'Aprende: copia de progreso (privada)';
+async function gistApi(path, token, opts = {}) {
+  const r = await fetch('https://api.github.com' + path, { ...opts, headers: { 'Accept': 'application/vnd.github+json', 'Authorization': 'Bearer ' + token, ...(opts.body ? { 'Content-Type': 'application/json' } : {}) } });
+  if (r.status === 401) throw new Error('token');
+  if (r.status === 404) throw new Error('404');
+  if (!r.ok) throw new Error('http ' + r.status);
+  return r.json();
+}
+async function gistFind(token) {
+  const id = getStorage('aprende.gist.id', '');
+  if (id) return id;
+  const list = await gistApi('/gists?per_page=100', token);
+  const g = (list || []).find(x => x.files && x.files[GIST_FILE]);
+  if (g) setStorage('aprende.gist.id', g.id);
+  return g ? g.id : '';
+}
+function GistSyncCard({ dark }) {
+  const [token, setToken] = useState(() => getStorage('aprende.gist.token', ''));
+  const [show, setShow] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [last, setLast] = useState(() => getStorage('aprende.gist.last', null));
+  useEffect(() => { setStorage('aprende.gist.token', token.trim()); }, [token]);
+  const fail = (e) => setMsg(e.message === 'token' ? 'GitHub no acepta el token. Revisa que tenga permiso de gists.' : e.message === '404' ? 'No se encuentra la copia en GitHub.' : 'Error de red. Inténtalo otra vez.');
+  const push = async () => {
+    setBusy(true); setMsg('Subiendo…');
+    try {
+      const t = token.trim();
+      const content = JSON.stringify(backupCollect(), null, 1);
+      let id = await gistFind(t);
+      if (id) await gistApi('/gists/' + id, t, { method: 'PATCH', body: JSON.stringify({ files: { [GIST_FILE]: { content } } }) });
+      else { const g = await gistApi('/gists', t, { method: 'POST', body: JSON.stringify({ description: GIST_DESC, public: false, files: { [GIST_FILE]: { content } } }) }); id = g.id; setStorage('aprende.gist.id', id); }
+      const l = { dir: 'up', at: new Date().toISOString() }; setStorage('aprende.gist.last', l); setLast(l);
+      setMsg('Progreso subido a GitHub.');
+    } catch (e) { if (e.message === '404') setStorage('aprende.gist.id', ''); fail(e); }
+    setBusy(false);
+  };
+  const pull = async () => {
+    setBusy(true); setMsg('Buscando la copia…');
+    try {
+      const t = token.trim();
+      const id = await gistFind(t);
+      if (!id) { setMsg('Aún no hay copia en GitHub. Súbela primero desde el otro dispositivo.'); setBusy(false); return; }
+      const g = await gistApi('/gists/' + id, t);
+      const f = g.files && g.files[GIST_FILE];
+      if (!f) throw new Error('404');
+      const raw = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+      const obj = JSON.parse(raw);
+      if (!window.confirm(`¿Bajar la copia del ${fmtStamp(obj.exportedAt)}? Sustituye el progreso de este dispositivo.`)) { setMsg(''); setBusy(false); return; }
+      const k = backupRestore(obj);
+      setStorage('aprende.gist.last', { dir: 'down', at: new Date().toISOString() });
+      setMsg(`Bajado: ${k} datos. Recargando…`);
+      setTimeout(() => window.location.reload(), 900);
+    } catch (e) { if (e.message === '404') setStorage('aprende.gist.id', ''); fail(e); setBusy(false); }
+  };
+  const ok = token.trim().length > 20;
+  return (
+    <Card dark={dark} className="p-5">
+      <p className="eyebrow mb-1">Sincronizar con GitHub</p>
+      <p className="text-sm text-dust mb-4">Guarda la copia en un gist privado de tu cuenta de GitHub. Sube en un dispositivo y baja en el otro. El token solo se guarda en este navegador.</p>
+      <details className="mb-4 rounded-xl bg-cream/60 px-4 py-3" open={!ok}>
+        <summary className="cursor-pointer text-sm font-semibold text-sienna-700">Cómo crear el token (2 min)</summary>
+        <ol className="text-[13px] text-ink/80 space-y-1.5 list-decimal ml-4 mt-2">
+          <li>En GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.</li>
+          <li>En Account permissions, pon <strong>Gists</strong> en Read and write. Nada más.</li>
+          <li>Copia el token y pégalo aquí. Haz lo mismo en el móvil (o usa Transferir claves).</li>
+        </ol>
+      </details>
+      <div className="flex gap-2 mb-3">
+        <input type={show ? 'text' : 'password'} value={token} onChange={e => setToken(e.target.value)} placeholder="github_pat_…" autoComplete="off" spellCheck="false"
+          className="flex-1 min-w-0 px-4 py-2.5 rounded-xl text-sm font-mono border border-ink/15 bg-paper text-ink focus:outline-none focus:border-orange-500" />
+        <button onClick={() => setShow(!show)} className="px-3 rounded-xl text-xs font-semibold bg-cream text-sienna-700 hover:bg-ochre-100">{show ? 'Ocultar' : 'Ver'}</button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button onClick={push} disabled={!ok || busy} className="min-h-11 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-40 text-paper text-sm font-bold transition-colors">Subir progreso</button>
+        <button onClick={pull} disabled={!ok || busy} className="min-h-11 px-5 rounded-xl bg-cream hover:bg-ochre-100 disabled:opacity-40 text-sienna-700 text-sm font-semibold transition-colors">Bajar progreso</button>
+      </div>
+      {last && <p className="text-xs text-dust mt-3">Última vez: {last.dir === 'up' ? 'subido' : 'bajado'} el {fmtStamp(last.at)}.</p>}
+      {msg && <p className="text-xs font-semibold text-sienna-700 mt-2">{msg}</p>}
+    </Card>
+  );
+}
+
 function Ajustes({ dark, onBack }) {
+  const [sec, setSec] = usePersistedState('aprende.view.ajustes.sec', 'voz');
   // ── ElevenLabs state ──
   const [provider, setProvider]       = useState(() => getStorage('aprende.tts.provider', 'web'));
   const [apiKey, setApiKey]           = useState(() => getStorage('aprende.tts.apiKey', ''));
@@ -21747,11 +22624,15 @@ function Ajustes({ dark, onBack }) {
 
   return (
     <div>
-      <BackHeader title="Ajustes" subtitle="Voz y audio" onBack={onBack} dark={dark} />
+      <BackHeader title="Ajustes" subtitle="Voz, traducción, estudio y datos" onBack={onBack} dark={dark} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto space-y-6">
 
+        <h1 className="hidden lg:block font-serif font-bold text-4xl text-sienna-700 leading-tight -mt-2 -mb-2">Ajustes</h1>
+        <AjustesNav sec={sec} setSec={setSec} />
+
+        {sec === 'voz' && (<>
         <div>
-          <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-2">Voz y audio</h2>
+          <h2 className="font-serif font-bold text-2xl lg:text-3xl leading-tight mb-2">Voz y audio</h2>
           <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
             La app usa tres capas en cascada: <strong>Google Neural2</strong> (mejor calidad, 1M chars/mes gratis) → <strong>Azure Neural</strong> (respaldo, 500k chars/mes gratis) → voz del navegador (siempre disponible).
           </p>
@@ -21779,116 +22660,15 @@ function Ajustes({ dark, onBack }) {
         {!googleKey && !azureKey && (
           <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
             <p className="font-bold text-amber-800 text-sm mb-1">⚠️ Sin API keys en este dispositivo</p>
-            <p className="text-amber-700 text-xs">Estás usando la voz del navegador (calidad básica). Si ya las configuraste en otro dispositivo, usa <strong>Transferir ajustes</strong> aquí abajo para copiarlas en 30 segundos.</p>
+            <p className="text-amber-700 text-xs">Estás usando la voz del navegador (calidad básica). Si ya las configuraste en otro dispositivo, usa <strong>Transferir claves</strong> en la pestaña Datos para copiarlas en 30 segundos.</p>
           </div>
         )}
         {!googleKey && azureKey && (
           <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
             <p className="font-bold text-amber-800 text-sm mb-1">🎙️ Google TTS no configurado en este dispositivo</p>
-            <p className="text-amber-700 text-xs">Azure está activo como reserva, pero Google Neural2 da más calidad. Usa <strong>Transferir ajustes</strong> aquí abajo para copiarlo desde tu ordenador en segundos.</p>
+            <p className="text-amber-700 text-xs">Azure está activo como reserva, pero Google Neural2 da más calidad. Usa <strong>Transferir claves</strong> en la pestaña Datos para copiarlo desde tu ordenador en segundos.</p>
           </div>
         )}
-
-        {/* ── Transfer settings (at the top so it's easy to find on mobile) ── */}
-        {(() => {
-          const TRANSFER_KEYS = [
-            'aprende.tts.provider','aprende.tts.apiKey','aprende.tts.voiceFemale','aprende.tts.voiceMale',
-            'aprende.tts.googleKey','aprende.tts.googleVoiceFemale','aprende.tts.googleVoiceMale',
-            'aprende.tts.azureKey','aprende.tts.azureRegion','aprende.tts.azureVoiceFemale','aprende.tts.azureVoiceMale',
-            'aprende.tts.speechRate',
-            'aprende.ai.anthropicKey',
-            'aprende.slack.botToken','aprende.slack.channelId',
-            'aprende.custom_equiv',
-            // Learning data - glossary/SRS/streak/XP live only in this
-            // browser's localStorage; without these in the transfer there is
-            // no backup at all.
-            'aprende.glossary','aprende.srs','aprende.streak','aprende.xp',
-            'aprende.achievements','aprende.exercise_history','aprende.saved_verbs',
-            'aprende.dictado.stats','aprende.dictado.count',
-          ];
-          const [copied, setCopied] = React.useState(false);
-          const [exportCode, setExportCode] = React.useState('');
-          const [importVal, setImportVal] = React.useState('');
-          const [importMsg, setImportMsg] = React.useState('');
-
-          const handleExport = () => {
-            const data = {};
-            TRANSFER_KEYS.forEach(k => {
-              const v = localStorage.getItem(k);
-              if (v) data[k] = v;
-            });
-            const str = btoa(unescape(encodeURIComponent(JSON.stringify(data)))); // UTF-8-safe: plain btoa throws on curly quotes/emoji
-            setExportCode(str);
-            try {
-              navigator.clipboard.writeText(str).then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 3000);
-              }).catch(() => {});
-            } catch(e) {}
-          };
-
-          const handleImport = () => {
-            try {
-              const raw = atob(importVal.trim());
-              let json;
-              try { json = decodeURIComponent(escape(raw)); } catch (e) { json = raw; }
-              const data = JSON.parse(json);
-              let count = 0;
-              TRANSFER_KEYS.forEach(k => {
-                if (data[k] !== undefined) { localStorage.setItem(k, data[k]); count++; }
-              });
-              setImportMsg(`✅ ${count} ajustes importados. Recargando...`);
-              setImportVal('');
-              setTimeout(() => window.location.reload(), 1200);
-            } catch(e) {
-              setImportMsg('❌ Código inválido. Cópialo de nuevo desde el otro dispositivo.');
-            }
-          };
-
-          return (
-            <Card dark={dark} className="p-5" id="transfer-card">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">📲 Transferir ajustes entre dispositivos</p>
-              <p className={`text-xs mb-4 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>
-                Copia tus API keys al móvil (o viceversa) sin escribirlas de nuevo. En el dispositivo que ya funciona: genera el código. En el otro: pégalo.
-              </p>
-              <div className="grid grid-cols-1 gap-4">
-                {/* Export */}
-                <div>
-                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>En este dispositivo → Generar código</p>
-                  <button onClick={handleExport}
-                    className={`w-full rounded-xl py-3 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
-                    {copied ? '✅ Copiado al portapapeles' : '📋 Generar código de ajustes'}
-                  </button>
-                  {exportCode ? (
-                    <div className="mt-3">
-                      <p className={`text-[11px] mb-1.5 font-semibold ${dark ? 'text-stone-400' : 'text-stone-600'}`}>
-                        En móvil: pulsa el cuadro → Seleccionar todo → Copiar
-                      </p>
-                      <textarea readOnly value={exportCode} rows={3}
-                        onClick={e => e.target.select()}
-                        onFocus={e => e.target.select()}
-                        className={`w-full rounded-xl px-3 py-2.5 text-xs border font-mono break-all resize-none ${dark ? 'bg-white/[0.06] border-white/10 text-stone-300' : 'bg-stone-50 border-stone-200 text-stone-700'} focus:outline-none focus:border-[#C4202E]`} />
-                    </div>
-                  ) : null}
-                </div>
-                {/* Import */}
-                <div>
-                  <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>En este dispositivo → Pegar código</p>
-                  <div className="flex gap-2">
-                    <input value={importVal} onChange={e => setImportVal(e.target.value)}
-                      placeholder="Pega el código aquí..."
-                      className={`flex-1 rounded-xl px-3 py-2.5 text-sm border font-mono ${dark ? 'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500' : 'bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-[#C4202E]`} />
-                    <button onClick={handleImport} disabled={!importVal.trim()}
-                      className="rounded-xl px-4 py-2.5 bg-[#C4202E] hover:bg-red-700 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
-                      Importar
-                    </button>
-                  </div>
-                  {importMsg && <p className={`text-xs mt-2 font-medium ${importMsg.startsWith('✅') ? 'text-emerald-600' : 'text-red-500'}`}>{importMsg}</p>}
-                </div>
-              </div>
-            </Card>
-          );
-        })()}
 
         {/* ══════════════════════════════════════
             SPEED CONTROL
@@ -21923,9 +22703,9 @@ function Ajustes({ dark, onBack }) {
           <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🎙️ Google Cloud TTS – Nivel 1 (1M chars/mes gratis, más natural)</p>
 
           <div className="space-y-4">
-            {!googleKey && (
-              <Card dark={dark} className="p-5 border-2 border-green-200">
-                <p className="font-bold text-sm mb-3">📝 Cómo configurar Google Cloud TTS (5 min, gratis)</p>
+            <details className="rounded-2xl border border-ink/10 bg-paper px-5 py-4" open={!googleKey}>
+                <summary className="cursor-pointer text-sm font-semibold text-sienna-700">Cómo configurar Google Cloud TTS (5 min, gratis)</summary>
+                <div className="mt-3">
                 <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
                   <li>Ve a <a href="https://console.cloud.google.com" target="_blank" rel="noopener" className="text-green-700 font-semibold underline">console.cloud.google.com</a> → inicia sesión con Google.</li>
                   <li>Crea un proyecto nuevo (o usa uno existente).</li>
@@ -21934,8 +22714,8 @@ function Ajustes({ dark, onBack }) {
                   <li>Copia la clave y pégala aquí abajo 👇</li>
                 </ol>
                 <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>1.000.000 chars/mes de voces Neural2 gratis de por vida. No requiere tarjeta si ya tienes cuenta Google.</p>
-              </Card>
-            )}
+                </div>
+            </details>
 
             <InputCard label="Google Cloud API Key" value={googleKey} onChange={setGoogleKey}
               show={showGoogleKey} setShow={setShowGoogleKey} placeholder="AIza..." confirmed={!!googleKey} />
@@ -21986,9 +22766,9 @@ function Ajustes({ dark, onBack }) {
           <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">☁️ Azure Neural – Nivel 2 (voz de reserva, 500k chars/mes gratis)</p>
 
           <div className="space-y-4">
-            {!azureKey && (
-              <Card dark={dark} className="p-5 border-2 border-blue-200">
-                <p className="font-bold text-sm mb-3">📝 Cómo configurar Azure (5 min, gratis con tarjeta)</p>
+            <details className="rounded-2xl border border-ink/10 bg-paper px-5 py-4" open={!azureKey}>
+                <summary className="cursor-pointer text-sm font-semibold text-sienna-700">Cómo configurar Azure (5 min, gratis con tarjeta)</summary>
+                <div className="mt-3">
                 <ol className={`text-xs space-y-2 list-decimal ml-4 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>
                   <li>Ve a <a href="https://azure.microsoft.com/free" target="_blank" rel="noopener" className="text-blue-600 font-semibold underline">azure.microsoft.com/free</a> → crea cuenta → pon tarjeta (verificación, no se cobra).</li>
                   <li>Busca <strong>"Speech"</strong> en los servicios → <strong>Crear</strong>.</li>
@@ -21998,8 +22778,8 @@ function Ajustes({ dark, onBack }) {
                   <li>Pega la clave aquí abajo 👇</li>
                 </ol>
                 <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>F0 = 500.000 caracteres/mes gratis de por vida. No expira.</p>
-              </Card>
-            )}
+                </div>
+            </details>
 
             <InputCard label="Azure API Key (Clave 1)" value={azureKey} onChange={setAzureKey}
               show={showAzureKey} setShow={setShowAzureKey} placeholder="Clave de 32 caracteres..." confirmed={!!azureKey} />
@@ -22056,14 +22836,35 @@ function Ajustes({ dark, onBack }) {
           </div>
         </div>
 
+        {/* ── Cache ── */}
+        <Card dark={dark} className="p-5">
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-stone-500">Caché de audio (compartida)</p>
+          <p className="text-sm mb-3">
+            <span className="font-bold text-2xl">{cacheSize}</span>
+            <span className={`ml-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>frases guardadas</span>
+          </p>
+          <p className={`text-[11px] mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
+            Google, Azure y ElevenLabs cachean el audio. Las repeticiones no gastan caracteres de ningún proveedor. Borra la caché si cambias de voz o velocidad.
+          </p>
+          <button onClick={clearCache}
+            className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
+            🗑️ Borrar caché
+          </button>
+        </Card>
+
+        </>)}
+
+        {sec === 'traduccion' && (<>
         {/* ══════════════════════════════════════
             ANTHROPIC AI – English → natural Spanish
         ══════════════════════════════════════ */}
         <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🤖 Traducción IA – Cómo se dice (Anthropic Claude)</p>
+          <h2 className="font-serif font-bold text-2xl lg:text-3xl leading-tight mb-2">Claude</h2>
+          <p className="text-sm text-dust mb-4">Traduce en Cómo se dice y corrige tus textos en Practica › Escribe. Una sola clave para las dos cosas.</p>
           <div className="space-y-4">
-            <Card dark={dark} className="p-5">
-              <p className={`text-sm font-semibold mb-2 ${dark?'text-stone-200':'text-stone-700'}`}>Para qué sirve</p>
+            <details className="rounded-2xl border border-ink/10 bg-paper px-5 py-4" open={!anthropicKey}>
+              <summary className="cursor-pointer text-sm font-semibold text-sienna-700">Para qué sirve y cómo configurarlo</summary>
+              <div className="mt-3">
               <p className={`text-xs mb-3 ${dark?'text-stone-400':'text-stone-600'}`}>
                 Cuando escribes una frase en <strong>Cómo se dice</strong> que no está en el diccionario verificado, Claude te da la traducción natural en español de España - sin calcos literales como "toma tiempo".
               </p>
@@ -22073,9 +22874,10 @@ function Ajustes({ dark, onBack }) {
                 <li>Las traducciones se cachean - solo paga la primera vez</li>
               </ol>
               <p className={`text-[11px] ${dark?'text-stone-500':'text-stone-400'}`}>
-                Coste: ~$0.0004 por frase con Claude Haiku 5.5. 1000 frases ≈ $0.40.
+                Coste: ~$0.0004 por frase con Claude Haiku 5.5. 1000 frases ≈ $0.40. Las correcciones de Escribe usan Claude Sonnet 5.5 y cuestan algo más por texto.
               </p>
-            </Card>
+              </div>
+            </details>
 
             <InputCard label="Anthropic API Key" value={anthropicKey} onChange={setAnthropicKey}
               show={showAnthropicKey} setShow={setShowAnthropicKey} placeholder="sk-ant-..." confirmed={!!anthropicKey} />
@@ -22137,22 +22939,15 @@ function Ajustes({ dark, onBack }) {
           </div>
         </div>
 
-        {/* ── Cache ── */}
-        <Card dark={dark} className="p-5">
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-2 text-stone-500">Caché de audio (compartida)</p>
-          <p className="text-sm mb-3">
-            <span className="font-bold text-2xl">{cacheSize}</span>
-            <span className={`ml-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>frases guardadas</span>
-          </p>
-          <p className={`text-[11px] mb-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>
-            Google, Azure y ElevenLabs cachean el audio. Las repeticiones no gastan caracteres de ningún proveedor. Borra la caché si cambias de voz o velocidad.
-          </p>
-          <button onClick={clearCache}
-            className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-            🗑️ Borrar caché
-          </button>
-        </Card>
+        </>)}
 
+        {sec === 'estudio' && <EstudioSettings dark={dark} />}
+
+        {sec === 'datos' && (<>
+          <BackupCard dark={dark} />
+          <GistSyncCard dark={dark} />
+          <TransferSettingsCard dark={dark} />
+        </>)}
 
       </div>
     </div>
@@ -22238,7 +23033,7 @@ const DICTADO_SENTENCES = {
   ],
 };
 
-function Dictado({ onBack, dark }) {
+function Dictado({ onBack, dark, jump }) {
   const [level, setLevel] = React.useState(null);
   const [pool, setPool] = React.useState([]);
   const [poolIdx, setPoolIdx] = React.useState(0);
@@ -22289,6 +23084,15 @@ function Dictado({ onBack, dark }) {
     setReplayCount(0);
     setSessionScore({ correct:0, total:0, sentences:0 });
   };
+
+  // Hoy's session opens Dictado straight into a level (and its weak sentences).
+  const jumpRef = React.useRef(null);
+  React.useEffect(() => {
+    if (jump && jump.section === 'dictado' && jump.n !== jumpRef.current) {
+      jumpRef.current = jump.n;
+      if (DICTADO_SENTENCES[jump.id]) startLevel(jump.id, jump.sub === 'weak');
+    }
+  }, [jump]);
 
   const handlePlay = () => {
     speakES(current, { gender:'female' });
@@ -22996,6 +23800,7 @@ function dictadoStatsUpdate(sentence, correct, total) {
   prev.totalWords += total;
   stats[key] = prev;
   setStorage('aprende.dictado.stats', stats);
+  dayLogBump('dictado');
   // update global dictado count
   const count = getStorage('aprende.dictado.count', 0) + 1;
   setStorage('aprende.dictado.count', count);
@@ -23026,11 +23831,12 @@ function XPToast({ xp, onDone }) {
 // Practica > Escribe: the free-writing prompts (were Escritura libre inside Ejercicios).
 function Escribe({ dark }) {
   const [promptId, setPromptId] = usePersistedState('aprende.view.escribe.prompt', null);
+  const [done] = useDone('escribe');
   const prompt = promptId ? WRITING_PROMPTS.find(p => p.id === promptId) : null;
   if (prompt) return <EscrituraView prompt={prompt} dark={dark} onBack={() => setPromptId(null)} />;
   return (
     <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-      <p className="text-base leading-relaxed text-stone-600 mb-5">Escribe un texto corto sobre cada tema. El contador te dice cuándo llegas al objetivo de palabras.</p>
+      <p className="text-base leading-relaxed text-stone-600 mb-5">Escribe un texto corto sobre cada tema. El contador te dice cuándo llegas al objetivo de palabras, y Claude te lo corrige. Tus borradores se guardan solos.</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {WRITING_PROMPTS.map(p => (
           <button key={p.id} onClick={() => setPromptId(p.id)} className="text-left">
@@ -23038,6 +23844,7 @@ function Escribe({ dark }) {
               <div className="flex items-center gap-2 mb-2">
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${p.level === 'A2' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{p.level}</span>
                 <span className="text-xs text-stone-400">{p.minWords}+ palabras</span>
+                <span className="ml-auto"><DoneBadge on={!!done[p.id]} label="Hecho" /></span>
               </div>
               <p className="font-bold text-base mb-2">📝 {p.title}</p>
               <p className="text-sm line-clamp-3 text-stone-500">{p.prompt}</p>
@@ -23132,6 +23939,19 @@ function App() {
   };
 
   const [searchOpen, setSearchOpen] = useState(false);
+  // Desktop: / (or Cmd/Ctrl+K) opens search from anywhere outside a text field.
+  useEffect(() => {
+    const h = (e) => {
+      const k = (e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K');
+      if (!k && (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey)) return;
+      const t = e.target;
+      if (!k && t && t.closest && t.closest('input,textarea,select,[contenteditable="true"]')) return;
+      e.preventDefault();
+      setSearchOpen(true);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
   // Deep-link target for opening a specific item (global search, chuleta links, Hoy).
   // Each component reads `jump` and acts when jump.section matches; the nonce (n)
   // lets it re-open even if that tab is already the active one.
@@ -23207,6 +24027,7 @@ function App() {
             className="w-full flex items-center gap-2 px-4 py-2.5 min-h-11 rounded-xl bg-cream hover:bg-ochre-100 text-dust text-sm font-medium transition-colors">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
             <span className="flex-1 text-left">Buscar…</span>
+            <kbd className="text-[11px] font-mono font-semibold text-dust/80 border border-ink/15 rounded px-1.5 leading-5">/</kbd>
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
