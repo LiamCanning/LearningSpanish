@@ -9860,7 +9860,7 @@ function makeSpeakUtterance(text, opts) {
 // SHARED COMPONENTS
 // ============================================================
 
-const { useState, useEffect, useRef, useCallback } = React;
+const { useState, useEffect, useRef, useCallback, useContext } = React;
 
 // Persist a piece of view state to localStorage so Cmd+R restores the exact page/item you were on.
 function usePersistedState(key, initial) {
@@ -10079,12 +10079,29 @@ function Toaster() {
   );
 }
 
-function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
+// Where the current tab's list lives, for the desktop back link ("← Chuletas") on drill-in views.
+const NavCtx = React.createContext({ parentLabel: 'Volver' });
+
+// Desktop back link for drill-in views: one slim text line above the page's own title.
+function DesktopBack({ onBack }) {
+  const nav = useContext(NavCtx);
   if (!onBack) return null;
   return (
-    <div className="sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center gap-3 glass-light border-b border-ink/10">
+    <div className="hidden lg:block px-8 pt-5 max-w-5xl mx-auto no-print">
+      <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-semibold text-dust hover:text-orange-600 transition-colors">
+        <span aria-hidden>←</span><span>{nav.parentLabel}</span>
+      </button>
+    </div>
+  );
+}
+
+function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
+  if (!onBack) return null;
+  return (<>
+    <DesktopBack onBack={onBack} />
+    <div className="lg:hidden sticky top-0 z-30 px-4 py-3 flex items-center gap-3 glass-light border-b border-ink/10">
       <button onClick={onBack} aria-label="Volver"
-        className="flex lg:hidden items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
+        className="flex items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
         <span aria-hidden>←</span>
         <span className="hidden sm:inline">Volver</span>
       </button>
@@ -10094,12 +10111,12 @@ function BackHeader({ title, subtitle, onBack, dark, onSearch }) {
       </div>
       {onSearch && (
         <button onClick={onSearch} aria-label="Buscar"
-          className="lg:hidden flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">
+          className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
         </button>
       )}
     </div>
-  );
+  </>);
 }
 
 // ── Editorial section hero - replaces ad-hoc gradient headers ──
@@ -10509,7 +10526,7 @@ function HoyPage({ goTo, go, onSearch }) {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
           </button>
           <button onClick={() => goTo('ajustes')} aria-label="Ajustes" title="Ajustes"
-            className="w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0 text-lg">⚙</button>
+            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0 text-lg">⚙</button>
         </div>
 
         {/* Continúa: the exact area, tab and item you were on; a fresh start points at the Diario */}
@@ -10518,7 +10535,7 @@ function HoyPage({ goTo, go, onSearch }) {
           <div className="flex-1 min-w-0">
             <p className="eyebrow" style={{ color:'rgba(250,246,238,0.75)' }}>{place ? 'Continúa donde lo dejaste' : 'Empieza aquí'}</p>
             <p className="font-serif font-bold text-2xl lg:text-3xl leading-tight mt-1.5 line-clamp-2">{place ? (place.item || place.tabLabel) : 'Empieza con el Diario'}</p>
-            <p className="text-sm mt-1.5" style={{ color:'rgba(250,246,238,0.85)' }}>{place ? `${place.areaLabel} › ${place.tabLabel}` : 'Diez tarjetas cortas · unos 5 minutos'}</p>
+            <p className="text-sm mt-1.5" style={{ color:'rgba(250,246,238,0.85)' }}>{place ? `${place.areaLabel} › ${place.tabLabel}` : `${cards.length ? cards.length + ' tarjetas cortas' : 'Tarjetas cortas'} · unos 5 minutos`}</p>
           </div>
           <span className="text-2xl transition-transform group-hover:translate-x-1 flex-shrink-0">→</span>
         </button>
@@ -10605,8 +10622,8 @@ function HoyPage({ goTo, go, onSearch }) {
         </div>
 
         <div className="mt-12 pt-6 border-t border-ink/10 flex items-center justify-between gap-3">
-          <p className="text-xs text-dust">{xpState.total} XP · {level.label} {level.emoji} · Mejor racha: {streak.best || streak.count} días</p>
-          <button onClick={() => goTo('ajustes')} className="text-sm font-medium text-dust hover:text-orange-600 transition-colors min-h-11">Ajustes ⚙</button>
+          <p className="text-xs text-dust">{xpState.total} XP · {level.label} {level.emoji} · Mejor racha: {(n => `${n} ${n === 1 ? 'día' : 'días'}`)(streak.best || streak.count)}</p>
+          <button onClick={() => goTo('ajustes')} className="lg:hidden text-sm font-medium text-dust hover:text-orange-600 transition-colors min-h-11">Ajustes ⚙</button>
         </div>
       </section>
     </div>
@@ -11277,10 +11294,10 @@ function TenseCard({ card, dark }) {
 
 // Tense tile color map
 const TENSE_TAB_COLORS = {
-  pasado:     { tile:'from-blue-500 to-blue-600',    badge:'bg-blue-100 text-blue-700' },
-  presente:   { tile:'from-emerald-500 to-emerald-600', badge:'bg-emerald-100 text-emerald-700' },
-  futuro:     { tile:'from-violet-500 to-violet-600', badge:'bg-violet-100 text-violet-700' },
-  subjuntivo: { tile:'from-rose-500 to-rose-600',    badge:'bg-rose-100 text-rose-700' },
+  pasado:     { tile:'from-sienna-400 to-sienna-500', badge:'bg-sienna-50 text-sienna-700' },
+  presente:   { tile:'from-oliva-400 to-oliva-500',   badge:'bg-oliva-50 text-oliva-700' },
+  futuro:     { tile:'from-anil-400 to-anil-500',     badge:'bg-anil-50 text-anil-700' },
+  subjuntivo: { tile:'from-orange-400 to-orange-500', badge:'bg-orange-50 text-orange-700' },
 };
 
 function Tiempos({ onBack, dark, onSearch }) {
@@ -11310,14 +11327,11 @@ function Tiempos({ onBack, dark, onSearch }) {
 
   return (
     <div>
-      <BackHeader title="Tiempos verbales" subtitle="Tenses reference" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 py-6 mx-auto max-w-3xl">
-        <div className="hidden lg:block mb-4">
-          <h2 className="text-2xl font-serif font-bold">Tiempos verbales</h2>
-        </div>
+      <BackHeader title="Tiempos verbales" subtitle="Referencia de tiempos" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 mx-auto max-w-5xl">
         <CategoryNav dark={dark} categories={tenseCategories} active={tab} onChange={(t) => { setTab(t); setSelectedTense(null); }} />
         {(
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {(TENSES[tab] || []).map(card => (
               <button key={card.id} onClick={() => setSelectedTense(card)}
                 className={`min-w-0 text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
@@ -11345,11 +11359,8 @@ function Tiempos({ onBack, dark, onSearch }) {
 function ConjugadorSection({ onBack, dark, onSearch }) {
   return (
     <div>
-      <BackHeader title="Conjugador" subtitle="Conjugate any verb" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
-        <div className="hidden lg:block mb-4">
-          <h2 className="text-2xl font-serif font-bold">Conjugador</h2>
-        </div>
+      <BackHeader title="Conjugador" subtitle="Conjuga cualquier verbo" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <Conjugador dark={dark} />
       </div>
     </div>
@@ -11823,16 +11834,13 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
 
   return (
     <div>
-      <BackHeader title="Lecturas" subtitle="Reading passages" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Lecturas" subtitle="Lecturas con audio" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Lecturas</h2>
-          <p className="text-sm text-stone-500 mt-1">Mini textos con audio, vocabulario y preguntas</p>
-        </div>
+        <p className="text-sm text-dust mb-5">Mini textos con audio, vocabulario y preguntas.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {READING_PASSAGES.map(p => (
             <button key={p.id} onClick={() => setSelected(p)} className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 min-h-[220px] flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
-              <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 to-sky-500" />
+              <div className="h-1.5 w-full bg-gradient-to-r from-anil-400 to-anil-500" />
               <div className="p-5 flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{p.level}</span>
@@ -13770,12 +13778,9 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
 
   return (
     <div>
-      <BackHeader title="Conversaciones" subtitle="Listening practice" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Conversaciones" subtitle="Escucha y lee" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Conversaciones</h2>
-          <p className="text-sm text-stone-500 mt-1">Diálogos reales con dos voces, audio y vocabulario</p>
-        </div>
+        <p className="text-sm text-dust mb-5">Diálogos reales con dos voces, audio y vocabulario.</p>
         <div className="flex gap-2 mb-5">
           {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
             <button key={o.id} onClick={() => setFilter(o.id)}
@@ -15195,7 +15200,7 @@ function Conjugador({ dark }) {
           )}
 
           {/* ── Layer 1: uniform conjugation grid ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 mb-6">
             {tenseGroups.map(g => {
               const forms = data[g.key];
               if (!forms) return null;
@@ -15662,12 +15667,14 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
   const [hideEn, setHideEn] = useState(() => getStorage('aprende.chuletas.hideEn', false));
   const [resumenOpen, setResumenOpen] = useState(() => sheetProgress(sheet.id).status !== 'nueva');
   const [active, setActive] = useState(0);
+  const [tocOpen, setTocOpen] = useState(false);
   const [, bump] = useState(0);
   const seq = useSequencePlayer();
   const toast = useToast();
-  const stripRef = useRef(null);
+  const nav = useContext(NavCtx);
   const total = sheet.content.length;
   const readSet = new Set(prog.read || []);
+  const pctRead = total ? Math.round((readSet.size / total) * 100) : 0;
 
   useEffect(() => { window.scrollTo(0, 0); setProg(sheetProgress(sheet.id)); }, [sheet.id]);
 
@@ -15707,15 +15714,10 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
   }, [sheet.id]);
-  useEffect(() => {
-    const chip = stripRef.current && stripRef.current.querySelector(`[data-chip="${active}"]`);
-    if (chip && chip.scrollIntoView) chip.scrollIntoView({ block: 'nearest', inline: 'center' });
-  }, [active]);
-
-  const jumpTo = (i) => {
-    const el = document.querySelector(`[data-sheet-sec="${i}"]`);
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 150, behavior: 'smooth' });
-  };
+  // Close the phone Índice first, then measure: the dropdown collapsing shifts the page.
+  const scrollToEl = (el) => { if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 96, behavior: 'smooth' }); };
+  const jumpTo = (i) => { setTocOpen(false); setTimeout(() => scrollToEl(document.querySelector(`[data-sheet-sec="${i}"]`)), 60); };
+  const jumpQuiz = () => { setTocOpen(false); setTimeout(() => scrollToEl(document.getElementById('sheet-quiz')), 60); };
   const toggleEn = () => setHideEn(v => { setStorage('aprende.chuletas.hideEn', !v); return !v; });
   const allExamples = sheet.content.flatMap(s => Array.isArray(s.examples) ? s.examples : []);
   const addAll = () => {
@@ -15741,14 +15743,46 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
   };
   const dueLabel = sheetDueLabel(prog);
 
+  // Contents list: full section titles, read ticks, the active one marked. Shared by the desktop rail and the phone dropdown.
+  const Toc = ({ compact }) => (
+    <ol className={compact ? 'space-y-0.5' : 'space-y-0.5'}>
+      {sheet.content.map((sec, i) => {
+        const on = i === active, done = readSet.has(i);
+        return (
+          <li key={i}>
+            <button onClick={() => jumpTo(i)} aria-current={on ? 'true' : undefined}
+              className={`w-full text-left flex items-start gap-2.5 px-3 py-2 rounded-xl text-[13px] leading-snug transition-colors border-l-2 ${on ? 'border-orange-500 bg-paper text-ink font-semibold' : 'border-transparent text-sienna-700 hover:bg-paper/70'}`}>
+              <span className={`flex-shrink-0 w-4 text-[11px] font-mono mt-0.5 ${done ? 'text-oliva-600' : 'text-dust'}`}>{done ? '✓' : i + 1}</span>
+              <span className="min-w-0">{sheetHeadingShort(sec.heading) || `Sección ${i + 1}`}</span>
+            </button>
+          </li>
+        );
+      })}
+      {sheet.quiz && (
+        <li>
+          <button onClick={jumpQuiz}
+            className="w-full text-left flex items-start gap-2.5 px-3 py-2 rounded-xl text-[13px] leading-snug border-l-2 border-transparent text-orange-600 font-semibold hover:bg-paper/70 transition-colors">
+            <span className="flex-shrink-0 w-4 text-[11px] font-mono mt-0.5">▸</span><span>Test · {sheet.quiz.length} preguntas</span>
+          </button>
+        </li>
+      )}
+    </ol>
+  );
+  const EnToggle = () => (
+    <button onClick={toggleEn} aria-pressed={hideEn} title={hideEn ? 'Mostrar el inglés' : 'Ocultar el inglés'}
+      className={`flex-shrink-0 text-xs font-semibold px-3 min-h-10 rounded-full transition-colors ${hideEn ? 'bg-cream text-dust hover:bg-ochre-100 line-through' : 'bg-orange-500 text-paper'}`}>
+      EN
+    </button>
+  );
+
   return (
     <div>
-      {/* Sticky header: Volver, title, EN toggle, print + section strip with read ticks */}
-      <div className="sticky top-0 z-30 glass-light border-b border-ink/10">
-        <div className="px-4 lg:px-8 pt-3 pb-2 flex items-center gap-3">
+      {/* Phone: sticky strip with Volver, title, progress, EN and an Índice dropdown with the full section titles */}
+      <div className="lg:hidden sticky top-0 z-30 glass-light border-b border-ink/10 no-print">
+        <div className="px-4 pt-3 pb-2.5 flex items-center gap-2.5">
           {onBack && (
             <button onClick={onBack} aria-label="Volver"
-              className="flex lg:hidden items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
+              className="flex items-center gap-1.5 px-3.5 py-2.5 min-h-11 rounded-xl text-sm font-semibold transition-colors flex-shrink-0 bg-cream text-sienna-700 hover:bg-ochre-100">
               <span aria-hidden>←</span><span className="hidden sm:inline">Volver</span>
             </button>
           )}
@@ -15756,29 +15790,40 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             <p className="font-serif font-bold text-base text-ink leading-tight truncate">{sheet.title}</p>
             <p className="text-[11px] text-dust mt-0.5 font-mono">{readSet.size}/{total} secciones leídas</p>
           </div>
-          <button onClick={toggleEn} aria-pressed={hideEn} title={hideEn ? 'Mostrar el inglés' : 'Ocultar el inglés'}
-            className={`flex-shrink-0 text-xs font-semibold px-3 min-h-11 rounded-full transition-colors ${hideEn ? 'bg-cream text-dust hover:bg-ochre-100 line-through' : 'bg-orange-500 text-paper'}`}>
-            EN
+          <EnToggle />
+          <button onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}
+            className={`flex-shrink-0 text-xs font-semibold px-3 min-h-10 rounded-full transition-colors ${tocOpen ? 'bg-ink text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>
+            Índice {tocOpen ? '▴' : '▾'}
           </button>
-          <button onClick={() => window.print()} className="no-print hidden sm:inline-flex items-center flex-shrink-0 text-xs px-3 min-h-11 rounded-xl font-semibold bg-stone-100 text-stone-600 hover:bg-stone-200">🖨️ Imprimir</button>
         </div>
-        <div ref={stripRef} className="overflow-x-auto hide-scroll">
-          <div className="flex gap-1.5 px-4 lg:px-8 pb-2.5 w-max">
-            {sheet.content.map((s, i) => (
-              <button key={i} data-chip={i} onClick={() => jumpTo(i)}
-                className={`flex-shrink-0 max-w-[13rem] truncate text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${i === active ? 'bg-ink text-paper border-ink' : readSet.has(i) ? 'bg-oliva-50 text-oliva-700 border-oliva-200' : 'bg-paper text-sienna-700 border-ink/10 hover:border-orange-500/40'}`}>
-                {readSet.has(i) && i !== active ? '✓ ' : ''}{sheetHeadingShort(s.heading) || `Sección ${i + 1}`}
-              </button>
-            ))}
-            {sheet.quiz && (
-              <button onClick={() => { const el = document.getElementById('sheet-quiz'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 150, behavior: 'smooth' }); }}
-                className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full border border-orange-500/40 text-orange-600 bg-paper">Test</button>
-            )}
-          </div>
-        </div>
+        <div className="h-0.5 bg-ink/10"><div className="h-full bg-orange-500 transition-all" style={{ width: pctRead + '%' }} /></div>
+        {tocOpen && <div className="px-2 py-2 max-h-[60vh] overflow-y-auto border-t border-ink/10"><Toc compact /></div>}
       </div>
 
-      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+      {/* Desktop: slim back link, then a sticky contents rail beside the sheet */}
+      {onBack && (
+        <div className="hidden lg:block px-8 pt-5 max-w-5xl mx-auto no-print">
+          <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-semibold text-dust hover:text-orange-600 transition-colors">
+            <span aria-hidden>←</span><span>{nav.parentLabel}</span>
+          </button>
+        </div>
+      )}
+
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
+        <aside className="hidden lg:block sticky top-6 self-start no-print">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <p className="eyebrow">Índice</p>
+            <p className="text-[11px] font-mono text-dust">{readSet.size}/{total} leídas</p>
+          </div>
+          <div className="h-1 rounded-full bg-ink/10 overflow-hidden mb-3"><div className="h-full bg-orange-500 transition-all" style={{ width: pctRead + '%' }} /></div>
+          <Toc />
+          <div className="mt-4 pt-4 border-t border-ink/10 flex flex-wrap items-center gap-2">
+            <EnToggle />
+            <button onClick={() => window.print()} className="inline-flex items-center text-xs px-3 min-h-10 rounded-full font-semibold bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">Imprimir</button>
+          </div>
+        </aside>
+
+        <div className="min-w-0">
         <Card dark={dark} className="overflow-hidden">
           <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[sheet.color] || tileColorMap.stone} text-white`}>
             <p className="font-serif font-bold text-2xl lg:text-3xl">{sheet.title}</p>
@@ -15889,6 +15934,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             </div>
           )}
         </div>
+        </div>
       </div>
     </div>
   );
@@ -15936,7 +15982,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
     if (m) {
       return (
         <div>
-          <BackHeader title="Errores comunes" subtitle="Error detail" onBack={() => setSelectedMistake(null)} dark={dark} />
+          <BackHeader title="Errores comunes" subtitle="Error común" onBack={() => setSelectedMistake(null)} dark={dark} />
           <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
             <Card dark={dark} className="overflow-hidden">
               <div className="px-6 py-5 bg-gradient-to-br from-rose-400 to-rose-500 text-white">
@@ -15967,9 +16013,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
     }
     return (
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <Card dark={dark} className="p-4 bg-amber-50 border-amber-200 mb-5">
-          <p className="text-sm text-amber-800 font-medium">⚠️ Errores comunes que cometen los anglohablantes al aprender español. Toca una tarjeta para ver la explicación completa.</p>
-        </Card>
+        <p className="text-sm text-dust mb-5">Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {COMMON_MISTAKES.map((mm, i) => (
             <button key={i} onClick={() => setSelectedMistake(i)} className="text-left">
@@ -16039,7 +16083,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
                 <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <SheetStatusBadge status={p.status} />
+                    {p.status !== 'nueva' && <SheetStatusBadge status={p.status} />}
                     {activeFilter === 'recientes' && idx < 3 && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Nuevo</span>}
                     {sheet.quiz && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">Test</span>}
                   </div>
@@ -16051,7 +16095,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
                   )}
                   <p className="text-xs mt-2 text-stone-400">
                     {sheet.content.length} {sheet.content.length === 1 ? 'sección' : 'secciones'}
-                    {activeFilter === 'recientes' && sheet.added ? ` · Añadida ${fmtSheetDate(sheet.added)}` : sheetDueLabel(p) && p.status !== 'dominada' ? ` · ${sheetDueLabel(p)}` : ' · Toca para abrir →'}
+                    {activeFilter === 'recientes' && sheet.added ? ` · Añadida ${fmtSheetDate(sheet.added)}` : sheetDueLabel(p) && p.status !== 'dominada' ? ` · ${sheetDueLabel(p)}` : ' · Abrir →'}
                   </p>
                 </div>
               </Card>
@@ -16442,7 +16486,7 @@ function ConectoresPanel({ dark }) {
 function Conectores({ onBack, dark }) {
   return (
     <div>
-      <BackHeader title="Conectores" subtitle="Connectors reference" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Conectores" subtitle="Conectores" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="hidden lg:block mb-6">
           <h2 className="text-2xl font-serif font-bold">Conectores</h2>
@@ -16792,14 +16836,14 @@ function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
   // ── Level 0: Index ────────────────────────────────────────────────────────
   return (
     <div>
-      <BackHeader title="Frases" subtitle="Phrases & idioms" onBack={onBack} dark={dark} onSearch={onSearch} />
-      <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
+      <BackHeader title="Frases" subtitle="Frases y modismos" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <SectionIndex dark={dark} sections={[
-          { id:'situaciones', emoji:'💬', label:'Situaciones', sub:`Phrases for ${SITUATIONAL_PHRASES.length} real-life contexts`,  color:'from-orange-400 to-rose-500',  onClick:()=>goSection('situaciones') },
-          { id:'modismos',    emoji:'🎭', label:'Modismos',    sub:`${IDIOMS.length} Spanish idioms & expressions`,                color:'from-violet-400 to-purple-500',onClick:()=>goSection('modismos') },
-          { id:'argot',       emoji:'🗣️', label:'Argot',       sub:'Slang, fillers & swearing',                                   color:'from-stone-400 to-stone-600',  onClick:()=>goSection('argot') },
-          { id:'valencia',    emoji:'🍊', label:'Valencià',    sub:'Basics for Valencia & the levant',                             color:'from-amber-400 to-yellow-500', onClick:()=>goSection('valencia') },
-          { id:'conectores',  emoji:'🔗', label:'Conectores',  sub:'Connectors & discourse markers',                               color:'from-teal-400 to-cyan-500',    onClick:()=>goSection('conectores') },
+          { id:'situaciones', emoji:'💬', label:'Situaciones', sub:`Frases para ${SITUATIONAL_PHRASES.length} situaciones reales`,  color:'from-orange-400 to-rose-500',  onClick:()=>goSection('situaciones') },
+          { id:'modismos',    emoji:'🎭', label:'Modismos',    sub:`${IDIOMS.length} modismos y expresiones`,                       color:'from-violet-400 to-purple-500',onClick:()=>goSection('modismos') },
+          { id:'argot',       emoji:'🗣️', label:'Argot',       sub:'Jerga, muletillas y tacos',                                    color:'from-stone-400 to-stone-600',  onClick:()=>goSection('argot') },
+          { id:'valencia',    emoji:'🍊', label:'Valencià',    sub:'Lo básico para Valencia y el Levante',                         color:'from-amber-400 to-yellow-500', onClick:()=>goSection('valencia') },
+          { id:'conectores',  emoji:'🔗', label:'Conectores',  sub:'Conectores y marcadores del discurso',                         color:'from-teal-400 to-cyan-500',    onClick:()=>goSection('conectores') },
         ]} />
       </div>
     </div>
@@ -17417,11 +17461,11 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
   // ── Index view ──
   return (
     <div>
-      <BackHeader title="Gramática" subtitle="Learn how Spanish sentences work" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Gramática" subtitle="Cómo funcionan las frases" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="mb-6">
           <p className={`text-base leading-relaxed ${dark ? 'text-stone-300' : 'text-stone-600'}`}>
-            No grammar jargon. Each lesson explains a pattern in plain terms, shows you real examples with audio, then lets you practise until it clicks.
+            Sin jerga. Cada lección explica un patrón en términos sencillos, con ejemplos reales y audio, y luego te deja practicar hasta que encaje.
           </p>
         </div>
         {GRAMMAR_CATEGORIES.map(cat => {
@@ -17950,7 +17994,7 @@ function SentenceBuilderDrill({ onExit, dark }) {
 
   return (
     <div>
-      <BackHeader title="Conjugador drill" subtitle="Sentence builder" onBack={onExit} dark={dark} />
+      <BackHeader title="Conjugador drill" subtitle="Construye frases" onBack={onExit} dark={dark} />
       <div className="px-4 lg:px-8 py-6 max-w-xl mx-auto">
         <div className="hidden lg:flex items-center justify-between mb-6">
           <button onClick={onExit} className={`text-sm font-medium ${dark ? 'text-stone-400 hover:text-white' : 'text-stone-500 hover:text-stone-900'}`}>← Ejercicios</button>
@@ -18623,7 +18667,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
 
   return (
     <div>
-      <BackHeader title="Cómo se dice" subtitle="English → Spanish · Spanish → explained" onBack={selectedCat || onBack ? handleBack : null} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Cómo se dice" subtitle="Del inglés al español" onBack={selectedCat || onBack ? handleBack : null} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
 
         {/* ── Search bar ────────────────────────────────────────────────── */}
@@ -18759,17 +18803,17 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
                 const samples = samplesForCat(cat);
                 return (
                   <button key={cat} onClick={() => { setSelectedCat(cat); setExpandedIdx(null); }}
-                    className={`relative overflow-hidden rounded-3xl p-5 text-left transition-all hover:scale-[1.02] active:scale-[0.99] bg-gradient-to-br ${meta.color} text-white shadow-sm min-h-[150px] flex flex-col`}>
-                    <div className="flex items-start justify-between mb-2">
-                      <span className="text-3xl">{meta.emoji}</span>
+                    className="rounded-2xl p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border border-stone-200/80 shadow-sm min-h-[140px] flex flex-col">
+                    <div className="flex items-start justify-between mb-3">
+                      <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-gradient-to-br ${meta.color} text-white`}>{meta.emoji}</span>
                       <div className="flex items-center gap-1">
-                        {customCount > 0 && <span className="text-[10px] font-bold bg-amber-400/30 px-1.5 py-0.5 rounded-full">⭐{customCount}</span>}
-                        <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 bg-white/20 px-2 py-0.5 rounded-full">{count}</span>
+                        {customCount > 0 && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-ochre-100 text-ochre-700">⭐ {customCount}</span>}
+                        <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-cream text-sienna-700">{count}</span>
                       </div>
                     </div>
-                    <p className="font-serif font-bold text-lg leading-tight mb-2">{meta.label}</p>
+                    <p className="font-serif font-bold text-lg leading-tight mb-1.5 text-ink">{meta.label}</p>
                     <div className="mt-auto space-y-0.5">
-                      {samples.map((s, i) => <p key={i} className="text-[11px] opacity-85 font-medium truncate">"{s}"</p>)}
+                      {samples.map((s, i) => <p key={i} className="text-xs text-dust truncate">"{s}"</p>)}
                     </div>
                   </button>
                 );
@@ -18783,7 +18827,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
                   <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
                     Escribe lo que quieras decir arriba. Si no está en el diccionario, tradúcelo con Claude y guárdalo en tu colección.
                   </p>
-                  {!hasAi && <p className={`text-[11px] mt-2 ${dark?'text-violet-300':'text-violet-700'}`}>Sin clave configurada - solo el diccionario verificado por ahora.</p>}
+                  {!hasAi && <p className="text-[11px] mt-2 text-dust">Sin clave configurada: por ahora solo el diccionario verificado. Se añade en Ajustes.</p>}
                 </div>
               </div>
             </Card>
@@ -18835,7 +18879,7 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
   if (escrituraMode) {
     return (
       <div>
-        <BackHeader title="Escritura Libre" subtitle="Writing practice" onBack={() => setEscrituraMode(false)} dark={dark} />
+        <BackHeader title="Escritura Libre" subtitle="Escritura" onBack={() => setEscrituraMode(false)} dark={dark} />
         <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {WRITING_PROMPTS.map(p => (
@@ -18935,12 +18979,8 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
 
   return (
     <div>
-      <BackHeader title="Ejercicios" subtitle="Practice exercises" onBack={onBack} dark={dark} onSearch={onSearch} />
+      <BackHeader title="Ejercicios" subtitle="Ejercicios" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <div className="hidden lg:block mb-6">
-          <h2 className="text-2xl font-serif font-bold">Ejercicios</h2>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <button onClick={() => setTimedMode(true)} className="text-left">
             <Card dark={dark} className="p-5 bg-gradient-to-br from-orange-500 to-rose-500 text-white border-0 hover:shadow-lg transition-shadow h-full">
@@ -18955,7 +18995,7 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
             </Card>
           </button>
           <button onClick={() => setDrillMode(true)} className="text-left">
-            <Card dark={dark} className="p-5 bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white border-0 hover:shadow-lg transition-shadow h-full">
+            <Card dark={dark} className="p-5 bg-gradient-to-br from-sienna-500 to-sienna-700 text-white border-0 hover:shadow-lg transition-shadow h-full">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">✍️</div>
                 <div className="flex-1">
@@ -19166,28 +19206,28 @@ function GlosarioInner({ dark, mode }) {
 
   const typePills = [
     { id:'all',    label:'Todos',  count: stats.total },
-    { id:'noun',   label:'Noun',   count: stats.noun, color:'text-blue-500' },
-    { id:'verb',   label:'Verb',   count: stats.verb, color:'text-green-500' },
-    { id:'adj',    label:'Adj',    count: stats.adj,  color:'text-pink-500' },
-    { id:'phrase', label:'Phrase', count: stats.phrase, color:'text-orange-500' },
+    { id:'noun',   label:'Sustantivos', count: stats.noun, color:'text-blue-500' },
+    { id:'verb',   label:'Verbos',      count: stats.verb, color:'text-green-500' },
+    { id:'adj',    label:'Adjetivos',   count: stats.adj,  color:'text-pink-500' },
+    { id:'phrase', label:'Frases',      count: stats.phrase, color:'text-orange-500' },
   ];
 
   return (
     <div>
-      <div className="px-4 lg:px-8 py-6 max-w-6xl mx-auto">
+      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-4 lg:mb-6">
           <div>
-            <h2 className={`text-lg font-serif font-bold ${dark ? 'text-white' : 'text-stone-800'}`}>{mode === 'tarjetas' ? 'Repaso' : 'Mi glosario personal'}</h2>
-            <p className={`text-sm mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{dueDeck.length} para repasar</p>
+            <p className="text-sm text-dust">{mode === 'tarjetas' ? 'Tus tarjetas, con repaso espaciado.' : 'Las palabras y frases que has guardado.'}</p>
+            <p className="font-serif font-bold text-lg text-ink mt-0.5">{dueDeck.length} para repasar</p>
           </div>
           <div className="hidden lg:flex items-center gap-2">
             <div className="flex flex-col items-end gap-0.5">
               <div className="flex items-center gap-2">
-                <button onClick={handleExportAnki} title="Anki is a free spaced-repetition flashcard app. Open Anki → File → Import → pick this .txt file." className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${dark ? 'bg-white/[0.08] text-stone-200 hover:bg-white/[0.12]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>🃏 Anki</button>
+                <button onClick={handleExportAnki} title="Anki es una app gratuita de repaso espaciado. Abre Anki → Archivo → Importar → elige este .txt." className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${dark ? 'bg-white/[0.08] text-stone-200 hover:bg-white/[0.12]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>🃏 Anki</button>
                 <button onClick={handleExportCSV} className={`px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${dark ? 'bg-white/[0.08] text-stone-200 hover:bg-white/[0.12]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>⬇️ CSV</button>
                 <button onClick={() => setShowAdd(true)} className="bg-orange-500 text-white px-4 py-2 rounded-xl text-sm font-semibold">+ Añadir</button>
               </div>
-              <p className={`text-[10px] ${dark ? 'text-stone-600' : 'text-stone-400'}`}>🃏 Anki = free flashcard app (spaced repetition) · File → Import in Anki desktop</p>
+              <p className={`text-[10px] ${dark ? 'text-stone-600' : 'text-stone-400'}`}>Anki: app gratuita de repaso espaciado · Archivo → Importar en Anki</p>
             </div>
           </div>
         </div>
@@ -19330,7 +19370,7 @@ function GlosarioInner({ dark, mode }) {
                           <SpeakBtn text={currentCard.es} size="lg" />
                         </div>
                       )}
-                      <p className="text-xs text-stone-400 mt-4">Toca para girar</p>
+                      <p className="text-xs text-stone-400 mt-4">Pulsa para girar</p>
                     </>
                   ) : (
                     <>
@@ -21311,7 +21351,7 @@ function Negocios({ onBack, dark, onSearch, only }) {
   if (!tab) {
     return (
       <div>
-        <BackHeader title="Negocios" subtitle="Business Spanish" onBack={onBack} dark={dark} onSearch={onSearch} />
+        <BackHeader title="Negocios" subtitle="Español de trabajo" onBack={onBack} dark={dark} onSearch={onSearch} />
         <div className="px-4 lg:px-8 py-8 max-w-3xl mx-auto">
           <SectionIndex dark={dark} sections={[
             { id:'vocabulario',    emoji:'📖', label:'Vocabulario',    sub:'Business vocabulary by topic',         color:'from-blue-400 to-blue-500',    onClick:()=>setTab('vocabulario') },
@@ -21393,7 +21433,7 @@ function Negocios({ onBack, dark, onSearch, only }) {
                     <p className="font-serif font-bold text-lg leading-tight">{sheet.title}</p>
                     <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sheet.titleEn}</p>
                     {sheet.intro && <p className={`text-xs mt-2 line-clamp-2 leading-relaxed ${dark ? 'text-stone-500' : 'text-stone-500'}`}>{sheet.intro}</p>}
-                    <p className={`text-xs mt-2 ${dark ? 'text-stone-600' : 'text-stone-400'}`}>{sheet.content.length} secciones · Toca para abrir →</p>
+                    <p className={`text-xs mt-2 ${dark ? 'text-stone-600' : 'text-stone-400'}`}>{sheet.content.length} secciones · Abrir →</p>
                   </div>
                 </Card>
               </button>
@@ -22315,11 +22355,8 @@ function Dictado({ onBack, dark }) {
     return (
       <div>
         <BackHeader title="Dictado" subtitle="Escucha y escribe" onBack={onBack} dark={dark} />
-        <div className="px-4 lg:px-8 py-6 max-w-3xl mx-auto space-y-6">
-          <div>
-            <h2 className="font-serif font-bold text-3xl lg:text-4xl leading-tight mb-2">Dictado</h2>
-            <p className={`text-sm ${dark?'text-stone-400':'text-stone-500'}`}>Escucha y escribe lo que oyes. Las frases difíciles vuelven más a menudo.</p>
-          </div>
+        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto"><div className="max-w-3xl space-y-6">
+          <p className="text-sm text-dust">Escucha y escribe lo que oyes. Las frases difíciles vuelven más a menudo.</p>
           {(sessionScore.sentences > 0 || totalDone > 0) && (
             <Card dark={dark} className="p-5">
               <div className="grid grid-cols-3 gap-4 text-center">
@@ -22363,7 +22400,7 @@ function Dictado({ onBack, dark }) {
               );
             })}
           </div>
-        </div>
+        </div></div>
       </div>
     );
   }
@@ -23018,7 +23055,7 @@ function AreaHeader({ area, tab, onTab, onSearch }) {
     <div className="px-4 lg:px-8 pt-4 lg:pt-8 max-w-5xl mx-auto">
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="eyebrow">Aprende</p>
+          <p className="eyebrow lg:hidden">Aprende</p>
           <h1 className="font-serif font-bold text-3xl lg:text-4xl text-sienna-700 leading-tight mt-0.5">{area.label}</h1>
         </div>
         <button onClick={onSearch} aria-label="Buscar"
@@ -23138,8 +23175,11 @@ function App() {
   };
 
   const showAreaHeader = area && area.tabs.length > 0;
+  const curTab = area && area.tabs.find(t => t.id === route.tab);
+  const navValue = { parentLabel: curTab ? curTab.label : area ? area.label : 'Hoy' };
 
   return (
+    <NavCtx.Provider value={navValue}>
     <div className="min-h-screen mesh-light text-ink">
       {/* Desktop sidebar: the five areas, with Ajustes at the foot */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 border-r border-ink/10 glass-light">
@@ -23212,6 +23252,7 @@ function App() {
         </div>
       </nav>
     </div>
+    </NavCtx.Provider>
   );
 }
 
