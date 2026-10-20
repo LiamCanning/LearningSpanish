@@ -9923,8 +9923,8 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
     setState(cid === idRef.current ? cstate : 'idle');
   }), []);
 
-  const dim = size === 'sm' ? 'w-9 h-9' : size === 'lg' ? 'w-12 h-12' : 'w-10 h-10';
-  const iconSize = size === 'sm' ? 14 : size === 'lg' ? 18 : 16;
+  const dim = size === 'xs' ? 'w-7 h-7' : size === 'sm' ? 'w-9 h-9' : size === 'lg' ? 'w-12 h-12' : 'w-10 h-10';
+  const iconSize = size === 'xs' ? 11 : size === 'sm' ? 14 : size === 'lg' ? 18 : 16;
 
   const handle = async (e) => {
     e.stopPropagation(); e.preventDefault();
@@ -11754,13 +11754,15 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
   if (selected) {
     const vocabCard = (
       <Card dark={dark} className="p-4">
-        <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Vocabulario clave</p>
-        <div className="space-y-2">
+        <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1">Vocabulario clave</p>
+        <div className="divide-y divide-ink/5">
           {selected.glossary.map((g, i) => (
-            <div key={i} className="flex items-baseline gap-2 text-sm">
-              <span className="font-serif font-bold flex-shrink-0">{g[0]}</span>
-              <span className="text-stone-600 flex-1 min-w-0">{g[1]}</span>
-              <SpeakBtn text={g[0]} size="sm" />
+            <div key={i} className="flex items-start gap-3 py-2.5">
+              <div className="flex-1 min-w-0">
+                <p className="font-serif font-bold text-[15px] leading-snug text-ink" lang="es">{g[0]}</p>
+                <p className="text-[13px] leading-snug text-dust mt-0.5">{g[1]}</p>
+              </div>
+              <SpeakBtn text={g[0]} size="xs" />
             </div>
           ))}
         </div>
@@ -13647,13 +13649,15 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
     const extras = (<>
       {selected.vocab && selected.vocab.length > 0 && (
         <Card dark={dark} className="p-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Vocabulario clave</p>
-          <div className="space-y-2">
+          <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1">Vocabulario clave</p>
+          <div className="divide-y divide-ink/5">
             {selected.vocab.map((v, i) => (
-              <div key={i} className="flex items-baseline gap-2 text-sm">
-                <span className="font-serif font-bold flex-shrink-0">{v.es}</span>
-                <span className="text-stone-600 flex-1 min-w-0">{v.en}</span>
-                <SpeakBtn text={v.es} size="sm" />
+              <div key={i} className="flex items-start gap-3 py-2.5">
+                <div className="flex-1 min-w-0">
+                  <p className="font-serif font-bold text-[15px] leading-snug text-ink" lang="es">{v.es}</p>
+                  <p className="text-[13px] leading-snug text-dust mt-0.5">{v.en}</p>
+                </div>
+                <SpeakBtn text={v.es} size="xs" />
               </div>
             ))}
           </div>
@@ -13682,15 +13686,15 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
             </button>
           </div>
             <p className="text-sm italic text-stone-500">{selected.setting}</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap lg:flex-col gap-2">
               {playMode === null ? (
                 <>
                   <button onClick={() => playAll(selected.lines, 'normal')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-full lg:w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
                     <span>▶</span> Reproducir todo
                   </button>
                   <button onClick={() => playAll(selected.lines, 'shadow')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500 hover:bg-violet-600 text-white text-sm font-bold"
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-full lg:w-full bg-violet-500 hover:bg-violet-600 text-white text-sm font-bold"
                     title="Tras cada línea, el audio hace una pausa larga para que la repitas en voz alta">
                     <span>🎭</span> Modo sombra
                   </button>
@@ -13698,22 +13702,22 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
               ) : (playMode === 'normal' || playMode === 'shadow') ? (
                 <>
                   <button onClick={pauseAll}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold">
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-full lg:w-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold">
                     <span>⏸</span> Pausar {playMode === 'shadow' ? '(sombra)' : ''}
                   </button>
                   <button onClick={stopAll}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-full lg:w-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
                     <span>⏹</span> Parar
                   </button>
                 </>
               ) : (
                 <>
                   <button onClick={resumeAll}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-full lg:w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold">
                     <span>▶</span> Reanudar {playMode === 'paused-shadow' ? '(sombra)' : ''}
                   </button>
                   <button onClick={stopAll}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-full lg:w-full bg-stone-700 hover:bg-stone-800 text-white text-sm font-bold">
                     <span>⏹</span> Parar
                   </button>
                 </>
