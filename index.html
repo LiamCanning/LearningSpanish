@@ -152,6 +152,10 @@ body { color: var(--ink); }
 .glass-dark  { background: rgba(250,246,238,0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 
 /* ── Editorial typography helpers ──────────────────────────── */
+/* Chuleta reading view: a wide canvas, and the area header widens with it so the left edges line up */
+.sheet-canvas { max-width: 90rem; }
+body.sheet-open .area-head { max-width: 90rem; }
+
 .eyebrow {
   font-family: 'Inter', sans-serif;
   font-size: 0.6875rem;
@@ -7164,6 +7168,366 @@ const CHEAT_SHEETS_SRC = [
         ]
       }
     ]
+  },
+  {
+    id:'argot-diario',
+    category:'conversacion',
+    title:'Argot del día a día',
+    titleEn:'Everyday Spanish slang: planazo, bocata, finde and what locals actually say',
+    added:'2026-11-03',
+    color:'amber',
+    intro:'The Spanish you hear in a Valencia bar is not the Spanish in the textbook. Locals bolt endings onto words to make them bigger, smaller or funnier (planazo, bocata, tapeo), chop long words in half (finde, compi, peli) and lean on a few hundred slang words for people, money, plans and moods. This sheet goes past the basics on Argot castellano: the word-building tricks first, then the vocabulary by situation, how it sounds at speed, the words that mean something rude, and a top 20 to learn this week.',
+    content:[
+      {
+        heading:'1 · -azo and -ón: make it big, make it brilliant',
+        lead:'This is where planazo comes from. Add -azo (or -ón) to almost any noun and it becomes a great, big or impressive version of itself. It is the most productive slang ending in Spain: people invent new ones on the spot, and you can too.',
+        rows:[
+          ['Word','From','Meaning','Say it like this'],
+          ['un planazo','plan','a brilliant plan','Paella en la playa el domingo. ¡Planazo!'],
+          ['un tiempazo','tiempo','gorgeous weather','Hace un tiempazo, vámonos a la terraza.'],
+          ['un ambientazo','ambiente','a great atmosphere','Había un ambientazo en Mestalla.'],
+          ['un pisazo','piso','an amazing flat','Se han comprado un pisazo en Ruzafa.'],
+          ['un fiestón','fiesta','a massive party','El cumple de Marta fue un fiestón.'],
+          ['un peliculón','película','a brilliant film','Tienes que verla, es un peliculón.'],
+          ['un notición','noticia','big (good) news','¡Qué notición! Me alegro un montón.'],
+          ['un subidón / un bajón','subida / bajada','a high, a rush / a slump, a down','Me dio un bajón después de comer.'],
+          ['un pedazo de...','pedazo (piece)','one hell of a...','Se ha comprado un pedazo de coche.']
+        ],
+        note:'The pattern is open: if something is great, try -azo (or -ón) and people will understand you. Accents drop when the stress moves: canción → cancionazo, película → peliculón.',
+        examples:[
+          { es:'Mañana vamos a la Albufera a ver el atardecer. ¡Planazo!', en:'We\'re going to the Albufera to watch the sunset tomorrow. Great plan!' },
+          { es:'Hace un tiempazo, ¿nos tomamos algo en una terraza?', en:'The weather\'s gorgeous, shall we grab a drink on a terrace?' },
+          { es:'Me dio un bajón a las cuatro y me quedé frito en el sofá.', en:'I hit a slump at four and fell asleep on the sofa.' }
+        ]
+      },
+      {
+        heading:'2 · -ata, -eo, -ucho, -orro, -ete: the other endings locals use',
+        lead:'Beyond -ito and -azo, Spain has a set of colloquial endings that give a word a particular flavour. -ata (not -ato) makes a short, slangy version of a noun. -eo turns a noun into an activity. -ucho makes something shabby. -orro makes it rough but fun. -ete is friendly, a bit cheeky.',
+        rows:[
+          ['Ending','Feel','Examples','Meaning'],
+          ['-ata','slangy short form','bocata · cubata · segurata','baguette sandwich · mixed drink · security guard'],
+          ['-eo','the activity of doing it','tapeo · vermuteo · tardeo · terraceo','going for tapas · vermouth hour · afternoon drinking · sitting on terraces'],
+          ['-eo','the activity (people)','cotilleo · salseo · postureo · cachondeo','gossip · drama · showing off online · messing about'],
+          ['-ucho / -ucha','shabby, sorry-looking','casucha · cuartucho · papelucho','hovel · poky room · worthless bit of paper'],
+          ['-orro / -orra','rough but enjoyable','tintorro · vidorra','cheap red wine · the good life (darse la vidorra)'],
+          ['-ete / -eta','friendly, slightly cheeky','amiguete · majete · regordete','pal (or crony) · quite nice · chubby'],
+          ['-illo','a little, no big deal','un problemilla · contentillo · un ratillo','a minor problem · a bit tipsy · a little while']
+        ],
+        trap:'Drogata (junkie) and sociata (socialist, said by opponents) are also -ata words, and both are insults. Stick to bocata, cubata and segurata.',
+        examples:[
+          { es:'¿Nos pillamos un bocata y comemos en el parque?', en:'Shall we grab a sandwich and eat in the park?' },
+          { es:'Los sábados aquí hay mucho tardeo, la gente sale a las cinco.', en:'On Saturdays there\'s loads of afternoon drinking here, people go out at five.' },
+          { es:'Vivía en un cuartucho sin ventanas.', en:'He was living in a poky room with no windows.' },
+          { es:'Esto es postureo puro, solo lo hace para Instagram.', en:'This is pure showing off, he only does it for Instagram.' }
+        ]
+      },
+      {
+        heading:'3 · -ito the way locals use it',
+        lead:'The Diminutivos sheet has the rules. What matters day to day is that Spaniards use -ito less for size and more for tone: to soften, to sound warm, to make something sound nice and cosy, or to be ironic.',
+        rows:[
+          ['Phrase','What it really means','When you hear it'],
+          ['Un momentito.','Hang on a sec (politely)','shops, phone calls, bars'],
+          ['Un ratito.','A little while (often longer)','Me quedo un ratito más.'],
+          ['Fresquito / calentito','nice and cool / nice and warm','Una cerveza fresquita. Un caldo calentito.'],
+          ['Ahora mismito.','Right this second','a waiter on the way'],
+          ['Despacito.','Nice and slowly / gently','giving directions, driving, learning'],
+          ['Cerquita.','Just round the corner','Está cerquita, a cinco minutos.'],
+          ['Tranquilito.','Calm down, easy','to a child, or teasing a friend'],
+          ['¡Qué fresquito hace!','It\'s freezing (or: it\'s boiling)','irony: depends on the weather']
+        ],
+        note:'Fresquita and calentito are compliments, not size: una cerveza fresquita is the perfect cold beer. Use them when ordering and you sound local.',
+        examples:[
+          { es:'Ponme una cañita bien fresquita, porfa.', en:'Get me a nice cold small beer, please.' },
+          { es:'Está cerquita, no hace falta coger el metro.', en:'It\'s just round the corner, no need to take the metro.' }
+        ]
+      },
+      {
+        heading:'4 · Chopped words: finde, compi, peli',
+        lead:'Spaniards clip long words constantly, and the clipped version is often more common than the full one in speech and WhatsApp. These are neutral-to-informal: fine with friends, colleagues and most shop staff.',
+        rows:[
+          ['Short','Full word','Meaning','Example'],
+          ['el finde','fin de semana','weekend','¿Qué haces el finde?'],
+          ['el / la compi','compañero/a','flatmate, colleague, classmate','Mi compi de piso es de Bilbao.'],
+          ['la peli','película','film','¿Vemos una peli esta noche?'],
+          ['el / la profe','profesor/a','teacher','Mi profe de español es de Xàtiva.'],
+          ['el cumple','cumpleaños','birthday','El sábado es mi cumple.'],
+          ['el boli · la bici · la tele','bolígrafo · bicicleta · televisión','pen · bike · TV','¿Me dejas un boli?'],
+          ['el cole · el insti · la uni','colegio · instituto · universidad','school · secondary school · uni','Voy a recoger a los niños al cole.'],
+          ['el súper · el frigo · la pelu','supermercado · frigorífico · peluquería','supermarket · fridge · hairdresser','Hay cerveza en el frigo.'],
+          ['la depre','depresión','the blues, a low mood','Tengo una depre con este tiempo...'],
+          ['la poli','policía','the police','Vino la poli por el ruido.'],
+          ['la ilu','ilusión','excitement, joy','¡Me hace mucha ilu! (cutesy, young)'],
+          ['porfa · tranqui · info','por favor · tranquilo · información','please · relax · info','Tranqui, no pasa nada.']
+        ],
+        examples:[
+          { es:'Este finde no puedo, es el cumple de mi compi.', en:'I can\'t this weekend, it\'s my flatmate\'s birthday.' },
+          { es:'Paso por el súper y te veo en casa.', en:'I\'ll pop into the supermarket and see you at home.' }
+        ]
+      },
+      {
+        heading:'5 · Making plans and going out',
+        lead:'Quedar is the verb at the centre of Spanish social life. Around it sits a set of phrases for inviting, accepting, bailing and paying, most of which never appear in textbooks.',
+        rows:[
+          ['Phrase','Meaning','Example'],
+          ['¿Hay plan?','Anything on? / What\'s the plan?','¿Hay plan para el finde?'],
+          ['¿Te apuntas? · Me apunto.','Are you in? · I\'m in.','Vamos al cine, ¿te apuntas?'],
+          ['¿Te hace...? / ¿Hace...?','Fancy...?','¿Hace una caña después del curro?'],
+          ['Paso. / Paso de...','I\'ll pass. / Can\'t be bothered with...','Paso de salir hoy, estoy reventado.'],
+          ['rajarse','to bail, back out','No te rajes, que ya hemos reservado.'],
+          ['dar plantón (a alguien)','to stand someone up','Me dio plantón y ni me avisó.'],
+          ['ir de tranquis','to have a quiet one','Hoy vamos de tranquis, una y a casa.'],
+          ['la última y nos vamos','one for the road','the line that never means the last one'],
+          ['salir de fiesta / irse de marcha','to go out partying','El sábado salimos de fiesta por el Carmen.'],
+          ['volver a las tantas','to get back at all hours','Anoche volví a las tantas.'],
+          ['liarla (parda)','to go wild, cause chaos','Ayer la liamos parda.'],
+          ['Invito yo. · Esta ronda es mía.','My treat. · This round\'s on me.','Venga, esta la pago yo.'],
+          ['pagar a escote · hacer un bote','split the bill · put money in a kitty','¿Pagamos a escote o cada uno lo suyo?'],
+          ['hacer puente','take the day off between a holiday and the weekend','El jueves es festivo, así que hago puente.']
+        ],
+        note:'A plan that\'s sold as un planazo is great; menudo plan or vaya plan is sarcastic and means a terrible one.',
+        trap:'Paso de ti means I\'m ignoring you / I don\'t care about you. Paso on its own is fine; paso de ti to a friend is cold unless you\'re clearly joking.',
+        examples:[
+          { es:'Esta noche hay cena en casa de Pablo. ¿Te apuntas?', en:'There\'s dinner at Pablo\'s tonight. Are you in?' },
+          { es:'Iba a salir, pero me he rajado. Estoy hecho polvo.', en:'I was going to go out, but I\'ve bailed. I\'m shattered.' },
+          { es:'Nada de la última y nos vamos, que te conozco.', en:'None of your \'one for the road\', I know you.' }
+        ]
+      },
+      {
+        heading:'6 · Drinking, eating and the morning after',
+        rows:[
+          ['Phrase','Meaning','Example'],
+          ['una caña · un tercio · un mini','small draught beer · 33cl bottle · a huge plastic cup','Una caña y una tapa, por favor.'],
+          ['picar algo · el picoteo','have a bite · nibbles','¿Picamos algo antes de cenar?'],
+          ['la sobremesa','chatting at the table after the meal','La sobremesa duró hasta las seis.'],
+          ['ponerse morado / ponerse ciego (de)','to stuff yourself','Me puse morado de paella.'],
+          ['ir contentillo / piripi','a bit tipsy (jokey)','Después de dos vinos ya voy contentillo.'],
+          ['ir pedo / ir ciego','to be drunk / hammered','Iba tan pedo que no se acuerda de nada.'],
+          ['pillarse un pedo','to get drunk','Se pilló un pedo en la boda.'],
+          ['la resaca · estar de resaca','hangover · to be hungover','Hoy no me hables, estoy de resaca.'],
+          ['el almuerzo','mid-morning sandwich break (big in Valencia)','¿Bajamos a almorzar a las diez y media?']
+        ],
+        trap:'Ponerse ciego can mean stuffed with food or completely drunk; context tells you which. Pedo also means a fart, so un pedo on its own needs context too.',
+        examples:[
+          { es:'Nos pusimos morados y luego sobremesa hasta las siete.', en:'We stuffed ourselves and then sat chatting at the table until seven.' },
+          { es:'No voy pedo, voy contentillo, que es diferente.', en:'I\'m not drunk, I\'m a bit merry, that\'s different.' }
+        ]
+      },
+      {
+        heading:'7 · Describing people',
+        lead:'Slang for people is where Spanish gets most colourful. Most of these work as un/una + word: es un crack, es una pesada. They are informal; fine with friends, too much for your landlord.',
+        rows:[
+          ['Word','Meaning','Example'],
+          ['un crack · una máquina · un fiera','a legend, brilliant at something','Eres un crack, gracias por la ayuda.'],
+          ['buena gente · un sol · un cielo','a good person · a sweetheart','Tu madre es un sol.'],
+          ['majo / maja','nice, friendly','Los vecinos son muy majos.'],
+          ['un cachondo / una cachonda','a laugh, really funny','Tu primo es un cachondo.'],
+          ['un plasta · un pesado · un muermo','a bore, a pain · a drag','No seas plasta, ya te he dicho que no.'],
+          ['borde','rude, curt, unfriendly','El camarero fue muy borde.'],
+          ['un caradura · un jeta · tener morro','a cheeky so-and-so · to have a nerve','¡Qué morro tiene! Se ha colado.'],
+          ['un rata · agarrado','stingy, tight','No seas rata y paga una ronda.'],
+          ['un pelota','a suck-up','Es el pelota del jefe.'],
+          ['un bocazas · un cotilla','a loudmouth, can\'t keep secrets · a gossip','No se lo cuentes, es un bocazas.'],
+          ['un pasota','someone who couldn\'t care less','Es un pasota, todo le da igual.'],
+          ['un pijo / una pija','posh, preppy','Ese barrio es muy pijo.'],
+          ['un friki','geek, obsessive','Es un friki del Real Madrid.'],
+          ['un enchufado · tener enchufe','got the job through contacts','Está ahí porque tiene enchufe.'],
+          ['un flipado / una flipada','full of themselves, a show-off','Va de flipado con su cochazo.']
+        ],
+        trap:'Ser cachondo = to be funny. Estar cachondo = to be horny. The same split applies to bueno: ser bueno is good, estar bueno is hot. Watch your verb.',
+        examples:[
+          { es:'Gracias por arreglarme la bici, eres un crack.', en:'Thanks for fixing my bike, you\'re a legend.' },
+          { es:'Qué morro tiene, se ha colado delante de todos.', en:'What a nerve, he\'s pushed in front of everyone.' },
+          { es:'El de la frutería es un poco borde, pero buena gente.', en:'The guy at the greengrocer\'s is a bit curt, but he\'s a good guy.' }
+        ]
+      },
+      {
+        heading:'8 · Moods and how you feel',
+        rows:[
+          ['Phrase','Meaning','Example'],
+          ['estar hecho polvo · reventado','to be shattered','Llevo toda la semana reventado.'],
+          ['quedarse frito','to nod off','Me quedé frito viendo la peli.'],
+          ['estar de bajón','to be down, low','Está de bajón desde que lo dejó con su novia.'],
+          ['rayarse · estar rayado','to overthink, get in your head','No te rayes, seguro que no es nada.'],
+          ['comerse el coco / el tarro','to obsess, overthink','Deja de comerte el coco.'],
+          ['estar agobiado','to be stressed, overwhelmed','Estoy agobiado con tanto curro.'],
+          ['estar mosqueado','to be annoyed (or suspicious)','Está mosqueado porque no le llamaste.'],
+          ['me da pereza · ¡qué pereza!','I can\'t be bothered · what a drag','Me da pereza cocinar hoy.'],
+          ['me da corte','I\'m embarrassed / shy to','Me da corte hablar en público.'],
+          ['me da cosa','it makes me uneasy / I feel bad','Me da cosa dejarlo solo.'],
+          ['tener mono de','to crave','Tengo mono de jamón.'],
+          ['ir a tu bola','to do your own thing','Él va a su bola, no le preguntes.'],
+          ['estar en su salsa','in your element','En la cocina está en su salsa.'],
+          ['estar como una cabra','to be mad, crazy','Tu abuela está como una cabra.'],
+          ['ir de culo','to be rushed off your feet (mildly rude)','Esta semana voy de culo.']
+        ],
+        examples:[
+          { es:'Me da pereza salir, pero luego seguro que me lo paso bien.', en:'I can\'t be bothered to go out, but I\'ll probably have a great time.' },
+          { es:'No te rayes, mañana lo hablamos tranquilamente.', en:'Don\'t overthink it, we\'ll talk it through tomorrow.' }
+        ]
+      },
+      {
+        heading:'9 · Money, prices and things',
+        rows:[
+          ['Word','Meaning','Example'],
+          ['la pasta · las pelas','money, cash','No tengo pasta este mes.'],
+          ['un pavo','a euro','Me costó diez pavos.'],
+          ['un pastón','a fortune','Se gastó un pastón en el móvil.'],
+          ['costar un ojo de la cara / un riñón','to cost an arm and a leg','El alquiler en Ruzafa cuesta un riñón.'],
+          ['estar pelado · sin blanca','to be broke','Estoy pelado hasta que cobre.'],
+          ['un chollo','a bargain (or a cushy number)','Ese piso a ese precio es un chollo.'],
+          ['un timo','a rip-off, a scam','Seis euros por un café es un timo.'],
+          ['estar tirado','dirt cheap · dead easy','El examen estaba tirado.'],
+          ['cutre','cheap and shabby, tacky','Un bar cutre pero con las mejores bravas.'],
+          ['hortera','tacky, naff (taste)','Esa camisa es muy hortera.'],
+          ['chungo','dodgy, tricky, unwell','Está chungo encontrar piso. · Estoy un poco chungo.'],
+          ['mono / mona · cuqui','cute (Spain) · cute (cutesy, young)','¡Qué mono tu perro!'],
+          ['un cacharro · un trasto','a gadget, a contraption · a bit of junk','Este cacharro no funciona.'],
+          ['la movida','the thing, the situation, a hassle','¿Qué movida tienes con el casero?']
+        ],
+        note:'Las pelas comes from pesetas. People in their thirties and up still say it about euros.',
+        examples:[
+          { es:'Diez pavos el menú con bebida y postre. ¡Un chollo!', en:'Ten euros for the set menu with a drink and dessert. A bargain!' },
+          { es:'El bar es un poco cutre, pero las bravas son las mejores del barrio.', en:'The bar\'s a bit shabby, but the patatas bravas are the best in the area.' }
+        ]
+      },
+      {
+        heading:'10 · Quick-fire reactions',
+        lead:'Short, punchy replies you\'ll hear twenty times a day. The core ones (vale, venga, qué va, qué fuerte) are on Muletillas and Argot castellano; these are the next layer.',
+        rows:[
+          ['Reaction','Meaning','When'],
+          ['¡Ya te digo!','Too right! / You\'re telling me!','strong agreement'],
+          ['¡Ni de coña! · ¡Ni de broma!','No chance! (coña is mildly rude)','refusing'],
+          ['¡Tela! · ¡Tela marinera!','Wow, that\'s a lot / that\'s something else','something extreme, good or bad'],
+          ['¡Toma ya!','Get in! / Take that!','celebrating'],
+          ['¡Me parto! · ¡Me meo!','I\'m dying (laughing)','something hilarious'],
+          ['¡Qué mal rollo! · ¡Qué buen rollo!','Creepy, bad vibe · Great vibe','atmosphere, people'],
+          ['¡Qué grima!','That makes me cringe / shudder','nails on a blackboard, creepy things'],
+          ['¡Qué vergüenza ajena!','So cringe (embarrassed for them)','someone else\'s embarrassing moment'],
+          ['¡Ahí va! · ¡Anda ya!','Whoa! · Get away!','surprise · disbelief'],
+          ['¡Ojo!','Careful! / Watch out!','a warning or a heads-up'],
+          ['Ni idea. · Ni flores.','No idea. · Haven\'t a clue.','you don\'t know'],
+          ['Me suena.','Rings a bell.','half-remembering'],
+          ['Tú mismo. · Lo que tú digas.','Your call. · Whatever you say.','can sound passive-aggressive'],
+          ['¡Manda huevos! · ¡Hay que joderse!','Unbelievable! (rude)','outrage, friends only']
+        ],
+        examples:[
+          { es:'- ¿Hace calor en agosto? - ¡Ya te digo! Cuarenta grados.', en:'- Is it hot in August? - You\'re telling me! Forty degrees.' },
+          { es:'Me pidieron tres mil euros de fianza. ¡Tela!', en:'They asked me for a three-thousand-euro deposit. That\'s insane!' }
+        ]
+      },
+      {
+        heading:'11 · Idioms locals really use',
+        rows:[
+          ['Expression','Literal','Meaning'],
+          ['dar la lata · dar la brasa','give the tin · give the embers','to pester, go on and on'],
+          ['tomar el pelo','take the hair','to pull someone\'s leg'],
+          ['meter la pata','put the paw in','to put your foot in it'],
+          ['ponerse las pilas','put your batteries in','to get your act together'],
+          ['pirarse · me piro · me abro','to leave','I\'m off (very casual)'],
+          ['echar una mano','throw a hand','to give a hand'],
+          ['echar la bronca','throw the row','to tell someone off'],
+          ['no pegar ojo','not stick an eye','not sleep a wink'],
+          ['ser pan comido','be eaten bread','to be a piece of cake'],
+          ['estar en el quinto pino','be at the fifth pine','in the middle of nowhere'],
+          ['a otra cosa, mariposa','to another thing, butterfly','moving on'],
+          ['estar hasta el moño / las narices','up to the bun / the noses','to be fed up'],
+          ['llover a cántaros','rain by the jugful','to pour down'],
+          ['ser la leche','be the milk','to be amazing, or the limit'],
+          ['sudar de algo','sweat of something','to not care about it (young)']
+        ],
+        examples:[
+          { es:'Me estás tomando el pelo, ¿no?', en:'You\'re pulling my leg, right?' },
+          { es:'Bueno, me piro, que mañana madrugo.', en:'Right, I\'m off, I\'ve got an early start tomorrow.' },
+          { es:'Ponte las pilas, que el examen es el lunes.', en:'Get your act together, the exam\'s on Monday.' }
+        ]
+      },
+      {
+        heading:'12 · WhatsApp and under-30 Spanish',
+        lead:'Spanish texting is short and phonetic. Young Spaniards also borrow English words freely and conjugate them as Spanish verbs.',
+        rows:[
+          ['Text / word','Means','Notes'],
+          ['q / k · xq / pq','que · porque / por qué','the basics'],
+          ['tb / tmb · xfa / porfa / porfi','también · por favor','porfi is cutesy'],
+          ['ns · npi','no sé · ni puta idea','npi is rude but very common'],
+          ['finde · mñn · dnd','fin de semana · mañana · dónde',''],
+          ['bss · un besito · un abrazo','kisses · love · hugs','bss between friends; men often use un abrazo'],
+          ['jajaja · jejeje','haha · hehe','a single jaja can read as dry'],
+          ['un audio','a voice note','Spaniards send a lot of them'],
+          ['dejar en visto','to leave on read','Me ha dejado en visto.'],
+          ['stalkear · ghostear','to stalk online · to ghost','Lo he stalkeado en Insta.'],
+          ['el crush · cringe · random','crush · cringe · random','used exactly as in English'],
+          ['renta · me renta','it\'s worth it','No me renta ir para una hora.'],
+          ['petarlo','to smash it','Tu presentación lo ha petado.'],
+          ['el salseo','gossip, drama','¿Hay salseo? Cuéntamelo todo.'],
+          ['literal · en plan','literally · like','Literal, me quedé sin palabras.']
+        ],
+        trap:'Most of this is fine with friends your age and sounds odd or try-hard in a work email or with anyone over fifty.',
+        examples:[
+          { es:'No me renta ir hasta allí para una hora.', en:'It\'s not worth going all the way there for an hour.' },
+          { es:'Te he mandado un audio, escúchalo cuando puedas.', en:'I\'ve sent you a voice note, listen when you can.' }
+        ]
+      },
+      {
+        heading:'13 · How it sounds at speed',
+        lead:'Half the trouble with slang is hearing it. In fast speech, especially in Valencia and the south, sounds drop out. You don\'t need to copy this, but you need to recognise it.',
+        rows:[
+          ['You hear','Written','What\'s happening'],
+          ['cansao · terminao · pescao','cansado · terminado · pescado','the d between vowels in -ado disappears'],
+          ['pa · pa\' ti · pa\'l','para · para ti · para el','para shrinks to pa'],
+          ['to · to\'l mundo','todo · todo el mundo','todo shrinks to to'],
+          ['na · nada de na','nada','nada shrinks to na'],
+          ['pos · ps','pues','the filler pues, squashed'],
+          ['mu','muy','Está mu bueno.'],
+          ['¿Ande vas?','¿Adónde vas?','rural and older speakers'],
+          ['Xe! / Che!','hey / wow (Valencian)','the local catch-all interjection']
+        ],
+        note:'Say -ado properly yourself; dropping it from a foreign mouth can sound put on. But understanding pa, to and na will unlock a lot of street conversation.'
+      },
+      {
+        heading:'14 · Same word, different meaning',
+        lead:'These everyday words have a second (sometimes rude) meaning. Knowing both saves a lot of embarrassment.',
+        rows:[
+          ['Word','Meaning 1','Meaning 2'],
+          ['pavo','turkey','a guy · a euro (cinco pavos)'],
+          ['mono','monkey · overalls','cute · a craving (tener mono)'],
+          ['chulo','cool, nice (Spain)','cocky, arrogant (ser un chulo)'],
+          ['pillado','caught · busy (estoy pillado)','to have a crush (estar pillado por alguien)'],
+          ['rollo','a roll · a bore (qué rollo)','a fling (tener un rollo) · vibe (buen rollo)'],
+          ['flipado','amazed (estoy flipado)','a show-off (es un flipado)'],
+          ['cachondo','funny (ser cachondo)','horny (estar cachondo)'],
+          ['bueno','good (ser bueno)','hot, attractive (estar bueno)'],
+          ['correrse','to move along (córrete un poco)','to come (sexual). Use muévete instead'],
+          ['coger','to take, catch (fine in Spain)','vulgar for sex in much of Latin America']
+        ],
+        trap:'Coger is completely normal in Spain (coger el autobús). Don\'t drop it, but if you ever talk to Mexicans or Argentinians, use tomar.'
+      },
+      {
+        heading:'Chuleta rápida: the top 20 to learn this week',
+        rows:[
+          ['Situation','Say','Why'],
+          ['A great plan','¡Planazo!','-azo = brilliant'],
+          ['Great weather','Hace un tiempazo.','everyone says it'],
+          ['The weekend','el finde','nobody says fin de semana'],
+          ['Your flatmate or colleague','mi compi','friendly and neutral'],
+          ['Inviting','¿Te apuntas? · ¿Hace una caña?','fancy it?'],
+          ['Accepting','Me apunto.','I\'m in'],
+          ['Declining','Paso, estoy reventado.','honest and normal'],
+          ['Someone backed out','Se ha rajado.','he bailed'],
+          ['A low-key night','Vamos de tranquis.','one or two drinks'],
+          ['Paying','Invito yo. · ¿A escote?','my treat · split it?'],
+          ['A legend','Eres un crack.','thanks and praise in one'],
+          ['Rude staff','Qué borde.','curt, unfriendly'],
+          ['Can\'t be bothered','Qué pereza.','the Spanish national mood'],
+          ['Stop overthinking','No te rayes.','friends\' reassurance'],
+          ['Money','diez pavos · no tengo pasta','euros and cash'],
+          ['A bargain / rip-off','un chollo · un timo','shopping and rent'],
+          ['Strong agreement','¡Ya te digo!','you\'re telling me'],
+          ['Something extreme','¡Tela!','wow, that\'s a lot'],
+          ['Leaving','Me piro.','I\'m off'],
+          ['Ordering nicely','Una caña bien fresquita.','-ito for tone, not size']
+        ]
+      }
+    ]
   }
 ];
 
@@ -7196,7 +7560,8 @@ const SHEET_LINKS = {
   'verb-chains':         ['verb-prepositions'],
   'se-constructions':    ['verbos-reflexivos'],
   'verbos-reflexivos':   ['se-constructions'],
-  'slang-dossier':       ['conversation-friends','animo-apoyo','muletillas'],
+  'slang-dossier':       ['argot-diario','conversation-friends','animo-apoyo','muletillas'],
+  'argot-diario':        ['slang-dossier','diminutivos','muletillas','conversation-friends'],
   'conversation-friends':['slang-dossier'],
   'animo-apoyo':         ['slang-dossier'],
 };
@@ -7220,6 +7585,18 @@ const SHEET_RELATED = {
 
 // Ponte a prueba: multiple-choice checks written for the sheets people get wrong most.
 const SHEET_QUIZZES = {
+  'argot-diario': [
+    { q:'Vamos a la playa a hacer una paella el domingo. ¡___!', opts:['Planazo','Planito','Planucho'], correct:0, why:'-azo makes it brilliant: un planazo is a great plan.' },
+    { q:'Hace un ___, vámonos a la terraza.', opts:['tiempazo','tiempito','tiempeo'], correct:0, why:'Un tiempazo = gorgeous weather.' },
+    { q:'¿Nos pillamos un ___ y comemos en el parque?', opts:['bocata','bocato','bocazo'], correct:0, why:'The slang ending is -ata, not -ato: bocata, cubata, segurata.' },
+    { q:'Iba a venir, pero se ha ___.', opts:['rajado','apuntado','pirado'], correct:0, why:'Rajarse = to bail on a plan. Apuntarse is to join in.' },
+    { q:'Seis euros por un café. ¡Es un ___!', opts:['timo','chollo','crack'], correct:0, why:'Un timo is a rip-off; un chollo is a bargain.' },
+    { q:'Tu primo es muy gracioso, ___ un cachondo.', opts:['es','está'], correct:0, why:'Ser cachondo = funny. Estar cachondo means something very different.' },
+    { q:'Me costó diez ___.', opts:['pavos','monos','rollos'], correct:0, why:'Un pavo = one euro in Spanish slang.' },
+    { q:'Hoy no salgo, ___ pereza.', opts:['me da','tengo','estoy'], correct:0, why:'Dar pereza: me da pereza = I can\'t be bothered.' },
+    { q:'- ¿Hace calor en agosto? - ¡___! Cuarenta grados.', opts:['Ya te digo','Ni de coña','Me suena'], correct:0, why:'¡Ya te digo! = you\'re telling me, strong agreement.' },
+    { q:'In Spain, what does \'Paso de ti\' mean?', opts:['I\'m ignoring you / I don\'t care about you','I\'ll walk past you','I\'ll pass it to you'], correct:0, why:'Pasar de = not bother with. To a person it is cold unless you\'re joking.' }
+  ],
   'ser-estar': [
     { q:'Mi hermana ___ médica en el Hospital La Fe.', opts:['es','está'], correct:0, why:'A job is what someone is: ser. (O for Occupation in DOCTOR.)' },
     { q:'La paella ___ fría, caliéntala un poco.', opts:['es','está'], correct:1, why:'How the paella is right now is a state: estar.' },
@@ -10258,11 +10635,50 @@ function SectionIndex({ sections, dark }) {
 
 // Wide tables (3+ columns with long cells) turn into stacked cards below 640px, where the
 // columns would otherwise be crushed; narrow ones (conjugation tables) stay as tables.
-function DataTable({ data, dark }) {
+function DataTable({ data, dark, refined }) {
   if (!data || !data.length) return null;
   const headers = data[0];
   const rows = data.slice(1);
   const stack = headers.length >= 3 && rows.some(r => r.join('').length > 40);
+  // Refined: the chuleta reading view. Hairline rules, small-caps header, Spanish term column set in sienna.
+  if (refined) return (
+    <>
+    {stack && (
+      <div className="sm:hidden divide-y divide-ink/[0.08] border-y border-ink/10">
+        {rows.map((row, ri) => (
+          <div key={ri} className="py-3">
+            <p className="font-semibold text-[15px] text-sienna-600 leading-snug" lang="es">{row[0]}</p>
+            {row.slice(1).map((cell, ci) => cell ? (
+              <p key={ci} className="text-sm mt-1 leading-snug text-stone-700">
+                {headers[ci + 1] && <span className="text-[10px] font-bold uppercase tracking-wider text-dust mr-1.5">{headers[ci + 1]}</span>}{cell}
+              </p>
+            ) : null)}
+          </div>
+        ))}
+      </div>
+    )}
+    <div className={`${stack ? 'hidden sm:block ' : ''}overflow-x-auto`}>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b-2 border-ink/15">
+            {headers.map((h, i) => (
+              <th key={i} className="pl-0 pr-6 last:pr-0 pb-2.5 text-left text-[10.5px] font-bold uppercase tracking-[0.14em] text-dust">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri} className="border-b border-ink/[0.07] hover:bg-cream/40 transition-colors">
+              {row.map((cell, ci) => (
+                <td key={ci} className={`pl-0 pr-6 last:pr-0 py-2.5 align-top text-[15px] leading-snug ${ci === 0 ? 'font-semibold text-sienna-600' : 'text-stone-700'}`} lang={ci === 0 ? 'es' : undefined}>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    </>
+  );
   return (
     <>
     {stack && (
@@ -15867,6 +16283,23 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
     toast({ tone: n ? 'success' : 'info', title: n ? 'Añadida a Tarjetas' : 'Ya está en Tarjetas', body: n ? 'La verás en Practica > Repaso.' : null });
     bump(x => x + 1);
   };
+  const hasSide = !!(section.lead || section.note || section.trap);
+  const hm = String(section.heading || '').match(/^(\d+)\s*·\s*(.*)$/);
+  const secNo = hm ? hm[1] : null, secTitle = hm ? hm[2] : section.heading;
+  const boxes = (section.note || section.trap) ? (
+    <div className="mt-4 space-y-3">
+      {section.note && (
+        <div className="border-l-2 border-teal-600 bg-teal-50/70 pl-4 pr-3 py-2.5 text-teal-900">
+          <p className="text-[13.5px] leading-relaxed"><span className="font-bold">Clave: </span>{section.note}</p>
+        </div>
+      )}
+      {section.trap && (
+        <div className="border-l-2 border-amber-600 bg-amber-50/80 pl-4 pr-3 py-2.5 text-amber-900">
+          <p className="text-[13.5px] leading-relaxed"><span className="font-bold">Ojo: </span>{section.trap}</p>
+        </div>
+      )}
+    </div>
+  ) : null;
   return (
     <section data-sheet-sec={index} className="scroll-mt-40">
       {section.partTitle && sheet.mergedFrom && (
@@ -15876,29 +16309,27 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
           {section.partIntro && <p className="text-base leading-relaxed text-stone-600 mt-2">{section.partIntro}</p>}
         </div>
       )}
-      {section.heading && (
-        <p className="text-base font-bold uppercase tracking-wide mb-3 text-stone-700 flex items-start gap-2">
-          <span className="flex-1">{section.heading}</span>
-          {isRead && <span className="text-oliva-600 text-sm normal-case font-semibold flex-shrink-0" title="Leída">✓</span>}
-        </p>
-      )}
-      {section.lead && <p className="text-base leading-relaxed mb-3 text-stone-700">{section.lead}</p>}
-      {section.rows && Array.isArray(section.rows) && <DataTable data={section.rows} />}
-      {section.text && <p className="text-base leading-relaxed text-stone-700 mt-3">{section.text}</p>}
-      {section.note && (
-        <div className="mt-3 rounded-xl px-4 py-3 border-l-4 bg-teal-50 border-teal-500 text-teal-900">
-          <p className="text-sm leading-relaxed"><span className="font-bold">Clave: </span>{section.note}</p>
-        </div>
-      )}
-      {section.trap && (
-        <div className="mt-3 rounded-xl px-4 py-3 border-l-4 bg-amber-50 border-amber-500 text-amber-900">
-          <p className="text-sm leading-relaxed"><span className="font-bold">Ojo: </span>{section.trap}</p>
-        </div>
-      )}
+      <div className={hasSide ? '2xl:grid 2xl:grid-cols-[20rem_minmax(0,1fr)] 2xl:gap-14' : ''}>
+      {/* Explanation column: number, title, lead, Clave and Ojo. Sticks beside long tables on wide screens. */}
+      <div className={hasSide ? '2xl:sticky 2xl:top-6 2xl:self-start' : ''}>
+        {section.heading && (
+          <div className="flex items-baseline gap-3 mb-3">
+            {secNo && <span className="font-serif font-bold text-lg text-ochre-500 tabular-nums leading-none">{secNo.padStart(2, '0')}</span>}
+            <h3 className="flex-1 font-serif font-bold text-xl lg:text-[1.375rem] text-ink leading-snug">{secTitle}</h3>
+            {isRead && <span className="text-oliva-600 text-sm font-semibold flex-shrink-0" title="Leída">✓</span>}
+          </div>
+        )}
+        {section.lead && <p className="text-[15px] leading-relaxed mb-5 2xl:mb-0 text-stone-600 max-w-prose">{section.lead}</p>}
+        {hasSide && <div className="hidden 2xl:block">{boxes}</div>}
+      </div>
+      <div className="min-w-0">
+      {section.rows && Array.isArray(section.rows) && <DataTable data={section.rows} refined />}
+      {section.text && <p className="text-[15px] leading-relaxed text-stone-700 mt-3">{section.text}</p>}
+      <div className={hasSide ? '2xl:hidden' : ''}>{boxes}</div>
       {ex.length > 0 && (
-        <div className="mt-3 rounded-xl p-4 bg-orange-50/50">
-          <div className="flex items-center gap-2 mb-2">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-orange-600 flex-1">Ejemplos reales</p>
+        <div className="mt-6">
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-orange-600 flex-1">Ejemplos reales</p>
             {ex.length > 1 && (
               <button onClick={() => playingHere ? seq.stop() : seq.play(index, ex.map(e => e.es))}
                 className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 min-h-9 rounded-full transition-colors ${playingHere ? 'bg-orange-500 text-paper' : 'bg-paper text-orange-600 hover:bg-orange-100 border border-orange-500/30'}`}>
@@ -15906,13 +16337,13 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
               </button>
             )}
           </div>
-          <div className="space-y-2.5">
+          <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
             {ex.map((e, ei) => {
               const showEn = !hideEn || revealed[ei];
               const isCur = playingHere && seq.playing.idx === ei;
               const saved = glossaryHas(e.es);
               return (
-                <div key={ei} className={`rounded-lg transition-colors ${isCur ? 'bg-amber-50 ring-2 ring-amber-300 -mx-2 px-2 py-1' : ''}`}>
+                <div key={ei} className={`border-l-2 pl-4 py-0.5 transition-colors ${isCur ? 'border-amber-400 bg-amber-50' : 'border-ochre-300/70'}`}>
                   <div className="flex items-start gap-2">
                     <p className="font-serif italic text-base flex-1" lang="es">"{e.es}"</p>
                     <SpeakBtn text={e.es} size="sm" />
@@ -15944,6 +16375,8 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
           )}
         </div>
       )}
+      </div>
+      </div>
       <div data-sheet-end={index} className="h-px" />
     </section>
   );
@@ -15965,6 +16398,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
   const pctRead = total ? Math.round((readSet.size / total) * 100) : 0;
 
   useEffect(() => { window.scrollTo(0, 0); setProg(sheetProgress(sheet.id)); }, [sheet.id]);
+  useEffect(() => { document.body.classList.add('sheet-open'); return () => document.body.classList.remove('sheet-open'); }, []);
 
   // Tick a section as read once its end scrolls into view; all read → Leída, first review due tomorrow.
   useEffect(() => {
@@ -16088,23 +16522,23 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
         {tocOpen && <div className="px-2 py-2 max-h-[60vh] overflow-y-auto border-t border-ink/10"><Toc compact /></div>}
       </div>
 
-      {/* Desktop: slim back link, then a sticky contents rail beside the sheet */}
+      {/* Desktop: slim back link, then a sticky contents rail beside the sheet. Wide canvas (sheet-canvas). */}
       {onBack && (
-        <div className="hidden lg:block px-8 pt-5 max-w-5xl mx-auto no-print">
+        <div className="hidden lg:block px-8 pt-5 sheet-canvas mx-auto no-print">
           <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-semibold text-dust hover:text-orange-600 transition-colors">
             <span aria-hidden>←</span><span>{nav.parentLabel}</span>
           </button>
         </div>
       )}
 
-      <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
+      <div className="px-4 lg:px-8 py-6 sheet-canvas mx-auto lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-10 xl:gap-14 lg:items-start">
         <aside className="hidden lg:block sticky top-6 self-start no-print">
           <div className="flex items-center justify-between gap-2 mb-2">
             <p className="eyebrow">Índice</p>
             <p className="text-[11px] font-mono text-dust">{readSet.size}/{total} leídas</p>
           </div>
-          <div className="h-1 rounded-full bg-ink/10 overflow-hidden mb-3"><div className="h-full bg-orange-500 transition-all" style={{ width: pctRead + '%' }} /></div>
-          <Toc />
+          <div className="h-0.5 rounded-full bg-ink/10 overflow-hidden mb-3"><div className="h-full bg-orange-500 transition-all" style={{ width: pctRead + '%' }} /></div>
+          <div className="max-h-[calc(100vh-11rem)] overflow-y-auto hide-scroll -mx-1 px-1"><Toc /></div>
           <div className="mt-4 pt-4 border-t border-ink/10 flex flex-wrap items-center gap-2">
             <EnToggle />
             <button onClick={() => window.print()} className="inline-flex items-center text-xs px-3 min-h-10 rounded-full font-semibold bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">Imprimir</button>
@@ -16112,43 +16546,63 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
         </aside>
 
         <div className="min-w-0">
-        <Card dark={dark} className="overflow-hidden">
-          <div className={`px-6 py-5 bg-gradient-to-br ${tileColorMap[sheet.color] || tileColorMap.stone} text-white`}>
-            <p className="font-serif font-bold text-2xl lg:text-3xl">{sheet.title}</p>
-            <p className="text-base opacity-90 mt-1">{sheet.titleEn}</p>
-          </div>
-          <div className="px-6 py-3 border-b border-stone-100 flex flex-wrap items-center gap-2">
+        {/* Editorial header on the page itself: eyebrow with the sheet colour, serif title, actions on the right */}
+        <header className="pb-6 lg:pb-8">
+          <div className="flex items-center gap-2.5 mb-3">
+            <span className={`h-1 w-8 rounded-full bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} aria-hidden />
+            <p className="eyebrow">Chuleta</p>
             <SheetStatusBadge status={prog.status} />
             {dueLabel && prog.status !== 'dominada' && <span className={`text-xs ${isDue ? 'font-semibold text-orange-600' : 'text-dust'}`}>{dueLabel}</span>}
-            <div className="flex-1" />
+          </div>
+          <div className="lg:flex lg:items-end lg:gap-8">
+            <div className="flex-1 min-w-0">
+              <h2 className="font-serif font-bold text-3xl lg:text-[2.75rem] text-ink leading-[1.08] tracking-tight">{sheet.title}</h2>
+              <p className="text-base lg:text-lg text-stone-500 mt-2 leading-snug">{sheet.titleEn}</p>
+            </div>
             {allExamples.length > 0 && (() => {
               const missing = allExamples.filter(ex => !glossaryHas(ex.es)).length;
-              return missing ? (
-                <button onClick={addAll} className="text-xs font-semibold px-3 min-h-9 rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors">
-                  + Añadir {missing} frases a Tarjetas
-                </button>
-              ) : <span className="text-xs font-semibold text-oliva-700">✓ Todas en Tarjetas</span>;
+              return (
+                <div className="mt-4 lg:mt-0 flex-shrink-0 no-print">
+                  {missing ? (
+                    <button onClick={addAll} className="text-sm font-semibold px-4 min-h-10 rounded-full bg-ink text-paper hover:bg-sienna-700 transition-colors">
+                      + Añadir {missing} frases a Tarjetas
+                    </button>
+                  ) : <span className="text-sm font-semibold text-oliva-700">✓ Todas en Tarjetas</span>}
+                </div>
+              );
             })()}
           </div>
           {sheet.intro && (
-            <div className="px-6 py-4 border-b bg-stone-50 border-stone-100">
-              <p className="text-base leading-relaxed text-stone-600">{sheet.intro}</p>
+            <p className="mt-5 text-[16.5px] leading-relaxed text-stone-700 max-w-[46rem]">{sheet.intro}</p>
+          )}
+          {links.length > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-x-1 gap-y-1.5 text-sm no-print">
+              <span className="eyebrow mr-2">Ver también</span>
+              {links.map((l, li) => (
+                <React.Fragment key={l.id}>
+                  {li > 0 && <span className="text-dust/60 px-1" aria-hidden>·</span>}
+                  <button onClick={() => onOpenSheet && onOpenSheet(l.id)}
+                    className="font-semibold text-sienna-700 underline decoration-ink/20 underline-offset-4 hover:text-orange-600 hover:decoration-orange-500 transition-colors">{l.title}</button>
+                </React.Fragment>
+              ))}
             </div>
           )}
+        </header>
 
+        <Card dark={dark} className="overflow-hidden">
           {/* Resumen: every Clave and Ojo line on the sheet, for a two-minute revision */}
           {resumen.length > 0 && (
-            <div className="px-6 py-4 border-b border-stone-100">
+            <div className="px-5 lg:px-10 py-4 border-b border-ink/[0.07] bg-cream/30">
               <button onClick={() => setResumenOpen(o => !o)} className="w-full flex items-center gap-2 text-left">
                 <p className="eyebrow flex-1">Resumen · {(n => `${n} ${n === 1 ? 'clave' : 'claves'}`)(resumen.filter(r => r.note).length)}, {(n => `${n} ${n === 1 ? 'trampa' : 'trampas'}`)(resumen.filter(r => r.trap).length)}</p>
                 <span className={`text-dust transition-transform ${resumenOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
               {resumenOpen && (
-                <ul className="mt-3 space-y-2.5">
+                <ul className="mt-4 grid md:grid-cols-2 gap-x-10 gap-y-3.5">
                   {resumen.map(r => (
                     <li key={r.i}>
                       <button onClick={() => jumpTo(r.i)} className="text-left w-full group">
-                        <p className="text-[11px] font-bold uppercase tracking-wide text-dust group-hover:text-orange-600">{r.h}</p>
+                        <p className="text-[10.5px] font-bold uppercase tracking-wider text-dust group-hover:text-orange-600">{r.h}</p>
                         {r.note && <p className="text-sm leading-snug text-teal-900 mt-0.5"><span className="font-bold">Clave: </span>{r.note}</p>}
                         {r.trap && <p className="text-sm leading-snug text-amber-900 mt-0.5"><span className="font-bold">Ojo: </span>{r.trap}</p>}
                       </button>
@@ -16159,17 +16613,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             </div>
           )}
 
-          {links.length > 0 && (
-            <div className="px-6 py-3 border-b border-stone-100 flex flex-wrap items-center gap-2">
-              <span className="eyebrow mr-1">Ver también</span>
-              {links.map(l => (
-                <button key={l.id} onClick={() => onOpenSheet && onOpenSheet(l.id)}
-                  className="text-xs font-semibold px-3 min-h-9 rounded-full border border-ink/10 bg-paper text-sienna-700 hover:border-orange-500/40 hover:text-orange-600 transition-colors">{l.title} →</button>
-              ))}
-            </div>
-          )}
-
-          <div className="px-6 pb-6 pt-5 space-y-8">
+          <div className="px-5 lg:px-10 py-2 divide-y divide-ink/[0.08] [&>section]:py-8 lg:[&>section]:py-10">
             {sheet.content.map((section, si) => (
               <SheetSection key={sheet.id + si} sheet={sheet} section={section} index={si} hideEn={hideEn}
                 isRead={readSet.has(si)} seq={seq} onRecallDone={onRecallDone} />
@@ -23873,7 +24317,7 @@ function AreaHeader({ area, tab, onTab, onSearch }) {
     return () => clearTimeout(t);
   }, [tab]);
   return (
-    <div className="px-4 lg:px-8 pt-4 lg:pt-8 max-w-5xl mx-auto">
+    <div className="px-4 lg:px-8 pt-4 lg:pt-8 max-w-5xl mx-auto area-head">
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
           <p className="eyebrow lg:hidden">Aprende</p>
