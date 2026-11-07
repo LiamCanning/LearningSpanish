@@ -55,11 +55,18 @@
   }
 })();
 </script>
+<script>try{var f=JSON.parse(localStorage.getItem('aprende.font')||'"inter"');document.documentElement.setAttribute('data-font',f);}catch(e){}</script>
+<style>
+:root { --font-ui: 'Inter', system-ui, sans-serif; }
+html[data-font="atkinson"] { --font-ui: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif; }
+html[data-font="aptos"] { --font-ui: 'Aptos', 'Aptos Display', 'Segoe UI', system-ui, sans-serif; }
+html[data-font="sf"] { --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', sans-serif; }
+</style>
 <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 <script src="https://cdn.tailwindcss.com/3.4.1"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script>
 // ============================================================
 // DESIGN TOKENS - Aprende Identity Palette
@@ -105,7 +112,7 @@ tailwind.config = {
         dust:  '#7b7791',
       },
       fontFamily: {
-        sans: ['Inter','system-ui','sans-serif'],
+        sans: ['var(--font-ui)'],
         serif: ['Fraunces','Georgia','serif']
       },
       letterSpacing: {
@@ -147,7 +154,7 @@ h1.font-serif, h2.font-serif, h3.font-serif, .font-serif.font-bold { font-weight
 body.sheet-open .area-head { max-width: 90rem; }
 
 .eyebrow {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -287,21 +294,21 @@ body.sheet-open .area-head { max-width: 90rem; }
 .k-sec { background: var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow: var(--sh); overflow:hidden; }
 .k-sec-head { display:flex; align-items:center; gap:.85rem; padding:1.25rem 1.25rem 0; }
 .k-sec-no { flex-shrink:0; width:1.85rem; height:1.85rem; border-radius:8px; background: var(--ink); color:#fff; display:flex; align-items:center; justify-content:center;
-  font-family:'Inter',system-ui,sans-serif; font-weight:600; font-size:.85rem; font-variant-numeric: tabular-nums; }
-.k-sec-title { font-family:'Inter',system-ui,sans-serif; font-weight:600; color: var(--ink); font-size:1.2rem; line-height:1.3; letter-spacing:-.012em; }
+  font-family:var(--font-ui); font-weight:600; font-size:.85rem; font-variant-numeric: tabular-nums; }
+.k-sec-title { font-family:var(--font-ui); font-weight:600; color: var(--ink); font-size:1.2rem; line-height:1.3; letter-spacing:-.012em; }
 .k-sec-body { padding:1rem 1.25rem 1.5rem; }
 .k-sec-body > * + * { margin-top:1.6rem; }
 .k-sub { display:flex; align-items:center; gap:.5rem; font-size:11.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color: var(--dust); margin-bottom:.75rem; }
 .k-sub::before { content:''; width:.75rem; height:2px; background: var(--keeps); border-radius:2px; flex-shrink:0; }
-.k-body { font-family:'Inter',system-ui,sans-serif; font-size:17px; line-height:1.65; color: var(--ink); max-width:68ch; }
+.k-body { font-family:var(--font-ui); font-size:17px; line-height:1.65; color: var(--ink); max-width:68ch; }
 .k-mark { background: linear-gradient(180deg, transparent 50%, #FFDF6B 50%, #FFDF6B 94%, transparent 94%); color: inherit; font-weight:inherit;
   padding:0 .06em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .k-key, .k-warn { border-radius:10px; background:#fbf9f5; border:1px solid var(--line); border-left:3px solid var(--ink); padding:.85rem 1.1rem .95rem; }
 .k-warn { border-left-color: var(--keeps); }
 .k-key-l, .k-warn-l { display:flex; align-items:center; gap:.4rem; font-size:11.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color: var(--ink); margin-bottom:.3rem; }
 .k-warn-l { color: var(--keeps-d); }
-.k-box-t { font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.6; color: var(--ink); }
-.k-ex-es { font-family:'Inter',system-ui,sans-serif; font-weight:500; font-size:16.5px; line-height:1.45; color: var(--ink); }
+.k-box-t { font-family:var(--font-ui); font-size:16px; line-height:1.6; color: var(--ink); }
+.k-ex-es { font-family:var(--font-ui); font-weight:500; font-size:16.5px; line-height:1.45; color: var(--ink); }
 .k-ex-en { font-size:14px; line-height:1.45; color: var(--dust); margin-top:.2rem; }
 .k-formula { display:flex; flex-direction:column; gap:.7rem; }
 .k-formula-row { display:flex; flex-wrap:wrap; align-items:center; gap:.45rem; }
@@ -314,7 +321,7 @@ body.sheet-open .area-head { max-width: 90rem; }
   .k-sec-title { font-size:1.32rem; }
   .k-sec-body { padding:1.15rem 2.25rem 2.1rem; }
   .k-sec-body > * + * { margin-top:1.9rem; }
-  .k-body { font-size:18px; line-height:1.68; }
+  .k-body { font-size:18px; line-height:1.68; max-width:76ch; }
   .k-box-t { font-size:16.5px; }
   .k-ex-es { font-size:17.5px; }
   .k-ex-en { font-size:14.5px; }
@@ -7789,6 +7796,194 @@ const CHEAT_SHEETS_SRC = [
         ]
       }
     ]
+  },
+  {
+    id:"le-vs-lo",
+    added:"2026-11-07",
+    category:"gramatica",
+    title:"Le o lo: a quién le pasa",
+    titleEn:"Le/les vs lo/la/los/las: why it is 'a la amiga no le gusta salir'",
+    intro:"Why do we say a la amiga no le gusta salir and not la gusta? Because lo and la are for someone the verb acts on directly, while le and les are for someone something is passed to, said to, or pleasing to. Gustar, decir, preguntar, escribir and a few more verbs never act on the person; they hand something to her, so she is always le, whatever her gender. This sheet gives you one test, the verbs that break the English pattern, the doubling (a la amiga ... le), Spain's leísmo and the laísmo trap, and the se lo swap.",
+    color:"blue",
+    content:[
+      { heading:"1 · The test: act on someone, or pass something to them",
+        lead:"Lo, la, los and las are for whoever or whatever the verb acts on directly: the person you see, call, invite or wait for. Le and les are for whoever receives, benefits from or is affected by the action: the person you tell, ask, write to, give something to. The question is not whether it is a man or a woman, it is whether you do something to them (lo, la) or pass something to them (le).",
+        note:"Le and les do not change for gender: le digo is right for a man and for a woman. Lo and la do. So when a woman is the indirect object, the pronoun is still le, never la.",
+        rows:[
+          ["Ask", "Pronoun", "Example", "English"],
+          ["Who or what do I see, know, invite?", "lo, la, los, las", "A Marta la conozco del trabajo.", "I know Marta from work."],
+          ["To or for whom do I say, give, write?", "le, les", "A Marta le escribo cada semana.", "I write to Marta every week."],
+          ["Who is it pleasing, hurting, interesting?", "le, les", "A Marta le interesa el proyecto.", "Marta is interested in the project."],
+          ["Me, you, us, you lot", "me, te, nos, os", "Me llama. · Me dice la verdad.", "Same word for both jobs, so no choice to make."]
+        ],
+        examples:[
+          {es:"A Marta la veo en el gimnasio; a Marta le mando las fotos por WhatsApp.",en:"I see Marta at the gym; I send Marta the photos on WhatsApp."},
+          {es:"A mis vecinos los invito a cenar, pero no les cuento nada de la reforma.",en:"I'm inviting my neighbours to dinner, but I'm not telling them anything about the renovation."}
+        ]
+      },
+      { heading:"2 · The trap: a + person does not decide it",
+        lead:"A person who is the direct object takes a in front of it (the personal a): veo a María. But an indirect object also takes a: digo la verdad a María. So the little word a tells you nothing. Replace the person with a pronoun and decide with the test from section 1: veo a María becomes la veo, digo a María becomes le digo.",
+        note:"Passive test, for when you are stuck: if the person can become the subject of a passive sentence, it is usually a direct object. María fue invitada works, so la invito. María fue escrita makes no sense, so le escribo.",
+        trap:"Do not let the a or the gender decide. A María in veo a María and a María in escribo a María look identical, but the first is la and the second is le. It depends on the verb, not on her.",
+        rows:[
+          ["Sentence", "Pronoun", "Why", "English"],
+          ["Veo a María.", "La veo.", "she is what I see", "I see her."],
+          ["Digo la verdad a María.", "Le digo la verdad.", "I say it to her", "I tell her the truth."],
+          ["Invito a Pablo.", "Lo invito.", "invite him: direct", "I invite him."],
+          ["Pregunto a Pablo.", "Le pregunto.", "ask him: indirect", "I ask him."],
+          ["Espero a mis padres.", "Los espero.", "wait for them: direct", "I'm waiting for my parents."],
+          ["Escribo a mis padres.", "Les escribo.", "write to them: indirect", "I write to my parents."]
+        ],
+        examples:[
+          {es:"- ¿Has visto a Lucía? - La vi ayer en el Mercado Central. Le pregunté por el piso y me dijo que sigue libre.",en:"- Have you seen Lucía? - I saw her yesterday at the Central Market. I asked her about the flat and she said it's still available."}
+        ]
+      },
+      { heading:"3 · Gustar and friends: the thing is the subject",
+        lead:"With gustar, the thing you like is the subject of the sentence and the person is the one it is pleasing to. Literally, going out is pleasing to her. Nobody is acting on her, so she can only be the indirect object: le. Her gender never matters. The verb agrees with the thing, not the person: le gusta salir, le gustan los bares.",
+        note:"A la amiga no le gusta salir: a la amiga = the person, le = her again (compulsory), gusta = agrees with the thing, salir = the subject, the thing she does not like. Word for word: going out is not pleasing to the friend.",
+        trap:"Never la gusta for a woman or lo gusta for a man. That is the same mistake as laísmo (section 6). And an infinitive counts as singular: le gusta salir y tomar algo, not le gustan.",
+        rows:[
+          ["Verb", "Means", "Example", "English"],
+          ["gustar", "to please", "A mi madre le gusta cocinar para todos.", "My mum likes cooking for everyone."],
+          ["encantar", "to delight", "A Pablo le encantan las Fallas.", "Pablo loves the Fallas."],
+          ["interesar", "to interest", "A mi jefa le interesa el proyecto.", "My boss is interested in the project."],
+          ["importar", "to matter to", "A la casera no le importa que tengamos gato.", "The landlady doesn't mind us having a cat."],
+          ["molestar", "to bother", "A los vecinos les molesta el ruido de la terraza.", "The noise from the terrace bothers the neighbours."],
+          ["doler", "to hurt", "A Javi le duele la rodilla desde el partido.", "Javi's knee has hurt since the match."],
+          ["apetecer", "to appeal to", "A Marta no le apetece salir hoy.", "Marta doesn't fancy going out today."],
+          ["parecer", "to seem to", "A mi hermana le parece buena idea.", "My sister thinks it's a good idea."],
+          ["quedar", "to be left, to fit", "A Lucía le queda genial esa chaqueta.", "That jacket looks great on Lucía."]
+        ],
+        examples:[
+          {es:"- ¿Vienes de cañas esta noche? - Yo sí, pero a la amiga de Marta no le gusta salir entre semana.",en:"- Coming for a beer tonight? - I am, but Marta's friend doesn't like going out on weekdays."},
+          {es:"A mis padres les encantan las Fallas, pero a mi madre le molesta el ruido de las mascletàs.",en:"My parents love the Fallas, but my mum is bothered by the noise of the mascletàs."}
+        ]
+      },
+      { heading:"4 · Doubling: a la amiga ... le",
+        lead:"When you name the person with a + noun, Spanish still keeps the pronoun: a la amiga le gusta, a Pablo le dije. This is not a repetition error, it is the normal structure. With gustar-type verbs the pronoun is compulsory. With verbs like dar, decir or mandar it is almost always there (le di el libro a Ana). And with a direct object, a noun placed before the verb also needs its pronoun: a Marta la veo.",
+        note:"Same pattern for every gustar-type verb: a + person + le/les + verb + thing. A mi jefe le interesa, a mis amigos les apetece.",
+        trap:"Two slips: dropping the pronoun (a la amiga no gusta salir is wrong) and keeping le with a plural person (a mis amigos le gusta is wrong, it is les).",
+        rows:[
+          ["Structure", "Example", "English"],
+          ["a + person first, then pronoun", "A la amiga le gusta salir.", "The friend likes going out."],
+          ["pronoun first, person last", "Le gusta salir a la amiga.", "Same sentence, person at the end."],
+          ["indirect, person at the end", "Le mandé el informe a mi jefe.", "I sent my boss the report."],
+          ["direct, person first: pronoun needed", "A mi jefe lo veo mañana.", "I'm seeing my boss tomorrow."],
+          ["direct, person last: no pronoun", "Veo a mi jefe mañana.", "Same, but without lo."],
+          ["plural person", "A mis amigos les gusta salir.", "My friends like going out."]
+        ],
+        examples:[
+          {es:"A mi jefa le parece bien el cambio, pero a sus compañeros no les hace gracia.",en:"My boss thinks the change is fine, but her colleagues aren't thrilled."},
+          {es:"Le di las llaves a la casera y le pedí un recibo.",en:"I gave the landlady the keys and asked her for a receipt."}
+        ]
+      },
+      { heading:"5 · Verbs that look direct in English but take le",
+        lead:"English makes a person look like the direct object: I asked him, I wrote her, I smiled at him. In Spanish these verbs pass something to the person (a question, a message, a smile), so they take le or les. A second group works the other way: ayudar, conocer, invitar, visitar and esperar act on the person directly, so they take lo or la. Learn each verb with its pronoun as one chunk.",
+        note:"Llamar is the awkward one. To phone someone it takes lo or la in Spain (la llamo luego), which is the safe choice. But llamar la atención takes le (le llamó la atención, it caught his eye), and some speakers say le llamo for a man.",
+        trap:"Do not follow the English. I ask him and I help him look the same, but they are le pregunto and lo ayudo. And esperar has no preposition: la espero, never espero para ella.",
+        rows:[
+          ["Verb", "Takes", "Example", "English"],
+          ["preguntar", "le, les", "Le pregunté al camarero si había mesa.", "I asked the waiter if there was a table."],
+          ["decir", "le, les", "Le dije a Marta que llegaba tarde.", "I told Marta I'd be late."],
+          ["pedir", "le, les", "Le pedí la cuenta a la camarera.", "I asked the waitress for the bill."],
+          ["escribir", "le, les", "Le escribo a mi madre todos los domingos.", "I write to my mum every Sunday."],
+          ["contestar, responder", "le, les", "Le contesté enseguida.", "I answered him straight away."],
+          ["gritar", "le, les", "Le gritó al árbitro después del partido.", "He shouted at the referee after the match."],
+          ["pegar", "le, les", "No le pegues a tu hermano.", "Don't hit your brother."],
+          ["sonreír", "le, les", "Le sonreí y me devolvió la sonrisa.", "I smiled at her and she smiled back."],
+          ["hacer caso", "le, les", "Hazle caso a tu madre.", "Listen to your mum."],
+          ["ayudar", "lo, la", "¿La ayudo con las bolsas?", "Shall I help her with the bags?"],
+          ["conocer", "lo, la", "Lo conozco del trabajo.", "I know him from work."],
+          ["invitar", "lo, la", "A Marta la invité a cenar.", "I invited Marta for dinner."],
+          ["visitar", "lo, la", "Los visito en Gandia cada mes.", "I visit them in Gandia every month."],
+          ["esperar", "lo, la", "La espero en la puerta del bar.", "I'll wait for her at the door of the bar."],
+          ["llamar (phone)", "lo, la", "La llamo luego, ahora está en una reunión.", "I'll call her later, she's in a meeting."]
+        ],
+        examples:[
+          {es:"- ¿Le has pedido el presupuesto al fontanero? - Sí, lo llamé ayer y me dijo que me lo manda hoy.",en:"- Have you asked the plumber for the quote? - Yes, I called him yesterday and he said he'll send it to me today."}
+        ]
+      },
+      { heading:"6 · Leísmo is fine, laísmo is not",
+        lead:"In Spain you will hear le where the textbook says lo: le vi ayer, meaning I saw him. The RAE accepts this for one man or for usted, so you can use it and you will certainly understand it. Laísmo is the opposite error: using la (or lo) where the verb needs le, as in la dije, I told her. It is common in Madrid and Castile, but it is considered wrong, so recognise it and do not copy it.",
+        note:"Leísmo only works for one man or for usted. A woman stays la (la vi), things stay lo or la, and plurals stay los or las (los vi, not les vi). In Valencia lo and la are heard more than le, so lo vi is always a safe choice.",
+        trap:"Quick test against laísmo: swap the woman for a man. If you would say le digo for Juan, it is le digo for María too. When it is the indirect object, le is for everyone.",
+        rows:[
+          ["You hear", "Status", "Say", "English"],
+          ["Le vi ayer. (a man)", "leísmo, accepted", "Le vi / Lo vi", "I saw him yesterday."],
+          ["Le acompaño a la salida. (usted)", "accepted, polite", "Le acompaño", "I'll show you out."],
+          ["Le vi ayer. (a woman)", "not accepted", "La vi", "I saw her yesterday."],
+          ["Les vi ayer. (my friends)", "not recommended", "Los vi", "I saw them yesterday."],
+          ["El móvil, no le encuentro.", "wrong: never for things", "No lo encuentro", "I can't find it."],
+          ["La dije que sí. (to her)", "laísmo, wrong", "Le dije que sí", "I told her yes."],
+          ["Lo di un regalo. (to him)", "loísmo, wrong", "Le di un regalo", "I gave him a present."]
+        ],
+        examples:[
+          {es:"- ¿Y a Raúl, le viste en la fiesta? - Sí, le vi, pero no le dije nada.",en:"- And Raúl, did you see him at the party? - Yes, I saw him, but I didn't say anything to him. (le vi is leísmo, le dije is indirect)"},
+          {es:"- ¿Y a Raúl, lo viste en la fiesta? - Sí, lo vi, pero no le dije nada.",en:"- And Raúl, did you see him at the party? - Yes, I saw him, but I didn't say anything to him. (standard version: lo vi is direct)"}
+        ]
+      },
+      { heading:"7 · Two objects: le + lo becomes se lo",
+        lead:"When a sentence has a person and a thing, the person is the indirect object (le) and the thing is the direct one (lo, la, los, las). Replace both and the person goes first. Le and les cannot sit next to lo, la, los or las, so they turn into se: never le lo, always se lo. Se lo can mean to him, to her, to you (usted) or to them, so add a él, a ella or a ellos if it is unclear.",
+        note:"The full pronoun-stacking rules (order, position, accents) are in the lesson Me lo, te la, se lo. This sheet is only about choosing le or lo.",
+        trap:"Se does not become plural. If the thing is singular and the people are plural, it is still se lo: se lo di a mis padres, not se los di. The lo agrees with the thing.",
+        rows:[
+          ["Sentence", "Both replaced", "English"],
+          ["Doy el libro a Ana.", "Se lo doy.", "I give it to her."],
+          ["Dije la verdad a mis padres.", "Se la dije.", "I told them (the truth)."],
+          ["Mandé el informe a mi jefa.", "Se lo mandé.", "I sent it to her."],
+          ["Pedí la cuenta a la camarera.", "Se la pedí.", "I asked her for it."],
+          ["¿Me das la llave?", "¿Me la das?", "Me, te, nos and os do not change."]
+        ],
+        examples:[
+          {es:"- ¿Le has dado las llaves al casero? - Sí, se las di esta mañana.",en:"- Have you given the landlord the keys? - Yes, I gave them to him this morning."},
+          {es:"A mis suegros les encanta el jamón, así que siempre se lo llevo de Teruel.",en:"My in-laws love ham, so I always bring it to them from Teruel."}
+        ]
+      },
+      { heading:"8 · Quick decision flow",
+        lead:"Four questions, in this order. Stop at the first one that gives you an answer: gustar-type verbs first, then verbs that pass something on, then verbs that act on the person.",
+        rows:[
+          ["Step", "Ask yourself", "Then"],
+          ["1", "Is it gustar, encantar, interesar, importar, molestar, doler, apetecer, parecer or quedar?", "le / les, always. The thing is the subject, the person is indirect."],
+          ["2", "Do I say, ask, write, give, send or shout something to the person?", "le / les"],
+          ["3", "Do I act on the person directly (see, know, invite, visit, wait for, help, call)?", "lo / la / los / las. A man can also be le in Spain (leísmo)."],
+          ["4", "Still not sure?", "What or whom? is direct. To or for whom? is indirect. Person plus thing: le for the person, lo or la for the thing, then se lo."]
+        ],
+        examples:[
+          {es:"A mi tía la llamo los domingos; a mi tía le encanta hablar por teléfono.",en:"I call my aunt on Sundays; my aunt loves talking on the phone."}
+        ]
+      },
+      { heading:"9 · Common mistakes",
+        lead:"These are the slips learners make most, plus the ones you will hear from native speakers and should not copy.",
+        note:"Native speakers do say la dije and le vi (about a woman). Understand it, and in your own Spanish stick to the Right column.",
+        rows:[
+          ["Wrong", "Right", "Why"],
+          ["A la amiga no la gusta salir.", "A la amiga no le gusta salir.", "gustar-type verbs take le, whatever the gender"],
+          ["A la amiga no gusta salir.", "A la amiga no le gusta salir.", "the pronoun is compulsory, a la amiga alone is not enough"],
+          ["A mis amigos le gusta salir.", "A mis amigos les gusta salir.", "les for a plural person"],
+          ["Le gustan salir.", "Le gusta salir.", "the verb agrees with the thing, and an infinitive is singular"],
+          ["A María le veo mucho.", "A María la veo mucho.", "veo acts on her directly, and leísmo is only for men"],
+          ["La dije que no.", "Le dije que no.", "laísmo: decir takes le, even for a woman"],
+          ["Le lo mandé.", "Se lo mandé.", "le + lo becomes se lo"],
+          ["Espero para ella.", "La espero.", "esperar already means wait for"]
+        ],
+        examples:[
+          {es:"- ¿Le contaste a Lucía lo del piso? - Sí, se lo conté, y a ella le pareció una locura.",en:"- Did you tell Lucía about the flat? - Yes, I told her, and she thought it was crazy."}
+        ]
+      },
+      { heading:"Chuleta rápida: le o lo?",
+        rows:[
+          ["Situation", "Say", "Why"],
+          ["gustar, encantar, interesar, doler...", "le gusta, les encantan", "the thing is the subject, the person is indirect"],
+          ["A person you see, know, invite, wait for", "lo, la, los, las", "the verb acts on them: direct"],
+          ["A person you tell, ask, write to, give to", "le, les", "something is passed to them: indirect"],
+          ["a + person", "check the verb", "a appears with both kinds"],
+          ["a la amiga ... le", "A la amiga le gusta", "the doubling is normal and compulsory"],
+          ["A man as direct object (Spain)", "lo vi · le vi", "leísmo is accepted, lo is the safe choice"],
+          ["A woman as indirect object", "le dije, never la dije", "laísmo is wrong"],
+          ["Person plus thing", "se lo, se la", "le + lo becomes se lo"]
+        ]
+      }
+    ]
   }
 ];
 
@@ -7810,6 +8005,7 @@ const sheetId = (id) => SHEET_ALIASES[id] || id;
 
 // Cross-links between sheets that overlap without merging, plus the sheets the Argot page points to.
 const SHEET_LINKS = {
+  'le-vs-lo':            ['pronouns','leismo'],
   'verbos-cotidianos':   ['llevar-uses','sacar','quedar-dejar-llevar','salir-verb'],
   'llevar-uses':         ['verbos-cotidianos','quedar-dejar-llevar'],
   'sacar':               ['verbos-cotidianos'],
@@ -7849,6 +8045,18 @@ const SHEET_RELATED = {
 
 // Ponte a prueba: multiple-choice checks written for the sheets people get wrong most.
 const SHEET_QUIZZES = {
+  'le-vs-lo': [
+    { q:'A la amiga no ___ gusta salir.', opts:['le','la','lo'], correct:0, why:'Gustar-type verbs always take le, whatever the gender: the thing is the subject.' },
+    { q:'A mis padres ___ encantan las Fallas.', opts:['les','le','los'], correct:0, why:'Plural person, indirect object: les. The verb (encantan) agrees with las Fallas.' },
+    { q:'A María ___ veo todos los días en el gimnasio.', opts:['la','le','lo'], correct:0, why:'Ver acts on her directly, so la. Leísmo (le) is only accepted for a man.' },
+    { q:'___ dije a Lucía que llegaba tarde.', opts:['Le','La','Lo'], correct:0, why:'Decir passes something to her: le. La dije is laísmo.' },
+    { q:'¿Quieres que ___ ayude con las cajas? (a ella)', opts:['la','le','se'], correct:0, why:'Ayudar acts on the person directly: la. Some Spaniards say le for a man, never for a woman.' },
+    { q:'___ pregunté al camarero si había mesa.', opts:['Le','Lo','La'], correct:0, why:'You pass a question to him: indirect, so le.' },
+    { q:'Le di el libro a Ana. → ___ di.', opts:['Se lo','Le lo','La le'], correct:0, why:'Le + lo becomes se lo.' },
+    { q:'Le vi ayer (a Raúl, direct object) is...', opts:['leísmo, accepted','laísmo, wrong','plural leísmo'], correct:0, why:'Le for one man as a direct object is accepted by the RAE. Lo vi is the safe standard.' },
+    { q:'A Javi ___ duele la rodilla.', opts:['le','lo','la'], correct:0, why:'Doler works like gustar: the knee is the subject, Javi is indirect.' },
+    { q:'A mis amigos ___ apetece una caña.', opts:['les','le','los'], correct:0, why:'Plural person with a gustar-type verb: les.' }
+  ],
   'sea': [
     { q:"No creo que ___ buena idea.", opts:["sea","es","está"], correct:0, why:"No creo que expresses doubt, so the subjunctive: sea." },
     { q:"Creo que ___ buena idea.", opts:["es","sea"], correct:0, why:"Positive believing takes the indicative: creo que es." },
@@ -12611,7 +12819,7 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
       const start = !prev || /[.!?…:»"]$/.test(prev) || /^[¿¡«"]/.test(token);
       return (
         <span key={i} onMouseDown={e => e.preventDefault()} onClick={e => handleWordClick(e, token, start)}
-          className={`cursor-pointer rounded px-0.5 transition-colors ${dark ? 'hover:bg-orange-900/40' : 'hover:bg-orange-100'}`}>
+          className={`cursor-pointer rounded px-px transition-colors ${dark ? 'hover:bg-orange-900/40' : 'hover:bg-orange-100'}`}>
           {token}
         </span>
       );
@@ -12619,7 +12827,7 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
   };
 
   if (selected) {
-    const vocabCard = <VocabCard items={selected.glossary.map(g => ({ es: g[0], en: g[1] }))} source={'lectura:' + selected.id} dark={dark} />;
+    const vocabCard = <VocabCard plain items={selected.glossary.map(g => ({ es: g[0], en: g[1] }))} source={'lectura:' + selected.id} dark={dark} />;
     const isDone = !!done[selected.id];
     const nextUp = pickNext(READING_PASSAGES.filter(r => r.id !== selected.id), done, lvl);
     const doneCard = (
@@ -12628,7 +12836,7 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
         {isDone && nextUp && (
           <button onClick={() => openReading(nextUp)} className="w-full text-left rounded-xl bg-cream hover:bg-ochre-100 px-4 py-3 transition-colors">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-dust">Siguiente lectura</span>
-            <span className="block font-serif font-bold text-[15px] text-ink leading-snug mt-0.5">{nextUp.title} →</span>
+            <span className="block text-[15px] text-ink leading-snug mt-0.5" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{nextUp.title} →</span>
           </button>
         )}
       </div>
@@ -12636,57 +12844,80 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
     return (
       <div onClick={() => setWordPopover(null)}>
         <BackHeader title={selected.title} subtitle={selected.titleEn} onBack={() => { setSelected(null); setShowAnswers({}); setWordPopover(null); }} dark={dark} />
-        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto lg:grid lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-8 lg:items-start">
+        <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
+          <header className="mb-6">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              <p className="k-kicker">Lectura · {selected.paragraphs.length} párrafos</p>
+              <span className="text-[11px] font-bold tracking-wider px-2 py-0.5 rounded-full border border-ink/15 text-ink">{selected.level}</span>
+              <span className="flex-1" />
+              <DoneBadge on={isDone} label="Leída" />
+            </div>
+            <h2 className="font-serif text-[2.1rem] lg:text-[3rem] text-ink leading-[1.05] tracking-[-0.025em] mt-2" style={{fontWeight:600}}>{selected.title}</h2>
+            {selected.titleEn && <p className="font-serif italic text-[1.1rem] lg:text-[1.3rem] text-ink/60 mt-2">{selected.titleEn}</p>}
+            {selected.intro && <p className="k-body mt-4">{selected.intro}</p>}
+          </header>
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-8 lg:items-start">
           <aside className="lg:order-2 lg:sticky lg:top-24 mb-4 lg:mb-0 space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{selected.level}</span>
-              <span className="text-xs text-stone-400">{selected.paragraphs.length} párrafos</span>
-              <div className="flex-1" />
+              <p className="k-sub !mb-0 flex-1">Escuchar todo</p>
               <SpeakBtn text={selected.paragraphs.join(' ')} size="sm" />
             </div>
-            <p className="text-xs text-dust">Pulsa el altavoz para escuchar y una palabra para traducirla y guardarla.</p>
-            <p className="hidden lg:block text-[11px] text-dust">Teclado: ← → párrafo anterior o siguiente · espacio para parar o seguir</p>
+            <p className="text-[13px] leading-snug text-dust">Pulsa el altavoz para escuchar y una palabra para traducirla y guardarla.</p>
+            <p className="hidden lg:block text-[12px] leading-snug text-dust">Teclado: ← → párrafo anterior o siguiente · espacio para parar o seguir</p>
             <div className="hidden lg:block">{doneCard}</div>
             <div className="hidden lg:block">{vocabCard}</div>
           </aside>
-          <div className="min-w-0 lg:order-1">
+          <div className="min-w-0 lg:order-1 space-y-6">
 
           {wordPopover && <WordPopover pop={wordPopover} source={'lectura:' + selected.id} onClose={() => setWordPopover(null)} />}
 
-          <Card dark={dark} className="p-5 mb-5">
-            <p className="text-sm italic text-stone-500 mb-4">{selected.intro}</p>
-            {selected.paragraphs.map((p, i) => (
-              <div key={i} className={`mb-4 group rounded-lg transition-colors ${para === i ? 'bg-ochre-50 -mx-2 px-2 py-1' : ''}`}>
-                <div className="flex items-start gap-2">
-                  <p className="text-base leading-relaxed flex-1">{renderClickableText(p)}</p>
-                  <SpeakBtn text={p} size="sm" />
-                </div>
+          <section className="k-sec">
+            <header className="k-sec-head">
+              <span className="k-sec-no">1</span>
+              <h3 className="k-sec-title flex-1 min-w-0">Texto</h3>
+            </header>
+            <div className="k-sec-body">
+              <div className="space-y-2">
+                {selected.paragraphs.map((p, i) => (
+                  <div key={i} className={`group rounded-lg transition-colors ${para === i ? 'bg-ink/[0.05] -mx-2 px-2 py-1' : 'py-1'}`}>
+                    <div className="flex items-start gap-3">
+                      <p className="k-body flex-1" style={{textAlign:'left'}} lang="es">{renderClickableText(p)}</p>
+                      <SpeakBtn text={p} size="sm" />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </Card>
-
-          <div className="lg:hidden mb-5">{vocabCard}</div>
-
-          <Card dark={dark} className="p-5">
-            <p className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-3">Preguntas de comprensión</p>
-            <div className="space-y-3">
-              {selected.questions.map((q, i) => (
-                <div key={i}>
-                  <p className="text-sm font-semibold mb-1">{i + 1}. {q.q}</p>
-                  {showAnswers[i] ? (
-                    <p className="text-sm text-emerald-700 bg-emerald-50 rounded-lg p-2">✓ {q.a}</p>
-                  ) : (
-                    <button onClick={() => setShowAnswers(prev => { const nx = { ...prev, [i]: true }; if (Object.keys(nx).length === selected.questions.length) markDone(selected.id); return nx; })}
-                      className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-600 px-3 py-1.5 rounded-lg font-semibold">
-                      Mostrar respuesta
-                    </button>
-                  )}
-                </div>
-              ))}
             </div>
-          </Card>
-          <div className="lg:hidden mt-5">{doneCard}</div>
+          </section>
+
+          <div className="lg:hidden">{vocabCard}</div>
+
+          <section className="k-sec">
+            <header className="k-sec-head">
+              <span className="k-sec-no">2</span>
+              <h3 className="k-sec-title flex-1 min-w-0">Preguntas de comprensión</h3>
+            </header>
+            <div className="k-sec-body">
+              <div className="space-y-5">
+                {selected.questions.map((q, i) => (
+                  <div key={i}>
+                    <p className="k-body" style={{fontWeight:600}}>{i + 1}. {q.q}</p>
+                    {showAnswers[i] ? (
+                      <div className="k-key mt-2.5"><p className="k-key-l">Respuesta</p><p className="k-box-t">{q.a}</p></div>
+                    ) : (
+                      <button onClick={() => setShowAnswers(prev => { const nx = { ...prev, [i]: true }; if (Object.keys(nx).length === selected.questions.length) markDone(selected.id); return nx; })}
+                        className="k-chip mt-2.5">
+                        Mostrar respuesta
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          <div className="lg:hidden">{doneCard}</div>
           </div>
+        </div>
         </div>
       </div>
     );
@@ -12700,23 +12931,28 @@ function Lecturas({ onBack, dark, onSearch, jump }) {
       <BackHeader title="Lecturas" subtitle="Lecturas con audio" onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="flex flex-wrap items-center gap-3 mb-5">
-          <p className="text-sm text-dust flex-1 min-w-[12rem]">Mini textos con audio, vocabulario y preguntas. {readN}/{READING_PASSAGES.length} leídas.</p>
+          <p className="k-body flex-1 min-w-[12rem]" style={{fontSize:'15px',lineHeight:1.55}}>Mini textos con audio, vocabulario y preguntas. {readN}/{READING_PASSAGES.length} leídas.</p>
           <LevelChips value={lvl} onChange={setLvl} levels={['A2', 'B1']} />
         </div>
         <NextForYou item={nextReading} meta={nextReading && nextReading.titleEn} onOpen={() => openReading(nextReading)} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {shownReadings.map(p => (
-            <button key={p.id} onClick={() => openReading(p)} className={`text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 min-h-[220px] flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
-              <div className="h-1.5 w-full bg-gradient-to-r from-anil-400 to-anil-500" />
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{p.level}</span>
-                  <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{p.paragraphs.length} párrafos</span>
-                  <span className="ml-auto"><DoneBadge on={!!done[p.id]} label="Leída" /></span>
+            <button key={p.id} onClick={() => openReading(p)} className="text-left group">
+              <div className="k-card k-card-hover h-full flex flex-col p-5 lg:p-6">
+                <div className="flex items-center gap-2 mb-3 min-h-[1.375rem]">
+                  <span className="k-kicker">{p.level} · {p.paragraphs.length} párrafos</span>
+                  <span className="flex-1" />
+                  <DoneBadge on={!!done[p.id]} label="Leída" />
                 </div>
-                <p className="font-serif font-bold text-lg mb-1 leading-snug">{p.title}</p>
-                <p className={`text-sm mb-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{p.titleEn}</p>
-                <p className={`text-sm italic line-clamp-3 mt-auto ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{p.intro}</p>
+                <p className="text-[1.2rem] leading-[1.25] text-ink tracking-[-0.012em]" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{p.title}</p>
+                <p className="text-[14.5px] mt-1.5 text-dust">{p.titleEn}</p>
+                <p className="text-[14.5px] mt-3 line-clamp-3 leading-relaxed text-ink/75">{p.intro}</p>
+                <div className="flex-1" />
+                <div className="mt-4 pt-3.5 border-t border-ink/10 flex items-center gap-3 text-[13px] text-dust">
+                  <span>{p.questions ? p.questions.length + ' preguntas' : ''}</span>
+                  <span className="flex-1" />
+                  <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Leer →</span>
+                </div>
               </div>
             </button>
           ))}
@@ -16360,7 +16596,7 @@ function AddCardBtn({ es, en, source }) {
   );
 }
 // Vocabulario clave for Lecturas and Conversaciones: listen to each item and send it to Tarjetas.
-function VocabCard({ items, source, dark }) {
+function VocabCard({ items, source, dark, plain }) {
   const [n, setN] = useState(0);
   const missing = items.filter(v => !glossaryHas(v.es)).length;
   const addAll = () => { items.forEach(v => addToTarjetas({ es: v.es, en: v.en, source })); setN(x => x + 1); };
@@ -16376,7 +16612,7 @@ function VocabCard({ items, source, dark }) {
         {items.map((v, i) => (
           <div key={i + '-' + n} className="flex items-start gap-2 py-2.5">
             <div className="flex-1 min-w-0">
-              <p className="font-serif font-bold text-[15px] leading-snug text-ink" lang="es">{v.es}</p>
+              <p className={plain ? 'text-[15px] leading-snug text-ink font-semibold' : 'font-serif font-bold text-[15px] leading-snug text-ink'} style={plain ? {fontFamily:'var(--font-ui)'} : undefined} lang="es">{v.es}</p>
               <p className="text-[13px] leading-snug text-dust mt-0.5">{v.en}</p>
             </div>
             <AddCardBtn es={v.es} en={v.en} source={source} />
@@ -16568,7 +16804,17 @@ function Formula({ text }) {
     </div>
   );
 }
-const SHEET_MARKS = ["Cuenta comes from contar (to count), so it's anything you add up", "Use de before a noun and de que before a full sentence", "Caer en la cuenta is the moment something suddenly clicks", "Tener algo en cuenta is \"to take something into account\"", "Por mi cuenta (tu, su...) means \"on my own\", without help or company", "A fin de cuentas and en resumidas cuentas are great fillers for wrapping up an argument", "On its own it works like mucho and goes after the verb; with de it goes before a noun", "They work just like un montón: after a verb, or with de before a noun", "The only y in the whole year goes between the tens and the units", "Three are irregular and must be learnt: quinientos (500), setecientos (700) and novecientos (900)", "From 21 to 29 the two join into one word: veintiuno, veintiséis", "the y appears once, between the tens and the units, and only when there is a unit", "Read each one aloud, block by block, before you look at the sound column", "From 2000 every year starts dos mil, with no y after it", "A date links everything with de: el catorce de octubre de dos mil veintiséis", "In Spain the date is often asked with estar: ¿A cuántos estamos?, and answered estamos a + day", "if you could swap the sentence for \"X = Y\", it is ser", "Use estar for location and for states: how someone feels, how something is at the moment", "Ser describes what someone or something is like in general; estar describes how they are or seem right now", "With some adjectives the verb changes the actual meaning, not just the angle", "It is closer to say ser defines, estar locates or describes a state", "Para always points at an end point", "Por looks at the cause or the channel", "Por looks back at the reason; para looks ahead to the result", "Lots of everyday expressions use por or para with no logic you need to work out", "Most mistakes come from translating \"for\" automatically", "is someone doing it to themselves, is it a general statement, or did something happen to someone by accident", "Reflexive verbs carry a pronoun that matches the subject", "If a noun follows, the verb agrees with it: se vende un piso, se venden pisos", "The pattern is se + me/te/le/nos/os/les + verb + thing. The verb agrees with the thing, not with you", "When the indirect pronoun le or les comes right before lo, la, los or las, it changes to se", "take the present tense él/ella form", "Eight very common verbs have a short, one-syllable tú command", "swap the final -r of the infinitive for -d: hablad, comed, venid", "Every negative command, for every person, uses the present subjunctive", "In a positive command, pronouns stick onto the end of the verb in one word", "using the normal present as a command, forgetting the subjunctive after no, and leaving the pronoun on the end in a negative", "Remove the -r, put -d in its place", "Vosotros has none: the same -d rule covers all of them", "use no + the vosotros present subjunctive: -ar verbs end in -éis, -er and -ir verbs end in -áis", "With reflexive verbs you add -os, and the -d falls away: sentad + os = sentaos", "With two pronouns the stress falls three syllables from the end, so it needs a written accent", "Learn them as fixed phrases", "it is considered incorrect, so do not copy it in writing", "keep the original tense. Only the person changes", "the tense usually moves one step into the past, just like English \"is\" becoming \"was\"", "For a yes/no question, use preguntar si", "you report it with pedir que, decir que or similar + subjunctive", "only shift what is no longer true from where you are standing", "Note which ones need en or the subjunctive", "Most slips come from forgetting the subjunctive after pedir, or confusing preguntar and pedir", "Spanish has no \"-er\" ending: there's no single word for cheaper or taller, it's always más barato, más alto", "The second part is always como, never que", "Before a number or quantity, que changes to de", "Mejor and peor replace más bueno and más malo", "The group you're comparing within comes after de, never en", "swap the final vowel for -ísimo (or -ísima, -ísimos, -ísimas)", "the verb ending already tells you (hablo can only be \"I speak\"), so you leave them out", "me, te, nos and os never change, whatever the job", "The indirect object is the person who receives it or benefits: to whom, for whom?", "the indirect (the person) comes first, then the direct (the thing)", "in front of a conjugated verb, or stuck onto the end of an infinitive, a gerund or a positive command", "except for yo and tú, which become mí and ti", "With gustar-type verbs the pronoun is compulsory and a mí, a ti, a ella is optional for emphasis or contrast", "16 to 29 are written as one word (dieciséis, veintidós)", "Primero and tercero lose their -o right before a masculine singular noun", "answer with son las + hour, because las stands for las horas", "With days, el means \"on\": el lunes = on Monday, los lunes = on Mondays", "Hace looks back (ago). Desde hace and llevar measure something that is still going on (for)", "With the present, the situation is still going on. With the preterite, it happened once, that long ago, and is over", "the short form needs el: en el noventa y cinco", "Neither use means owning something: that is always tener", "In Spain it is the normal past for anything that happened today, this week, this year, or ever in your life", "-ar gives -ado, -er and -ir give -ido", "The participle stays the same throughout", "hay answers \"is there one?\", está answers \"where is it?\"", "it never goes plural, even with a plural noun", "Hay que + infinitive means \"you have to / it's necessary to\", about people in general", "A often points towards an action or a goal", "acordarse de and olvidarse de need de, but recordar and olvidar on their own take no preposition", "En marks what your mind or effort is fixed on", "Con + mí and con + ti become conmigo and contigo", "These verbs already contain the English preposition, so adding para, a or por is wrong", "A few verbs change meaning with the preposition", "Nearly every mistake here is an English preposition carried across", "Only the first verb is conjugated; the second never changes", "Ponerse a suggests you suddenly start, or knuckle down to something", "Volver a + infinitive is the everyday way to say \"again\"", "Acabar de has two meanings: in the present or imperfect it means \"have just done\"", "Put llevar in the present for \"have been doing\", and in the imperfect (llevaba) for \"had been doing\"", "Most take the infinitive straight after, with no link word; tener que and hay que take que", "The errors are almost always the wrong link word or the wrong form of the second verb", "the Spanish word means X, not the English lookalike", "Learn the everyday meaning first", "Every Spanish word of two or more syllables has one syllable said louder than the rest", "If a word ends in a vowel, -n or -s, the stress falls on the second-to-last syllable", "stress on the third-to-last syllable always gets a tilde", "what does it end in, and where is the stress?", "When the i or u is the stressed one, a tilde splits the pair into two syllables: dí-a, pa-ís", "The tilde goes on the one that carries stress in the sentence (a pronoun, a verb, a question word)", "take a tilde whenever they ask or exclaim", "The tilde stays on a question word even inside a longer sentence (no sé dónde vive)", "Capital letters keep their tildes: Él, Álvaro, ÁFRICA", "Most of the time it adds a feeling: affection, politeness, or playing something down", "-ito / -ita is the default everywhere and the one to use yourself", "Longer words ending in -e, -n or -r, or in a stressed vowel, add -cito. Words of one syllable add -ecito", "-azo / -aza means big and impressive, but it also means a blow or hit with something", "You cannot work these out from the base word, so learn them as vocabulary", "adding the ending without the extra -c- or -ec-, forgetting the spelling change, or switching the gender", "In much of central and northern Spain, people use le for a male person as a direct object too: le vi ayer", "Laísmo (la dije, \"I told her\") is common in Madrid and Castile, but it is considered a mistake", "Use it with any group you'd say tú to individually", "take the infinitive and swap the final -r for -d: hablad, comed, venid", "Ustedes takes the they-form of the verb (ustedes comen)", "If in doubt with someone older, start with usted", "When Spanish wants to say \"I keep it\", it says \"I stay with it\": me quedo con el plato, or shorter, me lo quedo", "the verb is dejar (leave it) or llevarse (take it away), in the imperative", "Llevar is to take something to somewhere. Llevarse adds \"away from here\": the thing leaves with the person", "Object pronouns stick onto the end of a command (with an accent to keep the stress) and go in front of a normal verb", "The basic meaning is to carry or take something or someone from here to somewhere else", "Llevar = take it there, away from here. Traer = bring it here, towards the speaker", "Spanish uses plain llevar in the present", "Llevo + time + -ando/-iendo = I've been doing it for that long (and still am)", "which is where Spain says lleva tiempo rather than toma tiempo", "Asking what a dish or product contains is ¿Qué lleva?", "The se adds the idea that the thing ends up with someone or leaves with them", "Most llevar mistakes come from translating English word for word", "English often drops the \"myself\" (\"I get dressed\", \"I get up\"), but Spanish never drops the pronoun", "One pronoun per person, and it goes in front of the conjugated verb", "Note bañarse: in Valencia you'll use it far more for swimming at the beach than for having a bath", "Spanish uses the article (el, la, los, las) instead of a possessive", "With a positive command it must go on the end; with a negative command it goes before", "Some verbs shift meaning when they take the pronoun", "A few common verbs only exist with the pronoun, and most of them need a preposition after them", "In the plural the same pronouns can mean \"each other\"", "Spanish uses se + the person it happened to + verb. The thing is the grammatical subject, so the verb agrees with it", "either a missing pronoun, a pronoun in the wrong place, or a missing accent on a command", "For how much time something needs, Spain says llevar: lleva tiempo. For how long a person or a journey takes, it says tardar", "English \"take\" covers five Spanish verbs", "Missing a person or a place you are away from is echar de menos. Missing a bus, a train or a chance is perder", "Spanish says you HAVE them: tengo hambre (I have hunger)", "Spanish has no single \"become\". Pick by the kind of change", "Saber is knowing information or how to do something. Conocer is being familiar with a person, place or thing", "Leaving a place, or going out, is salir. Going away from where you are now is irse", "Arranging to meet friends is quedar (the key social verb in Spain)", "Quedar = there's some left. Faltar = there isn't enough, or there's still time to go. Sobrar = there's too much", "the thing you like is the subject, and you are the indirect object (me, te, le)", "Learn them as whole chunks", "Cien is exactly 100; the moment anything follows it, it becomes ciento", "mil itself never goes plural when you count", "Millón is a noun, not an adjective like mil, so it goes plural (dos millones) and needs de before a noun", "The only y in the whole number sits between the tens and the units (treinta y cuatro)", "Primero and tercero drop the -o before a masculine singular noun", "in conversation people put a normal number after the noun: el piso once, el capítulo quince", "For the 1st, Spain mostly says el uno, although el primero is also correct", "Spain uses a dot (or a small space) to group thousands and a comma for decimals: the mirror image of English", "Unos or unas before a number means \"about\": unos veinte euros, unas cien personas", "Half is medio/media before a noun (medio litro, media hora) and la mitad on its own (la mitad del grupo)", "the I hope is dropped, so the verb stays in the subjunctive", "¡Vamos! and ¡A por ello! are high energy; ¡Ánimo! is warmer, for when someone is struggling", "¡enhorabuena! is for achievements (a new job, an exam, a baby) and ¡felicidades! is for birthdays and celebrations", "¡Ánimo! is the go-to comfort word in Spain", "Tone of voice tells you which meaning", "Forget the grammar names and just learn what job each piece does", "the verb ending already tells you who the doer is (tengo can only be \"I have\"), so you normally leave the doer out", "No goes directly in front of the action", "In Spanish the default is after: un coche rojo", "Before tends to be the figurative or opinion meaning; after is the literal one", "Spanish never drops que", "In a question, \"what\" is qué: ¿Qué quieres? vs No sé lo que quieres", "in football news the usual way to say \"new sporting director\" is actually nuevo before: el nuevo director deportivo", "Pues and a ver start answers; es que introduces a reason or excuse; o sea rephrases; bueno moves on; nada closes a story", "Oye and mira are commands (listen, look) used to grab attention before you say something", "Vale is OK. Venga is let's go, come on, or a cheerful goodbye", "En plan is the youngest-sounding of these: it is the Spanish 'like'", "Only one o'clock is singular (la una), so only it takes es. Everything from two upwards is plural and takes son", "After half past, go to the next hour and subtract with menos", "A las (a la) means \"at\" and answers ¿A qué hora?", "la tarde runs until dinner, around 8 or 9pm, and the small hours after midnight are la madrugada, not the morning", "With a clock time you use de (a las cinco de la tarde). Without one you use por", "Y pico means \"a bit after\" and is very Spanish", "Timetables, shops, kick-offs, appointments and announcements use the 24-hour clock", "Longer words ending in -e, -n, -r or a stressed vowel add -cito. One-syllable words add -ecito", "c becomes qu, g becomes gu, z becomes c", "Mostly it signals a relationship: warmth, sympathy, politeness, or 'this is no big deal'", "Learn these as chunks and drop them into conversation as they are", "The biggest trap is thinking diminutives are childish and avoiding them: in Spain adults use them all the time", "Once you've said el móvil or a Marta, you switch to a pronoun instead of saying it again", "Me, te, nos and os are the same in both sets, so the choice only bites with him, her, it, them and usted", "Learn these as pairs: verb + the pronoun it takes", "when le or les comes right before lo, la, los or las, it changes to se", "Front of a conjugated verb, or stuck to the end of an infinitive, a gerund or a positive command", "If the stress would end up three or more syllables from the end, you write an accent on the stressed vowel", "Person first, then thing", "lo (the landlord as the person you call) and le (the landlord as the person you tell or ask) swap depending on the verb", "the wrong word turns an innocent sentence into something about sex, pregnancy or worse", "the everyday Spanish meaning is different", "Learn the real meaning and the right word for the English one", "Actualmente is about now; eventualmente is about maybe, not in the end", "Simpático is a compliment, disgustado is just upset, and sano is about your health, not your mind", "The literal meaning is moving something from inside to outside. Say where from with de", "to keep the hard \"k\" sound before an e, the spelling changes from c to qu", "Think of each one as getting something out of a system", "sacar means to get something out of a situation", "Adding se makes it personal: you get something for yourself or out of yourself", "sacar a alguien de means to push someone out of their normal state, usually their calm", "If you are removing something from on top of or off something, it is quitar. If you are just picking something up, it is coger", "The perfecto and pluscuamperfecto are both haber + past participle: only the haber part changes", "the imperfecto is the background, and the indefinido is the event that interrupts it", "if the time period you are talking about has not finished yet (today, this week, this year, ever), use the perfecto", "Use había + participle for something that had already happened before another past moment", "Ser and ir share exactly the same forms", "Regular participles end in -ado (-ar verbs) or -ido (-er, -ir verbs). These common ones don't", "if you hear one of them, the tense next to it is usually right", "Note salir is \"go out\", while irse is \"leave, be off\"", "Salir also means how something turns out", "With se, salir means something comes out where it shouldn't", "yo salgo in the present (a \"-go\" verb like tengo, pongo)", "In a question you use the positive form (¿algo?), in a negative you use the negative form (nada)", "Before a masculine singular noun they lose the -o: algún día, ningún problema", "When a negative word (nada, nadie, nunca, ninguno, tampoco) comes after the verb, Spanish also needs no before the verb", "For \"wherever\" or \"anywhere you like\", use donde sea or donde quieras", "Cualquier means \"any (at all)\" before a noun; on its own it becomes cualquiera", "In the negative they flip: ya no = no longer, todavía no = not yet", "Aunque means \"although\" with a fact, and \"even if\" with the subjunctive", "Para que always takes the subjunctive, because the result hasn't happened yet", "Start with es que, pues and a ver, which are safe with anyone, including your boss", "Tío and tía are the big ones in Spain: they have nothing to do with uncles and aunts here", "The last two rows are swear words: understand them, use them only with close friends", "Molar (to be cool) works like gustar: the thing that is cool is the subject", "currar instead of trabajar, pillar instead of entender or coger", "Ir de cañas is the after-work beer, ir de copas is the late-night drinks", "aim to understand all of it and produce only the Neutral and Informal levels until it feels natural", "you say them about a situation, not at a person", "Every big swear word has a softened version", "how strong it is depends entirely on what comes after it", "Que te den is the most usable", "Between friends, several of these are almost affectionate", "Some of the rudest-looking phrases are compliments", "Buenas on its own is a very Spanish all-day hello", "Answer, add a detail, then bounce it back with ¿y tú?", "the natural Spanish for weekend plans is the simple present: ¿qué haces este finde?", "A reaction comes first, then the follow-up question", "La verdad es que is a softener Spaniards use all the time, roughly \"to be honest\"", "Ya, ya means \"yeah, I know\", not \"already\"", "friends say igual or a lo mejor, both followed by the normal present", "Set the scene with the imperfect (estaba, había) and drop events into it with the preterite (llegó, se cayó)", "Pesado means annoying or tiresome, not heavy", "Alguien covers \"someone\" and also \"anyone\" in a question. Nadie covers \"nobody\" and \"not anyone\"", "Algo is \"something\" and \"anything?\" in questions; nada is \"nothing\" and \"not anything\"", "Use en with location (where something is) and a with movement (where you are going)", "Nunca and jamás both mean \"never\"; jamás is stronger", "Be careful with de cualquier manera: it often means \"any old how\" (carelessly), not \"however you like\"", "In conversation, Spaniards use a question word + sea, or a verb + que + the same verb in the subjunctive", "If a negative word (nadie, nada, nunca, ningún) comes after the verb, put no before the verb", "Alguno and ninguno lose their -o before a masculine singular noun, and gain an accent", "Qué with an accent asks a question (¿Qué dices?); lo que points to something (No entiendo lo que dices)", "Lo que has no noun in front: it refers to an idea or a whole situation", "when \"than\" is followed by a whole verb phrase (than I thought, than it looks), Spanish uses de lo que", "Por lo que and de lo que are the ones you will use most", "At the start of an exclamation, lo que means \"how much\" or \"you wouldn't believe how\"", "de + el becomes del, and a + el becomes al", "Add -azo (or -ón) to almost any noun and it becomes a great, big or impressive version of itself", "-ata (not -ato) makes a short, slangy version of a noun. -eo turns a noun into an activity", "Spaniards use -ito less for size and more for tone", "Spaniards clip long words constantly, and the clipped version is often more common than the full one in speech and WhatsApp", "Quedar is the verb at the centre of Spanish social life", "Most of these work as un/una + word: es un crack, es una pesada", "Young Spaniards also borrow English words freely and conjugate them as Spanish verbs", "In fast speech, especially in Valencia and the south, sounds drop out", "These everyday words have a second (sometimes rude) meaning", "the tense of the main verb decides which one you need", "Negative commands always use the subjunctive (no seas, no seáis); the positive tú form is the short sé", "Es states a fact. Sea appears when the sentence is about a wish, a feeling, a judgement, a doubt or a possibility", "After time words, if the moment has not happened yet, use sea", "When you describe something you are looking for, or something that may not exist, the description takes sea", "Many follow the pattern X + sea + X: sea lo que sea, sea quien sea, sea como sea", "Que + subjunctive at the start of a sentence is short for I hope or let it be", "Sea only belongs to ser. Estar's subjunctive is esté", "Puede que always takes sea. A lo mejor never does"];
+const SHEET_MARKS = ["Cuenta comes from contar (to count), so it's anything you add up", "Use de before a noun and de que before a full sentence", "Caer en la cuenta is the moment something suddenly clicks", "Tener algo en cuenta is \"to take something into account\"", "Por mi cuenta (tu, su...) means \"on my own\", without help or company", "A fin de cuentas and en resumidas cuentas are great fillers for wrapping up an argument", "On its own it works like mucho and goes after the verb; with de it goes before a noun", "They work just like un montón: after a verb, or with de before a noun", "The only y in the whole year goes between the tens and the units", "Three are irregular and must be learnt: quinientos (500), setecientos (700) and novecientos (900)", "From 21 to 29 the two join into one word: veintiuno, veintiséis", "the y appears once, between the tens and the units, and only when there is a unit", "Read each one aloud, block by block, before you look at the sound column", "From 2000 every year starts dos mil, with no y after it", "A date links everything with de: el catorce de octubre de dos mil veintiséis", "In Spain the date is often asked with estar: ¿A cuántos estamos?, and answered estamos a + day", "if you could swap the sentence for \"X = Y\", it is ser", "Use estar for location and for states: how someone feels, how something is at the moment", "Ser describes what someone or something is like in general; estar describes how they are or seem right now", "With some adjectives the verb changes the actual meaning, not just the angle", "It is closer to say ser defines, estar locates or describes a state", "Para always points at an end point", "Por looks at the cause or the channel", "Por looks back at the reason; para looks ahead to the result", "Lots of everyday expressions use por or para with no logic you need to work out", "Most mistakes come from translating \"for\" automatically", "is someone doing it to themselves, is it a general statement, or did something happen to someone by accident", "Reflexive verbs carry a pronoun that matches the subject", "If a noun follows, the verb agrees with it: se vende un piso, se venden pisos", "The pattern is se + me/te/le/nos/os/les + verb + thing. The verb agrees with the thing, not with you", "When the indirect pronoun le or les comes right before lo, la, los or las, it changes to se", "take the present tense él/ella form", "Eight very common verbs have a short, one-syllable tú command", "swap the final -r of the infinitive for -d: hablad, comed, venid", "Every negative command, for every person, uses the present subjunctive", "In a positive command, pronouns stick onto the end of the verb in one word", "using the normal present as a command, forgetting the subjunctive after no, and leaving the pronoun on the end in a negative", "Remove the -r, put -d in its place", "Vosotros has none: the same -d rule covers all of them", "use no + the vosotros present subjunctive: -ar verbs end in -éis, -er and -ir verbs end in -áis", "With reflexive verbs you add -os, and the -d falls away: sentad + os = sentaos", "With two pronouns the stress falls three syllables from the end, so it needs a written accent", "Learn them as fixed phrases", "it is considered incorrect, so do not copy it in writing", "keep the original tense. Only the person changes", "the tense usually moves one step into the past, just like English \"is\" becoming \"was\"", "For a yes/no question, use preguntar si", "you report it with pedir que, decir que or similar + subjunctive", "only shift what is no longer true from where you are standing", "Note which ones need en or the subjunctive", "Most slips come from forgetting the subjunctive after pedir, or confusing preguntar and pedir", "Spanish has no \"-er\" ending: there's no single word for cheaper or taller, it's always más barato, más alto", "The second part is always como, never que", "Before a number or quantity, que changes to de", "Mejor and peor replace más bueno and más malo", "The group you're comparing within comes after de, never en", "swap the final vowel for -ísimo (or -ísima, -ísimos, -ísimas)", "the verb ending already tells you (hablo can only be \"I speak\"), so you leave them out", "me, te, nos and os never change, whatever the job", "The indirect object is the person who receives it or benefits: to whom, for whom?", "the indirect (the person) comes first, then the direct (the thing)", "in front of a conjugated verb, or stuck onto the end of an infinitive, a gerund or a positive command", "except for yo and tú, which become mí and ti", "With gustar-type verbs the pronoun is compulsory and a mí, a ti, a ella is optional for emphasis or contrast", "16 to 29 are written as one word (dieciséis, veintidós)", "Primero and tercero lose their -o right before a masculine singular noun", "answer with son las + hour, because las stands for las horas", "With days, el means \"on\": el lunes = on Monday, los lunes = on Mondays", "Hace looks back (ago). Desde hace and llevar measure something that is still going on (for)", "With the present, the situation is still going on. With the preterite, it happened once, that long ago, and is over", "the short form needs el: en el noventa y cinco", "Neither use means owning something: that is always tener", "In Spain it is the normal past for anything that happened today, this week, this year, or ever in your life", "-ar gives -ado, -er and -ir give -ido", "The participle stays the same throughout", "hay answers \"is there one?\", está answers \"where is it?\"", "it never goes plural, even with a plural noun", "Hay que + infinitive means \"you have to / it's necessary to\", about people in general", "A often points towards an action or a goal", "acordarse de and olvidarse de need de, but recordar and olvidar on their own take no preposition", "En marks what your mind or effort is fixed on", "Con + mí and con + ti become conmigo and contigo", "These verbs already contain the English preposition, so adding para, a or por is wrong", "A few verbs change meaning with the preposition", "Nearly every mistake here is an English preposition carried across", "Only the first verb is conjugated; the second never changes", "Ponerse a suggests you suddenly start, or knuckle down to something", "Volver a + infinitive is the everyday way to say \"again\"", "Acabar de has two meanings: in the present or imperfect it means \"have just done\"", "Put llevar in the present for \"have been doing\", and in the imperfect (llevaba) for \"had been doing\"", "Most take the infinitive straight after, with no link word; tener que and hay que take que", "The errors are almost always the wrong link word or the wrong form of the second verb", "the Spanish word means X, not the English lookalike", "Learn the everyday meaning first", "Every Spanish word of two or more syllables has one syllable said louder than the rest", "If a word ends in a vowel, -n or -s, the stress falls on the second-to-last syllable", "stress on the third-to-last syllable always gets a tilde", "what does it end in, and where is the stress?", "When the i or u is the stressed one, a tilde splits the pair into two syllables: dí-a, pa-ís", "The tilde goes on the one that carries stress in the sentence (a pronoun, a verb, a question word)", "take a tilde whenever they ask or exclaim", "The tilde stays on a question word even inside a longer sentence (no sé dónde vive)", "Capital letters keep their tildes: Él, Álvaro, ÁFRICA", "Most of the time it adds a feeling: affection, politeness, or playing something down", "-ito / -ita is the default everywhere and the one to use yourself", "Longer words ending in -e, -n or -r, or in a stressed vowel, add -cito. Words of one syllable add -ecito", "-azo / -aza means big and impressive, but it also means a blow or hit with something", "You cannot work these out from the base word, so learn them as vocabulary", "adding the ending without the extra -c- or -ec-, forgetting the spelling change, or switching the gender", "In much of central and northern Spain, people use le for a male person as a direct object too: le vi ayer", "Laísmo (la dije, \"I told her\") is common in Madrid and Castile, but it is considered a mistake", "Use it with any group you'd say tú to individually", "take the infinitive and swap the final -r for -d: hablad, comed, venid", "Ustedes takes the they-form of the verb (ustedes comen)", "If in doubt with someone older, start with usted", "When Spanish wants to say \"I keep it\", it says \"I stay with it\": me quedo con el plato, or shorter, me lo quedo", "the verb is dejar (leave it) or llevarse (take it away), in the imperative", "Llevar is to take something to somewhere. Llevarse adds \"away from here\": the thing leaves with the person", "Object pronouns stick onto the end of a command (with an accent to keep the stress) and go in front of a normal verb", "The basic meaning is to carry or take something or someone from here to somewhere else", "Llevar = take it there, away from here. Traer = bring it here, towards the speaker", "Spanish uses plain llevar in the present", "Llevo + time + -ando/-iendo = I've been doing it for that long (and still am)", "which is where Spain says lleva tiempo rather than toma tiempo", "Asking what a dish or product contains is ¿Qué lleva?", "The se adds the idea that the thing ends up with someone or leaves with them", "Most llevar mistakes come from translating English word for word", "English often drops the \"myself\" (\"I get dressed\", \"I get up\"), but Spanish never drops the pronoun", "One pronoun per person, and it goes in front of the conjugated verb", "Note bañarse: in Valencia you'll use it far more for swimming at the beach than for having a bath", "Spanish uses the article (el, la, los, las) instead of a possessive", "With a positive command it must go on the end; with a negative command it goes before", "Some verbs shift meaning when they take the pronoun", "A few common verbs only exist with the pronoun, and most of them need a preposition after them", "In the plural the same pronouns can mean \"each other\"", "Spanish uses se + the person it happened to + verb. The thing is the grammatical subject, so the verb agrees with it", "either a missing pronoun, a pronoun in the wrong place, or a missing accent on a command", "For how much time something needs, Spain says llevar: lleva tiempo. For how long a person or a journey takes, it says tardar", "English \"take\" covers five Spanish verbs", "Missing a person or a place you are away from is echar de menos. Missing a bus, a train or a chance is perder", "Spanish says you HAVE them: tengo hambre (I have hunger)", "Spanish has no single \"become\". Pick by the kind of change", "Saber is knowing information or how to do something. Conocer is being familiar with a person, place or thing", "Leaving a place, or going out, is salir. Going away from where you are now is irse", "Arranging to meet friends is quedar (the key social verb in Spain)", "Quedar = there's some left. Faltar = there isn't enough, or there's still time to go. Sobrar = there's too much", "the thing you like is the subject, and you are the indirect object (me, te, le)", "Learn them as whole chunks", "Cien is exactly 100; the moment anything follows it, it becomes ciento", "mil itself never goes plural when you count", "Millón is a noun, not an adjective like mil, so it goes plural (dos millones) and needs de before a noun", "The only y in the whole number sits between the tens and the units (treinta y cuatro)", "Primero and tercero drop the -o before a masculine singular noun", "in conversation people put a normal number after the noun: el piso once, el capítulo quince", "For the 1st, Spain mostly says el uno, although el primero is also correct", "Spain uses a dot (or a small space) to group thousands and a comma for decimals: the mirror image of English", "Unos or unas before a number means \"about\": unos veinte euros, unas cien personas", "Half is medio/media before a noun (medio litro, media hora) and la mitad on its own (la mitad del grupo)", "the I hope is dropped, so the verb stays in the subjunctive", "¡Vamos! and ¡A por ello! are high energy; ¡Ánimo! is warmer, for when someone is struggling", "¡enhorabuena! is for achievements (a new job, an exam, a baby) and ¡felicidades! is for birthdays and celebrations", "¡Ánimo! is the go-to comfort word in Spain", "Tone of voice tells you which meaning", "Forget the grammar names and just learn what job each piece does", "the verb ending already tells you who the doer is (tengo can only be \"I have\"), so you normally leave the doer out", "No goes directly in front of the action", "In Spanish the default is after: un coche rojo", "Before tends to be the figurative or opinion meaning; after is the literal one", "Spanish never drops que", "In a question, \"what\" is qué: ¿Qué quieres? vs No sé lo que quieres", "in football news the usual way to say \"new sporting director\" is actually nuevo before: el nuevo director deportivo", "Pues and a ver start answers; es que introduces a reason or excuse; o sea rephrases; bueno moves on; nada closes a story", "Oye and mira are commands (listen, look) used to grab attention before you say something", "Vale is OK. Venga is let's go, come on, or a cheerful goodbye", "En plan is the youngest-sounding of these: it is the Spanish 'like'", "Only one o'clock is singular (la una), so only it takes es. Everything from two upwards is plural and takes son", "After half past, go to the next hour and subtract with menos", "A las (a la) means \"at\" and answers ¿A qué hora?", "la tarde runs until dinner, around 8 or 9pm, and the small hours after midnight are la madrugada, not the morning", "With a clock time you use de (a las cinco de la tarde). Without one you use por", "Y pico means \"a bit after\" and is very Spanish", "Timetables, shops, kick-offs, appointments and announcements use the 24-hour clock", "Longer words ending in -e, -n, -r or a stressed vowel add -cito. One-syllable words add -ecito", "c becomes qu, g becomes gu, z becomes c", "Mostly it signals a relationship: warmth, sympathy, politeness, or 'this is no big deal'", "Learn these as chunks and drop them into conversation as they are", "The biggest trap is thinking diminutives are childish and avoiding them: in Spain adults use them all the time", "Once you've said el móvil or a Marta, you switch to a pronoun instead of saying it again", "Me, te, nos and os are the same in both sets, so the choice only bites with him, her, it, them and usted", "Learn these as pairs: verb + the pronoun it takes", "when le or les comes right before lo, la, los or las, it changes to se", "Front of a conjugated verb, or stuck to the end of an infinitive, a gerund or a positive command", "If the stress would end up three or more syllables from the end, you write an accent on the stressed vowel", "Person first, then thing", "lo (the landlord as the person you call) and le (the landlord as the person you tell or ask) swap depending on the verb", "the wrong word turns an innocent sentence into something about sex, pregnancy or worse", "the everyday Spanish meaning is different", "Learn the real meaning and the right word for the English one", "Actualmente is about now; eventualmente is about maybe, not in the end", "Simpático is a compliment, disgustado is just upset, and sano is about your health, not your mind", "The literal meaning is moving something from inside to outside. Say where from with de", "to keep the hard \"k\" sound before an e, the spelling changes from c to qu", "Think of each one as getting something out of a system", "sacar means to get something out of a situation", "Adding se makes it personal: you get something for yourself or out of yourself", "sacar a alguien de means to push someone out of their normal state, usually their calm", "If you are removing something from on top of or off something, it is quitar. If you are just picking something up, it is coger", "The perfecto and pluscuamperfecto are both haber + past participle: only the haber part changes", "the imperfecto is the background, and the indefinido is the event that interrupts it", "if the time period you are talking about has not finished yet (today, this week, this year, ever), use the perfecto", "Use había + participle for something that had already happened before another past moment", "Ser and ir share exactly the same forms", "Regular participles end in -ado (-ar verbs) or -ido (-er, -ir verbs). These common ones don't", "if you hear one of them, the tense next to it is usually right", "Note salir is \"go out\", while irse is \"leave, be off\"", "Salir also means how something turns out", "With se, salir means something comes out where it shouldn't", "yo salgo in the present (a \"-go\" verb like tengo, pongo)", "In a question you use the positive form (¿algo?), in a negative you use the negative form (nada)", "Before a masculine singular noun they lose the -o: algún día, ningún problema", "When a negative word (nada, nadie, nunca, ninguno, tampoco) comes after the verb, Spanish also needs no before the verb", "For \"wherever\" or \"anywhere you like\", use donde sea or donde quieras", "Cualquier means \"any (at all)\" before a noun; on its own it becomes cualquiera", "In the negative they flip: ya no = no longer, todavía no = not yet", "Aunque means \"although\" with a fact, and \"even if\" with the subjunctive", "Para que always takes the subjunctive, because the result hasn't happened yet", "Start with es que, pues and a ver, which are safe with anyone, including your boss", "Tío and tía are the big ones in Spain: they have nothing to do with uncles and aunts here", "The last two rows are swear words: understand them, use them only with close friends", "Molar (to be cool) works like gustar: the thing that is cool is the subject", "currar instead of trabajar, pillar instead of entender or coger", "Ir de cañas is the after-work beer, ir de copas is the late-night drinks", "aim to understand all of it and produce only the Neutral and Informal levels until it feels natural", "you say them about a situation, not at a person", "Every big swear word has a softened version", "how strong it is depends entirely on what comes after it", "Que te den is the most usable", "Between friends, several of these are almost affectionate", "Some of the rudest-looking phrases are compliments", "Buenas on its own is a very Spanish all-day hello", "Answer, add a detail, then bounce it back with ¿y tú?", "the natural Spanish for weekend plans is the simple present: ¿qué haces este finde?", "A reaction comes first, then the follow-up question", "La verdad es que is a softener Spaniards use all the time, roughly \"to be honest\"", "Ya, ya means \"yeah, I know\", not \"already\"", "friends say igual or a lo mejor, both followed by the normal present", "Set the scene with the imperfect (estaba, había) and drop events into it with the preterite (llegó, se cayó)", "Pesado means annoying or tiresome, not heavy", "Alguien covers \"someone\" and also \"anyone\" in a question. Nadie covers \"nobody\" and \"not anyone\"", "Algo is \"something\" and \"anything?\" in questions; nada is \"nothing\" and \"not anything\"", "Use en with location (where something is) and a with movement (where you are going)", "Nunca and jamás both mean \"never\"; jamás is stronger", "Be careful with de cualquier manera: it often means \"any old how\" (carelessly), not \"however you like\"", "In conversation, Spaniards use a question word + sea, or a verb + que + the same verb in the subjunctive", "If a negative word (nadie, nada, nunca, ningún) comes after the verb, put no before the verb", "Alguno and ninguno lose their -o before a masculine singular noun, and gain an accent", "Qué with an accent asks a question (¿Qué dices?); lo que points to something (No entiendo lo que dices)", "Lo que has no noun in front: it refers to an idea or a whole situation", "when \"than\" is followed by a whole verb phrase (than I thought, than it looks), Spanish uses de lo que", "Por lo que and de lo que are the ones you will use most", "At the start of an exclamation, lo que means \"how much\" or \"you wouldn't believe how\"", "de + el becomes del, and a + el becomes al", "Add -azo (or -ón) to almost any noun and it becomes a great, big or impressive version of itself", "-ata (not -ato) makes a short, slangy version of a noun. -eo turns a noun into an activity", "Spaniards use -ito less for size and more for tone", "Spaniards clip long words constantly, and the clipped version is often more common than the full one in speech and WhatsApp", "Quedar is the verb at the centre of Spanish social life", "Most of these work as un/una + word: es un crack, es una pesada", "Young Spaniards also borrow English words freely and conjugate them as Spanish verbs", "In fast speech, especially in Valencia and the south, sounds drop out", "These everyday words have a second (sometimes rude) meaning", "the tense of the main verb decides which one you need", "Negative commands always use the subjunctive (no seas, no seáis); the positive tú form is the short sé", "Es states a fact. Sea appears when the sentence is about a wish, a feeling, a judgement, a doubt or a possibility", "After time words, if the moment has not happened yet, use sea", "When you describe something you are looking for, or something that may not exist, the description takes sea", "Many follow the pattern X + sea + X: sea lo que sea, sea quien sea, sea como sea", "Que + subjunctive at the start of a sentence is short for I hope or let it be", "Sea only belongs to ser. Estar's subjunctive is esté", "Puede que always takes sea. A lo mejor never does",
+  "whether you do something to them (lo, la) or pass something to them (le)",
+  "So the little word a tells you nothing",
+  "Nobody is acting on her, so she can only be the indirect object: le",
+  "This is not a repetition error, it is the normal structure",
+  "Learn each verb with its pronoun as one chunk",
+  "it is considered wrong, so recognise it and do not copy it",
+  "Le and les cannot sit next to lo, la, los or las, so they turn into se",
+  "Stop at the first one that gives you an answer",
+  "plus the ones you will hear from native speakers and should not copy",
+];
 function Marked({ text }) {
   const t = String(text || '');
   const ph = SHEET_MARKS.find(p => p && t.includes(p));
@@ -16835,7 +17081,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
         </div>
       )}
 
-      <div className="px-4 lg:px-8 py-6 sheet-canvas mx-auto lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[minmax(11rem,1fr)_minmax(0,54rem)_minmax(0,1fr)] xl:gap-12 lg:items-start">
+      <div className="px-4 lg:px-8 py-6 sheet-canvas mx-auto lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[minmax(11rem,1fr)_minmax(0,66rem)_minmax(0,1fr)] xl:gap-12 lg:items-start">
         <aside className="hidden lg:block sticky top-24 self-start no-print xl:justify-self-end xl:w-[12rem]">
           <div className="flex items-center justify-between gap-2 mb-2">
             <p className="k-label">Índice</p>
@@ -17118,64 +17364,94 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
     if (errDrill) return <ErroresDrill dark={dark} onExit={() => setErrDrill(false)} />;
     const m = selectedMistake !== null ? COMMON_MISTAKES[selectedMistake] : null;
     if (m) {
+      const canSpeak = m.right && m.right !== '(correct!)' && m.right !== '(correct, but...)';
       return (
         <div>
           <BackHeader title="Errores comunes" subtitle="Error común" onBack={() => setSelectedMistake(null)} dark={dark} />
-          <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-            <Card dark={dark} className="overflow-hidden">
-              <div className="px-6 py-5 bg-keeps-50 border-b border-keeps-100">
-                <p className="k-kicker mb-1.5">Error común</p>
-                <p className="font-serif text-xl lg:text-2xl line-through decoration-keeps/70 text-ink/70">{m.wrong}</p>
+          <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto space-y-6">
+            <header>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <p className="k-kicker">Error común · {String(selectedMistake + 1).padStart(2, '0')} de {COMMON_MISTAKES.length}</p>
               </div>
-              <div className="p-6 space-y-5">
+              <h2 className="font-serif text-[2.1rem] lg:text-[3rem] text-ink leading-[1.05] tracking-[-0.025em] mt-2" style={{fontWeight:600}}>{m.en}</h2>
+              <p className="k-body mt-4">Cómo se dice en español, y por qué la versión que sale sola no funciona.</p>
+            </header>
+
+            <section className="k-sec">
+              <header className="k-sec-head">
+                <span className="k-sec-no">1</span>
+                <h3 className="k-sec-title flex-1 min-w-0">Lo que se suele decir</h3>
+              </header>
+              <div className="k-sec-body">
+                <div className="k-warn">
+                  <p className="k-warn-l"><WarnIcon />Ojo</p>
+                  <p className="k-ex-es line-through decoration-keeps/70" style={{fontSize:'1.2rem'}} lang="es">{m.wrong}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="k-sec">
+              <header className="k-sec-head">
+                <span className="k-sec-no">2</span>
+                <h3 className="k-sec-title flex-1 min-w-0">Lo correcto</h3>
+                <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-oliva-700 border border-oliva-200 bg-oliva-50">✓ Así sí</span>
+              </header>
+              <div className="k-sec-body">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-oliva-600 text-xl">✓</span>
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-oliva-700">Lo correcto</p>
+                  <p className="k-sub">Ejemplo</p>
+                  <div className="border-l-2 border-ink/15 pl-4 py-1">
+                    <div className="flex items-start gap-2">
+                      <p className="k-ex-es flex-1 pt-1.5" style={{fontSize:'1.2rem',fontWeight:600}} lang="es">{m.right}</p>
+                      {canSpeak && <SpeakBtn text={m.right} size="md" />}
+                    </div>
+                    <p className="k-ex-en">{m.en}</p>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <p className="font-serif font-bold text-2xl flex-1">{m.right}</p>
-                    {m.right && m.right !== '(correct!)' && m.right !== '(correct, but...)' && <SpeakBtn text={m.right} size="md" />}
-                  </div>
-                  <p className="text-base mt-1 text-stone-500">{m.en}</p>
-                </div>
-                <div className="rounded-r-[10px] border-l-[3px] border-ink pl-4 pr-4 py-3 bg-cream/60">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.08em] mb-1.5 text-ink">¿Por qué?</p>
-                  <p className="font-serif text-[17px] leading-relaxed text-ink/85">{m.why}</p>
                 </div>
               </div>
-            </Card>
+            </section>
+
+            <section className="k-sec">
+              <header className="k-sec-head">
+                <span className="k-sec-no">3</span>
+                <h3 className="k-sec-title flex-1 min-w-0">¿Por qué?</h3>
+              </header>
+              <div className="k-sec-body">
+                <div className="k-key"><p className="k-key-l"><KeyIcon />Recuerda</p><p className="k-box-t">{m.why}</p></div>
+              </div>
+            </section>
           </div>
         </div>
       );
     }
     return (
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-        <p className="text-sm text-dust mb-5">Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
+        <p className="k-body mb-5" style={{fontSize:'15px',lineHeight:1.55}}>Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
         <button onClick={() => { setErrDrill(true); window.scrollTo(0, 0); }}
           className="group w-full text-left mb-6 rounded-xl bg-ink hover:bg-orange-600 text-white px-5 py-4 flex items-center gap-4 transition-colors">
           <div className="flex-1 min-w-0">
             <p className="eyebrow" style={{ color:'rgba(250,246,238,0.7)' }}>Ponte a prueba</p>
-            <p className="font-serif font-bold text-xl mt-1">¿Cuál es correcto?</p>
+            <p className="text-xl mt-1" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>¿Cuál es correcto?</p>
             <p className="text-sm mt-0.5" style={{ color:'rgba(250,246,238,0.8)' }}>Diez preguntas rápidas. Los errores que falles vuelven primero.</p>
           </div>
           <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
         </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {COMMON_MISTAKES.map((mm, i) => (
-            <button key={i} onClick={() => setSelectedMistake(i)} className="text-left">
-              <div className="k-card k-card-hover h-full">
-                <div className="p-5">
-                  <div className="flex items-start gap-2 mb-2">
-                    <span className="text-keeps font-bold flex-shrink-0 mt-0.5">✗</span>
-                    <p className="font-serif text-sm line-through text-stone-400 leading-snug line-clamp-2">{mm.wrong}</p>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-oliva-600 font-bold flex-shrink-0 mt-0.5">✓</span>
-                    <p className="font-serif font-bold text-base leading-snug line-clamp-2">{mm.right}</p>
-                  </div>
-                  <p className="text-[13px] mt-2.5 pt-2.5 border-t border-ink/10 text-dust">{mm.en}</p>
+            <button key={i} onClick={() => setSelectedMistake(i)} className="text-left group">
+              <div className="k-card k-card-hover h-full flex flex-col p-5">
+                <div className="flex items-center gap-2 mb-3 min-h-[1.375rem]">
+                  <span className="k-kicker">Error {String(i + 1).padStart(2, '0')}</span>
                 </div>
+                <div className="k-warn" style={{padding:'.6rem .85rem .65rem'}}>
+                  <p className="k-warn-l"><WarnIcon />Ojo</p>
+                  <p className="k-ex-es line-through decoration-keeps/70 line-clamp-2" style={{fontSize:'15.5px',fontWeight:500}} lang="es">{mm.wrong}</p>
+                </div>
+                <div className="flex items-start gap-2 mt-3.5">
+                  <span className="text-oliva-700 font-bold flex-shrink-0" style={{fontSize:'15.5px',lineHeight:1.45}} aria-hidden>✓</span>
+                  <p className="k-ex-es line-clamp-2" style={{fontSize:'16.5px',fontWeight:600}} lang="es">{mm.right}</p>
+                </div>
+                <div className="flex-1" />
+                <p className="k-ex-en mt-3 pt-3 border-t border-ink/10">{mm.en}</p>
               </div>
             </button>
           ))}
@@ -18660,25 +18936,25 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
           const lessons = GRAMMAR_LESSONS.filter(l => l.category === cat.id && (lvl === 'all' || l.level === lvl));
           if (!lessons.length) return null;
           return (
-            <div key={cat.id} className="mb-8">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xl">{cat.emoji}</span>
-                <p className={`text-sm font-bold uppercase tracking-widest ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.label}</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div key={cat.id} className="mb-9">
+              <p className="k-sub">{cat.label}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {lessons.map(lesson => (
-                  <button key={lesson.id} onClick={() => openLesson(lesson)}
-                    className={`text-left rounded-2xl overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] border ${dark ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 hover:shadow-md shadow-sm'}`}>
-                    <div className={`h-1.5 bg-gradient-to-r ${lesson.color}`} />
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">{lesson.icon}</span>
-                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${lesson.level === 'A2' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{lesson.level}</span>
-                        <span className="ml-auto"><DoneBadge on={!!done[lesson.id]} label="Hecha" /></span>
+                  <button key={lesson.id} onClick={() => openLesson(lesson)} className="text-left group">
+                    <div className="k-card k-card-hover h-full flex flex-col p-5 lg:p-6">
+                      <div className="flex items-center gap-2 mb-3 min-h-[1.375rem]">
+                        <span className="k-kicker">{lesson.level} · {cat.label}</span>
+                        <span className="flex-1" />
+                        <DoneBadge on={!!done[lesson.id]} label="Hecha" />
                       </div>
-                      <p className="font-serif font-bold text-lg leading-tight mb-1">{lesson.title}</p>
-                      <p className={`text-sm line-clamp-2 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{lesson.summary}</p>
-                      {lesson.practice && <p className={`text-xs mt-2 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>🧠 {lesson.practice.length} preguntas</p>}
+                      <p className="text-[1.2rem] leading-[1.25] text-ink tracking-[-0.012em]" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{lesson.title}</p>
+                      <p className="text-[14.5px] mt-2 line-clamp-2 leading-relaxed text-dust">{lesson.summary}</p>
+                      <div className="flex-1" />
+                      <div className="mt-4 pt-3.5 border-t border-ink/10 flex items-center gap-3 text-[13px] text-dust">
+                        {lesson.practice && <span>{lesson.practice.length} preguntas</span>}
+                        <span className="flex-1" />
+                        <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Leer →</span>
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -18687,20 +18963,22 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
           );
         })}
         <div className="mb-8">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xl">📢</span>
-            <p className="text-sm font-bold uppercase tracking-widest text-stone-500">Mandatos en contexto</p>
-          </div>
-          <p className="text-sm text-stone-500 mb-3">Commands you'd actually use, tú, usted and nosotros. The rules are in Chuletas: El imperativo.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <p className="k-sub">Mandatos en contexto</p>
+          <p className="k-body mb-4" style={{fontSize:'15px',lineHeight:1.55}}>Commands you'd actually use, tú, usted and nosotros. The rules are in Chuletas: El imperativo.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {MANDATOS_DATA.map(group => (
-              <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left">
-                <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 flex flex-col">
-                  <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${group.color} flex items-center justify-center text-xl mb-3 shadow-sm`}>{group.emoji}</div>
-                  <p className="font-bold text-base leading-tight mb-1">{group.title}</p>
-                  <p className="text-xs text-stone-500">{group.titleEn}</p>
-                  <p className="text-[11px] mt-auto pt-3 font-semibold text-stone-400">{group.phrases.length} mandatos →</p>
-                </Card>
+              <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left group">
+                <div className="k-card k-card-hover h-full flex flex-col p-5">
+                  <p className="k-kicker mb-3">Mandatos</p>
+                  <p className="text-[1.1rem] leading-[1.25] text-ink" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{group.title}</p>
+                  <p className="text-[14px] mt-1.5 text-dust">{group.titleEn}</p>
+                  <div className="flex-1" />
+                  <div className="mt-4 pt-3.5 border-t border-ink/10 flex items-center gap-3 text-[13px] text-dust">
+                    <span>{group.phrases.length} mandatos</span>
+                    <span className="flex-1" />
+                    <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Ver →</span>
+                  </div>
+                </div>
               </button>
             ))}
           </div>
@@ -24684,6 +24962,58 @@ function AreaHeader({ area, tab, onTab, onSearch }) {
 }
 
 // Top bar: brand, the five areas (desktop), search and Ajustes. Sticky on desktop, scrolls away on phones.
+// Reading font, site wide: sets html[data-font], which swaps --font-ui. Titles stay Fraunces.
+const FONT_CHOICES = [
+  { id:'inter', label:'Inter', stack:"'Inter', system-ui, sans-serif", local:null },
+  { id:'atkinson', label:'Atkinson Hyperlegible', stack:"'Atkinson Hyperlegible Next', system-ui, sans-serif", local:null },
+  { id:'aptos', label:'Aptos', stack:"'Aptos', 'Segoe UI', system-ui, sans-serif", local:'Aptos' },
+  { id:'sf', label:'SF Pro', stack:"-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif", local:null },
+];
+function FontPicker() {
+  const [font, setFont] = useState(() => getStorage('aprende.font', 'inter'));
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => { document.documentElement.setAttribute('data-font', font); setStorage('aprende.font', font); }, [font]);
+  useEffect(() => {
+    if (!open) return;
+    const off = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('pointerdown', off); return () => document.removeEventListener('pointerdown', off);
+  }, [open]);
+  // A local-only font (Aptos) is missing when text measures the same as the fallback.
+  const missing = (c) => {
+    if (!c.local) return false;
+    try {
+      const x = document.createElement('canvas').getContext('2d'); const t = 'mmmmmmmmmmlli ¿amiga?';
+      x.font = '32px monospace'; const a = x.measureText(t).width;
+      x.font = `32px "${c.local}", monospace`; return x.measureText(t).width === a;
+    } catch (e) { return false; }
+  };
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(o => !o)} aria-label="Tipo de letra" title="Tipo de letra" className={`k-iconbtn ${open ? '!border-ink' : ''}`}>
+        <span className="text-[14px] font-semibold tracking-tight">Aa</span>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-ink/10 bg-surface shadow-xl p-2">
+          <p className="px-3 pt-1.5 pb-2 text-[11px] font-semibold uppercase tracking-[0.09em] text-dust">Tipo de letra</p>
+          {FONT_CHOICES.map(c => (
+            <button key={c.id} onClick={() => { setFont(c.id); setOpen(false); }}
+              className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-colors ${font === c.id ? 'bg-ink text-white' : 'text-ink hover:bg-cream'}`}>
+              <span className="flex-1 min-w-0">
+                <span className="block text-[16px] leading-tight" style={{ fontFamily: c.stack }}>{c.label}</span>
+                <span className={`block text-[12.5px] mt-0.5 ${font === c.id ? 'text-white/70' : 'text-dust'}`} style={{ fontFamily: c.stack }}>
+                  {missing(c) ? 'No instalada en este dispositivo' : '¿A la amiga no le gusta?'}
+                </span>
+              </span>
+              {font === c.id && <span aria-hidden="true">✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function TopBar({ route, goArea, goTo, onSearch, badgeFor, badgeTitle }) {
   const searchIcon = <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>;
   return (
@@ -24715,6 +25045,7 @@ function TopBar({ route, goArea, goTo, onSearch, badgeFor, badgeTitle }) {
           <kbd className="text-[11px] font-mono font-semibold text-dust/80 border border-ink/15 rounded px-1.5 leading-5">/</kbd>
         </button>
         <button onClick={onSearch} aria-label="Buscar" className="lg:hidden k-iconbtn">{searchIcon}</button>
+        <FontPicker />
         <a href="#ajustes" onClick={e => { e.preventDefault(); goTo('ajustes'); }} aria-label="Ajustes" title="Ajustes"
           className={`k-iconbtn ${route.area === 'ajustes' ? '!bg-ink !text-white !border-ink' : ''}`}>
           <NavIcon id="ajustes" size={17} />
