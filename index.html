@@ -283,6 +283,32 @@ body.sheet-open .area-head { max-width: 90rem; }
   .k-stat-l { font-size:11.5px; line-height:1.25; margin-top:.35rem; }
 }
 
+/* ── Chuleta reading hierarchy ─────────────────────────────── */
+.k-sec { background: var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow: var(--sh); overflow:hidden; }
+.k-sec-head { display:flex; align-items:center; gap:1rem; padding:1.1rem 1.25rem; background: #f3efe6; border-bottom:1px solid var(--line); }
+.k-sec-no { flex-shrink:0; width:2.4rem; height:2.4rem; border-radius:10px; background: var(--ink); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:1.05rem; font-variant-numeric: tabular-nums; }
+.k-sec-title { font-family:'Fraunces',Georgia,serif; font-weight:600; color: var(--ink); font-size:1.35rem; line-height:1.2; letter-spacing:-.015em; }
+.k-sec-body { padding:1.4rem 1.25rem 1.6rem; }
+.k-sec-body > * + * { margin-top:1.75rem; }
+.k-sub { display:flex; align-items:center; gap:.55rem; font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: var(--ink); margin-bottom:.8rem; }
+.k-sub::before { content:''; width:.9rem; height:2px; background: var(--keeps); border-radius:2px; flex-shrink:0; }
+.k-body { font-size:16.5px; line-height:1.72; color: var(--ink-2); max-width:46rem; }
+.k-mark { background: linear-gradient(180deg, transparent 6%, #FFE36E 6%, #FFE36E 94%, transparent 94%); color: var(--ink); font-weight:600;
+  padding:0 .18em; border-radius:2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.k-key { border-radius:12px; background:#FFF7D1; border:1px solid #F5DE7A; padding:.9rem 1.1rem 1rem; }
+.k-key-l { display:flex; align-items:center; gap:.45rem; font-size:11.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#7A5B00; margin-bottom:.35rem; }
+.k-warn { border-radius:12px; background: #fff1ec; border:1px solid #ffd2c4; padding:.9rem 1.1rem 1rem; }
+.k-warn-l { display:flex; align-items:center; gap:.45rem; font-size:11.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: var(--keeps-d); margin-bottom:.35rem; }
+.k-box-t { font-size:15.5px; line-height:1.62; color: var(--ink); }
+@media (min-width: 1024px) {
+  .k-sec-head { padding:1.35rem 2.25rem; gap:1.1rem; }
+  .k-sec-title { font-size:1.65rem; }
+  .k-sec-body { padding:2rem 2.25rem 2.25rem; }
+  .k-sec-body > * + * { margin-top:2.1rem; }
+  .k-body { font-size:17px; }
+}
+
 /* ── Top bar, phone tab bar ─────────────────────────────── */
 .k-top { background: rgba(247,244,238,.9); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom:1px solid var(--line); }
 .k-topnav { position:relative; display:flex; align-items:center; gap:.45rem; height:100%; padding:0 .75rem; font-size:14.5px; font-weight:500; color: var(--dust); text-decoration:none; white-space:nowrap; transition: color .15s; }
@@ -16511,6 +16537,18 @@ function SheetQuiz({ items, onPass }) {
   );
 }
 
+// Yellow highlighter: the one phrase per paragraph worth remembering (SHEET_MARKS, exact substrings).
+const SHEET_MARKS = ["Cuenta comes from contar (to count), so it's anything you add up", "Use de before a noun and de que before a full sentence", "Caer en la cuenta is the moment something suddenly clicks", "Tener algo en cuenta is \"to take something into account\"", "Por mi cuenta (tu, su...) means \"on my own\", without help or company", "A fin de cuentas and en resumidas cuentas are great fillers for wrapping up an argument", "On its own it works like mucho and goes after the verb; with de it goes before a noun", "They work just like un montón: after a verb, or with de before a noun", "The only y in the whole year goes between the tens and the units", "Three are irregular and must be learnt: quinientos (500), setecientos (700) and novecientos (900)", "From 21 to 29 the two join into one word: veintiuno, veintiséis", "the y appears once, between the tens and the units, and only when there is a unit", "Read each one aloud, block by block, before you look at the sound column", "From 2000 every year starts dos mil, with no y after it", "A date links everything with de: el catorce de octubre de dos mil veintiséis", "In Spain the date is often asked with estar: ¿A cuántos estamos?, and answered estamos a + day", "if you could swap the sentence for \"X = Y\", it is ser", "Use estar for location and for states: how someone feels, how something is at the moment", "Ser describes what someone or something is like in general; estar describes how they are or seem right now", "With some adjectives the verb changes the actual meaning, not just the angle", "It is closer to say ser defines, estar locates or describes a state", "Para always points at an end point", "Por looks at the cause or the channel", "Por looks back at the reason; para looks ahead to the result", "Lots of everyday expressions use por or para with no logic you need to work out", "Most mistakes come from translating \"for\" automatically", "is someone doing it to themselves, is it a general statement, or did something happen to someone by accident", "Reflexive verbs carry a pronoun that matches the subject", "If a noun follows, the verb agrees with it: se vende un piso, se venden pisos", "The pattern is se + me/te/le/nos/os/les + verb + thing. The verb agrees with the thing, not with you", "When the indirect pronoun le or les comes right before lo, la, los or las, it changes to se", "take the present tense él/ella form", "Eight very common verbs have a short, one-syllable tú command", "swap the final -r of the infinitive for -d: hablad, comed, venid", "Every negative command, for every person, uses the present subjunctive", "In a positive command, pronouns stick onto the end of the verb in one word", "using the normal present as a command, forgetting the subjunctive after no, and leaving the pronoun on the end in a negative", "Remove the -r, put -d in its place", "Vosotros has none: the same -d rule covers all of them", "use no + the vosotros present subjunctive: -ar verbs end in -éis, -er and -ir verbs end in -áis", "With reflexive verbs you add -os, and the -d falls away: sentad + os = sentaos", "With two pronouns the stress falls three syllables from the end, so it needs a written accent", "Learn them as fixed phrases", "it is considered incorrect, so do not copy it in writing", "keep the original tense. Only the person changes", "the tense usually moves one step into the past, just like English \"is\" becoming \"was\"", "For a yes/no question, use preguntar si", "you report it with pedir que, decir que or similar + subjunctive", "only shift what is no longer true from where you are standing", "Note which ones need en or the subjunctive", "Most slips come from forgetting the subjunctive after pedir, or confusing preguntar and pedir", "Spanish has no \"-er\" ending: there's no single word for cheaper or taller, it's always más barato, más alto", "The second part is always como, never que", "Before a number or quantity, que changes to de", "Mejor and peor replace más bueno and más malo", "The group you're comparing within comes after de, never en", "swap the final vowel for -ísimo (or -ísima, -ísimos, -ísimas)", "the verb ending already tells you (hablo can only be \"I speak\"), so you leave them out", "me, te, nos and os never change, whatever the job", "The indirect object is the person who receives it or benefits: to whom, for whom?", "the indirect (the person) comes first, then the direct (the thing)", "in front of a conjugated verb, or stuck onto the end of an infinitive, a gerund or a positive command", "except for yo and tú, which become mí and ti", "With gustar-type verbs the pronoun is compulsory and a mí, a ti, a ella is optional for emphasis or contrast", "16 to 29 are written as one word (dieciséis, veintidós)", "Primero and tercero lose their -o right before a masculine singular noun", "answer with son las + hour, because las stands for las horas", "With days, el means \"on\": el lunes = on Monday, los lunes = on Mondays", "Hace looks back (ago). Desde hace and llevar measure something that is still going on (for)", "With the present, the situation is still going on. With the preterite, it happened once, that long ago, and is over", "the short form needs el: en el noventa y cinco", "Neither use means owning something: that is always tener", "In Spain it is the normal past for anything that happened today, this week, this year, or ever in your life", "-ar gives -ado, -er and -ir give -ido", "The participle stays the same throughout", "hay answers \"is there one?\", está answers \"where is it?\"", "it never goes plural, even with a plural noun", "Hay que + infinitive means \"you have to / it's necessary to\", about people in general", "A often points towards an action or a goal", "acordarse de and olvidarse de need de, but recordar and olvidar on their own take no preposition", "En marks what your mind or effort is fixed on", "Con + mí and con + ti become conmigo and contigo", "These verbs already contain the English preposition, so adding para, a or por is wrong", "A few verbs change meaning with the preposition", "Nearly every mistake here is an English preposition carried across", "Only the first verb is conjugated; the second never changes", "Ponerse a suggests you suddenly start, or knuckle down to something", "Volver a + infinitive is the everyday way to say \"again\"", "Acabar de has two meanings: in the present or imperfect it means \"have just done\"", "Put llevar in the present for \"have been doing\", and in the imperfect (llevaba) for \"had been doing\"", "Most take the infinitive straight after, with no link word; tener que and hay que take que", "The errors are almost always the wrong link word or the wrong form of the second verb", "the Spanish word means X, not the English lookalike", "Learn the everyday meaning first", "Every Spanish word of two or more syllables has one syllable said louder than the rest", "If a word ends in a vowel, -n or -s, the stress falls on the second-to-last syllable", "stress on the third-to-last syllable always gets a tilde", "what does it end in, and where is the stress?", "When the i or u is the stressed one, a tilde splits the pair into two syllables: dí-a, pa-ís", "The tilde goes on the one that carries stress in the sentence (a pronoun, a verb, a question word)", "take a tilde whenever they ask or exclaim", "The tilde stays on a question word even inside a longer sentence (no sé dónde vive)", "Capital letters keep their tildes: Él, Álvaro, ÁFRICA", "Most of the time it adds a feeling: affection, politeness, or playing something down", "-ito / -ita is the default everywhere and the one to use yourself", "Longer words ending in -e, -n or -r, or in a stressed vowel, add -cito. Words of one syllable add -ecito", "-azo / -aza means big and impressive, but it also means a blow or hit with something", "You cannot work these out from the base word, so learn them as vocabulary", "adding the ending without the extra -c- or -ec-, forgetting the spelling change, or switching the gender", "In much of central and northern Spain, people use le for a male person as a direct object too: le vi ayer", "Laísmo (la dije, \"I told her\") is common in Madrid and Castile, but it is considered a mistake", "Use it with any group you'd say tú to individually", "take the infinitive and swap the final -r for -d: hablad, comed, venid", "Ustedes takes the they-form of the verb (ustedes comen)", "If in doubt with someone older, start with usted", "When Spanish wants to say \"I keep it\", it says \"I stay with it\": me quedo con el plato, or shorter, me lo quedo", "the verb is dejar (leave it) or llevarse (take it away), in the imperative", "Llevar is to take something to somewhere. Llevarse adds \"away from here\": the thing leaves with the person", "Object pronouns stick onto the end of a command (with an accent to keep the stress) and go in front of a normal verb", "The basic meaning is to carry or take something or someone from here to somewhere else", "Llevar = take it there, away from here. Traer = bring it here, towards the speaker", "Spanish uses plain llevar in the present", "Llevo + time + -ando/-iendo = I've been doing it for that long (and still am)", "which is where Spain says lleva tiempo rather than toma tiempo", "Asking what a dish or product contains is ¿Qué lleva?", "The se adds the idea that the thing ends up with someone or leaves with them", "Most llevar mistakes come from translating English word for word", "English often drops the \"myself\" (\"I get dressed\", \"I get up\"), but Spanish never drops the pronoun", "One pronoun per person, and it goes in front of the conjugated verb", "Note bañarse: in Valencia you'll use it far more for swimming at the beach than for having a bath", "Spanish uses the article (el, la, los, las) instead of a possessive", "With a positive command it must go on the end; with a negative command it goes before", "Some verbs shift meaning when they take the pronoun", "A few common verbs only exist with the pronoun, and most of them need a preposition after them", "In the plural the same pronouns can mean \"each other\"", "Spanish uses se + the person it happened to + verb. The thing is the grammatical subject, so the verb agrees with it", "either a missing pronoun, a pronoun in the wrong place, or a missing accent on a command", "For how much time something needs, Spain says llevar: lleva tiempo. For how long a person or a journey takes, it says tardar", "English \"take\" covers five Spanish verbs", "Missing a person or a place you are away from is echar de menos. Missing a bus, a train or a chance is perder", "Spanish says you HAVE them: tengo hambre (I have hunger)", "Spanish has no single \"become\". Pick by the kind of change", "Saber is knowing information or how to do something. Conocer is being familiar with a person, place or thing", "Leaving a place, or going out, is salir. Going away from where you are now is irse", "Arranging to meet friends is quedar (the key social verb in Spain)", "Quedar = there's some left. Faltar = there isn't enough, or there's still time to go. Sobrar = there's too much", "the thing you like is the subject, and you are the indirect object (me, te, le)", "Learn them as whole chunks", "Cien is exactly 100; the moment anything follows it, it becomes ciento", "mil itself never goes plural when you count", "Millón is a noun, not an adjective like mil, so it goes plural (dos millones) and needs de before a noun", "The only y in the whole number sits between the tens and the units (treinta y cuatro)", "Primero and tercero drop the -o before a masculine singular noun", "in conversation people put a normal number after the noun: el piso once, el capítulo quince", "For the 1st, Spain mostly says el uno, although el primero is also correct", "Spain uses a dot (or a small space) to group thousands and a comma for decimals: the mirror image of English", "Unos or unas before a number means \"about\": unos veinte euros, unas cien personas", "Half is medio/media before a noun (medio litro, media hora) and la mitad on its own (la mitad del grupo)", "the I hope is dropped, so the verb stays in the subjunctive", "¡Vamos! and ¡A por ello! are high energy; ¡Ánimo! is warmer, for when someone is struggling", "¡enhorabuena! is for achievements (a new job, an exam, a baby) and ¡felicidades! is for birthdays and celebrations", "¡Ánimo! is the go-to comfort word in Spain", "Tone of voice tells you which meaning", "Forget the grammar names and just learn what job each piece does", "the verb ending already tells you who the doer is (tengo can only be \"I have\"), so you normally leave the doer out", "No goes directly in front of the action", "In Spanish the default is after: un coche rojo", "Before tends to be the figurative or opinion meaning; after is the literal one", "Spanish never drops que", "In a question, \"what\" is qué: ¿Qué quieres? vs No sé lo que quieres", "in football news the usual way to say \"new sporting director\" is actually nuevo before: el nuevo director deportivo", "Pues and a ver start answers; es que introduces a reason or excuse; o sea rephrases; bueno moves on; nada closes a story", "Oye and mira are commands (listen, look) used to grab attention before you say something", "Vale is OK. Venga is let's go, come on, or a cheerful goodbye", "En plan is the youngest-sounding of these: it is the Spanish 'like'", "Only one o'clock is singular (la una), so only it takes es. Everything from two upwards is plural and takes son", "After half past, go to the next hour and subtract with menos", "A las (a la) means \"at\" and answers ¿A qué hora?", "la tarde runs until dinner, around 8 or 9pm, and the small hours after midnight are la madrugada, not the morning", "With a clock time you use de (a las cinco de la tarde). Without one you use por", "Y pico means \"a bit after\" and is very Spanish", "Timetables, shops, kick-offs, appointments and announcements use the 24-hour clock", "Longer words ending in -e, -n, -r or a stressed vowel add -cito. One-syllable words add -ecito", "c becomes qu, g becomes gu, z becomes c", "Mostly it signals a relationship: warmth, sympathy, politeness, or 'this is no big deal'", "Learn these as chunks and drop them into conversation as they are", "The biggest trap is thinking diminutives are childish and avoiding them: in Spain adults use them all the time", "Once you've said el móvil or a Marta, you switch to a pronoun instead of saying it again", "Me, te, nos and os are the same in both sets, so the choice only bites with him, her, it, them and usted", "Learn these as pairs: verb + the pronoun it takes", "when le or les comes right before lo, la, los or las, it changes to se", "Front of a conjugated verb, or stuck to the end of an infinitive, a gerund or a positive command", "If the stress would end up three or more syllables from the end, you write an accent on the stressed vowel", "Person first, then thing", "lo (the landlord as the person you call) and le (the landlord as the person you tell or ask) swap depending on the verb", "the wrong word turns an innocent sentence into something about sex, pregnancy or worse", "the everyday Spanish meaning is different", "Learn the real meaning and the right word for the English one", "Actualmente is about now; eventualmente is about maybe, not in the end", "Simpático is a compliment, disgustado is just upset, and sano is about your health, not your mind", "The literal meaning is moving something from inside to outside. Say where from with de", "to keep the hard \"k\" sound before an e, the spelling changes from c to qu", "Think of each one as getting something out of a system", "sacar means to get something out of a situation", "Adding se makes it personal: you get something for yourself or out of yourself", "sacar a alguien de means to push someone out of their normal state, usually their calm", "If you are removing something from on top of or off something, it is quitar. If you are just picking something up, it is coger", "The perfecto and pluscuamperfecto are both haber + past participle: only the haber part changes", "the imperfecto is the background, and the indefinido is the event that interrupts it", "if the time period you are talking about has not finished yet (today, this week, this year, ever), use the perfecto", "Use había + participle for something that had already happened before another past moment", "Ser and ir share exactly the same forms", "Regular participles end in -ado (-ar verbs) or -ido (-er, -ir verbs). These common ones don't", "if you hear one of them, the tense next to it is usually right", "Note salir is \"go out\", while irse is \"leave, be off\"", "Salir also means how something turns out", "With se, salir means something comes out where it shouldn't", "yo salgo in the present (a \"-go\" verb like tengo, pongo)", "In a question you use the positive form (¿algo?), in a negative you use the negative form (nada)", "Before a masculine singular noun they lose the -o: algún día, ningún problema", "When a negative word (nada, nadie, nunca, ninguno, tampoco) comes after the verb, Spanish also needs no before the verb", "For \"wherever\" or \"anywhere you like\", use donde sea or donde quieras", "Cualquier means \"any (at all)\" before a noun; on its own it becomes cualquiera", "In the negative they flip: ya no = no longer, todavía no = not yet", "Aunque means \"although\" with a fact, and \"even if\" with the subjunctive", "Para que always takes the subjunctive, because the result hasn't happened yet", "Start with es que, pues and a ver, which are safe with anyone, including your boss", "Tío and tía are the big ones in Spain: they have nothing to do with uncles and aunts here", "The last two rows are swear words: understand them, use them only with close friends", "Molar (to be cool) works like gustar: the thing that is cool is the subject", "currar instead of trabajar, pillar instead of entender or coger", "Ir de cañas is the after-work beer, ir de copas is the late-night drinks", "aim to understand all of it and produce only the Neutral and Informal levels until it feels natural", "you say them about a situation, not at a person", "Every big swear word has a softened version", "how strong it is depends entirely on what comes after it", "Que te den is the most usable", "Between friends, several of these are almost affectionate", "Some of the rudest-looking phrases are compliments", "Buenas on its own is a very Spanish all-day hello", "Answer, add a detail, then bounce it back with ¿y tú?", "the natural Spanish for weekend plans is the simple present: ¿qué haces este finde?", "A reaction comes first, then the follow-up question", "La verdad es que is a softener Spaniards use all the time, roughly \"to be honest\"", "Ya, ya means \"yeah, I know\", not \"already\"", "friends say igual or a lo mejor, both followed by the normal present", "Set the scene with the imperfect (estaba, había) and drop events into it with the preterite (llegó, se cayó)", "Pesado means annoying or tiresome, not heavy", "Alguien covers \"someone\" and also \"anyone\" in a question. Nadie covers \"nobody\" and \"not anyone\"", "Algo is \"something\" and \"anything?\" in questions; nada is \"nothing\" and \"not anything\"", "Use en with location (where something is) and a with movement (where you are going)", "Nunca and jamás both mean \"never\"; jamás is stronger", "Be careful with de cualquier manera: it often means \"any old how\" (carelessly), not \"however you like\"", "In conversation, Spaniards use a question word + sea, or a verb + que + the same verb in the subjunctive", "If a negative word (nadie, nada, nunca, ningún) comes after the verb, put no before the verb", "Alguno and ninguno lose their -o before a masculine singular noun, and gain an accent", "Qué with an accent asks a question (¿Qué dices?); lo que points to something (No entiendo lo que dices)", "Lo que has no noun in front: it refers to an idea or a whole situation", "when \"than\" is followed by a whole verb phrase (than I thought, than it looks), Spanish uses de lo que", "Por lo que and de lo que are the ones you will use most", "At the start of an exclamation, lo que means \"how much\" or \"you wouldn't believe how\"", "de + el becomes del, and a + el becomes al", "Add -azo (or -ón) to almost any noun and it becomes a great, big or impressive version of itself", "-ata (not -ato) makes a short, slangy version of a noun. -eo turns a noun into an activity", "Spaniards use -ito less for size and more for tone", "Spaniards clip long words constantly, and the clipped version is often more common than the full one in speech and WhatsApp", "Quedar is the verb at the centre of Spanish social life", "Most of these work as un/una + word: es un crack, es una pesada", "Young Spaniards also borrow English words freely and conjugate them as Spanish verbs", "In fast speech, especially in Valencia and the south, sounds drop out", "These everyday words have a second (sometimes rude) meaning", "the tense of the main verb decides which one you need", "Negative commands always use the subjunctive (no seas, no seáis); the positive tú form is the short sé", "Es states a fact. Sea appears when the sentence is about a wish, a feeling, a judgement, a doubt or a possibility", "After time words, if the moment has not happened yet, use sea", "When you describe something you are looking for, or something that may not exist, the description takes sea", "Many follow the pattern X + sea + X: sea lo que sea, sea quien sea, sea como sea", "Que + subjunctive at the start of a sentence is short for I hope or let it be", "Sea only belongs to ser. Estar's subjunctive is esté", "Puede que always takes sea. A lo mejor never does"];
+function Marked({ text }) {
+  const t = String(text || '');
+  const ph = SHEET_MARKS.find(p => p && t.includes(p));
+  if (!ph) return t;
+  const i = t.indexOf(ph);
+  return <>{t.slice(0, i)}<mark className="k-mark">{ph}</mark>{t.slice(i + ph.length)}</>;
+}
+const KeyIcon = () => <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1.5l1.9 4 4.4.5-3.3 3 .9 4.4L8 11.2l-3.9 2.2.9-4.4-3.3-3 4.4-.5z"/></svg>;
+const WarnIcon = () => <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M8 2L1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.8v.1"/></svg>;
+
 const sheetHeadingShort = (h) => String(h || '').replace(/^\d+\s*·\s*/, '');
 
 // One section of a chuleta: lead, table, Clave/Ojo, examples (audio, hide-English, send to Tarjetas,
@@ -16527,55 +16565,45 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
     toast({ tone: n ? 'success' : 'info', title: n ? 'Añadida a Tarjetas' : 'Ya está en Tarjetas', body: n ? 'La verás en Practica > Repaso.' : null });
     bump(x => x + 1);
   };
-  const hasSide = !!(section.lead || section.note || section.trap);
   const hm = String(section.heading || '').match(/^(\d+)\s*·\s*(.*)$/);
-  const secNo = hm ? hm[1] : null, secTitle = hm ? hm[2] : section.heading;
-  const boxes = (section.note || section.trap) ? (
-    <div className="mt-4 space-y-3">
-      {section.note && (
-        <div className="rounded-r-[10px] border-l-[3px] border-oliva-500 bg-oliva-50 pl-4 pr-4 py-3">
-          <p className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-oliva-700 mb-1">Clave</p>
-          <p className="text-[15px] leading-relaxed text-ink">{section.note}</p>
-        </div>
-      )}
-      {section.trap && (
-        <div className="rounded-r-[10px] border-l-[3px] border-keeps bg-keeps-50 pl-4 pr-4 py-3">
-          <p className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-keeps-700 mb-1">Ojo</p>
-          <p className="text-[15px] leading-relaxed text-ink">{section.trap}</p>
-        </div>
-      )}
-    </div>
-  ) : null;
+  const secNo = hm ? hm[1] : String(index + 1), secTitle = hm ? hm[2] : section.heading;
   return (
     <section data-sheet-sec={index} className="scroll-mt-40">
       {section.partTitle && sheet.mergedFrom && (
-        <div className={`${section.partNo > 1 ? 'mt-4 pt-8 border-t-[3px] border-double border-ink/80' : ''} mb-7`}>
+        <div className={`${section.partNo > 1 ? 'mt-6 pt-9 border-t-[3px] border-double border-ink/80' : ''} mb-6`}>
           <p className="k-kicker">Parte {section.partNo}</p>
-          <p className="font-serif text-2xl lg:text-[1.9rem] text-ink leading-tight mt-1.5" style={{fontWeight:600}}>{section.partTitle}</p>
-          {section.partIntro && <p className="k-reading text-[1.0625rem] mt-2.5 max-w-[44rem]">{section.partIntro}</p>}
+          <p className="font-serif text-2xl lg:text-[2.1rem] text-ink leading-tight mt-1.5" style={{fontWeight:600}}>{section.partTitle}</p>
+          {section.partIntro && <p className="k-body mt-2.5">{section.partIntro}</p>}
         </div>
       )}
-      <div className={hasSide ? '2xl:grid 2xl:grid-cols-[20rem_minmax(0,1fr)] 2xl:gap-14' : ''}>
-      {/* Explanation column: number, title, lead, Clave and Ojo. Sticks beside long tables on wide screens. */}
-      <div className={hasSide ? '2xl:sticky 2xl:top-6 2xl:self-start' : ''}>
-        {section.heading && (
-          <div className="flex items-baseline gap-3.5 mb-3.5">
-            {secNo && <span className="font-serif text-[1.35rem] text-keeps tabular-nums leading-none" style={{fontWeight:500}}>{secNo.padStart(2, '0')}</span>}
-            <h3 className="flex-1 font-serif text-[1.45rem] lg:text-[1.7rem] text-ink leading-[1.2] tracking-[-0.015em]" style={{fontWeight:600}}>{secTitle}</h3>
-            {isRead && <span className="text-oliva-600 text-[12.5px] font-semibold flex-shrink-0 inline-flex items-center gap-1" title="Leída">✓ Leída</span>}
-          </div>
-        )}
-        {section.lead && <p className="font-serif text-[17.5px] leading-[1.62] mb-6 2xl:mb-0 text-ink/80 max-w-[42rem]">{section.lead}</p>}
-        {hasSide && <div className="hidden 2xl:block">{boxes}</div>}
-      </div>
-      <div className="min-w-0">
-      {section.rows && Array.isArray(section.rows) && <DataTable data={section.rows} refined />}
-      {section.text && <p className="font-serif text-[17px] leading-[1.62] text-ink/80 mt-4 max-w-[42rem]">{section.text}</p>}
-      <div className={hasSide ? '2xl:hidden' : ''}>{boxes}</div>
+      <div className="k-sec">
+      {section.heading && (
+        <header className="k-sec-head">
+          <span className="k-sec-no">{secNo}</span>
+          <h3 className="k-sec-title flex-1 min-w-0">{secTitle}</h3>
+          {isRead && <span className="text-oliva-700 text-[12.5px] font-semibold flex-shrink-0 inline-flex items-center gap-1 bg-oliva-50 border border-oliva-200 rounded-full px-2.5 py-0.5" title="Leída">✓ Leída</span>}
+        </header>
+      )}
+      <div className="k-sec-body">
+      {section.lead && <p className="k-body"><Marked text={section.lead} /></p>}
+      {section.rows && Array.isArray(section.rows) && (
+        <div><p className="k-sub">De un vistazo</p><DataTable data={section.rows} refined /></div>
+      )}
+      {section.text && <p className="k-body"><Marked text={section.text} /></p>}
+      {(section.note || section.trap) && (
+        <div className={`grid gap-3 ${section.note && section.trap ? 'lg:grid-cols-2' : ''}`}>
+          {section.note && (
+            <div className="k-key"><p className="k-key-l"><KeyIcon />Recuerda</p><p className="k-box-t">{section.note}</p></div>
+          )}
+          {section.trap && (
+            <div className="k-warn"><p className="k-warn-l"><WarnIcon />Ojo</p><p className="k-box-t">{section.trap}</p></div>
+          )}
+        </div>
+      )}
       {ex.length > 0 && (
-        <div className="mt-8">
-          <div className="flex items-center gap-2 mb-4">
-            <p className="k-kicker flex-1">Ejemplos reales</p>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <p className="k-sub flex-1 !mb-0">Ejemplos reales</p>
             {ex.length > 1 && (
               <button onClick={() => playingHere ? seq.stop() : seq.play(index, ex.map(e => e.es))}
                 className={`inline-flex items-center gap-1.5 text-[13px] font-semibold px-3.5 min-h-9 rounded-full border transition-colors ${playingHere ? 'bg-ink border-ink text-white' : 'bg-surface text-ink border-ink/15 hover:border-ink/40'}`}>
@@ -16583,7 +16611,7 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
               </button>
             )}
           </div>
-          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
+          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5 mt-3">
             {ex.map((e, ei) => {
               const showEn = !hideEn || revealed[ei];
               const isCur = playingHere && seq.playing.idx === ei;
@@ -16850,7 +16878,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             <div className="k-card px-5 lg:px-7 py-4 mb-2">
               <button onClick={() => setResumenOpen(o => !o)} className="w-full flex items-center gap-3 text-left min-h-9">
                 <p className="font-serif text-[1.15rem] text-ink" style={{fontWeight:600}}>Resumen en dos minutos</p>
-                <p className="text-[13px] text-dust flex-1">{(n => `${n} ${n === 1 ? 'clave' : 'claves'}`)(resumen.filter(r => r.note).length)}, {(n => `${n} ${n === 1 ? 'trampa' : 'trampas'}`)(resumen.filter(r => r.trap).length)}</p>
+                <p className="text-[13px] text-dust flex-1">{(n => `${n} para recordar`)(resumen.filter(r => r.note).length)}, {(n => `${n} ${n === 1 ? 'trampa' : 'trampas'}`)(resumen.filter(r => r.trap).length)}</p>
                 <span className={`text-dust transition-transform ${resumenOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
               {resumenOpen && (
@@ -16859,7 +16887,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
                     <li key={r.i}>
                       <button onClick={() => jumpTo(r.i)} className="text-left w-full group">
                         <p className="text-[12.5px] font-semibold text-ink group-hover:text-keeps-700 transition-colors">{r.h}</p>
-                        {r.note && <p className="text-[14px] leading-snug text-ink/80 mt-1"><span className="font-semibold text-oliva-700">Clave: </span>{r.note}</p>}
+                        {r.note && <p className="text-[14px] leading-snug text-ink mt-1.5"><span className="k-mark !font-semibold">Recuerda</span> {r.note}</p>}
                         {r.trap && <p className="text-[14px] leading-snug text-ink/80 mt-1"><span className="font-semibold text-keeps-700">Ojo: </span>{r.trap}</p>}
                       </button>
                     </li>
@@ -16869,7 +16897,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             </div>
           )}
 
-          <div className="divide-y divide-ink/[0.12] [&>section]:py-10 lg:[&>section]:py-14">
+          <div className="mt-6 space-y-6 lg:space-y-8">
             {sheet.content.map((section, si) => (
               <SheetSection key={sheet.id + si} sheet={sheet} section={section} index={si} hideEn={hideEn}
                 isRead={readSet.has(si)} seq={seq} onRecallDone={onRecallDone} />
@@ -18423,57 +18451,68 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
         <BackHeader title={lesson.title} subtitle={lesson.titleEn} onBack={() => { setSelectedLesson(null); setPracticeMode(false); resetPractice(); }} dark={dark} />
         <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto space-y-6">
 
-          {/* Hero / formula card */}
-          <div className={`rounded-2xl p-6 bg-gradient-to-br ${lesson.color} text-white shadow-lg`}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-3xl">{lesson.icon}</span>
-              <span className={`text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/25`}>{lesson.level}</span>
-              <span className="text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/20">{catMeta.label}</span>
+          {/* Header: level, category, title, summary; the formula is the yellow box to remember */}
+          <header>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              <p className="k-kicker">Lección · {catMeta.label}</p>
+              <span className="text-[11px] font-bold tracking-wider px-2 py-0.5 rounded-full border border-ink/15 text-ink">{lesson.level}</span>
+              <span className="flex-1" />
+              <DoneBadge on={!!done[lesson.id]} label="Hecha" />
+              <button onClick={() => markDone(lesson.id, !done[lesson.id])} className="text-[13px] font-semibold text-dust hover:text-ink min-h-9">{done[lesson.id] ? 'Desmarcar' : 'Marcar como hecha'}</button>
             </div>
-            <p className="font-serif font-bold text-2xl lg:text-3xl leading-tight mb-3">{lesson.title}</p>
-            <p className="text-sm opacity-90 mb-4">{lesson.summary}</p>
+            <h2 className="font-serif text-[2.1rem] lg:text-[3rem] text-ink leading-[1.05] tracking-[-0.025em] mt-2" style={{fontWeight:600}}>{lesson.title}</h2>
+            {lesson.titleEn && <p className="font-serif italic text-[1.1rem] lg:text-[1.3rem] text-ink/60 mt-2">{lesson.titleEn}</p>}
+            {lesson.summary && <p className="k-body mt-4">{lesson.summary}</p>}
             {lesson.formula && (
-              <div className="bg-black/20 rounded-xl p-4 font-mono text-sm leading-relaxed whitespace-pre-line">{lesson.formula}</div>
+              <div className="k-key mt-6 lg:px-6 lg:py-5">
+                <p className="k-key-l"><KeyIcon />Recuerda: la fórmula</p>
+                <div className="font-mono text-[14.5px] lg:text-[15px] leading-[1.8] text-ink whitespace-pre-line">{lesson.formula}</div>
+              </div>
             )}
-          </div>
+          </header>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex-1 min-w-0"><DoneBadge on={!!done[lesson.id]} label="Hecha" /></div>
-            <button onClick={() => markDone(lesson.id, !done[lesson.id])} className="text-xs font-semibold text-sienna-700 hover:text-orange-600 min-h-9">{done[lesson.id] ? 'Desmarcar' : 'Marcar como hecha'}</button>
-          </div>
-          {/* Toggle: Learn / Practice */}
-          <div className="flex gap-2">
-            <button onClick={() => { setPracticeMode(false); }} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${!practiceMode ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-              📖 Aprende
-            </button>
-            {lesson.practice && lesson.practice.length > 0 && (
-              <button onClick={() => { setPracticeMode(true); resetPractice(); }} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${practiceMode ? 'bg-orange-500 text-white' : dark ? 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1]' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-                🧠 Practica ({practiceTotal})
-              </button>
-            )}
-          </div>
+          {/* Learn / Practise */}
+          {lesson.practice && lesson.practice.length > 0 && (
+            <div className="k-tabs">
+              <button onClick={() => setPracticeMode(false)} className={`k-tab ${!practiceMode ? 'on' : ''}`}>Aprende</button>
+              <button onClick={() => { setPracticeMode(true); resetPractice(); }} className={`k-tab ${practiceMode ? 'on' : ''}`}>Practica · {practiceTotal}</button>
+            </div>
+          )}
 
           {!practiceMode ? (
             <>
               {/* Sections */}
               {lesson.sections.map((sec, si) => (
-                <Card key={si} dark={dark} className="p-5">
-                  {sec.heading && <p className={`text-base font-bold uppercase tracking-wide mb-3 ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{sec.heading}</p>}
-                  {sec.text && <p className={`text-base leading-relaxed mb-4 ${dark ? 'text-stone-300' : 'text-stone-600'}`}>{sec.text}</p>}
-                  {sec.examples && (
-                    <div className="space-y-3">
-                      {sec.examples.map((ex, ei) => (
-                        <div key={ei} className={`rounded-xl p-3 ${dark ? 'bg-white/[0.04]' : 'bg-stone-50'}`}>
-                          <div className="flex items-start gap-2">
-                            <p className="font-serif font-bold text-base flex-1">{ex.es}</p>
-                            <SpeakBtn text={ex.es} size="sm" />
-                          </div>
-                          <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{ex.en}</p>
-                        </div>
-                      ))}
-                    </div>
+                <section key={si} className="k-sec">
+                  {sec.heading && (
+                    <header className="k-sec-head">
+                      <span className="k-sec-no">{si + 1}</span>
+                      <h3 className="k-sec-title flex-1 min-w-0">{sec.heading.replace(/^★\s*/, '')}</h3>
+                      {/^★/.test(sec.heading) && <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{background:'#FFE36E',color:'#5c4400'}}>Clave</span>}
+                    </header>
                   )}
-                </Card>
+                  <div className="k-sec-body">
+                    {sec.text && (/^★/.test(sec.heading || '')
+                      ? <div className="k-key"><p className="k-key-l"><KeyIcon />Recuerda</p><p className="k-box-t">{sec.text}</p></div>
+                      : <p className="k-body"><Marked text={sec.text} /></p>)}
+                    {sec.examples && (
+                      <div>
+                        <p className="k-sub">Ejemplos</p>
+                        <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
+                          {sec.examples.map((ex, ei) => (
+                            <div key={ei} className="border-l-2 border-ink/15 pl-4 py-1">
+                              <div className="flex items-start gap-2">
+                                <p className="font-serif text-[17px] leading-snug text-ink flex-1 pt-1" lang="es">{ex.es}</p>
+                                <SpeakBtn text={ex.es} size="sm" />
+                              </div>
+                              <p className="text-[13.5px] mt-1 text-dust leading-snug">{ex.en}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
               ))}
 
               {/* Video embed */}
