@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Aprende" />
-<meta name="theme-color" content="#f7f4ee" />
+<meta name="theme-color" content="#fafaf8" />
 <script>
 // Generate icon synchronously and inject <link> tags inline so Arc / iOS
 // Safari see the href at parse time rather than after-script-runs.
@@ -31,7 +31,7 @@
     ctx.clip();
 
     // ── Background: carmín red ──────────────────────────────────
-    ctx.fillStyle = '#0D0440'; ctx.fillRect(0, 0, sz, sz);
+    ctx.fillStyle = '#2563EB'; ctx.fillRect(0, 0, sz, sz);
 
     // ── Subtle gold stripe (Spanish flag midband, 25% opacity) ──
     ctx.fillStyle = '#FF532D'; ctx.fillRect(58, 132, 64, 8);
@@ -90,26 +90,24 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        // Keeps Internal palette (7 November 2026). 'orange' is the primary scale used
-        // across the app, so it now carries Keeps navy; the Keeps orange accent is 'keeps'.
-        orange: {
-          50:'#f1f0f7', 100:'#e5e3f0', 200:'#cbc7e0', 300:'#a19bc4', 400:'#4a4185',
-          500:'#0D0440', 600:'#1b1259', 700:'#0D0440', 800:'#0a0333', 900:'#070226',
-        },
-        keeps: { DEFAULT:'#FF532D', 50:'#fff3ef', 100:'#ffe3da', 200:'#ffc4b3', 500:'#FF532D', 600:'#E64B26', 700:'#c23c1b' },
+        // Bright palette (7 November 2026): slate ink for text, cobalt 'brand' for fills and
+        // active states. 'orange' is the legacy primary scale, so it carries the same blue.
+        orange: { 50:'#eff4ff',100:'#dbe6fe',200:'#bfd3fe',300:'#93b4fd',400:'#3b82f6',500:'#2563EB',600:'#1D4ED8',700:'#1E40AF',800:'#1E3A8A',900:'#172554' },
+        brand: { DEFAULT:'#2563EB', 50:'#eff4ff',100:'#dbe6fe',200:'#bfd3fe',300:'#93b4fd',400:'#3b82f6',500:'#2563EB',600:'#1D4ED8',700:'#1E40AF',800:'#1E3A8A',900:'#172554' },
+        keeps: { DEFAULT:'#FF532D', 50:'#fff3ef', 100:'#ffe3da', 200:'#ffc4b3', 500:'#FF532D', 600:'#D2401C', 700:'#B8371A' },
         ochre: { 50:'#f6f1e7',100:'#ebe4d6',200:'#ead39f',300:'#ddb767',400:'#d29e33',500:'#C98A17',600:'#a87213',700:'#865b10',800:'#6b490d',900:'#573b0b' },
         oliva: { 50:'#ecf6ef',100:'#d4ecdc',200:'#a9d8b8',300:'#7cc194',400:'#4fab70',500:'#349E59',600:'#2b8249',700:'#22673a',800:'#1b512e',900:'#153f24' },
         anil:  { 50:'#f0f2f5',100:'#dfe3e9',200:'#c1c8d3',300:'#9aa5b5',400:'#7d8b9f',500:'#63738A',600:'#515f73',700:'#424d5e',800:'#363f4c',900:'#2c333e' },
-        sienna:{ 50:'#f3f2f8',100:'#e4e2f0',200:'#c9c5e0',300:'#9f98c6',400:'#6b6399',500:'#3a3560',600:'#1b1259',700:'#0D0440',800:'#0a0333',900:'#070226' },
-        stone: { 50:'#faf8f4',100:'#f1ede6',200:'#e3dfdc',300:'#cac6d0',400:'#a6a2b4',500:'#7b7791',600:'#5a5677',700:'#3a3560',800:'#241e4f',900:'#0D0440' },
+        sienna:{ 50:'#f8fafc',100:'#f1f4f8',200:'#e3e7ee',300:'#cbd2dc',400:'#98a1af',500:'#5E6675',600:'#4A5260',700:'#353C49',800:'#262C38',900:'#1C2230' },
+        stone: { 50:'#f8fafc',100:'#f1f4f8',200:'#e3e7ee',300:'#cbd2dc',400:'#98a1af',500:'#5E6675',600:'#4A5260',700:'#353C49',800:'#262C38',900:'#1C2230' },
         // KEEP: existing (used by gradient tiles & legacy components)
         terra: { 50:'#fdf6f0',100:'#fae8d8',200:'#f5cba8',300:'#eda872',400:'#e4823a',500:'#d4621a',600:'#b54d14',700:'#943b11',800:'#78300f',900:'#632a0e' },
         burg:  { 50:'#fdf2f4',100:'#fce7eb',200:'#f9c9d2',300:'#f49bab',400:'#ec6479',500:'#e03455',600:'#c41f3e',700:'#a21834',800:'#87162d',900:'#721529' },
-        paper: '#f7f4ee',
-        cream: '#efeae0',
-        surface: '#fffdfa',
-        ink:   '#0D0440',
-        dust:  '#7b7791',
+        paper: '#fafaf8',
+        cream: '#f1f3f6',
+        surface: '#ffffff',
+        ink:   '#1C2230',
+        dust:  '#5E6675',
       },
       fontFamily: {
         sans: ['var(--font-ui)'],
@@ -125,15 +123,15 @@ tailwind.config = {
 <style>
 :root {
   /* Keeps Internal tokens (mirrors the Tailwind palette) */
-  --paper:#f7f4ee; --cream:#efeae0; --cream-2:#e4ddd0; --surface:#fffdfa;
-  --ink:#0D0440; --ink-2:#3a3560; --dust:#7b7791; --faint:#a6a2b4;
-  --navy:#0D0440; --navy-2:#1b1259; --keeps:#FF532D; --keeps-d:#E64B26;
+  --paper:#fafaf8; --cream:#f1f3f6; --cream-2:#e3e7ee; --surface:#ffffff;
+  --ink:#1C2230; --ink-2:#353C49; --dust:#5E6675; --faint:#98a1af;
+  --navy:#2563EB; --navy-2:#1D4ED8; --keeps:#FF532D; --keeps-d:#D2401C;
   --good:#349E59; --good-2:#e6f2ea; --warn:#b4720c; --warn-2:#fbf0dc;
-  --line:rgba(13,4,64,.12); --line-2:rgba(13,4,64,.22);
-  --sh:0 1px 2px rgba(13,4,64,.04), 0 8px 22px rgba(13,4,64,.06);
-  --lift:0 2px 4px rgba(13,4,64,.05), 0 12px 28px rgba(13,4,64,.10);
+  --line:rgba(28,34,48,.12); --line-2:rgba(28,34,48,.22);
+  --sh:0 1px 2px rgba(28,34,48,.04), 0 8px 22px rgba(28,34,48,.06);
+  --lift:0 2px 4px rgba(28,34,48,.05), 0 12px 28px rgba(28,34,48,.10);
   /* legacy names still referenced in places */
-  --carmin:#0D0440; --ochre:#C98A17; --terra:#A0522D; --sienna:#0D0440; --oliva:#349E59; --anil:#63738A;
+  --carmin:#2563EB; --ochre:#C98A17; --terra:#A0522D; --sienna:#1C2230; --oliva:#349E59; --anil:#63738A;
 }
 
 html { font-size: 106.25%; } /* +1 px on base 16 px */
@@ -145,8 +143,8 @@ h1.font-serif, h2.font-serif, h3.font-serif, .font-serif.font-bold { font-weight
 .mesh-light { background-color: var(--paper); }
 .mesh-dark { background-color: var(--paper); }
 
-.glass-light { background: rgba(247,244,238,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-.glass-dark  { background: rgba(250,246,238,0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.glass-light { background: rgba(250,250,248,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.glass-dark  { background: rgba(250,250,248,0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 
 /* ── Editorial typography helpers ──────────────────────────── */
 /* Chuleta reading view: a wide canvas, and the area header widens with it so the left edges line up */
@@ -262,15 +260,15 @@ body.sheet-open .area-head { max-width: 90rem; }
 /* ── Keeps Internal components ─────────────────────────────── */
 .k-nav { display:flex; align-items:center; gap:.75rem; padding:.55rem .75rem; min-height:2.6rem; border-radius:10px;
   font-size:14.5px; font-weight:500; color: var(--ink-2); text-decoration:none; transition: background .15s, color .15s; }
-.k-nav:hover { background: rgba(13,4,64,.05); color: var(--ink); }
-.k-nav.on { background: var(--navy); color: #fff; box-shadow: 0 1px 2px rgba(13,4,64,.2); }
+.k-nav:hover { background: rgba(28,34,48,.05); color: var(--ink); }
+.k-nav.on { background: var(--navy); color: #fff; box-shadow: 0 1px 2px rgba(28,34,48,.2); }
 .k-nav svg { flex-shrink:0; opacity:.85; }
 .k-label { font-size:10.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color: var(--faint); }
 .k-tabs { display:flex; gap:1.75rem; border-bottom:1px solid var(--line); }
 .k-tab { position:relative; padding:.7rem 0 .8rem; font-size:15px; font-weight:500; color: var(--dust); white-space:nowrap; text-decoration:none; transition: color .15s; }
 .k-tab:hover { color: var(--ink); }
 .k-tab.on { color: var(--ink); font-weight:600; }
-.k-tab.on::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: var(--ink); border-radius:2px; }
+.k-tab.on::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: var(--navy); border-radius:2px; }
 .k-card { background: var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow: var(--sh); transition: box-shadow .2s, transform .2s, border-color .2s; }
 .k-card-hover:hover { box-shadow: var(--lift); transform: translateY(-2px); border-color: var(--line-2); }
 .k-chip { display:inline-flex; align-items:center; gap:.4rem; padding:0 .85rem; min-height:2.1rem; border-radius:999px; font-size:13.5px; font-weight:500;
@@ -293,7 +291,7 @@ body.sheet-open .area-head { max-width: 90rem; }
 /* ── Chuleta reading hierarchy: one reading face (Inter), navy on white, yellow only for the highlighter ── */
 .k-sec { background: var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow: var(--sh); overflow:hidden; }
 .k-sec-head { display:flex; align-items:center; gap:.85rem; padding:1.25rem 1.25rem 0; }
-.k-sec-no { flex-shrink:0; width:1.85rem; height:1.85rem; border-radius:8px; background: var(--ink); color:#fff; display:flex; align-items:center; justify-content:center;
+.k-sec-no { flex-shrink:0; width:1.85rem; height:1.85rem; border-radius:8px; background: var(--navy); color:#fff; display:flex; align-items:center; justify-content:center;
   font-family:var(--font-ui); font-weight:600; font-size:.85rem; font-variant-numeric: tabular-nums; }
 .k-sec-title { font-family:var(--font-ui); font-weight:600; color: var(--ink); font-size:1.2rem; line-height:1.3; letter-spacing:-.012em; }
 .k-sec-body { padding:1rem 1.25rem 1.5rem; }
@@ -303,9 +301,10 @@ body.sheet-open .area-head { max-width: 90rem; }
 .k-body { font-family:var(--font-ui); font-size:17px; line-height:1.65; color: var(--ink); max-width:68ch; }
 .k-mark { background: linear-gradient(180deg, transparent 50%, #FFDF6B 50%, #FFDF6B 94%, transparent 94%); color: inherit; font-weight:inherit;
   padding:0 .06em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-.k-key, .k-warn { border-radius:10px; background:#fbf9f5; border:1px solid var(--line); border-left:3px solid var(--ink); padding:.85rem 1.1rem .95rem; }
+.k-key, .k-warn { border-radius:10px; background:#f7f9fc; border:1px solid var(--line); border-left:3px solid var(--navy); padding:.85rem 1.1rem .95rem; }
 .k-warn { border-left-color: var(--keeps); }
 .k-key-l, .k-warn-l { display:flex; align-items:center; gap:.4rem; font-size:11.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color: var(--ink); margin-bottom:.3rem; }
+.k-key-l { color: var(--navy-2); }
 .k-warn-l { color: var(--keeps-d); }
 .k-box-t { font-family:var(--font-ui); font-size:16px; line-height:1.6; color: var(--ink); }
 .k-ex-es { font-family:var(--font-ui); font-weight:500; font-size:16.5px; line-height:1.45; color: var(--ink); }
@@ -329,17 +328,17 @@ body.sheet-open .area-head { max-width: 90rem; }
 }
 
 /* ── Top bar, phone tab bar ─────────────────────────────── */
-.k-top { background: rgba(247,244,238,.9); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom:1px solid var(--line); }
+.k-top { background: rgba(250,250,248,.92); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom:1px solid var(--line); }
 .k-topnav { position:relative; display:flex; align-items:center; gap:.45rem; height:100%; padding:0 .75rem; font-size:14.5px; font-weight:500; color: var(--dust); text-decoration:none; white-space:nowrap; transition: color .15s; }
 .k-topnav:hover { color: var(--ink); }
 .k-topnav.on { color: var(--ink); font-weight:600; }
-.k-topnav.on::after { content:''; position:absolute; left:.75rem; right:.75rem; bottom:-1px; height:2px; background: var(--keeps); border-radius:2px; }
+.k-topnav.on::after { content:''; position:absolute; left:.75rem; right:.75rem; bottom:-1px; height:2px; background: var(--navy); border-radius:2px; }
 .k-iconbtn { width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; color: var(--ink);
   background: var(--surface); border:1px solid var(--line); transition: border-color .15s, background .15s; flex-shrink:0; }
 .k-iconbtn:hover { border-color: var(--line-2); }
 .k-iconbtn:active { background: var(--cream); }
-.k-tabbar { background: rgba(255,253,250,.94); -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
-  border-top:1px solid var(--line); box-shadow: 0 -6px 24px -12px rgba(13,4,64,.12); }
+.k-tabbar { background: rgba(255,255,255,.94); -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
+  border-top:1px solid var(--line); box-shadow: 0 -6px 24px -12px rgba(28,34,48,.12); }
 .k-tabbar a { -webkit-tap-highlight-color: transparent; }
 .k-tabpill { position:relative; display:flex; align-items:center; justify-content:center; width:3.5rem; height:2rem; border-radius:999px; transition: background .2s, color .2s; }
 @media (max-width: 1023px) {
@@ -10767,7 +10766,7 @@ const AudioBus = (() => {
 
 function Card({ dark, className='', children, onClick }) {
   return (
-    <div onClick={onClick} className={`rounded-xl border transition-all bg-surface border-ink/[0.12] shadow-[0_1px_2px_rgba(13,4,64,0.04),0_8px_22px_rgba(13,4,64,0.06)] ${className}`}>
+    <div onClick={onClick} className={`rounded-xl border transition-all bg-surface border-ink/[0.12] shadow-[0_1px_2px_rgba(28,34,48,0.04),0_8px_22px_rgba(28,34,48,0.06)] ${className}`}>
       {children}
     </div>
   );
@@ -10815,7 +10814,7 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
   let ring = null, glyph = null;
   let cls = 'border transition-all flex-shrink-0 inline-flex items-center justify-center rounded-full relative';
   if (state === 'idle') {
-    cls += ' border-ink/15 bg-surface hover:border-ink hover:bg-ink hover:text-white text-ink';
+    cls += ' border-ink/15 bg-surface hover:border-ink hover:bg-brand hover:text-white text-ink';
     glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z" fill="currentColor"/><path d="M10.6 5.6a3.4 3.4 0 0 1 0 4.8"/><path d="M12.6 3.8a6 6 0 0 1 0 8.4"/></svg>);
   } else if (state === 'loading') {
     cls += ' border-orange-500/40 bg-paper text-orange-500';
@@ -10855,7 +10854,7 @@ function GlobalAudioStop() {
   if (!active) return null;
   return (
     <button onClick={() => AudioBus.stopAll()}
-      className="fixed bottom-24 lg:bottom-8 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-ink text-paper text-sm font-semibold shadow-lg hover:bg-sienna-900 transition-colors toast-in"
+      className="fixed bottom-24 lg:bottom-8 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-brand text-paper text-sm font-semibold shadow-lg hover:bg-sienna-900 transition-colors toast-in"
       style={{paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))'}}>
       <span className="inline-flex items-end gap-[2px] h-[12px]">
         <span className="audio-bar w-[2px] h-full bg-paper" />
@@ -11428,7 +11427,7 @@ function LevelChips({ value, onChange, levels }) {
       <span className="text-[10px] font-bold uppercase tracking-wider text-dust mr-1">Nivel</span>
       {[{ id:'all', label:'Todos' }, ...levels.map(l => ({ id:l, label:l }))].map(o => (
         <button key={o.id} onClick={() => onChange(o.id)} aria-pressed={value === o.id}
-          className={`px-3.5 min-h-9 rounded-full text-[13px] font-semibold transition-colors ${value === o.id ? 'bg-ink text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>{o.label}</button>
+          className={`px-3.5 min-h-9 rounded-full text-[13px] font-semibold transition-colors ${value === o.id ? 'bg-brand text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>{o.label}</button>
       ))}
     </div>
   );
@@ -11586,7 +11585,7 @@ function HoyPage({ goTo, go, onSearch }) {
                 </div>
               )}
               <div className="mt-4 flex flex-wrap gap-2">
-                <button onClick={() => goTo('hoy/diario')} className="min-h-11 px-4 rounded-xl bg-ink text-paper text-sm font-semibold hover:bg-sienna-700 transition-colors">
+                <button onClick={() => goTo('hoy/diario')} className="min-h-11 px-4 rounded-xl bg-brand text-paper text-sm font-semibold hover:bg-brand-600 transition-colors">
                   {doneN === 0 ? 'Abrir el Diario →' : doneN < cards.length ? 'Seguir con el Diario →' : 'Volver a leerlo →'}
                 </button>
                 <button onClick={() => goTo('hoy/archivo')} className="min-h-11 px-4 rounded-xl bg-cream text-sienna-700 text-sm font-semibold hover:bg-ochre-100 transition-colors">Archivo</button>
@@ -16841,7 +16840,7 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
             <p className="k-sub flex-1 !mb-0">Ejemplos reales</p>
             {ex.length > 1 && (
               <button onClick={() => playingHere ? seq.stop() : seq.play(index, ex.map(e => e.es))}
-                className={`inline-flex items-center gap-1.5 text-[13px] font-semibold px-3.5 min-h-9 rounded-full border transition-colors ${playingHere ? 'bg-ink border-ink text-white' : 'bg-surface text-ink border-ink/15 hover:border-ink/40'}`}>
+                className={`inline-flex items-center gap-1.5 text-[13px] font-semibold px-3.5 min-h-9 rounded-full border transition-colors ${playingHere ? 'bg-brand border-brand text-white' : 'bg-surface text-ink border-ink/15 hover:border-ink/40'}`}>
                 {playingHere ? '■ Parar' : '▶ Escuchar todo'}
               </button>
             )}
@@ -17023,7 +17022,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
           </div>
           <EnToggle />
           <button onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}
-            className={`flex-shrink-0 text-xs font-semibold px-3 min-h-10 rounded-full transition-colors ${tocOpen ? 'bg-ink text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>
+            className={`flex-shrink-0 text-xs font-semibold px-3 min-h-10 rounded-full transition-colors ${tocOpen ? 'bg-brand text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>
             Índice {tocOpen ? '▴' : '▾'}
           </button>
         </div>
@@ -17072,7 +17071,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
               return (
                 <div className="mt-4 lg:mt-0 flex-shrink-0 no-print">
                   {missing ? (
-                    <button onClick={addAll} className="text-sm font-semibold px-4 min-h-10 rounded-full bg-ink text-white hover:bg-orange-600 transition-colors">
+                    <button onClick={addAll} className="text-sm font-semibold px-4 min-h-10 rounded-full bg-brand text-white hover:bg-orange-600 transition-colors">
                       + Añadir {missing} frases a Tarjetas
                     </button>
                   ) : <span className="text-sm font-semibold text-oliva-700">✓ Todas en Tarjetas</span>}
@@ -17386,7 +17385,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <p className="k-body mb-5" style={{fontSize:'15px',lineHeight:1.55}}>Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
         <button onClick={() => { setErrDrill(true); window.scrollTo(0, 0); }}
-          className="group w-full text-left mb-6 rounded-xl bg-ink hover:bg-orange-600 text-white px-5 py-4 flex items-center gap-4 transition-colors">
+          className="group w-full text-left mb-6 rounded-xl bg-brand hover:bg-orange-600 text-white px-5 py-4 flex items-center gap-4 transition-colors">
           <div className="flex-1 min-w-0">
             <p className="eyebrow" style={{ color:'rgba(250,246,238,0.7)' }}>Ponte a prueba</p>
             <p className="text-xl mt-1" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>¿Cuál es correcto?</p>
@@ -20248,7 +20247,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
             <button onClick={handleSpeak}
               title={isSpanishMode ? 'Habla en español' : 'Speak in English'}
               aria-label={recording ? 'Grabando' : 'Dictar'}
-              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 flex items-center ${recording?'bg-keeps text-white':'bg-ink hover:bg-ink/90 text-white'}`}>
+              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 flex items-center ${recording?'bg-keeps text-white':'bg-brand hover:bg-brand-600 text-white'}`}>
               <MicIcon />
             </button>
             {query && (
@@ -23188,7 +23187,7 @@ function EstudioSettings({ dark }) {
       <div className="flex gap-2">
         {['A2', 'B1', 'B2'].map(l => (
           <button key={l} onClick={() => setNivel(l)} aria-pressed={nivel === l}
-            className={`min-h-11 px-5 rounded-xl text-sm font-bold transition-colors ${nivel === l ? 'bg-ink text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>{l}</button>
+            className={`min-h-11 px-5 rounded-xl text-sm font-bold transition-colors ${nivel === l ? 'bg-brand text-paper' : 'bg-cream text-sienna-700 hover:bg-ochre-100'}`}>{l}</button>
         ))}
       </div>
     </Card>
@@ -24647,7 +24646,7 @@ function Pronunciacion({ onBack, dark }) {
               <SpeakerIcon /> Escuchar
             </button>
             <button onClick={handleRecord}
-              className={`rounded-xl px-6 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${recording?'bg-keeps text-white':'bg-ink hover:bg-ink/90 text-white'}`}>
+              className={`rounded-xl px-6 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${recording?'bg-keeps text-white':'bg-brand hover:bg-brand-600 text-white'}`}>
               <MicIcon /> {recording ? 'Escuchando…' : 'Hablar'}
             </button>
             <button onClick={handleNext}
@@ -24919,7 +24918,7 @@ function FontPicker() {
   };
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen(o => !o)} aria-label="Tipo de letra" title="Tipo de letra" className={`k-iconbtn ${open ? '!border-ink' : ''}`}>
+      <button onClick={() => setOpen(o => !o)} aria-label="Tipo de letra" title="Tipo de letra" className={`k-iconbtn ${open ? '!border-brand' : ''}`}>
         <span className="text-[14px] font-semibold tracking-tight">Aa</span>
       </button>
       {open && (
@@ -24927,7 +24926,7 @@ function FontPicker() {
           <p className="px-3 pt-1.5 pb-2 text-[11px] font-semibold uppercase tracking-[0.09em] text-dust">Tipo de letra</p>
           {FONT_CHOICES.map(c => (
             <button key={c.id} onClick={() => { setFont(c.id); setOpen(false); }}
-              className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-colors ${font === c.id ? 'bg-ink text-white' : 'text-ink hover:bg-cream'}`}>
+              className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-colors ${font === c.id ? 'bg-brand text-white' : 'text-ink hover:bg-cream'}`}>
               <span className="flex-1 min-w-0">
                 <span className="block text-[16px] leading-tight" style={{ fontFamily: c.stack }}>{c.label}</span>
                 <span className={`block text-[12.5px] mt-0.5 ${font === c.id ? 'text-white/70' : 'text-dust'}`} style={{ fontFamily: c.stack }}>
@@ -24949,7 +24948,7 @@ function TopBar({ route, goArea, goTo, onSearch, badgeFor, badgeTitle }) {
     <header className="k-top lg:sticky lg:top-0 z-40 no-print">
       <div className="max-w-5xl mx-auto px-4 lg:px-8 h-14 lg:h-16 flex items-center gap-3 lg:gap-6">
         <a href="#hoy" onClick={e => { e.preventDefault(); goArea('hoy'); }} className="flex items-center gap-2.5 flex-shrink-0 no-underline">
-          <span className="w-8 h-8 rounded-lg bg-ink flex items-center justify-center">
+          <span className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center">
             <span className="font-serif text-white text-[15px] leading-none" style={{fontWeight:600}}>Ñ</span>
           </span>
           <span className="font-serif text-[17px] text-ink leading-none tracking-[-0.01em]" style={{fontWeight:600}}>La Vida Español</span>
@@ -24976,7 +24975,7 @@ function TopBar({ route, goArea, goTo, onSearch, badgeFor, badgeTitle }) {
         <button onClick={onSearch} aria-label="Buscar" className="lg:hidden k-iconbtn">{searchIcon}</button>
         <FontPicker />
         <a href="#ajustes" onClick={e => { e.preventDefault(); goTo('ajustes'); }} aria-label="Ajustes" title="Ajustes"
-          className={`k-iconbtn ${route.area === 'ajustes' ? '!bg-ink !text-white !border-ink' : ''}`}>
+          className={`k-iconbtn ${route.area === 'ajustes' ? '!bg-brand !text-white !border-brand' : ''}`}>
           <NavIcon id="ajustes" size={17} />
         </a>
       </div>
@@ -25120,10 +25119,10 @@ function App() {
             return (
               <a key={a.id} href={`#${a.id}`} onClick={e => { e.preventDefault(); goArea(a.id); }} aria-label={a.label} aria-current={on ? 'page' : undefined}
                 className="flex flex-col items-center gap-1 flex-1 min-w-0 pb-1 no-underline select-none">
-                <span className={`k-tabpill ${on ? 'bg-ink text-white' : 'text-dust'}`}>
+                <span className={`k-tabpill ${on ? 'bg-brand text-white' : 'text-dust'}`}>
                   <NavIcon id={a.id} size={20} />
                   {badge > 0 && (
-                    <span title={badgeTitle(a.id)} className="absolute -top-1 right-1.5 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-keeps text-white text-[10px] font-bold leading-[1.1rem] text-center ring-2 ring-[#fffdfa]">{badge > 99 ? '99+' : badge}</span>
+                    <span title={badgeTitle(a.id)} className="absolute -top-1 right-1.5 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-keeps text-white text-[10px] font-bold leading-[1.1rem] text-center ring-2 ring-white">{badge > 99 ? '99+' : badge}</span>
                   )}
                 </span>
                 <span className={`text-[11px] leading-none truncate max-w-full px-0.5 ${on ? 'text-ink font-semibold' : 'text-dust font-medium'}`}>{a.short || a.label}</span>
