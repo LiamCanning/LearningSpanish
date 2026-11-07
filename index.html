@@ -9718,7 +9718,7 @@ function setStorage(k, v) {
       });
       localStorage.setItem(k, JSON.stringify(v));
     } catch (e2) {
-      try { ToastBus.push('⚠️ No se pudo guardar - almacenamiento lleno'); } catch (e3) {}
+      try { ToastBus.push('No se pudo guardar - almacenamiento lleno'); } catch (e3) {}
     }
   }
 }
@@ -11053,12 +11053,7 @@ function ViewToggle({ options, active, onChange, dark }) {
     <div className="flex gap-3 mb-6">
       {options.map(o => (
         <button key={o.id} onClick={() => onChange(o.id)}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-sm font-semibold transition-all ${
-            active === o.id
-              ? 'bg-[#C4202E] text-white shadow-sm'
-              : dark ? 'bg-white/[0.07] text-stone-300 hover:bg-white/[0.12]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-          }`}>
-          {o.emoji && <span>{o.emoji}</span>}
+          className={`k-chip flex-1 justify-center min-h-11 text-[14.5px] ${active === o.id ? 'on' : ''}`}>
           <span>{o.label}</span>
           {o.count !== undefined && <span className="opacity-60 text-xs">({o.count})</span>}
         </button>
@@ -11077,15 +11072,10 @@ function CategoryNav({ categories, active, onChange, dark }) {
         const isActive = active === c.id;
         return (
           <button key={c.id} onClick={() => onChange(c.id)}
-            className={`text-left p-4 rounded-2xl border-2 transition-all ${
-              isActive
-                ? 'border-[#C4202E] bg-orange-50'
-                : dark ? 'border-white/[0.08] bg-white/[0.04] hover:border-white/[0.20] hover:bg-white/[0.08]'
-                       : 'border-stone-200 bg-white hover:border-stone-300 hover:bg-stone-50'
-            }`}>
-            {c.emoji && <span className="text-xl block mb-1">{c.emoji}</span>}
-            <p className={`font-bold text-sm leading-tight ${isActive ? 'text-[#C4202E]' : ''}`}>{c.label}</p>
-            {c.sub && <p className="text-xs mt-0.5 text-stone-500">{c.sub}</p>}
+            className={`k-card text-left px-4 py-3.5 ${isActive ? '' : 'k-card-hover'}`}
+            style={isActive ? {borderColor:'var(--ink)', boxShadow:'inset 0 0 0 1px var(--ink)'} : undefined}>
+            <p className="text-[15px] leading-tight text-ink" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{c.label}</p>
+            {c.sub && <p className="text-[13px] mt-1 text-dust leading-snug">{c.sub}</p>}
           </button>
         );
       })}
@@ -11100,17 +11090,17 @@ function SectionIndex({ sections, dark }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {sections.map(s => (
-        <button key={s.id} onClick={s.onClick} className="text-left">
-          <Card dark={dark} className="p-5 flex items-start gap-4 hover:shadow-lg transition-all hover:-translate-y-0.5">
-            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center text-2xl flex-shrink-0 shadow-sm`}>
-              {s.emoji}
+        <button key={s.id} onClick={s.onClick} className="text-left group">
+          <div className="k-card k-card-hover h-full flex flex-col p-5 lg:p-6">
+            <p className="text-[1.2rem] leading-[1.25] text-ink tracking-[-0.012em]" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{s.label}</p>
+            {s.sub && <p className="text-[14.5px] mt-1.5 leading-relaxed text-dust">{s.sub}</p>}
+            <div className="flex-1" />
+            <div className="mt-4 pt-3.5 border-t border-ink/10 flex items-center gap-3 text-[13px] text-dust">
+              {s.count !== undefined && <span>{s.count}</span>}
+              <span className="flex-1" />
+              <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Abrir →</span>
             </div>
-            <div className="flex-1 min-w-0 pt-0.5">
-              <p className="font-bold text-base leading-tight">{s.label}</p>
-              {s.sub && <p className={`text-xs mt-0.5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{s.sub}</p>}
-              {s.count !== undefined && <p className="text-xs font-semibold mt-1.5 text-orange-500">{s.count} →</p>}
-            </div>
-          </Card>
+          </div>
         </button>
       ))}
     </div>
@@ -11671,7 +11661,7 @@ function HoyPage({ goTo, go, onSearch }) {
         </div>
 
         <div className="mt-12 pt-6 border-t border-ink/10 flex items-center justify-between gap-3">
-          <p className="text-xs text-dust">{xpState.total} XP · {level.label} {level.emoji} · Mejor racha: {(n => `${n} ${n === 1 ? 'día' : 'días'}`)(streak.best || streak.count)}</p>
+          <p className="text-xs text-dust">{xpState.total} XP · {level.label} · Mejor racha: {(n => `${n} ${n === 1 ? 'día' : 'días'}`)(streak.best || streak.count)}</p>
         </div>
       </section>
     </div>
@@ -12236,97 +12226,70 @@ function TenseCard({ card, dark }) {
   // Shared inner renderer – used for all tenses (including the special vs-card)
   const renderInner = () => (
     <>
-      {/* ── 1. Bold heading ─────────────────────────────────── */}
-      <p className="font-serif font-bold text-2xl lg:text-3xl mb-0.5">{card.title}</p>
-      <p className={`text-sm mb-5 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.subtitle}</p>
+      {/* Heading, then concept as body text; formation, claves and warnings as callouts */}
+      <p className="k-kicker">Tiempo verbal</p>
+      <h2 className="font-serif text-[1.9rem] lg:text-[2.5rem] text-ink leading-[1.08] tracking-[-0.02em] mt-1.5" style={{fontWeight:600}}>{card.title}</h2>
+      {card.subtitle && <p className="font-serif italic text-[1.05rem] lg:text-[1.2rem] text-ink/60 mt-1.5">{card.subtitle}</p>}
+      {card.concept && <p className="k-body mt-4">{card.concept}</p>}
 
-      {/* ── 2. Concept + formation (orange) ─────────────────── */}
-      {(card.concept || card.formation) && (
-        <div className={`rounded-xl p-4 mb-4 ${dark ? 'bg-orange-900/20' : 'bg-orange-50'}`}>
-          <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${dark ? 'text-orange-300' : 'text-orange-600'}`}>Concepto</p>
-          {card.concept && <p className={`text-sm mb-2 ${dark ? 'text-orange-100' : 'text-orange-900'}`}>{card.concept}</p>}
-          {card.formation && <p className={`text-xs ${dark ? 'text-orange-300' : 'text-orange-700'}`}><strong>Formación:</strong> {card.formation}</p>}
+      {card.formation && (
+        <div className="k-key mt-5">
+          <p className="k-key-l"><KeyIcon />Formación</p>
+          <p className="k-box-t">{card.formation}</p>
         </div>
       )}
 
-      {/* ── 3. ✅ Key Points (green) ─────────────────────────── */}
       {card.keyPoints && card.keyPoints.length > 0 && (
-        <div className={`rounded-xl p-4 mb-4 ${dark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>✅ Claves</p>
-          <ul className="space-y-2">
+        <div className="k-key mt-4">
+          <p className="k-key-l"><KeyIcon />Claves</p>
+          <ul className="space-y-1.5">
             {card.keyPoints.map((pt, i) => (
-              <li key={i} className={`text-sm flex gap-2 leading-snug ${dark ? 'text-emerald-100' : 'text-emerald-900'}`}>
-                <span className="flex-shrink-0 font-bold">•</span><span>{pt}</span>
-              </li>
+              <li key={i} className="k-box-t flex gap-2.5"><span className="flex-shrink-0 text-ink/40">•</span><span>{pt}</span></li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* ── 4. ⚠️ Must Remember (amber) ──────────────────────── */}
       {card.mustRemember && card.mustRemember.length > 0 && (
-        <div className={`rounded-xl p-4 mb-4 ${dark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-amber-300' : 'text-amber-700'}`}>⚠️ No lo olvides</p>
-          <ul className="space-y-2">
+        <div className="k-warn mt-4">
+          <p className="k-warn-l"><WarnIcon />Ojo</p>
+          <ul className="space-y-1.5">
             {card.mustRemember.map((pt, i) => (
-              <li key={i} className={`text-sm flex gap-2 leading-snug ${dark ? 'text-amber-100' : 'text-amber-900'}`}>
-                <span className="flex-shrink-0 font-bold">!</span><span>{pt}</span>
-              </li>
+              <li key={i} className="k-box-t flex gap-2.5"><span className="flex-shrink-0 text-keeps-600">•</span><span>{pt}</span></li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* ── 5. Conjugation table ─────────────────────────────── */}
-      {card.table && card.table.length > 0 && (
-        <div className="mb-4">
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Conjugación</p>
-          <DataTable data={card.table} dark={dark} />
+      {[['Conjugación', card.table], ['Verbos irregulares', card.irregulars], ['Cambios de raíz', card.stemChanges]].map(([label, data]) => data && data.length > 0 && (
+        <div key={label} className="mt-7">
+          <p className="k-sub">{label}</p>
+          <DataTable data={data} dark={dark} refined />
         </div>
-      )}
+      ))}
 
-      {/* ── 6. Irregular verbs ───────────────────────────────── */}
-      {card.irregulars && card.irregulars.length > 0 && (
-        <div className="mb-4">
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Verbos irregulares</p>
-          <DataTable data={card.irregulars} dark={dark} />
-        </div>
-      )}
-
-      {/* ── 7. Stem changes ──────────────────────────────────── */}
-      {card.stemChanges && card.stemChanges.length > 0 && (
-        <div className="mb-4">
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Cambios de raíz</p>
-          <DataTable data={card.stemChanges} dark={dark} />
-        </div>
-      )}
-
-      {/* ── 8. Examples with audio ───────────────────────────── */}
       {card.examples && card.examples.length > 0 && (
-        <div className="mb-4">
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Ejemplos</p>
-          <div className="space-y-2">
+        <div className="mt-7">
+          <p className="k-sub">Ejemplos</p>
+          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
             {card.examples.map((ex, i) => (
-              <div key={i} className={`rounded-lg p-3 ${dark ? 'bg-white/[0.03]' : 'bg-stone-50'}`}>
-                <div className="flex items-start gap-2 mb-0.5">
-                  <p className="text-sm font-semibold flex-1">{ex.es}</p>
+              <div key={i} className="border-l-2 border-ink/15 pl-4 py-1">
+                <div className="flex items-start gap-2">
+                  <p className="k-ex-es flex-1 pt-1.5" lang="es">{ex.es}</p>
                   <SpeakBtn text={ex.es} size="sm" />
                 </div>
-                <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{ex.en}</p>
+                <p className="k-ex-en">{ex.en}</p>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── 9. Trigger words ─────────────────────────────────── */}
       {card.triggers && card.triggers.length > 0 && (
-        <div>
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Activadores temporales</p>
-          <div className="flex flex-wrap gap-1.5">
-            {card.triggers.map((t, i) => (
-              <span key={i} className={`text-xs px-2 py-1 rounded-full ${dark ? 'bg-white/[0.08] text-stone-300' : 'bg-stone-100 text-stone-600'}`}>{t}</span>
-            ))}
+        <div className="mt-7">
+          <p className="k-sub">Activadores temporales</p>
+          <div className="flex flex-wrap gap-2">
+            {card.triggers.map((t, i) => <span key={i} className="k-chip" lang="es">{t}</span>)}
           </div>
         </div>
       )}
@@ -12334,9 +12297,9 @@ function TenseCard({ card, dark }) {
   );
 
   return (
-    <Card dark={dark} className="p-5 lg:p-7 mb-4">
+    <div className="k-sec px-5 py-6 lg:px-9 lg:py-8 mb-4">
       {renderInner()}
-    </Card>
+    </div>
   );
 }
 
@@ -12371,7 +12334,6 @@ function Tiempos({ onBack, dark, onSearch }) {
     );
   }
 
-  const tabColors = TENSE_TAB_COLORS[tab] || TENSE_TAB_COLORS.pasado;
 
   return (
     <div>
@@ -12382,19 +12344,15 @@ function Tiempos({ onBack, dark, onSearch }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {(TENSES[tab] || []).map(card => (
               <button key={card.id} onClick={() => setSelectedTense(card)}
-                className={`min-w-0 text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 flex flex-col ${dark ? 'bg-white/[0.04] border-white/[0.08] hover:bg-white/[0.07]' : 'bg-white border-stone-200/80 shadow-sm'}`}>
-                {/* Colour strip */}
-                <div className={`h-1.5 w-full bg-gradient-to-r ${tabColors.tile}`} />
-                <div className="p-4 flex flex-col flex-1">
-                  <p className="font-serif font-bold text-base lg:text-lg mb-1 leading-snug break-words" lang="es" style={{hyphens:'auto', WebkitHyphens:'auto'}}>{card.title}</p>
-                  {card.subtitle && (
-                    <p className={`text-xs lg:text-sm mb-2 font-medium ${dark ? 'text-orange-300' : 'text-orange-600'}`}>{card.subtitle}</p>
-                  )}
-                  {card.when && (
-                    <p className={`text-sm leading-relaxed line-clamp-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{card.when}</p>
-                  )}
-                  <p className={`text-xs font-semibold mt-auto pt-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>Ver conjugación →</p>
-                </div>
+                className="group min-w-0 text-left k-card k-card-hover flex flex-col p-5">
+                  {card.subtitle && <p className="k-kicker mb-2.5 line-clamp-1">{card.subtitle}</p>}
+                  <p className="text-[1.15rem] leading-[1.25] text-ink tracking-[-0.012em] break-words" lang="es" style={{fontFamily:'var(--font-ui)',fontWeight:600,hyphens:'auto',WebkitHyphens:'auto'}}>{card.title}</p>
+                  {card.when && <p className="text-[14.5px] mt-2 leading-relaxed line-clamp-3 text-dust">{card.when}</p>}
+                  <div className="flex-1" />
+                  <div className="mt-4 pt-3 border-t border-ink/10 flex text-[13px]">
+                    <span className="flex-1" />
+                    <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Ver conjugación →</span>
+                  </div>
               </button>
             ))}
           </div>
@@ -14924,7 +14882,6 @@ function Conversaciones({ onBack, dark, onSearch, jump }) {
             <button key={c.id} onClick={() => setSelected(c)} className="text-left">
               <Card dark={dark} className="p-5 hover:shadow-md transition-shadow h-full">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">{c.emoji}</span>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700">{c.level}</span>
                   <span className="text-xs text-stone-400 ml-auto">{c.lines.length} líneas</span>
                 </div>
@@ -16823,6 +16780,8 @@ function Marked({ text }) {
   return <>{t.slice(0, i)}<mark className="k-mark">{ph}</mark>{t.slice(i + ph.length)}</>;
 }
 const KeyIcon = () => <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1.5l1.9 4 4.4.5-3.3 3 .9 4.4L8 11.2l-3.9 2.2.9-4.4-3.3-3 4.4-.5z"/></svg>;
+const MicIcon = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden><rect x="5.5" y="1.5" width="5" height="8.5" rx="2.5"/><path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v2"/></svg>;
+const SpeakerIcon = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M2 6h2.5L8 3v10L4.5 10H2z"/><path d="M10.5 5.5a3.5 3.5 0 0 1 0 5M12.5 3.5a6.3 6.3 0 0 1 0 9"/></svg>;
 const WarnIcon = () => <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M8 2L1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.8v.1"/></svg>;
 
 const sheetHeadingShort = (h) => String(h || '').replace(/^\d+\s*·\s*/, '');
@@ -17663,9 +17622,6 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
         {VOCAB_THEMES.map(theme => (
           <button key={theme.theme} onClick={() => setSelectedTheme(theme)}
             className={`rounded-2xl p-6 text-left transition-all hover:scale-[1.02] hover:shadow-md min-h-[160px] ${dark ? 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border border-stone-200/80 shadow-sm'}`}>
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 ${colorAccentMap[theme.color] || 'bg-stone-400'} text-white`}>
-              {theme.emoji}
-            </div>
             <p className="font-bold text-base lg:text-lg leading-tight">{theme.titleEs}</p>
             <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{theme.titleEn}</p>
             <p className={`text-xs mt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{theme.words.length} palabras</p>
@@ -17740,7 +17696,7 @@ function MisPalabras({ dark, onOpenTheme }) {
         return (
           <section key={key} className="mb-8">
             <div className="flex items-baseline gap-3 mb-3">
-              <h3 className="font-serif font-bold text-lg">{theme ? `${theme.emoji} ${theme.titleEs}` : 'Otras palabras'}</h3>
+              <h3 className="font-serif font-bold text-lg">{theme ? theme.titleEs : 'Otras palabras'}</h3>
               {theme && <button onClick={() => onOpenTheme(theme)} className={`text-xs font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>Ver tema →</button>}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -17802,7 +17758,7 @@ function Vocabulario({ onBack, dark, only = 'temas', onSearch, jump }) {
       {!selectedTheme && (
         <div className="px-4 lg:px-8 pt-6 max-w-5xl mx-auto">
           <div className="flex gap-2">
-            {[{id:'todos', label:'Todos los temas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
+            {[{id:'todos', label:'Todos los temas'}, {id:'trabajo', label:'Trabajo'}].map(o => (
               <button key={o.id} onClick={() => setTemasFilter(o.id)}
                 className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${temasFilter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
             ))}
@@ -17857,9 +17813,6 @@ function ConectoresPanel({ dark }) {
           <span>←</span> Todos los conectores
         </button>
         <div className="flex items-center gap-3 mb-5">
-          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-3xl shadow-sm`}>
-            {meta.emoji}
-          </div>
           <div>
             <p className="font-serif font-bold text-2xl leading-tight">{activeSelected.group}</p>
             <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{activeSelected.groupEn}</p>
@@ -17907,9 +17860,6 @@ function ConectoresPanel({ dark }) {
           return (
             <button key={gi} onClick={() => setSelectedGroup(group)} className="text-left">
               <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>
-                  {meta.emoji}
-                </div>
                 <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.group}</p>
                 <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.groupEn}</p>
                 <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{group.items.length} conectores →</p>
@@ -18167,7 +18117,7 @@ function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
 
           {section === 'situaciones' && (
             <div className="flex gap-2 mb-5">
-              {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'💼 Trabajo'}].map(o => (
+              {[{id:'todas', label:'Todas'}, {id:'trabajo', label:'Trabajo'}].map(o => (
                 <button key={o.id} onClick={() => setSitFilter(o.id)}
                   className={`px-4 min-h-10 rounded-full text-sm font-semibold transition-colors ${sitFilter === o.id ? 'bg-orange-500 text-paper' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>{o.label}</button>
               ))}
@@ -18181,7 +18131,6 @@ function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
                 return (
                   <button key={si} onClick={() => setSelectedSit(sit)} className="text-left">
                     <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>{meta.emoji}</div>
                       <p className="font-bold text-base lg:text-lg leading-tight mb-1">{sit.situation}</p>
                       <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{sit.situationEn}</p>
                       <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{sit.phrases.length} frases →</p>
@@ -18202,7 +18151,6 @@ function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
                 {MANDATOS_DATA.map((group) => (
                   <button key={group.id} onClick={() => setSelectedMandato(group)} className="text-left">
                     <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${group.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>{group.emoji}</div>
                       <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
                       <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
                       <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{group.phrases.length} mandatos →</p>
@@ -18255,7 +18203,6 @@ function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
                 {valGroups.map(g => (
                   <button key={g.key} onClick={() => setSelectedValGroup(g)} className="text-left">
                     <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[160px] flex flex-col">
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${g.color} flex items-center justify-center text-2xl mb-3 shadow-sm`}>{g.emoji}</div>
                       <p className="font-bold text-base lg:text-lg leading-tight mb-1">{g.title}</p>
                       <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{g.titleEn}</p>
                       <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{g.indices.length} frases →</p>
@@ -18823,11 +18770,13 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
 
               {/* Video embed */}
               {lesson.video && lesson.video.id && (
-                <Card dark={dark} className="overflow-hidden">
-                  <div className={`px-5 py-3 border-b ${dark ? 'border-white/10' : 'border-stone-100'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-widest ${dark ? 'text-stone-400' : 'text-stone-500'}`}>📺 Video - {lesson.video.channel}</p>
-                    <p className={`text-sm font-semibold mt-0.5 ${dark ? 'text-stone-200' : 'text-stone-700'}`}>{lesson.video.title}</p>
-                  </div>
+                <section className="k-sec">
+                  <header className="k-sec-head pb-4">
+                    <div className="min-w-0">
+                      <p className="k-sub mb-1">Vídeo · {lesson.video.channel}</p>
+                      <h3 className="k-sec-title">{lesson.video.title}</h3>
+                    </div>
+                  </header>
                   <div className="aspect-video">
                     <iframe
                       src={`https://www.youtube-nocookie.com/embed/${lesson.video.id}`}
@@ -18838,21 +18787,20 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
                       loading="lazy"
                     />
                   </div>
-                </Card>
+                </section>
               )}
             </>
           ) : (
             /* Practice mode */
             <div className="space-y-4">
               {allAnswered && (
-                <div className={`rounded-2xl p-5 text-center ${practiceScore === practiceTotal ? (dark ? 'bg-emerald-500/20' : 'bg-emerald-50') : (dark ? 'bg-amber-500/20' : 'bg-amber-50')}`}>
-                  <p className="text-3xl mb-2">{practiceScore === practiceTotal ? '🎉' : '💪'}</p>
-                  <p className={`font-bold text-lg ${practiceScore === practiceTotal ? (dark ? 'text-emerald-300' : 'text-emerald-700') : (dark ? 'text-amber-300' : 'text-amber-700')}`}>
-                    {practiceScore} / {practiceTotal} {practiceScore === practiceTotal ? '¡Perfecto!' : '- Sigue practicando'}
-                  </p>
-                  <div className="mt-3 flex flex-wrap justify-center gap-2">
-                    <button onClick={resetPractice} className="min-h-10 px-4 rounded-xl text-sm font-semibold text-orange-600 hover:bg-orange-50">↻ Reintentar</button>
-                    {nextLesson && <button onClick={() => openLesson(nextLesson)} className="min-h-10 px-4 rounded-xl bg-ink text-paper text-sm font-semibold hover:bg-sienna-700">Siguiente: {nextLesson.title} →</button>}
+                <div className={practiceScore === practiceTotal ? 'k-key lg:px-6 lg:py-5' : 'k-warn lg:px-6 lg:py-5'}>
+                  <p className={practiceScore === practiceTotal ? 'k-key-l' : 'k-warn-l'}>Resultado</p>
+                  <p className="font-serif text-ink leading-none mt-1" style={{fontSize:'2.4rem',fontWeight:500,letterSpacing:'-.02em'}}>{practiceScore} / {practiceTotal}</p>
+                  <p className="k-box-t mt-2">{practiceScore === practiceTotal ? '¡Perfecto! Lo tienes.' : 'Casi. Repasa las que fallaste y vuelve a intentarlo.'}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button onClick={resetPractice} className="k-chip">↻ Reintentar</button>
+                    {nextLesson && <button onClick={() => openLesson(nextLesson)} className="k-chip on">Siguiente: {nextLesson.title} →</button>}
                   </div>
                 </div>
               )}
@@ -18861,10 +18809,10 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
                 const isCorrect = answered && showResults[qi] === p.correct;
                 return (
                   <Card key={qi} dark={dark} className={`p-5 ${answered ? (isCorrect ? 'ring-2 ring-emerald-400' : 'ring-2 ring-rose-400') : ''}`}>
-                    <p className={`font-bold text-base mb-3 ${dark ? 'text-stone-100' : 'text-stone-800'}`}>
-                      <span className={`inline-block w-7 h-7 rounded-full text-center leading-7 text-sm font-bold mr-2 ${dark ? 'bg-white/10' : 'bg-stone-100'}`}>{qi + 1}</span>
-                      {p.q}
-                    </p>
+                    <div className="flex items-start gap-3 mb-4">
+                      <span className="k-sec-no">{qi + 1}</span>
+                      <p className="k-ex-es flex-1 pt-0.5">{p.q}</p>
+                    </div>
                     <div className="space-y-2">
                       {p.opts.map((opt, oi) => {
                         const isSelected = answers[qi] === oi;
@@ -19649,22 +19597,23 @@ function EscrituraView({ prompt, dark, onBack, onSearch }) {
       <BackHeader title={prompt.title} subtitle={`Nivel ${prompt.level} · Objetivo: ${target} palabras`} onBack={onBack} dark={dark} onSearch={onSearch} />
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <Card dark={dark} className="p-5 mb-4">
-          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${dark ? 'text-orange-300' : 'text-orange-600'}`}>📝 Tu tarea</p>
-          <p className={`text-base leading-relaxed ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{prompt.prompt}</p>
+          <p className="k-sub">Tu tarea</p>
+          <p className="k-body">{prompt.prompt}</p>
         </Card>
 
         <div className="mb-4">
           <button onClick={() => setShowTips(!showTips)}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${dark ? 'bg-white/[0.06] text-stone-200 hover:bg-white/[0.10]' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-            <span>💡 Consejos gramaticales ({prompt.tips.length})</span>
+            <span>Consejos gramaticales ({prompt.tips.length})</span>
             <span>{showTips ? '▲' : '▼'}</span>
           </button>
           {showTips && (
-            <div className={`mt-2 rounded-xl p-4 ${dark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-              <ul className="space-y-2">
+            <div className="k-key mt-2">
+              <p className="k-key-l"><KeyIcon />Recuerda</p>
+              <ul className="space-y-1.5">
                 {prompt.tips.map((tip, i) => (
-                  <li key={i} className={`text-sm flex gap-2 ${dark ? 'text-emerald-100' : 'text-emerald-900'}`}>
-                    <span className="flex-shrink-0">✅</span><span>{tip}</span>
+                  <li key={i} className="k-box-t flex gap-2.5">
+                    <span className="flex-shrink-0 text-ink/40">•</span><span>{tip}</span>
                   </li>
                 ))}
               </ul>
@@ -19687,7 +19636,7 @@ function EscrituraView({ prompt, dark, onBack, onSearch }) {
             <div className={`h-2 rounded-full transition-all ${done ? 'bg-emerald-500' : 'bg-orange-500'}`} style={{width:`${pct}%`}} />
           </div>
           <span className={`text-sm font-bold tabular-nums ${done ? (dark ? 'text-emerald-400' : 'text-emerald-600') : (dark ? 'text-stone-300' : 'text-stone-600')}`}>
-            {wordCount} / {target} palabras {done ? '✅' : ''}
+            {wordCount} / {target} palabras{done ? ' ✓' : ''}
           </span>
         </div>
 
@@ -19749,7 +19698,7 @@ function EscrituraView({ prompt, dark, onBack, onSearch }) {
 
         {done && !res && (
           <div className={`rounded-xl p-4 ${dark ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
-            <p className={`text-sm font-semibold mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>✅ ¡Bien hecho! Repasa tu texto:</p>
+            <p className={`text-sm font-semibold mb-2 ${dark ? 'text-emerald-300' : 'text-emerald-700'}`}>¡Bien hecho! Repasa tu texto:</p>
             <ul className={`text-sm space-y-1 ${dark ? 'text-emerald-100' : 'text-emerald-900'}`}>
               <li>• ¿Has usado los tiempos verbales correctamente?</li>
               <li>• ¿Hay concordancia de género y número en los adjetivos?</li>
@@ -19962,9 +19911,9 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
       <Card dark={dark} className={`p-5 ${isAi ? 'border-2 border-violet-300' : ''}`}>
         <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${meta.color} text-white`}>{meta.emoji} {meta.label}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-ink/15 text-ink/80">{meta.label}</span>
             {entry.register && <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-600'}`}>{entry.register}</span>}
-            {isAi && <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-100 text-violet-700">🤖 IA</span>}
+            {isAi && <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-ink/15 text-ink/80">IA</span>}
             {entry.isCustom && <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">⭐ Guardado</span>}
           </div>
           {confidence && !isAi && <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${confColor}`}>coincidencia {confidence}</span>}
@@ -20071,8 +20020,8 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
             <p className={`text-sm font-bold mb-3 ${dark?'text-stone-200':'text-stone-800'}`}>Guardar en categoría</p>
             <select value={saveCat} onChange={e => setSaveCat(e.target.value)}
               className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-white border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
-              {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.emoji} {m.label}</option>; })}
-              <option value="general">💬 General</option>
+              {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.label}</option>; })}
+              <option value="general">General</option>
             </select>
             <div className="flex gap-2">
               <button onClick={handleSaveEntry} disabled={!saveCat}
@@ -20102,9 +20051,9 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
         <Card dark={dark} className="p-5 border-2 border-emerald-300/70">
           <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={`text-[10px] font-bold px-2 py-1 rounded-full bg-gradient-to-br ${catMeta.color} text-white`}>{catMeta.emoji} {catMeta.label}</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-ink/15 text-ink/80">{catMeta.label}</span>
               {reverseResult.register && <span className={`text-[10px] font-semibold px-2 py-1 rounded-full ${dark?'bg-white/10 text-stone-300':'bg-stone-100 text-stone-600'}`}>{reverseResult.register}</span>}
-              <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">🤖 IA</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border border-ink/15 text-ink/80">IA</span>
             </div>
           </div>
           <p className={`text-xs font-semibold mb-1 ${dark?'text-stone-400':'text-stone-500'}`}>"{reverseQuery}"</p>
@@ -20140,8 +20089,8 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
             <p className={`text-sm font-bold mb-3 ${dark?'text-stone-200':'text-stone-800'}`}>Guardar en categoría</p>
             <select value={saveCat} onChange={e => setSaveCat(e.target.value)}
               className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-white border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
-              {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.emoji} {m.label}</option>; })}
-              <option value="general">💬 General</option>
+              {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.label}</option>; })}
+              <option value="general">General</option>
             </select>
             <div className="flex gap-2">
               <button onClick={handleSaveExplain} disabled={!saveCat}
@@ -20170,7 +20119,6 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
         <div className={`rounded-3xl p-6 mb-6 bg-gradient-to-br ${meta.color} text-white shadow-md`}>
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-5xl mb-3">{meta.emoji}</p>
               <p className="font-serif font-bold text-2xl leading-tight">{meta.label}</p>
               <p className="text-sm opacity-90 mt-1">{items.length} frases naturales
                 {customInCat > 0 && <span className="ml-2 font-bold">· ⭐ {customInCat} tuyas</span>}
@@ -20294,13 +20242,14 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
                       ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
                       : 'bg-violet-500 hover:bg-violet-600 text-white'
                 }`}>
-                {(isSpanishMode ? reverseLoading : aiLoading) ? '⏳' : isSpanishMode ? '🔍' : '🤖'}
+                {(isSpanishMode ? reverseLoading : aiLoading) ? '…' : isSpanishMode ? 'Explicar' : 'Traducir'}
               </button>
             )}
             <button onClick={handleSpeak}
               title={isSpanishMode ? 'Habla en español' : 'Speak in English'}
-              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 ${recording?'bg-red-500 text-white animate-pulse':'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
-              {recording ? '🔴' : isSpanishMode ? '🎙️' : '🎤'}
+              aria-label={recording ? 'Grabando' : 'Dictar'}
+              className={`rounded-xl px-4 py-3 font-semibold text-sm transition-colors flex-shrink-0 flex items-center ${recording?'bg-keeps text-white':'bg-ink hover:bg-ink/90 text-white'}`}>
+              <MicIcon />
             </button>
             {query && (
               <button onClick={() => { setQuery(''); setAiResult(null); setReverseResult(null); setAiError(null); setShowSaveForm(false); inputRef.current?.focus(); }}
@@ -20364,10 +20313,8 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
                       return (
                         <button key={i}
                           onClick={() => { setSelectedCat(entry.cat); setExpandedIdx(null); }}
-                          className={`relative text-left rounded-2xl overflow-hidden p-4 transition-all hover:scale-[1.02] active:scale-[0.98] ${dark?'bg-white/[0.05] hover:bg-white/[0.08] border border-white/10':'bg-white hover:bg-stone-50 border border-stone-200/80 shadow-sm'}`}>
-                          <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${meta.color}`} />
+                          className="k-card k-card-hover relative text-left p-4">
                           <div className="flex items-start justify-between gap-1 mb-2">
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gradient-to-r ${meta.color} text-white`}>{meta.emoji}</span>
                             <span onClick={e => e.stopPropagation()}><SpeakBtn text={entry.es} size="sm" /></span>
                           </div>
                           <p className="font-serif font-bold text-base leading-snug">{entry.es}</p>
@@ -20397,7 +20344,6 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
                   <button key={cat} onClick={() => { setSelectedCat(cat); setExpandedIdx(null); }}
                     className="rounded-2xl p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border border-stone-200/80 shadow-sm min-h-[140px] flex flex-col">
                     <div className="flex items-start justify-between mb-3">
-                      <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-gradient-to-br ${meta.color} text-white`}>{meta.emoji}</span>
                       <div className="flex items-center gap-1">
                         {customCount > 0 && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-ochre-100 text-ochre-700">⭐ {customCount}</span>}
                         <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-cream text-sienna-700">{count}</span>
@@ -20413,7 +20359,6 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
             </div>
             <Card dark={dark} className="p-5 mt-6">
               <div className="flex items-start gap-3">
-                <span className="text-2xl flex-shrink-0">🤖</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold mb-1">¿Falta una frase?</p>
                   <p className={`text-sm ${dark?'text-stone-400':'text-stone-600'}`}>
@@ -20482,7 +20427,7 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${p.level === 'A2' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{p.level}</span>
                     <span className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>{p.minWords}+ palabras</span>
                   </div>
-                  <p className="font-bold text-base mb-2">📝 {p.title}</p>
+                  <p className="font-bold text-base mb-2">{p.title}</p>
                   <p className={`text-sm line-clamp-3 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{p.prompt}</p>
                 </Card>
               </button>
@@ -20573,28 +20518,24 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <button onClick={() => setTimedMode(true)} className="text-left">
-            <Card dark={dark} className="p-5 bg-gradient-to-br from-orange-500 to-rose-500 text-white border-0 hover:shadow-lg transition-shadow h-full">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">⏱</div>
-                <div className="flex-1">
-                  <p className="font-bold text-base">Quiz Cronometrado</p>
-                  <p className="text-xs opacity-90">10 preguntas · 30 segundos cada una</p>
-                </div>
-                <span className="text-white/70">→</span>
+            <div className="k-card k-card-hover h-full p-5 lg:p-6 flex items-center gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="k-kicker mb-1.5">Contrarreloj</p>
+                <p className="text-[1.2rem] leading-[1.25] text-ink" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>Quiz cronometrado</p>
+                <p className="text-[14.5px] mt-1 text-dust">10 preguntas · 30 segundos cada una</p>
               </div>
-            </Card>
+              <span className="text-ink text-lg">→</span>
+            </div>
           </button>
           <button onClick={() => setDrillMode(true)} className="text-left">
-            <Card dark={dark} className="p-5 bg-gradient-to-br from-sienna-500 to-sienna-700 text-white border-0 hover:shadow-lg transition-shadow h-full">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">✍️</div>
-                <div className="flex-1">
-                  <p className="font-bold text-base">Conjugador drill</p>
-                  <p className="text-xs opacity-90">Conjuga verbos al azar · tecla Enter</p>
-                </div>
-                <span className="text-white/70">→</span>
+            <div className="k-card k-card-hover h-full p-5 lg:p-6 flex items-center gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="k-kicker mb-1.5">Verbos</p>
+                <p className="text-[1.2rem] leading-[1.25] text-ink" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>Conjugador drill</p>
+                <p className="text-[14.5px] mt-1 text-dust">Conjuga verbos al azar · tecla Enter</p>
               </div>
-            </Card>
+              <span className="text-ink text-lg">→</span>
+            </div>
           </button>
 {/* Escritura libre now lives in Practica > Escribe */}
         </div>
@@ -20611,15 +20552,16 @@ function Ejercicios({ onBack, dark, onSearch, jump }) {
         })()}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {weeklyExercises.map(cat => (
-            <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="text-left rounded-2xl overflow-hidden border transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border-stone-200/80 shadow-sm">
-              <div className={`h-1.5 w-full bg-gradient-to-r ${colorMap[cat.color] || colorMap.orange}`} />
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white text-base bg-gradient-to-br ${colorMap[cat.color] || colorMap.orange}`}>✏️</div>
-                  <LevelBadge level={cat.level} />
+            <button key={cat.category} onClick={() => setSelectedCategory(cat)} className="text-left group">
+              <div className="k-card k-card-hover h-full flex flex-col p-5">
+                <p className="k-kicker mb-2.5">{cat.level} · Ejercicios</p>
+                <p className="text-[1.1rem] leading-[1.25] text-ink" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>{cat.categoryEs}</p>
+                <div className="flex-1" />
+                <div className="mt-4 pt-3 border-t border-ink/10 flex items-center gap-3 text-[13px] text-dust">
+                  <span>{cat.exercises.filter(e => answered.has(e.id)).length}/{cat.exercises.length} hechos esta semana</span>
+                  <span className="flex-1" />
+                  <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Empezar →</span>
                 </div>
-                <p className="font-bold text-sm mb-1">{cat.categoryEs}</p>
-                <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{cat.exercises.filter(e => answered.has(e.id)).length}/{cat.exercises.length} hechos esta semana</p>
               </div>
             </button>
           ))}
@@ -22378,8 +22320,8 @@ const BUSINESS_SHEETS = [
         ['Internal team','Buenas','Saludos']
       ]},
       { heading:'Traps to avoid', examples:[
-        { es:'❌ Soy Liam, encantado, ¿qué tal estás? [first meeting with director deportivo]', en:'Too casual. Use ¿qué tal está? or ¿cómo le va?' },
-        { es:'❌ Señor Rodríguez, ¿podrías enviarme los papeles?', en:'Mixing Sr. with tú forms – pick a lane.' },
+        { es:'✗ Soy Liam, encantado, ¿qué tal estás? [first meeting with director deportivo]', en:'Too casual. Use ¿qué tal está? or ¿cómo le va?' },
+        { es:'✗ Señor Rodríguez, ¿podrías enviarme los papeles?', en:'Mixing Sr. with tú forms – pick a lane.' },
         { es:'✅ Encantado de conocerle, señor. ¿Cómo le va?', en:'Clean formal opening.' },
         { es:'✅ Si te parece bien, nos tuteamos – así hablamos más cómodos.', en:'Natural way to invite the switch.' }
       ]}
@@ -22774,9 +22716,6 @@ function Negocios({ onBack, dark, onSearch, only }) {
         <BackHeader title={selectedVocab.title} subtitle={selectedVocab.titleEn} onBack={() => setSelectedVocab(null)} dark={dark} />
         <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-5">
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[selectedVocab.color] || tileColorMap.stone} flex items-center justify-center text-3xl shadow-sm`}>
-              {selectedVocab.emoji}
-            </div>
             <div>
               <p className="font-serif font-bold text-2xl leading-tight">{selectedVocab.title}</p>
               <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedVocab.titleEn} · {selectedVocab.items.length} términos</p>
@@ -22814,9 +22753,6 @@ function Negocios({ onBack, dark, onSearch, only }) {
         <BackHeader title={selectedPhrases.title} subtitle={selectedPhrases.titleEn} onBack={() => setSelectedPhrases(null)} dark={dark} />
         <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-5">
-            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[selectedPhrases.color] || tileColorMap.stone} flex items-center justify-center text-3xl shadow-sm`}>
-              {selectedPhrases.emoji}
-            </div>
             <div>
               <p className="font-serif font-bold text-2xl leading-tight">{selectedPhrases.title}</p>
               <p className={`text-sm ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{selectedPhrases.titleEn} · {selectedPhrases.items.length} frases</p>
@@ -23023,9 +22959,6 @@ function Negocios({ onBack, dark, onSearch, only }) {
             {BUSINESS_VOCAB.map(group => (
               <button key={group.id} onClick={() => setSelectedVocab(group)} className="text-left">
                 <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[180px] flex flex-col">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} flex items-center justify-center text-3xl mb-4 shadow-sm`}>
-                    {group.emoji}
-                  </div>
                   <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
                   <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
                   <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{group.items.length} términos →</p>
@@ -23040,9 +22973,6 @@ function Negocios({ onBack, dark, onSearch, only }) {
             {BUSINESS_PHRASES.map(group => (
               <button key={group.id} onClick={() => setSelectedPhrases(group)} className="text-left">
                 <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[180px] flex flex-col">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tileColorMap[group.color] || tileColorMap.stone} flex items-center justify-center text-3xl mb-4 shadow-sm`}>
-                    {group.emoji}
-                  </div>
                   <p className="font-bold text-base lg:text-lg leading-tight mb-1">{group.title}</p>
                   <p className={`text-xs ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{group.titleEn}</p>
                   <p className={`text-[11px] mt-auto pt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{group.items.length} frases →</p>
@@ -23058,7 +22988,6 @@ function Negocios({ onBack, dark, onSearch, only }) {
               <button key={c.id} onClick={() => setSelectedDialog(c)} className="text-left">
                 <Card dark={dark} className="p-5 h-full hover:shadow-lg transition-all hover:-translate-y-0.5 min-h-[180px] flex flex-col">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-3xl">{c.emoji}</span>
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 text-orange-700 ml-auto">{c.level}</span>
                   </div>
                   <p className="font-bold text-base lg:text-lg leading-tight mb-1">{c.title}</p>
@@ -23148,11 +23077,11 @@ function TransferSettingsCard({ dark }) {
               TRANSFER_KEYS.forEach(k => {
                 if (data[k] !== undefined) { localStorage.setItem(k, data[k]); count++; }
               });
-              setImportMsg(`✅ ${count} ajustes importados. Recargando...`);
+              setImportMsg(`✓ ${count} ajustes importados. Recargando...`);
               setImportVal('');
               setTimeout(() => window.location.reload(), 1200);
             } catch(e) {
-              setImportMsg('❌ Código inválido. Cópialo de nuevo desde el otro dispositivo.');
+              setImportMsg('✗ Código inválido. Cópialo de nuevo desde el otro dispositivo.');
             }
           };
 
@@ -23168,7 +23097,7 @@ function TransferSettingsCard({ dark }) {
                   <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>En este dispositivo → Generar código</p>
                   <button onClick={handleExport}
                     className={`w-full rounded-xl py-3 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
-                    {copied ? '✅ Copiado al portapapeles' : '📋 Generar código de ajustes'}
+                    {copied ? '✓ Copiado al portapapeles' : 'Generar código de ajustes'}
                   </button>
                   {exportCode ? (
                     <div className="mt-3">
@@ -23194,7 +23123,7 @@ function TransferSettingsCard({ dark }) {
                       Importar
                     </button>
                   </div>
-                  {importMsg && <p className={`text-xs mt-2 font-medium ${importMsg.startsWith('✅') ? 'text-emerald-600' : 'text-red-500'}`}>{importMsg}</p>}
+                  {importMsg && <p className={`text-xs mt-2 font-medium ${importMsg.startsWith('✓') ? 'text-emerald-600' : 'text-red-500'}`}>{importMsg}</p>}
                 </div>
               </div>
             </Card>
@@ -23503,10 +23432,10 @@ function Ajustes({ dark, onBack }) {
     } catch(e) {
       setAiTestStatus('error');
       const msg = e.message || '';
-      if (msg.includes('invalid-key')) setAiTestMsg('❌ Clave inválida o sin permisos.');
-      else if (msg.includes('rate-limit')) setAiTestMsg('❌ Has excedido el límite de uso.');
-      else if (msg.includes('parse-failed')) setAiTestMsg('⚠️ Respuesta malformada del modelo.');
-      else setAiTestMsg('❌ Error de red - comprueba la conexión.');
+      if (msg.includes('invalid-key')) setAiTestMsg('✗ Clave inválida o sin permisos.');
+      else if (msg.includes('rate-limit')) setAiTestMsg('✗ Has excedido el límite de uso.');
+      else if (msg.includes('parse-failed')) setAiTestMsg('✗ Respuesta malformada del modelo.');
+      else setAiTestMsg('✗ Error de red - comprueba la conexión.');
     }
   };
 
@@ -23651,7 +23580,7 @@ function Ajustes({ dark, onBack }) {
           className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-mono border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-stone-50 border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`} />
         <button onClick={() => setShow(!show)}
           className={`px-3 py-2 rounded-xl text-xs font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-          {show ? '🙈' : '👁️'}
+          {show ? 'Ocultar' : 'Ver'}
         </button>
       </div>
       {confirmed && <p className="text-[11px] mt-2 text-emerald-600 font-semibold">✓ Guardado localmente</p>}
@@ -23706,15 +23635,15 @@ function Ajustes({ dark, onBack }) {
           <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Cascada activa</p>
           <div className="flex items-center gap-2 flex-wrap">
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${googleKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
-              🎙️ Google Neural2 {googleKey ? '✓' : '–'}
+              Google Neural2 {googleKey ? '✓' : '–'}
             </div>
             <span className={`text-lg ${dark ? 'text-stone-600' : 'text-stone-400'}`}>→</span>
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold ${azureKey ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}`}>
-              ☁️ Azure Neural {azureKey ? '✓' : '–'}
+              Azure Neural {azureKey ? '✓' : '–'}
             </div>
             <span className={`text-lg ${dark ? 'text-stone-600' : 'text-stone-400'}`}>→</span>
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold bg-stone-100 text-stone-600">
-              🔊 Navegador ✓
+              Navegador ✓
             </div>
           </div>
         </Card>
@@ -23722,13 +23651,13 @@ function Ajustes({ dark, onBack }) {
         {/* ── Missing-key warnings ── */}
         {!googleKey && !azureKey && (
           <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
-            <p className="font-bold text-amber-800 text-sm mb-1">⚠️ Sin API keys en este dispositivo</p>
+            <p className="font-bold text-amber-800 text-sm mb-1">Sin API keys en este dispositivo</p>
             <p className="text-amber-700 text-xs">Estás usando la voz del navegador (calidad básica). Si ya las configuraste en otro dispositivo, usa <strong>Transferir claves</strong> en la pestaña Datos para copiarlas en 30 segundos.</p>
           </div>
         )}
         {!googleKey && azureKey && (
           <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
-            <p className="font-bold text-amber-800 text-sm mb-1">🎙️ Google TTS no configurado en este dispositivo</p>
+            <p className="font-bold text-amber-800 text-sm mb-1">Google TTS no configurado en este dispositivo</p>
             <p className="text-amber-700 text-xs">Azure está activo como reserva, pero Google Neural2 da más calidad. Usa <strong>Transferir claves</strong> en la pestaña Datos para copiarlo desde tu ordenador en segundos.</p>
           </div>
         )}
@@ -23737,13 +23666,13 @@ function Ajustes({ dark, onBack }) {
             SPEED CONTROL
         ══════════════════════════════════════ */}
         <Card dark={dark} className="p-5">
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🎚️ Velocidad de habla (todos los proveedores)</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Velocidad de habla (todos los proveedores)</p>
           <div className="flex items-center gap-4">
-            <span className={`text-xs w-8 text-right ${dark ? 'text-stone-400' : 'text-stone-500'}`}>🐢</span>
+            <span className={`text-xs w-8 text-right ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Lenta</span>
             <input type="range" min="0.75" max="1.3" step="0.05" value={speechRate}
               onChange={e => setSpeechRate(parseFloat(e.target.value))}
               className="flex-1 accent-orange-500" />
-            <span className={`text-xs w-8 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>🐇</span>
+            <span className={`text-xs w-8 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Rápida</span>
             <span className={`text-sm font-bold w-10 text-right ${dark ? 'text-stone-200' : 'text-stone-800'}`}>{speechRate.toFixed(2)}×</span>
           </div>
           <div className="flex justify-between mt-1">
@@ -23763,7 +23692,7 @@ function Ajustes({ dark, onBack }) {
             GOOGLE CLOUD TTS
         ══════════════════════════════════════ */}
         <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">🎙️ Google Cloud TTS – Nivel 1 (1M chars/mes gratis, más natural)</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Google Cloud TTS – Nivel 1 (1M chars/mes gratis, más natural)</p>
 
           <div className="space-y-4">
             <details className="rounded-2xl border border-ink/10 bg-paper px-5 py-4" open={!googleKey}>
@@ -23774,7 +23703,7 @@ function Ajustes({ dark, onBack }) {
                   <li>Crea un proyecto nuevo (o usa uno existente).</li>
                   <li>Barra lateral → <strong>APIs y servicios</strong> → <strong>Biblioteca</strong> → busca <strong>"Cloud Text-to-Speech"</strong> → Activar.</li>
                   <li><strong>APIs y servicios</strong> → <strong>Credenciales</strong> → <strong>+ Crear credenciales</strong> → <strong>Clave de API</strong>.</li>
-                  <li>Copia la clave y pégala aquí abajo 👇</li>
+                  <li>Copia la clave y pégala aquí abajo</li>
                 </ol>
                 <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>1.000.000 chars/mes de voces Neural2 gratis de por vida. No requiere tarjeta si ya tienes cuenta Google.</p>
                 </div>
@@ -23826,7 +23755,7 @@ function Ajustes({ dark, onBack }) {
             AZURE NEURAL
         ══════════════════════════════════════ */}
         <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">☁️ Azure Neural – Nivel 2 (voz de reserva, 500k chars/mes gratis)</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3 text-stone-500">Azure Neural – Nivel 2 (voz de reserva, 500k chars/mes gratis)</p>
 
           <div className="space-y-4">
             <details className="rounded-2xl border border-ink/10 bg-paper px-5 py-4" open={!azureKey}>
@@ -23838,7 +23767,7 @@ function Ajustes({ dark, onBack }) {
                   <li><strong>Importante:</strong> elige nivel <strong>F0 (gratis)</strong>, no S0. Selecciona región <strong>West Europe</strong>.</li>
                   <li>Una vez creado: <strong>Claves y punto de conexión</strong> → copia la <strong>Clave 1</strong>.</li>
                   <li>En Azure Portal → Suscripciones → <strong>Presupuestos</strong> → crea una alerta a 0€ para mayor tranquilidad.</li>
-                  <li>Pega la clave aquí abajo 👇</li>
+                  <li>Pega la clave aquí abajo</li>
                 </ol>
                 <p className={`text-[11px] mt-3 ${dark ? 'text-stone-500' : 'text-stone-500'}`}>F0 = 500.000 caracteres/mes gratis de por vida. No expira.</p>
                 </div>
@@ -23911,7 +23840,7 @@ function Ajustes({ dark, onBack }) {
           </p>
           <button onClick={clearCache}
             className={`text-xs px-3 py-1.5 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-            🗑️ Borrar caché
+            Borrar caché
           </button>
         </Card>
 
@@ -23950,11 +23879,11 @@ function Ajustes({ dark, onBack }) {
               <div className="flex gap-2 flex-wrap">
                 <button onClick={runAiTest} disabled={aiTestStatus === 'testing'}
                   className={`text-xs px-4 py-2 rounded-xl font-semibold transition-colors ${aiTestStatus === 'testing' ? 'bg-violet-300 text-white cursor-wait' : 'bg-violet-500 hover:bg-violet-600 text-white'}`}>
-                  {aiTestStatus === 'testing' ? '⏳ Probando…' : '🤖 Probar con "I\'m starving"'}
+                  {aiTestStatus === 'testing' ? 'Probando…' : 'Probar con "I\'m starving"'}
                 </button>
                 <button onClick={clearAiCache}
                   className={`text-xs px-3 py-2 rounded-xl font-semibold ${dark ? 'bg-white/10 text-stone-300 hover:bg-white/20' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                  🗑️ Borrar caché de traducciones
+                  Borrar caché de traducciones
                 </button>
               </div>
               <TestBanner status={aiTestStatus} msg={aiTestMsg} />
@@ -23989,10 +23918,10 @@ function Ajustes({ dark, onBack }) {
                     });
                     const json = await resp.json();
                     if (json.ok) { setAiTestStatus('ok'); setAiTestMsg('✓ Mensaje de prueba enviado a #updates-spanish.'); }
-                    else { setAiTestStatus('error'); setAiTestMsg('❌ Slack error: ' + json.error); }
+                    else { setAiTestStatus('error'); setAiTestMsg('✗ Slack error: ' + json.error); }
                   } catch(e) {
                     setAiTestStatus('error');
-                    setAiTestMsg('❌ No se pudo enviar - comprueba el token.');
+                    setAiTestMsg('✗ No se pudo enviar - comprueba el token.');
                   }
                 }} className="mt-3 text-xs px-4 py-2 rounded-xl font-semibold bg-emerald-500 hover:bg-emerald-600 text-white">
                   Enviar prueba a Slack
@@ -24262,7 +24191,7 @@ function Dictado({ onBack, dark, jump }) {
                       <p className={`text-sm ${dark?'text-stone-400':'text-stone-500'}`}>{l.sub}</p>
                     </div>
                     <div className={`text-xs ${dark?'text-stone-400':'text-stone-500'}`}>
-                      ✅ {st.mastered}/{st.total}
+                      {st.mastered}/{st.total} dominadas
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -24715,11 +24644,11 @@ function Pronunciacion({ onBack, dark }) {
           <div className="flex gap-3 justify-center flex-wrap">
             <button onClick={handleListen}
               className={`rounded-xl px-5 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${dark?'bg-white/10 hover:bg-white/20 text-stone-200':'bg-stone-100 hover:bg-stone-200 text-stone-700'}`}>
-              🔊 Escuchar
+              <SpeakerIcon /> Escuchar
             </button>
             <button onClick={handleRecord}
-              className={`rounded-xl px-6 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${recording?'bg-red-500 hover:bg-red-600 text-white animate-pulse':'bg-orange-500 hover:bg-orange-600 text-white'}`}>
-              {recording ? '🔴 Escuchando...' : '🎤 Hablar'}
+              className={`rounded-xl px-6 py-2.5 font-semibold text-sm transition-colors flex items-center gap-2 ${recording?'bg-keeps text-white':'bg-ink hover:bg-ink/90 text-white'}`}>
+              <MicIcon /> {recording ? 'Escuchando…' : 'Hablar'}
             </button>
             <button onClick={handleNext}
               className={`rounded-xl px-5 py-2.5 font-semibold text-sm transition-colors ${dark?'bg-white/10 hover:bg-white/20 text-stone-200':'bg-stone-100 hover:bg-stone-200 text-stone-700'}`}>
@@ -24909,7 +24838,7 @@ function Escribe({ dark }) {
                 <span className="text-xs text-stone-400">{p.minWords}+ palabras</span>
                 <span className="ml-auto"><DoneBadge on={!!done[p.id]} label="Hecho" /></span>
               </div>
-              <p className="font-bold text-base mb-2">📝 {p.title}</p>
+              <p className="font-bold text-base mb-2">{p.title}</p>
               <p className="text-sm line-clamp-3 text-stone-500">{p.prompt}</p>
             </Card>
           </button>
