@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Aprende" />
-<meta name="theme-color" content="#C4202E" />
+<meta name="theme-color" content="#f7f4ee" />
 <script>
 // Generate icon synchronously and inject <link> tags inline so Arc / iOS
 // Safari see the href at parse time rather than after-script-runs.
@@ -31,10 +31,10 @@
     ctx.clip();
 
     // ── Background: carmín red ──────────────────────────────────
-    ctx.fillStyle = '#C4202E'; ctx.fillRect(0, 0, sz, sz);
+    ctx.fillStyle = '#0D0440'; ctx.fillRect(0, 0, sz, sz);
 
     // ── Subtle gold stripe (Spanish flag midband, 25% opacity) ──
-    ctx.fillStyle = 'rgba(212,148,58,0.22)'; ctx.fillRect(0, 56, sz, 68);
+    ctx.fillStyle = '#FF532D'; ctx.fillRect(58, 132, 64, 8);
 
     // ── "A" in white ────────────────────────────────────────────
     ctx.fillStyle = 'rgba(255,255,255,0.97)';
@@ -59,7 +59,7 @@
 <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
 <script src="https://cdn.tailwindcss.com/3.4.1"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script>
 // ============================================================
 // DESIGN TOKENS - Aprende Identity Palette
@@ -83,24 +83,26 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        // OVERRIDE: orange → carmín (entire app inherits via existing classes)
+        // Keeps Internal palette (7 November 2026). 'orange' is the primary scale used
+        // across the app, so it now carries Keeps navy; the Keeps orange accent is 'keeps'.
         orange: {
-          50:'#fdf2f3', 100:'#fce5e8', 200:'#f9c8cf', 300:'#f398a4', 400:'#ec6678',
-          500:'#C4202E', 600:'#a61926', 700:'#871420', 800:'#6e131c', 900:'#5a121b',
+          50:'#f1f0f7', 100:'#e5e3f0', 200:'#cbc7e0', 300:'#a19bc4', 400:'#4a4185',
+          500:'#0D0440', 600:'#1b1259', 700:'#0D0440', 800:'#0a0333', 900:'#070226',
         },
-        // NEW: editorial palette
-        ochre: { 50:'#fdf8ec',100:'#faecc6',200:'#f5d985',300:'#eebf4a',400:'#e2a625',500:'#D4943A',600:'#b07320',700:'#8b591d',800:'#73481c',900:'#603c1a' },
-        oliva: { 50:'#f6f8ec',100:'#e7ecca',200:'#d1d896',300:'#b1bf63',400:'#8e9d3b',500:'#708238',600:'#5b6b30',700:'#475427',800:'#3a4422',900:'#31391e' },
-        anil:  { 50:'#f0f4f9',100:'#dde7f0',200:'#bbcde0',300:'#8eaccb',400:'#5b85b1',500:'#2B4C7E',600:'#243f69',700:'#1f3458',800:'#1c2c4a',900:'#1a263e' },
-        sienna:{ 50:'#f8f1ec',100:'#ecd9c8',200:'#d6b08a',300:'#bd8a52',400:'#a06a31',500:'#6B3410',600:'#582a0d',700:'#48230c',800:'#3c1d0b',900:'#33180a' },
+        keeps: { DEFAULT:'#FF532D', 50:'#fff3ef', 100:'#ffe3da', 200:'#ffc4b3', 500:'#FF532D', 600:'#E64B26', 700:'#c23c1b' },
+        ochre: { 50:'#f6f1e7',100:'#ebe4d6',200:'#ead39f',300:'#ddb767',400:'#d29e33',500:'#C98A17',600:'#a87213',700:'#865b10',800:'#6b490d',900:'#573b0b' },
+        oliva: { 50:'#ecf6ef',100:'#d4ecdc',200:'#a9d8b8',300:'#7cc194',400:'#4fab70',500:'#349E59',600:'#2b8249',700:'#22673a',800:'#1b512e',900:'#153f24' },
+        anil:  { 50:'#f0f2f5',100:'#dfe3e9',200:'#c1c8d3',300:'#9aa5b5',400:'#7d8b9f',500:'#63738A',600:'#515f73',700:'#424d5e',800:'#363f4c',900:'#2c333e' },
+        sienna:{ 50:'#f3f2f8',100:'#e4e2f0',200:'#c9c5e0',300:'#9f98c6',400:'#6b6399',500:'#3a3560',600:'#1b1259',700:'#0D0440',800:'#0a0333',900:'#070226' },
+        stone: { 50:'#faf8f4',100:'#f1ede6',200:'#e3dfdc',300:'#cac6d0',400:'#a6a2b4',500:'#7b7791',600:'#5a5677',700:'#3a3560',800:'#241e4f',900:'#0D0440' },
         // KEEP: existing (used by gradient tiles & legacy components)
         terra: { 50:'#fdf6f0',100:'#fae8d8',200:'#f5cba8',300:'#eda872',400:'#e4823a',500:'#d4621a',600:'#b54d14',700:'#943b11',800:'#78300f',900:'#632a0e' },
         burg:  { 50:'#fdf2f4',100:'#fce7eb',200:'#f9c9d2',300:'#f49bab',400:'#ec6479',500:'#e03455',600:'#c41f3e',700:'#a21834',800:'#87162d',900:'#721529' },
-        // NEUTRALS (singletons)
-        paper: '#FAF6EE',
-        cream: '#F0E7D5',
-        ink:   '#1A1410',
-        dust:  '#8B7E6E',
+        paper: '#f7f4ee',
+        cream: '#efeae0',
+        surface: '#fffdfa',
+        ink:   '#0D0440',
+        dust:  '#7b7791',
       },
       fontFamily: {
         sans: ['Inter','system-ui','sans-serif'],
@@ -115,40 +117,28 @@ tailwind.config = {
 </script>
 <style>
 :root {
-  /* CSS variable mirror of palette for use outside Tailwind */
-  --carmin: #C4202E;
-  --ochre:  #D4943A;
-  --terra:  #A0522D;
-  --sienna: #6B3410;
-  --oliva:  #708238;
-  --anil:   #2B4C7E;
-  --paper:  #FAF6EE;
-  --cream:  #F0E7D5;
-  --ink:    #1A1410;
-  --dust:   #8B7E6E;
+  /* Keeps Internal tokens (mirrors the Tailwind palette) */
+  --paper:#f7f4ee; --cream:#efeae0; --cream-2:#e4ddd0; --surface:#fffdfa;
+  --ink:#0D0440; --ink-2:#3a3560; --dust:#7b7791; --faint:#a6a2b4;
+  --navy:#0D0440; --navy-2:#1b1259; --keeps:#FF532D; --keeps-d:#E64B26;
+  --good:#349E59; --good-2:#e6f2ea; --warn:#b4720c; --warn-2:#fbf0dc;
+  --line:rgba(13,4,64,.12); --line-2:rgba(13,4,64,.22);
+  --sh:0 1px 2px rgba(13,4,64,.04), 0 8px 22px rgba(13,4,64,.06);
+  --lift:0 2px 4px rgba(13,4,64,.05), 0 12px 28px rgba(13,4,64,.10);
+  /* legacy names still referenced in places */
+  --carmin:#0D0440; --ochre:#C98A17; --terra:#A0522D; --sienna:#0D0440; --oliva:#349E59; --anil:#63738A;
 }
 
 html { font-size: 106.25%; } /* +1 px on base 16 px */
-body { color: var(--ink); }
+body { color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; font-optical-sizing: auto; }
+.font-serif { font-optical-sizing: auto; letter-spacing: -0.012em; }
+h1.font-serif, h2.font-serif, h3.font-serif, .font-serif.font-bold { font-weight: 600; }
 
-/* ── Paper-textured background (replaces flat mesh) ────────── */
-/* Layer 1: subtle warm radials suggesting Mediterranean light. */
-/* Layer 2: SVG noise → paper-fiber feel.                       */
-.mesh-light {
-  background-color: #FAF6EE;
-  background-image:
-    radial-gradient(ellipse at 12% 18%, rgba(212,148,58,0.10) 0%, transparent 48%),
-    radial-gradient(ellipse at 88% 78%, rgba(160,82,45,0.08) 0%, transparent 52%),
-    radial-gradient(ellipse at 50% 50%, rgba(196,32,46,0.025) 0%, transparent 70%),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.31 0 0 0 0 0.18 0 0 0 0.10 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: auto, auto, auto, 240px 240px;
-  background-attachment: fixed, fixed, fixed, local;
-}
-.mesh-dark { /* retained for compatibility - dark mode out of scope */
-  background-color: #FAF6EE;
-}
+/* Flat warm paper, as in Keeps Internal */
+.mesh-light { background-color: var(--paper); }
+.mesh-dark { background-color: var(--paper); }
 
-.glass-light { background: rgba(250,246,238,0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.glass-light { background: rgba(247,244,238,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 .glass-dark  { background: rgba(250,246,238,0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 
 /* ── Editorial typography helpers ──────────────────────────── */
@@ -166,7 +156,7 @@ body.sheet-open .area-head { max-width: 90rem; }
 }
 .display {
   font-family: 'Fraunces', Georgia, serif;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 0.95;
   color: var(--sienna);
@@ -178,7 +168,7 @@ body.sheet-open .area-head { max-width: 90rem; }
   float: left;
   line-height: 0.85;
   padding: 6px 12px 0 0;
-  color: var(--carmin);
+  color: var(--keeps);
 }
 .serif-body {
   font-family: 'Fraunces', Georgia, serif;
@@ -191,8 +181,8 @@ body.sheet-open .area-head { max-width: 90rem; }
 }
 
 /* ── Editorial dividers ────────────────────────────────────── */
-.rule-thin   { height: 1px; background: rgba(26,20,16,0.15); }
-.rule-accent { height: 2px; background: linear-gradient(90deg, var(--carmin) 0%, var(--ochre) 60%, transparent 100%); }
+.rule-thin   { height: 1px; background: var(--line); }
+.rule-accent { height: 1px; background: var(--line-2); }
 
 /* ── Animations ────────────────────────────────────────────── */
 .card-slide { animation: cardSlide 0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
@@ -244,7 +234,7 @@ body.sheet-open .area-head { max-width: 90rem; }
 /* ── Focus rings (keyboard a11y) ───────────────────────────── */
 *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--carmin);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--keeps);
   border-radius: 6px;
 }
 
@@ -261,6 +251,39 @@ body.sheet-open .area-head { max-width: 90rem; }
 .hide-scroll { scrollbar-width:none; -ms-overflow-style:none; }
 .hide-scroll::-webkit-scrollbar { display:none; }
 .sidebar-item { transition: background 0.15s, color 0.15s; }
+
+/* ── Keeps Internal components ─────────────────────────────── */
+.k-rail { background: var(--cream); border-right: 1px solid var(--line); }
+.k-nav { display:flex; align-items:center; gap:.75rem; padding:.55rem .75rem; min-height:2.6rem; border-radius:10px;
+  font-size:14.5px; font-weight:500; color: var(--ink-2); text-decoration:none; transition: background .15s, color .15s; }
+.k-nav:hover { background: rgba(13,4,64,.05); color: var(--ink); }
+.k-nav.on { background: var(--navy); color: #fff; box-shadow: 0 1px 2px rgba(13,4,64,.2); }
+.k-nav svg { flex-shrink:0; opacity:.85; }
+.k-label { font-size:10.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color: var(--faint); }
+.k-tabs { display:flex; gap:1.75rem; border-bottom:1px solid var(--line); }
+.k-tab { position:relative; padding:.7rem 0 .8rem; font-size:15px; font-weight:500; color: var(--dust); white-space:nowrap; text-decoration:none; transition: color .15s; }
+.k-tab:hover { color: var(--ink); }
+.k-tab.on { color: var(--ink); font-weight:600; }
+.k-tab.on::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: var(--ink); border-radius:2px; }
+.k-card { background: var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow: var(--sh); transition: box-shadow .2s, transform .2s, border-color .2s; }
+.k-card-hover:hover { box-shadow: var(--lift); transform: translateY(-2px); border-color: var(--line-2); }
+.k-chip { display:inline-flex; align-items:center; gap:.4rem; padding:0 .85rem; min-height:2.1rem; border-radius:999px; font-size:13.5px; font-weight:500;
+  border:1px solid var(--line); background: var(--surface); color: var(--ink-2); transition: all .15s; }
+.k-chip:hover { border-color: var(--line-2); color: var(--ink); }
+.k-chip.on { background: var(--navy); border-color: var(--navy); color:#fff; }
+.k-kicker { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color: var(--keeps-d); }
+.k-reading { font-family:'Fraunces',Georgia,serif; font-size:1.1875rem; line-height:1.62; color: var(--ink-2); font-weight:400; }
+.k-stats { display:grid; grid-template-columns: repeat(var(--n,4), minmax(0,1fr)); border-top:1px solid var(--line); border-bottom: 3px double var(--ink); }
+.k-stats > div { padding: 1rem 1.25rem 1.1rem; border-left:1px solid var(--line); }
+.k-stats > div:first-child { border-left:0; padding-left:0; }
+.k-stat-n { font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:2.4rem; line-height:1; color: var(--ink); letter-spacing:-.02em; }
+.k-stat-l { margin-top:.45rem; font-size:13.5px; color: var(--dust); }
+@media (max-width: 639px) {
+  .k-stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .k-stats > div:nth-child(3) { border-left:0; padding-left:0; border-top:1px solid var(--line); }
+  .k-stats > div:nth-child(4) { border-top:1px solid var(--line); }
+  .k-stat-n { font-size:1.9rem; }
+}
 
 /* ── Print styles ──────────────────────────────────────────── */
 @media print {
@@ -10479,7 +10502,7 @@ const AudioBus = (() => {
 
 function Card({ dark, className='', children, onClick }) {
   return (
-    <div onClick={onClick} className={`rounded-2xl border transition-all bg-white/70 border-ink/10 shadow-[0_1px_2px_rgba(26,20,16,0.04),0_8px_24px_-12px_rgba(26,20,16,0.10)] ${className}`}>
+    <div onClick={onClick} className={`rounded-xl border transition-all bg-surface border-ink/[0.12] shadow-[0_1px_2px_rgba(13,4,64,0.04),0_8px_22px_rgba(13,4,64,0.06)] ${className}`}>
       {children}
     </div>
   );
@@ -10525,10 +10548,10 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
 
   // Visual states
   let ring = null, glyph = null;
-  let cls = 'border-2 transition-all flex-shrink-0 inline-flex items-center justify-center rounded-full relative';
+  let cls = 'border transition-all flex-shrink-0 inline-flex items-center justify-center rounded-full relative';
   if (state === 'idle') {
-    cls += ' border-orange-500/70 bg-paper hover:bg-orange-50 text-orange-500';
-    glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M5 5.5v5l5 2.5V3z"/></svg>);
+    cls += ' border-ink/15 bg-surface hover:border-ink hover:bg-ink hover:text-white text-ink';
+    glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M2.5 6h2.2L8 3.2v9.6L4.7 10H2.5z" fill="currentColor"/><path d="M10.6 5.6a3.4 3.4 0 0 1 0 4.8"/><path d="M12.6 3.8a6 6 0 0 1 0 8.4"/></svg>);
   } else if (state === 'loading') {
     cls += ' border-orange-500/40 bg-paper text-orange-500';
     glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden style={{animation:'spin 0.9s linear infinite'}}><path d="M14 8a6 6 0 1 1-3-5.196" strokeLinecap="round"/></svg>);
@@ -10539,8 +10562,8 @@ function SpeakBtn({ text, size='md', gender=null, dialect='es-ES' }) {
     glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><rect x="4.5" y="3.5" width="2.6" height="9" rx="0.8"/><rect x="8.9" y="3.5" width="2.6" height="9" rx="0.8"/></svg>);
   } else if (state === 'paused') {
     // Mid-sentence: amber tint + play triangle to resume from where it stopped.
-    cls += ' border-amber-500 bg-amber-50 text-amber-600';
-    glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M5 5.5v5l5 2.5V3z"/></svg>);
+    cls += ' border-keeps bg-keeps-50 text-keeps-700';
+    glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M5 3.2v9.6L12.6 8z"/></svg>);
   } else if (state === 'error') {
     cls += ' border-dust bg-paper text-dust shake';
     glyph = (<svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor" aria-hidden><path d="M8 1.5L1 14h14L8 1.5zm0 4l4.5 8h-9L8 5.5zM7 7h2v3H7V7zm0 4h2v2H7v-2z"/></svg>);
@@ -10661,7 +10684,7 @@ function DesktopBack({ onBack }) {
   if (!onBack) return null;
   return (
     <div className="hidden lg:block px-8 pt-5 max-w-5xl mx-auto no-print">
-      <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-semibold text-dust hover:text-orange-600 transition-colors">
+      <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-medium text-dust hover:text-ink transition-colors">
         <span aria-hidden>←</span><span>{nav.parentLabel}</span>
       </button>
     </div>
@@ -10968,6 +10991,19 @@ function ChuletaSection({ section, dark }) {
 // single-section ids (#chuletas, saved aprende.lastSection, search
 // section ids) map onto the new homes through LEGACY_ROUTES.
 // ============================================================
+function NavIcon({ id, size = 18 }) {
+  const p = { width:size, height:size, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:1.7, strokeLinecap:'round', strokeLinejoin:'round', 'aria-hidden':true };
+  switch (id) {
+    case 'hoy': return <svg {...p}><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>;
+    case 'gramatica': return <svg {...p}><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 8h8M8 12h5"/></svg>;
+    case 'palabras': return <svg {...p}><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>;
+    case 'escucha': return <svg {...p}><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>;
+    case 'practica': return <svg {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>;
+    case 'ajustes': return <svg {...p}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>;
+    default: return null;
+  }
+}
+
 const AREAS = [
   { id:'hoy',       label:'Hoy',           emoji:'🏠', tabs:[] },
   { id:'gramatica', label:'Gramática',     emoji:'📐', tabs:[
@@ -11255,7 +11291,7 @@ function HoyPage({ goTo, go, onSearch }) {
             <h1 className="font-serif font-bold text-4xl lg:text-5xl text-sienna-700 leading-none mt-3">Hoy</h1>
           </div>
           <button onClick={onSearch} aria-label="Buscar"
-            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0">
+            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-surface border border-ink/[0.12] text-ink hover:bg-cream transition-colors flex-shrink-0">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
           </button>
           <button onClick={() => goTo('ajustes')} aria-label="Ajustes" title="Ajustes"
@@ -16204,8 +16240,8 @@ function fmtSheetDate(iso) {
 // ============================================================
 const SHEET_REVIEW_DAYS = [1, 3, 7, 21];
 const SHEET_STATUS_META = {
-  nueva:    { label:'Nueva',    cls:'bg-cream text-sienna-700 border-sienna-200' },
-  leida:    { label:'Leída',    cls:'bg-anil-50 text-anil-700 border-anil-200' },
+  nueva:    { label:'Nueva',    cls:'bg-cream text-ink/70 border-ink/10' },
+  leida:    { label:'Leída',    cls:'bg-orange-50 text-ink border-orange-200' },
   dominada: { label:'Dominada', cls:'bg-oliva-50 text-oliva-700 border-oliva-200' },
 };
 function sheetProgressAll() { return getStorage('aprende.chuletas.progress', {}) || {}; }
@@ -16238,7 +16274,7 @@ function sheetDueLabel(p) {
 }
 function SheetStatusBadge({ status }) {
   const m = SHEET_STATUS_META[status] || SHEET_STATUS_META.nueva;
-  return <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${m.cls}`}>{m.label}</span>;
+  return <span className={`inline-flex items-center text-[11.5px] font-semibold px-2 py-0.5 rounded-full border ${m.cls}`}>{m.label}</span>;
 }
 
 // Send chuleta examples to Tarjetas (the glossary SRS behind Practica > Repaso). Skips ones already there.
@@ -16485,13 +16521,15 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
   const boxes = (section.note || section.trap) ? (
     <div className="mt-4 space-y-3">
       {section.note && (
-        <div className="border-l-2 border-teal-600 bg-teal-50/70 pl-4 pr-3 py-2.5 text-teal-900">
-          <p className="text-[13.5px] leading-relaxed"><span className="font-bold">Clave: </span>{section.note}</p>
+        <div className="rounded-r-[10px] border-l-[3px] border-oliva-500 bg-oliva-50 pl-4 pr-4 py-3">
+          <p className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-oliva-700 mb-1">Clave</p>
+          <p className="text-[15px] leading-relaxed text-ink">{section.note}</p>
         </div>
       )}
       {section.trap && (
-        <div className="border-l-2 border-amber-600 bg-amber-50/80 pl-4 pr-3 py-2.5 text-amber-900">
-          <p className="text-[13.5px] leading-relaxed"><span className="font-bold">Ojo: </span>{section.trap}</p>
+        <div className="rounded-r-[10px] border-l-[3px] border-keeps bg-keeps-50 pl-4 pr-4 py-3">
+          <p className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-keeps-700 mb-1">Ojo</p>
+          <p className="text-[15px] leading-relaxed text-ink">{section.trap}</p>
         </div>
       )}
     </div>
@@ -16499,59 +16537,59 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
   return (
     <section data-sheet-sec={index} className="scroll-mt-40">
       {section.partTitle && sheet.mergedFrom && (
-        <div className={`${section.partNo > 1 ? 'mt-4 pt-6 border-t-2 border-orange-500/20' : ''} mb-5`}>
-          <p className="eyebrow text-orange-600">Parte {section.partNo}</p>
-          <p className="font-serif font-bold text-xl lg:text-2xl text-sienna-700 leading-tight mt-1">{section.partTitle}</p>
-          {section.partIntro && <p className="text-base leading-relaxed text-stone-600 mt-2">{section.partIntro}</p>}
+        <div className={`${section.partNo > 1 ? 'mt-4 pt-8 border-t-[3px] border-double border-ink/80' : ''} mb-7`}>
+          <p className="k-kicker">Parte {section.partNo}</p>
+          <p className="font-serif text-2xl lg:text-[1.9rem] text-ink leading-tight mt-1.5" style={{fontWeight:600}}>{section.partTitle}</p>
+          {section.partIntro && <p className="k-reading text-[1.0625rem] mt-2.5 max-w-[44rem]">{section.partIntro}</p>}
         </div>
       )}
       <div className={hasSide ? '2xl:grid 2xl:grid-cols-[20rem_minmax(0,1fr)] 2xl:gap-14' : ''}>
       {/* Explanation column: number, title, lead, Clave and Ojo. Sticks beside long tables on wide screens. */}
       <div className={hasSide ? '2xl:sticky 2xl:top-6 2xl:self-start' : ''}>
         {section.heading && (
-          <div className="flex items-baseline gap-3 mb-3">
-            {secNo && <span className="font-serif font-bold text-lg text-ochre-500 tabular-nums leading-none">{secNo.padStart(2, '0')}</span>}
-            <h3 className="flex-1 font-serif font-bold text-xl lg:text-[1.375rem] text-ink leading-snug">{secTitle}</h3>
-            {isRead && <span className="text-oliva-600 text-sm font-semibold flex-shrink-0" title="Leída">✓</span>}
+          <div className="flex items-baseline gap-3.5 mb-3.5">
+            {secNo && <span className="font-serif text-[1.35rem] text-keeps tabular-nums leading-none" style={{fontWeight:500}}>{secNo.padStart(2, '0')}</span>}
+            <h3 className="flex-1 font-serif text-[1.45rem] lg:text-[1.7rem] text-ink leading-[1.2] tracking-[-0.015em]" style={{fontWeight:600}}>{secTitle}</h3>
+            {isRead && <span className="text-oliva-600 text-[12.5px] font-semibold flex-shrink-0 inline-flex items-center gap-1" title="Leída">✓ Leída</span>}
           </div>
         )}
-        {section.lead && <p className="text-[15px] leading-relaxed mb-5 2xl:mb-0 text-stone-600 max-w-prose">{section.lead}</p>}
+        {section.lead && <p className="font-serif text-[17.5px] leading-[1.62] mb-6 2xl:mb-0 text-ink/80 max-w-[42rem]">{section.lead}</p>}
         {hasSide && <div className="hidden 2xl:block">{boxes}</div>}
       </div>
       <div className="min-w-0">
       {section.rows && Array.isArray(section.rows) && <DataTable data={section.rows} refined />}
-      {section.text && <p className="text-[15px] leading-relaxed text-stone-700 mt-3">{section.text}</p>}
+      {section.text && <p className="font-serif text-[17px] leading-[1.62] text-ink/80 mt-4 max-w-[42rem]">{section.text}</p>}
       <div className={hasSide ? '2xl:hidden' : ''}>{boxes}</div>
       {ex.length > 0 && (
-        <div className="mt-6">
-          <div className="flex items-center gap-2 mb-3">
-            <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-orange-600 flex-1">Ejemplos reales</p>
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-4">
+            <p className="k-kicker flex-1">Ejemplos reales</p>
             {ex.length > 1 && (
               <button onClick={() => playingHere ? seq.stop() : seq.play(index, ex.map(e => e.es))}
-                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 min-h-9 rounded-full transition-colors ${playingHere ? 'bg-orange-500 text-paper' : 'bg-paper text-orange-600 hover:bg-orange-100 border border-orange-500/30'}`}>
+                className={`inline-flex items-center gap-1.5 text-[13px] font-semibold px-3.5 min-h-9 rounded-full border transition-colors ${playingHere ? 'bg-ink border-ink text-white' : 'bg-surface text-ink border-ink/15 hover:border-ink/40'}`}>
                 {playingHere ? '■ Parar' : '▶ Escuchar todo'}
               </button>
             )}
           </div>
-          <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
+          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
             {ex.map((e, ei) => {
               const showEn = !hideEn || revealed[ei];
               const isCur = playingHere && seq.playing.idx === ei;
               const saved = glossaryHas(e.es);
               return (
-                <div key={ei} className={`border-l-2 pl-4 py-0.5 transition-colors ${isCur ? 'border-amber-400 bg-amber-50' : 'border-ochre-300/70'}`}>
+                <div key={ei} className={`border-l-2 pl-4 py-1 transition-colors ${isCur ? 'border-keeps bg-keeps-50' : 'border-ink/15'}`}>
                   <div className="flex items-start gap-2">
-                    <p className="font-serif italic text-base flex-1" lang="es">"{e.es}"</p>
+                    <p className="font-serif text-[17px] leading-snug text-ink flex-1 pt-1" lang="es">{e.es}</p>
                     <SpeakBtn text={e.es} size="sm" />
                     <button onClick={() => addOne(e)} title={saved ? 'Ya está en Tarjetas' : 'Añadir a Tarjetas'} aria-label={saved ? 'Ya está en Tarjetas' : 'Añadir a Tarjetas'}
-                      className={`w-9 h-9 flex-shrink-0 inline-flex items-center justify-center rounded-full border-2 text-sm font-bold transition-colors ${saved ? 'border-oliva-500/50 text-oliva-600 bg-oliva-50' : 'border-ink/15 text-dust hover:border-orange-500/60 hover:text-orange-600 bg-paper'}`}>
+                      className={`w-9 h-9 flex-shrink-0 inline-flex items-center justify-center rounded-full border text-sm font-semibold transition-colors ${saved ? 'border-oliva-500/50 text-oliva-600 bg-oliva-50' : 'border-ink/15 text-dust hover:border-ink/50 hover:text-ink bg-surface'}`}>
                       {saved ? '✓' : '+'}
                     </button>
                   </div>
                   {showEn ? (
-                    <p className="text-xs mt-0.5 text-stone-500">{e.en}</p>
+                    <p className="text-[13.5px] mt-1 text-dust leading-snug">{e.en}</p>
                   ) : (
-                    <button onClick={() => setRevealed(r => ({ ...r, [ei]: true }))} className="text-xs mt-0.5 text-dust underline decoration-dotted underline-offset-2 hover:text-orange-600">Toca para ver el inglés</button>
+                    <button onClick={() => setRevealed(r => ({ ...r, [ei]: true }))} className="text-[13px] mt-1 text-dust underline decoration-dotted underline-offset-2 hover:text-ink">Toca para ver el inglés</button>
                   )}
                 </div>
               );
@@ -16561,7 +16599,7 @@ function SheetSection({ sheet, section, index, hideEn, isRead, seq, onRecallDone
             <div className="mt-4">
               {!recallOpen ? (
                 <button onClick={() => setRecallOpen(true)}
-                  className="w-full min-h-11 rounded-xl border-2 border-dashed border-orange-500/30 text-sm font-semibold text-orange-600 hover:bg-orange-50 transition-colors">
+                  className="w-full min-h-11 rounded-[10px] border border-dashed border-ink/25 text-sm font-semibold text-ink hover:bg-surface hover:border-ink/45 transition-colors">
                   Ponte a prueba · {ex.length} frases
                 </button>
               ) : (
@@ -16669,8 +16707,8 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
         return (
           <li key={i}>
             <button onClick={() => jumpTo(i)} aria-current={on ? 'true' : undefined}
-              className={`w-full text-left flex items-start gap-2.5 px-3 py-2 rounded-xl text-[13px] leading-snug transition-colors border-l-2 ${on ? 'border-orange-500 bg-paper text-ink font-semibold' : 'border-transparent text-sienna-700 hover:bg-paper/70'}`}>
-              <span className={`flex-shrink-0 w-4 text-[11px] font-mono mt-0.5 ${done ? 'text-oliva-600' : 'text-dust'}`}>{done ? '✓' : i + 1}</span>
+              className={`w-full text-left flex items-start gap-2.5 px-3 py-2 rounded-r-lg text-[13.5px] leading-snug transition-colors border-l-2 ${on ? 'border-keeps bg-surface text-ink font-semibold' : 'border-ink/10 text-ink/65 hover:text-ink hover:bg-surface/70'}`}>
+              <span className={`flex-shrink-0 w-4 text-[12px] tabular-nums mt-px ${done ? 'text-oliva-600' : 'text-dust'}`}>{done ? '✓' : i + 1}</span>
               <span className="min-w-0">{sheetHeadingShort(sec.heading) || `Sección ${i + 1}`}</span>
             </button>
           </li>
@@ -16679,8 +16717,8 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
       {sheet.quiz && (
         <li>
           <button onClick={jumpQuiz}
-            className="w-full text-left flex items-start gap-2.5 px-3 py-2 rounded-xl text-[13px] leading-snug border-l-2 border-transparent text-orange-600 font-semibold hover:bg-paper/70 transition-colors">
-            <span className="flex-shrink-0 w-4 text-[11px] font-mono mt-0.5">▸</span><span>Test · {sheet.quiz.length} preguntas</span>
+            className="w-full text-left flex items-start gap-2.5 px-3 py-2 rounded-r-lg text-[13.5px] leading-snug border-l-2 border-ink/10 text-keeps-700 font-semibold hover:bg-surface/70 transition-colors">
+            <span className="flex-shrink-0 w-4 text-[12px] mt-px">▸</span><span>Test · {sheet.quiz.length} preguntas</span>
           </button>
         </li>
       )}
@@ -16706,7 +16744,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
           )}
           <div className="flex-1 min-w-0">
             <p className="font-serif font-bold text-base text-ink leading-tight truncate">{sheet.title}</p>
-            <p className="text-[11px] text-dust mt-0.5 font-mono">{readSet.size}/{total} secciones leídas</p>
+            <p className="text-[12px] text-dust mt-0.5 tabular-nums">{readSet.size}/{total} secciones leídas</p>
           </div>
           <EnToggle />
           <button onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}
@@ -16714,14 +16752,14 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             Índice {tocOpen ? '▴' : '▾'}
           </button>
         </div>
-        <div className="h-0.5 bg-ink/10"><div className="h-full bg-orange-500 transition-all" style={{ width: pctRead + '%' }} /></div>
+        <div className="h-0.5 bg-ink/10"><div className="h-full bg-keeps transition-all" style={{ width: pctRead + '%' }} /></div>
         {tocOpen && <div className="px-2 py-2 max-h-[60vh] overflow-y-auto border-t border-ink/10"><Toc compact /></div>}
       </div>
 
       {/* Desktop: slim back link, then a sticky contents rail beside the sheet. Wide canvas (sheet-canvas). */}
       {onBack && (
         <div className="hidden lg:block px-8 pt-5 sheet-canvas mx-auto no-print">
-          <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-semibold text-dust hover:text-orange-600 transition-colors">
+          <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm font-medium text-dust hover:text-ink transition-colors">
             <span aria-hidden>←</span><span>{nav.parentLabel}</span>
           </button>
         </div>
@@ -16730,10 +16768,10 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
       <div className="px-4 lg:px-8 py-6 sheet-canvas mx-auto lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-10 xl:gap-14 lg:items-start">
         <aside className="hidden lg:block sticky top-6 self-start no-print">
           <div className="flex items-center justify-between gap-2 mb-2">
-            <p className="eyebrow">Índice</p>
-            <p className="text-[11px] font-mono text-dust">{readSet.size}/{total} leídas</p>
+            <p className="k-label">Índice</p>
+            <p className="text-[12px] tabular-nums text-dust">{readSet.size}/{total} leídas</p>
           </div>
-          <div className="h-0.5 rounded-full bg-ink/10 overflow-hidden mb-3"><div className="h-full bg-orange-500 transition-all" style={{ width: pctRead + '%' }} /></div>
+          <div className="h-0.5 rounded-full bg-ink/10 overflow-hidden mb-3"><div className="h-full bg-keeps transition-all" style={{ width: pctRead + '%' }} /></div>
           <div className="max-h-[calc(100vh-11rem)] overflow-y-auto hide-scroll -mx-1 px-1"><Toc /></div>
           <div className="mt-4 pt-4 border-t border-ink/10 flex flex-wrap items-center gap-2">
             <EnToggle />
@@ -16744,23 +16782,22 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
         <div className="min-w-0">
         {/* Editorial header on the page itself: eyebrow with the sheet colour, serif title, actions on the right */}
         <header className="pb-6 lg:pb-8">
-          <div className="flex items-center gap-2.5 mb-3">
-            <span className={`h-1 w-8 rounded-full bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} aria-hidden />
-            <p className="eyebrow">Chuleta</p>
+          <div className="flex flex-wrap items-center gap-2.5 mb-4">
+            <p className="k-kicker">Chuleta{(f => f ? ' · ' + f.label : '')(CHULETA_FILTERS.find(f => f.id === sheet.category))}</p>
             <SheetStatusBadge status={prog.status} />
-            {dueLabel && prog.status !== 'dominada' && <span className={`text-xs ${isDue ? 'font-semibold text-orange-600' : 'text-dust'}`}>{dueLabel}</span>}
+            {dueLabel && prog.status !== 'dominada' && <span className={`text-[13px] ${isDue ? 'font-semibold text-keeps-700' : 'text-dust'}`}>{dueLabel}</span>}
           </div>
           <div className="lg:flex lg:items-end lg:gap-8">
             <div className="flex-1 min-w-0">
-              <h2 className="font-serif font-bold text-3xl lg:text-[2.75rem] text-ink leading-[1.08] tracking-tight">{sheet.title}</h2>
-              <p className="text-base lg:text-lg text-stone-500 mt-2 leading-snug">{sheet.titleEn}</p>
+              <h2 className="font-serif text-[2.2rem] lg:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.025em]" style={{fontWeight:600}}>{sheet.title}</h2>
+              <p className="font-serif italic text-[1.15rem] lg:text-[1.35rem] text-ink/60 mt-2.5 leading-snug">{sheet.titleEn}</p>
             </div>
             {allExamples.length > 0 && (() => {
               const missing = allExamples.filter(ex => !glossaryHas(ex.es)).length;
               return (
                 <div className="mt-4 lg:mt-0 flex-shrink-0 no-print">
                   {missing ? (
-                    <button onClick={addAll} className="text-sm font-semibold px-4 min-h-10 rounded-full bg-ink text-paper hover:bg-sienna-700 transition-colors">
+                    <button onClick={addAll} className="text-sm font-semibold px-4 min-h-10 rounded-full bg-ink text-white hover:bg-orange-600 transition-colors">
                       + Añadir {missing} frases a Tarjetas
                     </button>
                   ) : <span className="text-sm font-semibold text-oliva-700">✓ Todas en Tarjetas</span>}
@@ -16769,11 +16806,21 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             })()}
           </div>
           {sheet.intro && (
-            <p className="mt-5 text-[16.5px] leading-relaxed text-stone-700 max-w-[46rem]">{sheet.intro}</p>
+            <p className="mt-6 k-reading max-w-[44rem]">{sheet.intro}</p>
           )}
+          {(() => {
+            const nTrap = sheet.content.filter(x => x.trap).length;
+            const cells = [[total, total === 1 ? 'Sección' : 'Secciones'], [allExamples.length, 'Ejemplos con audio'], [nTrap, nTrap === 1 ? 'Trampa' : 'Trampas']];
+            if (sheet.quiz) cells.push([sheet.quiz.length, 'Preguntas de test']);
+            return (
+              <div className="k-stats mt-7" style={{'--n':cells.length}}>
+                {cells.map(([n, l], ci) => <div key={ci}><div className="k-stat-n">{n}</div><div className="k-stat-l">{l}</div></div>)}
+              </div>
+            );
+          })()}
           {links.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-x-1 gap-y-1.5 text-sm no-print">
-              <span className="eyebrow mr-2">Ver también</span>
+              <span className="k-label mr-2">Ver también</span>
               {links.map((l, li) => (
                 <React.Fragment key={l.id}>
                   {li > 0 && <span className="text-dust/60 px-1" aria-hidden>·</span>}
@@ -16785,22 +16832,23 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
           )}
         </header>
 
-        <Card dark={dark} className="overflow-hidden">
+        <div>
           {/* Resumen: every Clave and Ojo line on the sheet, for a two-minute revision */}
           {resumen.length > 0 && (
-            <div className="px-5 lg:px-10 py-4 border-b border-ink/[0.07] bg-cream/30">
-              <button onClick={() => setResumenOpen(o => !o)} className="w-full flex items-center gap-2 text-left">
-                <p className="eyebrow flex-1">Resumen · {(n => `${n} ${n === 1 ? 'clave' : 'claves'}`)(resumen.filter(r => r.note).length)}, {(n => `${n} ${n === 1 ? 'trampa' : 'trampas'}`)(resumen.filter(r => r.trap).length)}</p>
+            <div className="k-card px-5 lg:px-7 py-4 mb-2">
+              <button onClick={() => setResumenOpen(o => !o)} className="w-full flex items-center gap-3 text-left min-h-9">
+                <p className="font-serif text-[1.15rem] text-ink" style={{fontWeight:600}}>Resumen en dos minutos</p>
+                <p className="text-[13px] text-dust flex-1">{(n => `${n} ${n === 1 ? 'clave' : 'claves'}`)(resumen.filter(r => r.note).length)}, {(n => `${n} ${n === 1 ? 'trampa' : 'trampas'}`)(resumen.filter(r => r.trap).length)}</p>
                 <span className={`text-dust transition-transform ${resumenOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
               {resumenOpen && (
-                <ul className="mt-4 grid md:grid-cols-2 gap-x-10 gap-y-3.5">
+                <ul className="mt-4 pt-4 border-t border-ink/10 grid md:grid-cols-2 gap-x-10 gap-y-4">
                   {resumen.map(r => (
                     <li key={r.i}>
                       <button onClick={() => jumpTo(r.i)} className="text-left w-full group">
-                        <p className="text-[10.5px] font-bold uppercase tracking-wider text-dust group-hover:text-orange-600">{r.h}</p>
-                        {r.note && <p className="text-sm leading-snug text-teal-900 mt-0.5"><span className="font-bold">Clave: </span>{r.note}</p>}
-                        {r.trap && <p className="text-sm leading-snug text-amber-900 mt-0.5"><span className="font-bold">Ojo: </span>{r.trap}</p>}
+                        <p className="text-[12.5px] font-semibold text-ink group-hover:text-keeps-700 transition-colors">{r.h}</p>
+                        {r.note && <p className="text-[14px] leading-snug text-ink/80 mt-1"><span className="font-semibold text-oliva-700">Clave: </span>{r.note}</p>}
+                        {r.trap && <p className="text-[14px] leading-snug text-ink/80 mt-1"><span className="font-semibold text-keeps-700">Ojo: </span>{r.trap}</p>}
                       </button>
                     </li>
                   ))}
@@ -16809,26 +16857,26 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
             </div>
           )}
 
-          <div className="px-5 lg:px-10 py-2 divide-y divide-ink/[0.08] [&>section]:py-8 lg:[&>section]:py-10">
+          <div className="divide-y divide-ink/[0.12] [&>section]:py-10 lg:[&>section]:py-14">
             {sheet.content.map((section, si) => (
               <SheetSection key={sheet.id + si} sheet={sheet} section={section} index={si} hideEn={hideEn}
                 isRead={readSet.has(si)} seq={seq} onRecallDone={onRecallDone} />
             ))}
           </div>
-        </Card>
+        </div>
 
         {sheet.quiz && (
-          <div id="sheet-quiz" className="mt-8 scroll-mt-40">
-            <p className="eyebrow mb-1">Ponte a prueba</p>
-            <p className="font-serif font-bold text-2xl text-sienna-700 mb-4">Test: {sheet.quiz.length} preguntas</p>
+          <div id="sheet-quiz" className="mt-6 pt-10 border-t-[3px] border-double border-ink/80 scroll-mt-40">
+            <p className="k-kicker mb-1.5">Ponte a prueba</p>
+            <p className="font-serif text-[1.8rem] text-ink mb-5" style={{fontWeight:600}}>Test: {sheet.quiz.length} preguntas</p>
             <SheetQuiz key={sheet.id} items={sheet.quiz} onPass={() => { if (prog.status === 'nueva' || isDue) reviewDone(); }} />
           </div>
         )}
 
         {/* Status and next steps */}
-        <div className="mt-8 rounded-2xl border border-ink/10 bg-white/60 p-5">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <p className="eyebrow">Tu progreso</p>
+        <div className="mt-10 k-card p-5 lg:p-6">
+          <div className="flex flex-wrap items-center gap-2.5 mb-4">
+            <p className="font-serif text-[1.2rem] text-ink" style={{fontWeight:600}}>Tu progreso</p>
             <SheetStatusBadge status={prog.status} />
             {dueLabel && prog.status !== 'dominada' && <span className="text-xs text-dust">{dueLabel}</span>}
           </div>
@@ -16845,7 +16893,7 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
           </div>
           {(relLessons.length > 0 || relEx.length > 0) && (
             <div className="mt-5 pt-4 border-t border-ink/10">
-              <p className="eyebrow mb-2">Sigue practicando</p>
+              <p className="k-label mb-2.5">Sigue practicando</p>
               <div className="flex flex-wrap gap-2">
                 {relLessons.map(l => (
                   <button key={l.id} onClick={() => go && go('gramatica', l.id)}
@@ -16869,15 +16917,15 @@ function SheetView({ sheet, onBack, onOpenSheet, go, dark }) {
 }
 
 const CHULETA_FILTERS = [
-  {id:'repasar', label:'🔁 Para repasar'},
-  {id:'recientes', label:'🆕 Recientes'},
-  {id:'todos', label:'Todos'},
-  {id:'verbos', label:'⚡ Verbos'},
-  {id:'tiempos', label:'📅 Tiempos'},
-  {id:'gramatica', label:'📐 Gramática'},
-  {id:'lexico', label:'📚 Léxico'},
-  {id:'conversacion', label:'💬 Conversación'},
-  {id:'trabajo', label:'💼 Trabajo'},
+  {id:'repasar', label:'Para repasar'},
+  {id:'recientes', label:'Recientes'},
+  {id:'todos', label:'Todas'},
+  {id:'verbos', label:'Verbos'},
+  {id:'tiempos', label:'Tiempos'},
+  {id:'gramatica', label:'Gramática'},
+  {id:'lexico', label:'Léxico'},
+  {id:'conversacion', label:'Conversación'},
+  {id:'trabajo', label:'Trabajo'},
 ];
 
 // Gramática > Chuletas (fixedTab 'gramatica') and Gramática > Errores (fixedTab 'errores').
@@ -17005,15 +17053,15 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
           <BackHeader title="Errores comunes" subtitle="Error común" onBack={() => setSelectedMistake(null)} dark={dark} />
           <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
             <Card dark={dark} className="overflow-hidden">
-              <div className="px-6 py-5 bg-gradient-to-br from-rose-400 to-rose-500 text-white">
-                <p className="text-xs font-bold uppercase tracking-wider opacity-90 mb-1">Error común</p>
-                <p className="font-serif font-bold text-xl lg:text-2xl line-through opacity-90">{m.wrong}</p>
+              <div className="px-6 py-5 bg-keeps-50 border-b border-keeps-100">
+                <p className="k-kicker mb-1.5">Error común</p>
+                <p className="font-serif text-xl lg:text-2xl line-through decoration-keeps/70 text-ink/70">{m.wrong}</p>
               </div>
               <div className="p-6 space-y-5">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-emerald-500 text-xl">✓</span>
-                    <p className="text-sm font-bold uppercase tracking-wider text-emerald-600">Lo correcto</p>
+                    <span className="text-oliva-600 text-xl">✓</span>
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-oliva-700">Lo correcto</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <p className="font-serif font-bold text-2xl flex-1">{m.right}</p>
@@ -17021,9 +17069,9 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
                   </div>
                   <p className="text-base mt-1 text-stone-500">{m.en}</p>
                 </div>
-                <div className="rounded-xl p-4 bg-blue-50 border border-blue-100">
-                  <p className="text-sm font-bold uppercase tracking-wider mb-2 text-blue-700">💡 ¿Por qué?</p>
-                  <p className="text-base leading-relaxed text-blue-900">{m.why}</p>
+                <div className="rounded-r-[10px] border-l-[3px] border-ink pl-4 pr-4 py-3 bg-cream/60">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.08em] mb-1.5 text-ink">¿Por qué?</p>
+                  <p className="font-serif text-[17px] leading-relaxed text-ink/85">{m.why}</p>
                 </div>
               </div>
             </Card>
@@ -17035,7 +17083,7 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
       <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
         <p className="text-sm text-dust mb-5">Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
         <button onClick={() => { setErrDrill(true); window.scrollTo(0, 0); }}
-          className="group w-full text-left mb-6 rounded-2xl bg-ink hover:bg-sienna-700 text-paper px-5 py-4 flex items-center gap-4 transition-colors">
+          className="group w-full text-left mb-6 rounded-xl bg-ink hover:bg-orange-600 text-white px-5 py-4 flex items-center gap-4 transition-colors">
           <div className="flex-1 min-w-0">
             <p className="eyebrow" style={{ color:'rgba(250,246,238,0.7)' }}>Ponte a prueba</p>
             <p className="font-serif font-bold text-xl mt-1">¿Cuál es correcto?</p>
@@ -17046,20 +17094,19 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {COMMON_MISTAKES.map((mm, i) => (
             <button key={i} onClick={() => setSelectedMistake(i)} className="text-left">
-              <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
-                <div className="h-2 bg-gradient-to-r from-rose-400 to-rose-500" />
-                <div className="p-4">
+              <div className="k-card k-card-hover h-full">
+                <div className="p-5">
                   <div className="flex items-start gap-2 mb-2">
-                    <span className="text-rose-500 font-bold flex-shrink-0 mt-0.5">✗</span>
+                    <span className="text-keeps font-bold flex-shrink-0 mt-0.5">✗</span>
                     <p className="font-serif text-sm line-through text-stone-400 leading-snug line-clamp-2">{mm.wrong}</p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-emerald-500 font-bold flex-shrink-0 mt-0.5">✓</span>
+                    <span className="text-oliva-600 font-bold flex-shrink-0 mt-0.5">✓</span>
                     <p className="font-serif font-bold text-base leading-snug line-clamp-2">{mm.right}</p>
                   </div>
-                  <p className="text-xs mt-2 text-stone-400">{mm.en}</p>
+                  <p className="text-[13px] mt-2.5 pt-2.5 border-t border-ink/10 text-dust">{mm.en}</p>
                 </div>
-              </Card>
+              </div>
             </button>
           ))}
         </div>
@@ -17084,50 +17131,67 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
     : CHEAT_SHEETS.filter(s => activeFilter === 'todos' ? s.category !== 'trabajo' : s.category === activeFilter)
   ).filter(s => !sheetQ || chuletaSearchText(s).includes(sheetQ));
 
+  const pool = CHEAT_SHEETS.filter(s => s.category !== 'trabajo');
+  const nRead = pool.filter(s => { const st = (progAll[s.id] || {}).status; return st === 'leida' || st === 'dominada'; }).length;
+  const nMastered = pool.filter(s => (progAll[s.id] || {}).status === 'dominada').length;
+  const catLabel = c => (CHULETA_FILTERS.find(f => f.id === c) || {}).label || 'Chuleta';
+
   return (
-    <div className="px-4 lg:px-8 py-6 max-w-5xl mx-auto">
-      <div className="flex flex-wrap gap-2 mb-5">
-        {filters.map(cat => (
-          <button key={cat.id} onClick={() => setSheetFilter(cat.id)}
-            className={`px-3 min-h-9 rounded-full text-sm font-semibold transition-colors ${activeFilter === cat.id ? 'bg-orange-500 text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'}`}>
-            {cat.label}{cat.id === 'repasar' ? ` (${due.length})` : ''}
-          </button>
-        ))}
+    <div className="px-4 lg:px-8 py-7 max-w-5xl mx-auto">
+      <p className="k-reading text-[1.0625rem] max-w-2xl mb-6">Explicaciones claras de la gramática que de verdad usas, con ejemplos reales que puedes escuchar, repasar y guardar en tus tarjetas.</p>
+      <div className="k-stats mb-8" style={{'--n':4}}>
+        <div><div className="k-stat-n">{pool.length}</div><div className="k-stat-l">Chuletas</div></div>
+        <div><div className="k-stat-n">{nRead}</div><div className="k-stat-l">Leídas</div></div>
+        <div><div className="k-stat-n">{nMastered}</div><div className="k-stat-l">Dominadas</div></div>
+        <div><div className="k-stat-n" style={{color: due.length ? 'var(--keeps-d)' : undefined}}>{due.length}</div><div className="k-stat-l">Para repasar hoy</div></div>
       </div>
-      <div className="flex items-center gap-2 mb-5 px-3.5 py-2.5 rounded-xl border bg-white border-stone-200">
-        <span className="text-stone-400">🔍</span>
-        <input value={sheetQuery} onChange={e => setSheetQuery(e.target.value)}
-          placeholder="Buscar en las chuletas (título o contenido)..."
-          className="flex-1 min-w-0 outline-none text-sm bg-transparent text-stone-700 placeholder-stone-400" />
-        {sheetQuery && <button onClick={() => setSheetQuery('')} className="text-stone-400 text-xl leading-none">×</button>}
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex items-center gap-2 px-3.5 min-h-11 rounded-[10px] border border-ink/[0.12] bg-surface sm:w-96 focus-within:border-ink/40 transition-colors">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="text-dust flex-shrink-0" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+          <input value={sheetQuery} onChange={e => setSheetQuery(e.target.value)}
+            placeholder="Buscar en las chuletas"
+            className="flex-1 min-w-0 outline-none text-[14.5px] bg-transparent text-ink placeholder-stone-400" />
+          {sheetQuery && <button onClick={() => setSheetQuery('')} aria-label="Borrar" className="text-dust text-xl leading-none">×</button>}
+        </div>
+        <div className="flex gap-2 overflow-x-auto hide-scroll -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+          {filters.map(cat => (
+            <button key={cat.id} onClick={() => setSheetFilter(cat.id)} className={`k-chip flex-shrink-0 ${activeFilter === cat.id ? 'on' : ''}`}>
+              {cat.label}{cat.id === 'repasar' && <span className={`text-[11.5px] font-semibold px-1.5 rounded-full ${activeFilter === cat.id ? 'bg-white/20' : 'bg-keeps-50 text-keeps-700'}`}>{due.length}</span>}
+            </button>
+          ))}
+        </div>
       </div>
-      {list.length === 0 && <p className="text-center text-sm text-stone-400 py-10">Ninguna chuleta coincide con "{sheetQuery}".</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {list.length === 0 && <p className="text-center text-[15px] text-dust py-12">Ninguna chuleta coincide con «{sheetQuery}».</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
         {list.map((sheet, idx) => {
           const p = { read: [], status: 'nueva', ...(progAll[sheet.id] || {}) };
           const pct = Math.round(((p.read || []).length / sheet.content.length) * 100);
+          const dueLbl = p.status !== 'dominada' ? sheetDueLabel(p) : '';
           return (
-            <button key={sheet.id} onClick={() => setSelectedSheetId(sheet.id)} className="text-left">
-              <Card dark={dark} className="overflow-hidden h-full hover:shadow-md transition-all hover:-translate-y-0.5">
-                <div className={`h-2 bg-gradient-to-r ${tileColorMap[sheet.color] || tileColorMap.stone}`} />
-                <div className="p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    {p.status !== 'nueva' && <SheetStatusBadge status={p.status} />}
-                    {activeFilter === 'recientes' && idx < 3 && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Nuevo</span>}
-                    {sheet.quiz && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">Test</span>}
-                  </div>
-                  <p className="font-serif font-bold text-lg leading-tight">{sheet.title}</p>
-                  <p className="text-sm mt-1 text-stone-500">{sheet.titleEn}</p>
-                  {sheet.intro && <p className="text-xs mt-2 line-clamp-2 leading-relaxed text-stone-500">{sheet.intro}</p>}
-                  {p.status === 'nueva' && pct > 0 && (
-                    <div className="mt-3 h-1 rounded-full bg-ink/10 overflow-hidden"><div className="h-full bg-orange-500" style={{ width: pct + '%' }} /></div>
-                  )}
-                  <p className="text-xs mt-2 text-stone-400">
-                    {sheet.content.length} {sheet.content.length === 1 ? 'sección' : 'secciones'}
-                    {activeFilter === 'recientes' && sheet.added ? ` · Añadida ${fmtSheetDate(sheet.added)}` : sheetDueLabel(p) && p.status !== 'dominada' ? ` · ${sheetDueLabel(p)}` : ' · Abrir →'}
-                  </p>
+            <button key={sheet.id} onClick={() => setSelectedSheetId(sheet.id)} className="text-left group">
+              <div className="k-card k-card-hover h-full flex flex-col p-5 lg:p-6">
+                <div className="flex items-center gap-2 mb-3 min-h-[1.375rem]">
+                  <span className="k-kicker">{catLabel(sheet.category)}</span>
+                  <span className="flex-1" />
+                  {activeFilter === 'recientes' && idx < 3 && <span className="text-[11.5px] font-semibold px-2 py-0.5 rounded-full bg-keeps-50 text-keeps-700">Nueva</span>}
+                  {p.status !== 'nueva' && <SheetStatusBadge status={p.status} />}
                 </div>
-              </Card>
+                <p className="font-serif text-[1.3rem] leading-[1.2] text-ink tracking-[-0.01em]" style={{fontWeight:600}}>{sheet.title}</p>
+                <p className="font-serif italic text-[15px] mt-1.5 text-ink/60 leading-snug">{sheet.titleEn}</p>
+                {sheet.intro && <p className="text-[14px] mt-3 line-clamp-3 leading-relaxed text-stone-600">{sheet.intro}</p>}
+                <div className="flex-1" />
+                {p.status === 'nueva' && pct > 0 && (
+                  <div className="mt-4 h-[3px] rounded-full bg-ink/10 overflow-hidden"><div className="h-full bg-keeps" style={{ width: pct + '%' }} /></div>
+                )}
+                <div className="mt-4 pt-3.5 border-t border-ink/10 flex items-center gap-3 text-[13px] text-dust">
+                  <span>{sheet.content.length} {sheet.content.length === 1 ? 'sección' : 'secciones'}</span>
+                  {sheet.quiz && <><span className="text-ink/20">·</span><span>Test</span></>}
+                  {activeFilter === 'recientes' && sheet.added ? <><span className="text-ink/20">·</span><span>{fmtSheetDate(sheet.added)}</span></>
+                    : dueLbl ? <><span className="text-ink/20">·</span><span className="text-keeps-700 font-medium">{dueLbl}</span></> : null}
+                  <span className="flex-1" />
+                  <span className="text-ink font-medium transition-transform group-hover:translate-x-0.5">Leer →</span>
+                </div>
+              </div>
             </button>
           );
         })}
@@ -24516,22 +24580,22 @@ function AreaHeader({ area, tab, onTab, onSearch }) {
     <div className="px-4 lg:px-8 pt-4 lg:pt-8 max-w-5xl mx-auto area-head">
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="eyebrow lg:hidden">Aprende</p>
-          <h1 className="font-serif font-bold text-3xl lg:text-4xl text-sienna-700 leading-tight mt-0.5">{area.label}</h1>
+          <p className="k-kicker">Aprende</p>
+          <h1 className="font-serif text-[2rem] lg:text-[2.6rem] text-ink leading-[1.08] mt-1 tracking-[-0.02em]" style={{fontWeight:600}}>{area.label}</h1>
         </div>
         <button onClick={onSearch} aria-label="Buscar"
-          className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-cream text-sienna-700 hover:bg-ochre-100 transition-colors flex-shrink-0">
+          className="lg:hidden w-11 h-11 flex items-center justify-center rounded-full bg-surface border border-ink/[0.12] text-ink hover:bg-cream transition-colors flex-shrink-0">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
         </button>
       </div>
-      <div ref={ref} className="mt-4 -mx-4 px-4 lg:mx-0 lg:px-0 overflow-x-auto hide-scroll">
-        <div role="tablist" aria-label={area.label} className="flex gap-1 p-1 rounded-2xl bg-cream/70 border border-ink/10 w-max">
+      <div ref={ref} className="mt-5 -mx-4 px-4 lg:mx-0 lg:px-0 overflow-x-auto hide-scroll">
+        <div role="tablist" aria-label={area.label} className="k-tabs min-w-max">
           {area.tabs.map(t => {
             const on = t.id === tab;
             return (
               <a key={t.id} role="tab" aria-selected={on} data-active={on ? '1' : '0'} href={`#${area.id}/${t.id}`}
                 onClick={e => { e.preventDefault(); onTab(t.id); }}
-                className={`flex-shrink-0 whitespace-nowrap inline-flex items-center px-4 min-h-10 rounded-xl text-sm font-semibold transition-colors no-underline ${on ? 'bg-orange-500 text-paper shadow-sm' : 'text-sienna-700 hover:bg-paper'}`}>
+                className={`k-tab flex-shrink-0 ${on ? 'on' : ''}`}>
                 {t.label}
               </a>
             );
@@ -24656,31 +24720,38 @@ function App() {
     <NavCtx.Provider value={navValue}>
     <div className="min-h-screen mesh-light text-ink">
       {/* Desktop sidebar: the five areas, with Ajustes at the foot */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 border-r border-ink/10 glass-light">
-        <div className="p-6 border-b border-ink/10">
-          <p className="eyebrow mb-2">Aprende</p>
-          <h1 className="font-serif font-bold text-2xl leading-[0.95] text-sienna-700">La Vida<br/>Español</h1>
-          <p className="text-xs font-medium text-dust mt-2">de Liam</p>
+      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-40 k-rail">
+        <div className="px-6 pt-7 pb-5">
+          <div className="flex items-center gap-3">
+            <span className="w-9 h-9 rounded-lg bg-ink flex items-center justify-center flex-shrink-0">
+              <span className="font-serif text-white text-[17px] leading-none" style={{fontWeight:600}}>Ñ</span>
+            </span>
+            <div className="min-w-0">
+              <p className="font-serif text-[18px] leading-tight text-ink" style={{fontWeight:600}}>La Vida Español</p>
+              <p className="text-[12.5px] text-dust mt-0.5">Aprende, de Liam</p>
+            </div>
+          </div>
         </div>
         <div className="px-3 pt-3">
           <button onClick={() => setSearchOpen(true)}
-            className="w-full flex items-center gap-2 px-4 py-2.5 min-h-11 rounded-xl bg-cream hover:bg-ochre-100 text-dust text-sm font-medium transition-colors">
+            className="w-full flex items-center gap-2 px-3 py-2 min-h-10 rounded-[10px] bg-surface border border-ink/[0.12] hover:border-ink/25 text-dust text-sm transition-colors">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
             <span className="flex-1 text-left">Buscar…</span>
             <kbd className="text-[11px] font-mono font-semibold text-dust/80 border border-ink/15 rounded px-1.5 leading-5">/</kbd>
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+        <p className="k-label px-6 pt-6 pb-2">Secciones</p>
+        <nav className="flex-1 overflow-y-auto px-3 space-y-0.5">
           {AREAS.map(a => {
             const on = route.area === a.id;
             const badge = badgeFor(a.id);
             return (
               <a key={a.id} href={`#${a.id}`} onClick={e => { e.preventDefault(); goArea(a.id); }} aria-current={on ? 'page' : undefined}
-                className={`w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl text-left transition-all font-semibold text-[15px] sidebar-item no-underline ${on ? 'bg-orange-500 text-paper shadow-sm' : 'text-ink hover:bg-cream'}`}>
-                <span className="text-lg flex-shrink-0">{a.emoji}</span>
+                className={`k-nav sidebar-item ${on ? 'on' : ''}`}>
+                <NavIcon id={a.id} />
                 <span className="flex-1">{a.label}</span>
                 {badge > 0 && (
-                  <span title={badgeTitle(a.id)} className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${on ? 'bg-paper/25 text-paper' : 'bg-orange-50 text-orange-600 border border-orange-200'}`}>{badge}</span>
+                  <span title={badgeTitle(a.id)} className={`text-[11px] font-semibold tabular-nums px-2 py-0.5 rounded-full ${on ? 'bg-keeps text-white' : 'bg-keeps-50 text-keeps-700'}`}>{badge}</span>
                 )}
               </a>
             );
@@ -24688,8 +24759,8 @@ function App() {
         </nav>
         <div className="p-3 border-t border-ink/10">
           <a href="#ajustes" onClick={e => { e.preventDefault(); goTo('ajustes'); }}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl text-sm font-medium no-underline transition-colors ${route.area === 'ajustes' ? 'bg-orange-500 text-paper' : 'text-dust hover:bg-cream hover:text-ink'}`}>
-            <span className="text-base">⚙️</span><span>Ajustes</span>
+            className={`k-nav ${route.area === 'ajustes' ? 'on' : ''}`}>
+            <NavIcon id="ajustes" /><span>Ajustes</span>
           </a>
         </div>
       </aside>
@@ -24707,19 +24778,19 @@ function App() {
       <GlobalAudioStop />
 
       {/* Phone: five-tab bottom bar, one per area */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-ink/10 glass-light" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-ink/10 bg-paper/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="flex">
           {AREAS.map(a => {
             const on = route.area === a.id;
             const badge = badgeFor(a.id);
             return (
               <a key={a.id} href={`#${a.id}`} onClick={e => { e.preventDefault(); goArea(a.id); }} aria-label={a.label} aria-current={on ? 'page' : undefined}
-                className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 min-h-14 py-2.5 transition-colors no-underline ${on ? 'text-orange-500' : 'text-dust'}`}>
-                {on && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-orange-500" />}
-                <span className="text-xl leading-none">{a.emoji}</span>
+                className={`relative flex flex-col items-center justify-center gap-1 flex-1 min-w-0 min-h-14 py-2.5 transition-colors no-underline ${on ? 'text-ink' : 'text-dust'}`}>
+                {on && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-keeps" />}
+                <NavIcon id={a.id} size={21} />
                 <span className="text-[10px] font-semibold leading-none tracking-wide truncate max-w-full px-0.5">{a.short || a.label}</span>
                 {badge > 0 && (
-                  <span className="absolute top-1 left-1/2 ml-2 min-w-[1.15rem] h-[1.15rem] px-1 rounded-full bg-orange-500 text-paper text-[10px] font-bold leading-[1.15rem] text-center">{badge > 99 ? '99+' : badge}</span>
+                  <span className="absolute top-1 left-1/2 ml-2 min-w-[1.15rem] h-[1.15rem] px-1 rounded-full bg-keeps text-white text-[10px] font-bold leading-[1.15rem] text-center">{badge > 99 ? '99+' : badge}</span>
                 )}
               </a>
             );
