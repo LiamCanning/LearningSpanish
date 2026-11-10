@@ -10,7 +10,57 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Aprende" />
-<meta name="theme-color" content="#fafaf8" />
+<meta name="theme-color" content="#f7f3ea" />
+<style id="tokens">
+/* ============================================================
+   COLOUR TOKENS: the only place colours are defined.
+   Look: Papel calido (10 November 2026). Warm paper, clay accent on small
+   things only, one muted accent per area.
+   Values are space-separated RGB triplets so Tailwind opacity classes work:
+   the Tailwind config below maps its colour names onto these variables.
+   To change the palette, edit this block and nothing else.
+   (The theme-color meta above mirrors --c-paper by hand.)
+   ============================================================ */
+:root {
+  /* Neutrals */
+  --c-paper:247 243 234; --c-cream:239 233 220; --c-cream-2:228 220 203; --c-surface:255 253 249;
+  --c-ink:38 33 27; --c-ink-2:63 56 48; --c-dust:103 95 83; --c-faint:160 151 138;
+  /* Warm grey scale: Tailwind 'stone' and 'sienna' */
+  --g50:250 247 241; --g100:243 238 228; --g200:231 224 211; --g300:211 201 184; --g400:160 151 138; --g500:103 95 83; --g600:84 77 67; --g700:63 56 48; --g800:47 42 36; --g900:38 33 27;
+  /* Accent, arcilla (Hoy and global): Tailwind 'orange' and 'brand'. Overridden per area below. */
+  --a50:249 241 235; --a100:242 227 219; --a200:229 201 188; --a300:210 163 144; --a400:187 118 91; --a500:168 80 47; --a600:144 69 40; --a700:121 58 34; --a800:97 46 27; --a900:71 34 20;
+  /* Signal and support scales */
+  --k50:255 243 239; --k100:255 227 218; --k200:255 196 179; --k500:255 83 45; --k600:210 64 28; --k700:184 55 26; /* 'keeps': due, Ojo, recording */
+  --ol50:236 246 239; --ol100:212 236 220; --ol200:169 216 184; --ol300:124 193 148; --ol400:79 171 112; --ol500:52 158 89; --ol600:43 130 73; --ol700:34 103 58; --ol800:27 81 46; --ol900:21 63 36; /* 'oliva': success */
+  --oc50:246 241 231; --oc100:235 228 214; --oc200:234 211 159; --oc300:221 183 103; --oc400:210 158 51; --oc500:201 138 23; --oc600:168 114 19; --oc700:134 91 16; --oc800:107 73 13; --oc900:87 59 11; /* 'ochre' */
+  --an50:240 242 245; --an100:223 227 233; --an200:193 200 211; --an300:154 165 181; --an400:125 139 159; --an500:99 115 138; --an600:81 95 115; --an700:66 77 94; --an800:54 63 76; --an900:44 51 62; /* 'anil' */
+  --c-mark:255 223 107; /* highlighter */
+  --good:#349E59; --good-2:#e6f2ea; --warn:#b4720c; --warn-2:#fbf0dc;
+  --scrim:rgb(0 0 0 / .5);
+
+  /* Derived names used by the stylesheet. Do not put raw colours here. */
+  --paper:rgb(var(--c-paper)); --cream:rgb(var(--c-cream)); --cream-2:rgb(var(--c-cream-2)); --surface:rgb(var(--c-surface));
+  --ink:rgb(var(--c-ink)); --ink-2:rgb(var(--c-ink-2)); --dust:rgb(var(--c-dust)); --faint:rgb(var(--c-faint));
+  --accent:rgb(var(--a500)); --accent-2:rgb(var(--a600)); --accent-soft:rgb(var(--a400));
+  --keeps:rgb(var(--k500)); --keeps-d:rgb(var(--k600));
+  --line:rgb(var(--c-ink) / .12); --line-2:rgb(var(--c-ink) / .22);
+  --sh:0 1px 2px rgb(var(--c-ink) / .04), 0 8px 22px rgb(var(--c-ink) / .06);
+  --lift:0 2px 4px rgb(var(--c-ink) / .05), 0 12px 28px rgb(var(--c-ink) / .10);
+  --sh-pop:0 4px 12px rgb(var(--c-ink) / .10), 0 20px 40px -12px rgb(var(--c-ink) / .18);
+  /* legacy names still referenced in places */
+  --navy:var(--accent); --navy-2:var(--accent-2);
+  --carmin:var(--accent); --ochre:rgb(var(--oc500)); --sienna:var(--ink); --oliva:rgb(var(--ol500)); --anil:rgb(var(--an500));
+}
+/* One muted accent per area; <html data-area> is set from the route. */
+html[data-area="gramatica"] { --a50:241 242 241; --a100:226 229 231; --a200:196 206 213; --a300:153 171 186; --a400:102 130 155; --a500:59 95 128; --a600:51 82 110; --a700:42 68 92; --a800:34 55 74; --a900:25 40 54; } /* azul tinta */
+html[data-area="palabras"]  { --a50:244 243 235; --a100:231 232 220; --a200:206 211 190; --a300:170 180 148; --a400:128 143 97; --a500:92 112 54; --a600:79 96 46; --a700:66 81 39; --a800:53 65 31; --a900:39 47 23; } /* oliva */
+html[data-area="escucha"]   { --a50:246 241 240; --a100:235 227 229; --a200:215 201 208; --a300:186 163 179; --a400:151 117 144; --a500:122 79 114; --a600:105 68 98; --a700:88 57 82; --a800:71 46 66; --a900:51 33 48; } /* ciruela */
+html[data-area="practica"]  { --a50:240 243 239; --a100:223 232 227; --a200:192 210 206; --a300:145 179 174; --a400:90 141 136; --a500:44 110 104; --a600:38 95 89; --a700:32 79 75; --a800:26 64 60; --a900:18 46 44; } /* verde petroleo */
+</style>
+<script>
+// First paint: area accent from the hash. The router keeps data-area in step afterwards.
+(function(){ try { var a = (location.hash || '').replace(/^#\/?/, '').split('/')[0]; if (a) document.documentElement.setAttribute('data-area', a); } catch(e){} })();
+</script>
 <script>
 // Generate icon synchronously and inject <link> tags inline so Arc / iOS
 // Safari see the href at parse time rather than after-script-runs.
@@ -30,14 +80,15 @@
     ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0); ctx.closePath();
     ctx.clip();
 
-    // ── Background: carmín red ──────────────────────────────────
-    ctx.fillStyle = '#2563EB'; ctx.fillRect(0, 0, sz, sz);
+    // ── Background: the global accent (arcilla), read from the colour tokens ──
+    var acc = getComputedStyle(document.documentElement).getPropertyValue('--a500').trim().split(/\s+/);
+    ctx.fillStyle = acc.length === 3 ? 'rgb(' + acc.join(',') + ')' : '#a8502f'; ctx.fillRect(0, 0, sz, sz);
 
-    // ── Subtle gold stripe (Spanish flag midband, 25% opacity) ──
+    // ── Tilde ───────────────────────────────────────────────────
     ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 13; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(56, 50); ctx.bezierCurveTo(66, 26, 80, 30, 90, 40); ctx.bezierCurveTo(100, 50, 114, 54, 124, 30); ctx.stroke();
 
-    // ── "A" in white ────────────────────────────────────────────
+    // ── "n" in white ────────────────────────────────────────────
     ctx.fillStyle = 'rgba(255,255,255,0.97)';
     ctx.font = 'bold 132px Georgia,serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -70,45 +121,30 @@ html[data-font="sf"] { --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Tex
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script>
 // ============================================================
-// DESIGN TOKENS - Aprende Identity Palette
+// TAILWIND COLOURS: names only. Every value lives in <style id="tokens">.
+// Legacy names: 'orange' and 'brand' are the accent (clay, or the area colour),
+// 'stone' and 'sienna' are the warm grey scale, 'keeps' is the signal orange.
 // ============================================================
-// PRIMARY:    carmín  (#C4202E)  Spanish flag red, accents & CTAs
-// SECONDARY:  ochre   (#D4943A)  Mediterranean yellow, energy
-//             terra   (#A0522D)  terracotta warmth (extended scale below)
-//             sienna  (#6B3410)  deep brown gravitas
-//             oliva   (#708238)  olive green, success/mastery
-//             añil    (#2B4C7E)  Mediterranean blue, reference
-// NEUTRALS:   paper   (#FAF6EE)  warm off-white background
-//             cream   (#F0E7D5)  card surfaces
-//             ink     (#1A1410)  near-black body text
-//             dust    (#8B7E6E)  secondary text
-// ────────────────────────────────────────────────────────────
-// NOTE: 'orange' is overridden globally so existing utilities
-// (bg-orange-500 etc.) become carmín automatically. Zero call-
-// site changes for the brand color shift.
+const tokVar = (v) => `rgb(var(--${v}) / <alpha-value>)`;
+const tokScale = (p, steps = [50,100,200,300,400,500,600,700,800,900]) => Object.fromEntries(steps.map(n => [n, tokVar(p + n)]));
 tailwind.config = {
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Bright palette (7 November 2026): slate ink for text, cobalt 'brand' for fills and
-        // active states. 'orange' is the legacy primary scale, so it carries the same blue.
-        orange: { 50:'#eff4ff',100:'#dbe6fe',200:'#bfd3fe',300:'#93b4fd',400:'#3b82f6',500:'#2563EB',600:'#1D4ED8',700:'#1E40AF',800:'#1E3A8A',900:'#172554' },
-        brand: { DEFAULT:'#2563EB', 50:'#eff4ff',100:'#dbe6fe',200:'#bfd3fe',300:'#93b4fd',400:'#3b82f6',500:'#2563EB',600:'#1D4ED8',700:'#1E40AF',800:'#1E3A8A',900:'#172554' },
-        keeps: { DEFAULT:'#FF532D', 50:'#fff3ef', 100:'#ffe3da', 200:'#ffc4b3', 500:'#FF532D', 600:'#D2401C', 700:'#B8371A' },
-        ochre: { 50:'#f6f1e7',100:'#ebe4d6',200:'#ead39f',300:'#ddb767',400:'#d29e33',500:'#C98A17',600:'#a87213',700:'#865b10',800:'#6b490d',900:'#573b0b' },
-        oliva: { 50:'#ecf6ef',100:'#d4ecdc',200:'#a9d8b8',300:'#7cc194',400:'#4fab70',500:'#349E59',600:'#2b8249',700:'#22673a',800:'#1b512e',900:'#153f24' },
-        anil:  { 50:'#f0f2f5',100:'#dfe3e9',200:'#c1c8d3',300:'#9aa5b5',400:'#7d8b9f',500:'#63738A',600:'#515f73',700:'#424d5e',800:'#363f4c',900:'#2c333e' },
-        sienna:{ 50:'#f8fafc',100:'#f1f4f8',200:'#e3e7ee',300:'#cbd2dc',400:'#98a1af',500:'#5E6675',600:'#4A5260',700:'#353C49',800:'#262C38',900:'#1C2230' },
-        stone: { 50:'#f8fafc',100:'#f1f4f8',200:'#e3e7ee',300:'#cbd2dc',400:'#98a1af',500:'#5E6675',600:'#4A5260',700:'#353C49',800:'#262C38',900:'#1C2230' },
-        // KEEP: existing (used by gradient tiles & legacy components)
-        terra: { 50:'#fdf6f0',100:'#fae8d8',200:'#f5cba8',300:'#eda872',400:'#e4823a',500:'#d4621a',600:'#b54d14',700:'#943b11',800:'#78300f',900:'#632a0e' },
-        burg:  { 50:'#fdf2f4',100:'#fce7eb',200:'#f9c9d2',300:'#f49bab',400:'#ec6479',500:'#e03455',600:'#c41f3e',700:'#a21834',800:'#87162d',900:'#721529' },
-        paper: '#fafaf8',
-        cream: '#f1f3f6',
-        surface: '#ffffff',
-        ink:   '#1C2230',
-        dust:  '#5E6675',
+        orange: tokScale('a'),
+        brand:  { DEFAULT: tokVar('a500'), ...tokScale('a') },
+        keeps:  { DEFAULT: tokVar('k500'), ...tokScale('k', [50,100,200,500,600,700]) },
+        ochre:  tokScale('oc'),
+        oliva:  tokScale('ol'),
+        anil:   tokScale('an'),
+        sienna: tokScale('g'),
+        stone:  tokScale('g'),
+        paper:   tokVar('c-paper'),
+        cream:   tokVar('c-cream'),
+        surface: tokVar('c-surface'),
+        ink:     tokVar('c-ink'),
+        dust:    tokVar('c-dust'),
       },
       fontFamily: {
         sans: ['var(--font-ui)'],
@@ -122,18 +158,7 @@ tailwind.config = {
 };
 </script>
 <style>
-:root {
-  /* Keeps Internal tokens (mirrors the Tailwind palette) */
-  --paper:#fafaf8; --cream:#f1f3f6; --cream-2:#e3e7ee; --surface:#ffffff;
-  --ink:#1C2230; --ink-2:#353C49; --dust:#5E6675; --faint:#98a1af;
-  --navy:#2563EB; --navy-2:#1D4ED8; --keeps:#FF532D; --keeps-d:#D2401C;
-  --good:#349E59; --good-2:#e6f2ea; --warn:#b4720c; --warn-2:#fbf0dc;
-  --line:rgba(28,34,48,.12); --line-2:rgba(28,34,48,.22);
-  --sh:0 1px 2px rgba(28,34,48,.04), 0 8px 22px rgba(28,34,48,.06);
-  --lift:0 2px 4px rgba(28,34,48,.05), 0 12px 28px rgba(28,34,48,.10);
-  /* legacy names still referenced in places */
-  --carmin:#2563EB; --ochre:#C98A17; --terra:#A0522D; --sienna:#1C2230; --oliva:#349E59; --anil:#63738A;
-}
+/* Colours: see <style id="tokens"> at the top of <head>. */
 
 html { font-size: 106.25%; } /* +1 px on base 16 px */
 body { color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; font-optical-sizing: auto; }
@@ -144,8 +169,8 @@ h1.font-serif, h2.font-serif, h3.font-serif, .font-serif.font-bold { font-weight
 .mesh-light { background-color: var(--paper); }
 .mesh-dark { background-color: var(--paper); }
 
-.glass-light { background: rgba(250,250,248,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-.glass-dark  { background: rgba(250,250,248,0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.glass-light { background: rgb(var(--c-paper) / .88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.glass-dark  { background: rgb(var(--c-paper) / .78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 
 /* ── Editorial typography helpers ──────────────────────────── */
 /* Chuleta reading view: a wide canvas, and the area header widens with it so the left edges line up */
@@ -261,8 +286,8 @@ body.sheet-open .area-head { max-width: 92rem; }
 /* ── Keeps Internal components ─────────────────────────────── */
 .k-nav { display:flex; align-items:center; gap:.75rem; padding:.55rem .75rem; min-height:2.6rem; border-radius:10px;
   font-size:14.5px; font-weight:500; color: var(--ink-2); text-decoration:none; transition: background .15s, color .15s; }
-.k-nav:hover { background: rgba(28,34,48,.05); color: var(--ink); }
-.k-nav.on { background: var(--navy); color: #fff; box-shadow: 0 1px 2px rgba(28,34,48,.2); }
+.k-nav:hover { background: rgb(var(--c-ink) / .05); color: var(--ink); }
+.k-nav.on { background: var(--navy); color: #fff; box-shadow: 0 1px 2px rgb(var(--c-ink) / .2); }
 .k-nav svg { flex-shrink:0; opacity:.85; }
 .k-label { font-size:10.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color: var(--faint); }
 .k-tabs { display:flex; gap:1.75rem; border-bottom:1px solid var(--line); }
@@ -272,11 +297,19 @@ body.sheet-open .area-head { max-width: 92rem; }
 .k-tab.on::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: var(--navy); border-radius:2px; }
 .k-card { background: var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow: var(--sh); transition: box-shadow .2s, transform .2s, border-color .2s; }
 .k-card-hover:hover { box-shadow: var(--lift); transform: translateY(-2px); border-color: var(--line-2); }
+/* Banner: a surface card with an accent left edge (never a solid accent fill) */
+.k-card.k-banner, .k-card.k-banner:hover { border-left:4px solid var(--accent); }
+.k-banner-eyebrow { color: var(--accent-2); }
+/* Full-width buttons are tonal; solid accent is for small things only */
+.k-btn-tonal { background: rgb(var(--a100)); color: rgb(var(--a800)); border:1px solid rgb(var(--a200)); transition: background .15s, border-color .15s; }
+.k-btn-tonal:hover { background: rgb(var(--a200)); border-color: rgb(var(--a300)); }
+.k-sh { box-shadow: var(--sh); }
+.k-sh-pop { box-shadow: var(--sh-pop); }
 .k-chip { display:inline-flex; align-items:center; gap:.4rem; padding:0 .85rem; min-height:2.1rem; border-radius:999px; font-size:13.5px; font-weight:500;
   border:1px solid var(--line); background: var(--surface); color: var(--ink-2); transition: all .15s; }
 .k-chip:hover { border-color: var(--line-2); color: var(--ink); }
 .k-chip.on { background: var(--navy); border-color: var(--navy); color:#fff; }
-.k-kicker { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color: var(--keeps-d); }
+.k-kicker { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color: var(--accent-2); }
 .k-reading { font-family:'Fraunces',Georgia,serif; font-size:1.1875rem; line-height:1.62; color: var(--ink-2); font-weight:400; }
 .k-stats { display:grid; grid-template-columns: repeat(var(--n,4), minmax(0,1fr)); border-top:1px solid var(--line); border-bottom: 3px double var(--ink); }
 .k-stats > div { padding: 1rem 1.25rem 1.1rem; border-left:1px solid var(--line); }
@@ -298,11 +331,11 @@ body.sheet-open .area-head { max-width: 92rem; }
 .k-sec-body { padding:1rem 1.25rem 1.5rem; }
 .k-sec-body > * + * { margin-top:1.6rem; }
 .k-sub { display:flex; align-items:center; gap:.5rem; font-size:11.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color: var(--dust); margin-bottom:.75rem; }
-.k-sub::before { content:''; width:.75rem; height:2px; background: var(--keeps); border-radius:2px; flex-shrink:0; }
+.k-sub::before { content:''; width:.75rem; height:2px; background: var(--accent-soft); border-radius:2px; flex-shrink:0; }
 .k-body { font-family:var(--font-ui); font-size:17px; line-height:1.65; color: var(--ink); max-width:68ch; }
-.k-mark { background: linear-gradient(180deg, transparent 50%, #FFDF6B 50%, #FFDF6B 94%, transparent 94%); color: inherit; font-weight:inherit;
+.k-mark { background: linear-gradient(180deg, transparent 50%, rgb(var(--c-mark)) 50%, rgb(var(--c-mark)) 94%, transparent 94%); color: inherit; font-weight:inherit;
   padding:0 .06em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-.k-key, .k-warn { border-radius:10px; background:#f7f9fc; border:1px solid var(--line); border-left:3px solid var(--navy); padding:.85rem 1.1rem .95rem; }
+.k-key, .k-warn { border-radius:10px; background: rgb(var(--g50)); border:1px solid var(--line); border-left:3px solid var(--navy); padding:.85rem 1.1rem .95rem; }
 .k-warn { border-left-color: var(--keeps); }
 .k-key-l, .k-warn-l { display:flex; align-items:center; gap:.4rem; font-size:11.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color: var(--ink); margin-bottom:.3rem; }
 .k-key-l { color: var(--navy-2); }
@@ -329,7 +362,7 @@ body.sheet-open .area-head { max-width: 92rem; }
 }
 
 /* ── Top bar, phone tab bar ─────────────────────────────── */
-.k-top { background: rgba(250,250,248,.92); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom:1px solid var(--line); }
+.k-top { background: rgb(var(--c-paper) / .92); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom:1px solid var(--line); }
 .k-topnav { position:relative; display:flex; align-items:center; gap:.45rem; height:100%; padding:0 .75rem; font-size:14.5px; font-weight:500; color: var(--dust); text-decoration:none; white-space:nowrap; transition: color .15s; }
 .k-topnav:hover { color: var(--ink); }
 .k-topnav.on { color: var(--ink); font-weight:600; }
@@ -338,8 +371,8 @@ body.sheet-open .area-head { max-width: 92rem; }
   background: var(--surface); border:1px solid var(--line); transition: border-color .15s, background .15s; flex-shrink:0; }
 .k-iconbtn:hover { border-color: var(--line-2); }
 .k-iconbtn:active { background: var(--cream); }
-.k-tabbar { background: rgba(255,255,255,.94); -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
-  border-top:1px solid var(--line); box-shadow: 0 -6px 24px -12px rgba(28,34,48,.12); }
+.k-tabbar { background: rgb(var(--c-surface) / .94); -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
+  border-top:1px solid var(--line); box-shadow: 0 -6px 24px -12px rgb(var(--c-ink) / .12); }
 .k-tabbar a { -webkit-tap-highlight-color: transparent; }
 .k-tabpill { position:relative; display:flex; align-items:center; justify-content:center; width:3.5rem; height:2rem; border-radius:999px; transition: background .2s, color .2s; }
 @media (max-width: 1023px) {
@@ -10767,7 +10800,7 @@ const AudioBus = (() => {
 
 function Card({ dark, className='', children, onClick }) {
   return (
-    <div onClick={onClick} className={`rounded-xl border transition-all bg-surface border-ink/[0.12] shadow-[0_1px_2px_rgba(28,34,48,0.04),0_8px_22px_rgba(28,34,48,0.06)] ${className}`}>
+    <div onClick={onClick} className={`rounded-xl border transition-all bg-surface border-ink/[0.12] k-sh ${className}`}>
       {children}
     </div>
   );
@@ -10855,7 +10888,7 @@ function GlobalAudioStop() {
   if (!active) return null;
   return (
     <button onClick={() => AudioBus.stopAll()}
-      className="fixed bottom-24 lg:bottom-8 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-brand text-paper text-sm font-semibold shadow-lg hover:bg-sienna-900 transition-colors toast-in"
+      className="fixed bottom-24 lg:bottom-8 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-brand text-paper text-sm font-semibold shadow-lg hover:bg-brand-600 transition-colors toast-in"
       style={{paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))'}}>
       <span className="inline-flex items-end gap-[2px] h-[12px]">
         <span className="audio-bar w-[2px] h-full bg-paper" />
@@ -10922,7 +10955,7 @@ function Toaster() {
         const c = TONE[t.tone] || TONE.info;
         return (
           <div key={t.id}
-            className="toast-in pointer-events-auto relative overflow-hidden bg-paper rounded-xl shadow-[0_4px_12px_rgba(26,20,16,0.10),0_20px_40px_-12px_rgba(26,20,16,0.18)] border border-ink/5 pl-4 pr-3 py-3 flex items-start gap-3">
+            className="toast-in pointer-events-auto relative overflow-hidden bg-paper rounded-xl k-sh-pop border border-ink/5 pl-4 pr-3 py-3 flex items-start gap-3">
             <span className={`absolute left-0 top-0 bottom-0 w-1 ${c.rule}`} />
             <span className={`flex-shrink-0 w-6 h-6 inline-flex items-center justify-center rounded-full font-serif font-bold text-sm ${c.glyphColor} bg-paper border-2 border-current/20`}>{c.glyph}</span>
             <div className="flex-1 min-w-0">
@@ -11549,13 +11582,13 @@ function HoyPage({ goTo, go, onSearch }) {
 
         {/* Continúa: the exact area, tab and item you were on; a fresh start points at the Diario */}
         <button onClick={() => goTo(place ? place.str : 'hoy/diario')}
-          className="group mt-6 w-full text-left rounded-3xl bg-orange-500 hover:bg-orange-600 text-paper p-5 lg:p-6 shadow-md hover:shadow-lg transition-all flex items-center gap-4 active:scale-[0.99]">
+          className="group mt-6 w-full text-left k-card k-card-hover k-banner text-ink p-5 lg:p-6 flex items-center gap-4 active:scale-[0.99]">
           <div className="flex-1 min-w-0">
-            <p className="eyebrow" style={{ color:'rgba(250,246,238,0.75)' }}>{place ? 'Continúa donde lo dejaste' : 'Empieza aquí'}</p>
+            <p className="eyebrow k-banner-eyebrow">{place ? 'Continúa donde lo dejaste' : 'Empieza aquí'}</p>
             <p className="font-serif font-bold text-2xl lg:text-3xl leading-tight mt-1.5 line-clamp-2">{place ? (place.item || place.tabLabel) : 'Empieza con el Diario'}</p>
-            <p className="text-sm mt-1.5" style={{ color:'rgba(250,246,238,0.85)' }}>{place ? `${place.areaLabel} › ${place.tabLabel}` : `${cards.length ? cards.length + ' tarjetas cortas' : 'Tarjetas cortas'} · unos 5 minutos`}</p>
+            <p className="text-sm mt-1.5 text-dust">{place ? `${place.areaLabel} › ${place.tabLabel}` : `${cards.length ? cards.length + ' tarjetas cortas' : 'Tarjetas cortas'} · unos 5 minutos`}</p>
           </div>
-          <span className="text-2xl transition-transform group-hover:translate-x-1 flex-shrink-0">→</span>
+          <span className="text-2xl text-orange-500 transition-transform group-hover:translate-x-1 flex-shrink-0">→</span>
         </button>
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
@@ -11621,7 +11654,7 @@ function HoyPage({ goTo, go, onSearch }) {
               </div>
               {sessionNext ? (
                 <button onClick={sessionNext.open}
-                  className="mt-4 w-full min-h-11 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-bold transition-colors">
+                  className="mt-4 w-full min-h-11 px-4 rounded-xl k-btn-tonal text-sm font-bold transition-colors">
                   {sessionDoneN === 0 ? `Empezar · unos ${sessionMins} min` : `Seguir: ${sessionNext.label} →`}
                 </button>
               ) : (
@@ -16685,7 +16718,7 @@ function RecallDeck({ examples, onFinish }) {
         </div>
       )}
       {!shown ? (
-        <button onClick={() => setShown(true)} className="mt-4 w-full min-h-11 rounded-xl bg-orange-500 hover:bg-orange-600 text-paper text-sm font-semibold transition-colors">Mostrar</button>
+        <button onClick={() => setShown(true)} className="mt-4 w-full min-h-11 rounded-xl k-btn-tonal text-sm font-semibold transition-colors">Mostrar</button>
       ) : (
         <div className="grid grid-cols-3 gap-2 mt-4">
           <button onClick={() => grade('otra')} className="min-h-11 rounded-xl text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-800 transition-colors">Otra vez</button>
@@ -17386,13 +17419,13 @@ function Chuletas({ dark, onSearch, jump, go, fixedTab = 'gramatica' }) {
       <div className="px-4 lg:px-10 xl:px-14 py-6 max-w-[92rem] mx-auto">
         <p className="k-body mb-5" style={{fontSize:'15px',lineHeight:1.55}}>Errores típicos de los anglohablantes. Abre una tarjeta para ver la explicación completa.</p>
         <button onClick={() => { setErrDrill(true); window.scrollTo(0, 0); }}
-          className="group w-full text-left mb-6 rounded-xl bg-brand hover:bg-orange-600 text-white px-5 py-4 flex items-center gap-4 transition-colors">
+          className="group w-full text-left mb-6 k-card k-card-hover k-banner text-ink px-5 py-4 flex items-center gap-4">
           <div className="flex-1 min-w-0">
-            <p className="eyebrow" style={{ color:'rgba(250,246,238,0.7)' }}>Ponte a prueba</p>
+            <p className="eyebrow k-banner-eyebrow">Ponte a prueba</p>
             <p className="text-xl mt-1" style={{fontFamily:'var(--font-ui)',fontWeight:600}}>¿Cuál es correcto?</p>
-            <p className="text-sm mt-0.5" style={{ color:'rgba(250,246,238,0.8)' }}>Diez preguntas rápidas. Los errores que falles vuelven primero.</p>
+            <p className="text-sm mt-0.5 text-dust">Diez preguntas rápidas. Los errores que falles vuelven primero.</p>
           </div>
-          <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
+          <span className="text-xl text-orange-500 transition-transform group-hover:translate-x-1">→</span>
         </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
           {COMMON_MISTAKES.map((mm, i) => (
@@ -17621,7 +17654,7 @@ function VocabTemas({ dark, selectedTheme, setSelectedTheme, filter, setFilter }
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
         {VOCAB_THEMES.map(theme => (
           <button key={theme.theme} onClick={() => setSelectedTheme(theme)}
-            className={`rounded-2xl p-6 text-left transition-all hover:scale-[1.02] hover:shadow-md min-h-[160px] ${dark ? 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08]' : 'bg-white border border-stone-200/80 shadow-sm'}`}>
+            className={`rounded-2xl p-6 text-left transition-all hover:scale-[1.02] hover:shadow-md min-h-[160px] ${dark ? 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08]' : 'bg-surface border border-stone-200/80 shadow-sm'}`}>
             <p className="font-bold text-base lg:text-lg leading-tight">{theme.titleEs}</p>
             <p className={`text-sm mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>{theme.titleEn}</p>
             <p className={`text-xs mt-3 font-semibold ${dark ? 'text-orange-400' : 'text-orange-600'}`}>{theme.words.length} palabras</p>
@@ -18143,7 +18176,7 @@ function Frases({ onBack, dark, initialTab, onSearch, jump, go }) {
 
           {section === 'mandatos' && (
             <div>
-              <Card dark={dark} className="p-4 mb-5" style={{background:'#fff7ed',borderColor:'#fed7aa'}}>
+              <Card dark={dark} className="p-4 mb-5 !bg-orange-50 !border-orange-200">
                 <p className="text-sm font-semibold text-orange-900 mb-1">📢 Mandatos - imperativo en contexto</p>
                 <p className="text-xs text-orange-800">Commands are one of the most natural parts of spoken Spanish. Each group shows phrases you'd actually use - tú, usted & nosotros. Grammar reference is in Chuletas → El Imperativo.</p>
               </Card>
@@ -18817,7 +18850,7 @@ function GramaticaSection({ onBack, dark, onSearch, jump }) {
                       {p.opts.map((opt, oi) => {
                         const isSelected = answers[qi] === oi;
                         const isThisCorrect = oi === p.correct;
-                        let btnClass = dark ? 'bg-white/[0.06] text-stone-200 hover:bg-white/[0.1] border-white/10' : 'bg-white text-stone-800 hover:bg-stone-50 border-stone-200';
+                        let btnClass = dark ? 'bg-white/[0.06] text-stone-200 hover:bg-white/[0.1] border-white/10' : 'bg-surface text-stone-800 hover:bg-stone-50 border-stone-200';
                         if (answered && isThisCorrect) btnClass = 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold';
                         else if (answered && isSelected && !isThisCorrect) btnClass = 'bg-rose-100 text-rose-800 border-rose-300';
                         else if (answered) btnClass = dark ? 'bg-white/[0.03] text-stone-500 border-white/5' : 'bg-stone-50 text-stone-400 border-stone-100';
@@ -19098,8 +19131,8 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
             <input autoFocus value={userAnswer} onChange={e => setUserAnswer(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleFillSubmit()}
               placeholder="Tu respuesta..."
-              className={`w-full rounded-xl px-4 py-3 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.12] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-white border-stone-200 text-stone-900 placeholder-stone-400 focus:border-orange-500'}`} />
-            <button onClick={handleFillSubmit} className="bg-orange-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Comprobar</button>
+              className={`w-full rounded-xl px-4 py-3 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.12] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-surface border-stone-200 text-stone-900 placeholder-stone-400 focus:border-orange-500'}`} />
+            <button onClick={handleFillSubmit} className="k-btn-tonal px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Comprobar</button>
             {exercise.hint && <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>💡 {exercise.hint}</p>}
           </div>
         ) : (
@@ -19111,7 +19144,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
               )}
               <p className={`text-xs mt-1 ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Tu respuesta: {userAnswer}</p>
             </div>
-            <button onClick={onNext} className="bg-orange-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Siguiente →</button>
+            <button onClick={onNext} className="k-btn-tonal px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Siguiente →</button>
           </div>
         )}
       </div>
@@ -19131,9 +19164,9 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
             if (submitted) {
               if (opt === exercise.answer) cls = 'bg-green-500 text-white border-transparent';
               else if (opt === selectedOption) cls = 'bg-red-500 text-white border-transparent';
-              else cls = dark ? 'opacity-40 bg-white/[0.04] border-white/[0.08] text-stone-400' : 'opacity-40 bg-white border-stone-200 text-stone-500';
+              else cls = dark ? 'opacity-40 bg-white/[0.04] border-white/[0.08] text-stone-400' : 'opacity-40 bg-surface border-stone-200 text-stone-500';
             } else {
-              cls = dark ? 'bg-white/[0.06] border-white/[0.10] text-stone-200 hover:bg-white/[0.12]' : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-50';
+              cls = dark ? 'bg-white/[0.06] border-white/[0.10] text-stone-200 hover:bg-white/[0.12]' : 'bg-surface border-stone-200 text-stone-700 hover:bg-stone-50';
             }
             return (
               <button key={i} onClick={() => handleMCQSelect(opt)} disabled={submitted}
@@ -19146,7 +19179,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
         {submitted && (
           <>
             {exercise.hint && <p className={`text-xs mb-3 ${dark ? 'text-stone-500' : 'text-stone-400'}`}>💡 {exercise.hint}</p>}
-            <button onClick={onNext} className="bg-orange-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Siguiente →</button>
+            <button onClick={onNext} className="k-btn-tonal px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Siguiente →</button>
           </>
         )}
       </div>
@@ -19168,8 +19201,8 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
             <textarea autoFocus value={userAnswer} onChange={e => setUserAnswer(e.target.value)}
               placeholder="Tu traducción en español..."
               rows={3}
-              className={`w-full rounded-xl px-4 py-3 text-sm outline-none border-2 resize-none transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.12] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-white border-stone-200 text-stone-900 placeholder-stone-400 focus:border-orange-500'}`} />
-            <button onClick={handleTranslationSubmit} className="bg-orange-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Comprobar</button>
+              className={`w-full rounded-xl px-4 py-3 text-sm outline-none border-2 resize-none transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.12] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-surface border-stone-200 text-stone-900 placeholder-stone-400 focus:border-orange-500'}`} />
+            <button onClick={handleTranslationSubmit} className="k-btn-tonal px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Comprobar</button>
             {exercise.hint && <p className={`text-xs ${dark ? 'text-stone-500' : 'text-stone-400'}`}>💡 {exercise.hint}</p>}
           </div>
         ) : (
@@ -19180,7 +19213,7 @@ function ExerciseView({ exercise, dark, onComplete, onNext, category }) {
               <p className={`text-xs font-bold mb-1 ${dark ? 'text-green-400' : 'text-green-600'}`}>Respuesta modelo:</p>
               <p className="text-sm font-semibold">{exercise.answer}</p>
             </div>
-            <button onClick={onNext} className="bg-orange-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Siguiente →</button>
+            <button onClick={onNext} className="k-btn-tonal px-6 py-2.5 rounded-xl font-semibold text-sm w-full">Siguiente →</button>
           </div>
         )}
       </div>
@@ -19323,7 +19356,7 @@ function TimedQuiz({ onExit, dark }) {
             })}
           </div>
           {revealed && (
-            <button onClick={handleNext} className="w-full mt-5 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl text-sm font-bold">
+            <button onClick={handleNext} className="w-full mt-5 k-btn-tonal py-3 rounded-xl text-sm font-bold">
               {idx < pool.length - 1 ? 'Siguiente →' : 'Ver resultados'}
             </button>
           )}
@@ -19627,7 +19660,7 @@ function EscrituraView({ prompt, dark, onBack, onSearch }) {
             onChange={e => setText(e.target.value)}
             placeholder="Empieza a escribir aquí en español…"
             rows={10}
-            className={`w-full rounded-xl px-4 py-3 text-base leading-relaxed outline-none border-2 transition-colors resize-none ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-white border-stone-200 text-stone-900 placeholder-stone-400 focus:border-orange-500'}`}
+            className={`w-full rounded-xl px-4 py-3 text-base leading-relaxed outline-none border-2 transition-colors resize-none ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-surface border-stone-200 text-stone-900 placeholder-stone-400 focus:border-orange-500'}`}
           />
         </div>
 
@@ -20019,7 +20052,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
           <Card dark={dark} className="p-4">
             <p className={`text-sm font-bold mb-3 ${dark?'text-stone-200':'text-stone-800'}`}>Guardar en categoría</p>
             <select value={saveCat} onChange={e => setSaveCat(e.target.value)}
-              className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-white border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
+              className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-surface border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
               {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.label}</option>; })}
               <option value="general">General</option>
             </select>
@@ -20088,7 +20121,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
           <Card dark={dark} className="p-4">
             <p className={`text-sm font-bold mb-3 ${dark?'text-stone-200':'text-stone-800'}`}>Guardar en categoría</p>
             <select value={saveCat} onChange={e => setSaveCat(e.target.value)}
-              className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-white border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
+              className={`w-full rounded-xl px-3 py-2.5 text-sm border mb-3 ${dark?'bg-white/[0.06] border-white/10 text-stone-100':'bg-surface border-stone-200 text-stone-900'} focus:outline-none focus:border-orange-500`}>
               {categories.map(cat => { const m = EQUIV_CAT_META[cat] || { label: cat, emoji: '💬' }; return <option key={cat} value={cat}>{m.label}</option>; })}
               <option value="general">General</option>
             </select>
@@ -20134,7 +20167,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
             const isExp = expandedIdx === i;
             const hasDetail = (entry.esAlts && entry.esAlts.length > 0) || entry.example || entry.explain;
             return (
-              <div key={i} style={isExp ? {gridColumn:'1 / -1'} : {}} className={`rounded-2xl overflow-hidden border transition-all duration-200 ${dark?'bg-white/[0.04] border-white/10':'bg-white border-stone-200/70 shadow-sm'} ${entry.isCustom?'ring-2 ring-amber-400/50':''} ${isExp?(dark?'bg-white/[0.07]':'bg-stone-50/60'):''}`}>
+              <div key={i} style={isExp ? {gridColumn:'1 / -1'} : {}} className={`rounded-2xl overflow-hidden border transition-all duration-200 ${dark?'bg-white/[0.04] border-white/10':'bg-surface border-stone-200/70 shadow-sm'} ${entry.isCustom?'ring-2 ring-amber-400/50':''} ${isExp?(dark?'bg-white/[0.07]':'bg-stone-50/60'):''}`}>
                 {/* Always-visible row */}
                 <button onClick={() => setExpandedIdx(isExp ? null : i)}
                   className={`w-full text-left p-4 transition-colors ${dark?'hover:bg-white/[0.04]':'hover:bg-stone-50/80'}`}>
@@ -20229,7 +20262,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
               }}
               placeholder="English phrase or frase en español..."
               inputMode="text" autoCapitalize="none" autoComplete="off" spellCheck={false}
-              className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none ${isSpanishMode?'focus:border-emerald-400':'focus:border-orange-500'} transition-colors`} />
+              className={`flex-1 min-w-0 rounded-xl px-4 py-3 text-sm border-2 ${dark?'bg-white/[0.04] border-white/10 text-stone-100 placeholder:text-stone-500':'bg-surface border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none ${isSpanishMode?'focus:border-emerald-400':'focus:border-orange-500'} transition-colors`} />
             {isSearching && hasAi && (
               <button
                 onClick={isSpanishMode ? handleReverseExplain : handleAITranslate}
@@ -20342,7 +20375,7 @@ function Equivalentes({ onBack, dark, onSearch, jump }) {
                 const samples = samplesForCat(cat);
                 return (
                   <button key={cat} onClick={() => { setSelectedCat(cat); setExpandedIdx(null); }}
-                    className="rounded-2xl p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 bg-white border border-stone-200/80 shadow-sm min-h-[140px] flex flex-col">
+                    className="rounded-2xl p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 bg-surface border border-stone-200/80 shadow-sm min-h-[140px] flex flex-col">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-1">
                         {customCount > 0 && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-ochre-100 text-ochre-700">⭐ {customCount}</span>}
@@ -20811,9 +20844,9 @@ function GlosarioInner({ dark, mode }) {
         <div className="flex gap-2 mb-4">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Buscar..."
-            className={`flex-1 rounded-xl px-4 py-2.5 text-sm outline-none border transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500' : 'bg-white border-stone-200 text-stone-900 placeholder-stone-400'}`} />
+            className={`flex-1 rounded-xl px-4 py-2.5 text-sm outline-none border transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500' : 'bg-surface border-stone-200 text-stone-900 placeholder-stone-400'}`} />
           <select value={sort} onChange={e => setSort(e.target.value)}
-            className={`rounded-xl px-3 py-2.5 text-sm outline-none border ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white' : 'bg-white border-stone-200 text-stone-900'}`}>
+            className={`rounded-xl px-3 py-2.5 text-sm outline-none border ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white' : 'bg-surface border-stone-200 text-stone-900'}`}>
             <option value="reciente">Reciente</option>
             <option value="az">A-Z</option>
             <option value="tipo">Tipo</option>
@@ -20829,8 +20862,8 @@ function GlosarioInner({ dark, mode }) {
 
         {/* Add modal */}
         {showAdd && (
-          <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center p-4" style={{background:'rgba(0,0,0,0.5)'}}>
-            <div className={`w-full max-w-md rounded-2xl p-5 ${dark ? 'bg-stone-900' : 'bg-white'} shadow-2xl`}>
+          <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center p-4" style={{background:'var(--scrim)'}}>
+            <div className={`w-full max-w-md rounded-2xl p-5 ${dark ? 'bg-stone-900' : 'bg-surface'} shadow-2xl`}>
               <div className="flex items-center justify-between mb-4">
                 <p className="font-bold text-lg">Añadir palabra</p>
                 <button onClick={() => setShowAdd(false)} className={`text-2xl leading-none ${dark ? 'text-stone-400' : 'text-stone-400'}`}>×</button>
@@ -20840,7 +20873,7 @@ function GlosarioInner({ dark, mode }) {
                   <label className={`text-xs font-semibold mb-1 block ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Español *</label>
                   <input value={newEs} onChange={e => setNewEs(e.target.value)}
                     placeholder="Ej: apetecer"
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-white border-stone-200 text-stone-900 focus:border-orange-500'}`} />
+                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-surface border-stone-200 text-stone-900 focus:border-orange-500'}`} />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -20852,12 +20885,12 @@ function GlosarioInner({ dark, mode }) {
                   </div>
                   <input value={newEn} onChange={e => setNewEn(e.target.value)}
                     placeholder="Traducción al inglés"
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-white border-stone-200 text-stone-900 focus:border-orange-500'}`} />
+                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-surface border-stone-200 text-stone-900 focus:border-orange-500'}`} />
                 </div>
                 <div>
                   <label className={`text-xs font-semibold mb-1 block ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Tipo</label>
                   <select value={newType} onChange={e => setNewType(e.target.value)}
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white' : 'bg-white border-stone-200 text-stone-900'}`}>
+                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white' : 'bg-surface border-stone-200 text-stone-900'}`}>
                     <option value="noun">Sustantivo</option>
                     <option value="verb">Verbo</option>
                     <option value="adj">Adjetivo</option>
@@ -20869,10 +20902,10 @@ function GlosarioInner({ dark, mode }) {
                   <label className={`text-xs font-semibold mb-1 block ${dark ? 'text-stone-400' : 'text-stone-500'}`}>Ejemplo (opcional)</label>
                   <input value={newExample} onChange={e => setNewExample(e.target.value)}
                     placeholder="Frase de ejemplo"
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-white border-stone-200 text-stone-900 focus:border-orange-500'}`} />
+                    className={`w-full rounded-xl px-4 py-2.5 text-sm outline-none border-2 transition-colors ${dark ? 'bg-white/[0.06] border-white/[0.10] text-white placeholder-stone-500 focus:border-orange-500' : 'bg-surface border-stone-200 text-stone-900 focus:border-orange-500'}`} />
                 </div>
                 <button onClick={handleAdd} disabled={!newEs.trim() || translating}
-                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${!newEs.trim() ? 'opacity-50 cursor-not-allowed bg-orange-400 text-white' : 'bg-orange-500 text-white hover:bg-orange-600'}`}>
+                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all ${!newEs.trim() ? 'opacity-50 cursor-not-allowed bg-orange-400 text-white' : 'k-btn-tonal hover:bg-orange-600'}`}>
                   {translating ? 'Traduciendo...' : 'Guardar'}
                 </button>
               </div>
@@ -20928,7 +20961,7 @@ function GlosarioInner({ dark, mode }) {
                 </div>
 
                 <div onClick={() => setCardFlipped(f => !f)}
-                  className="cursor-pointer select-none rounded-3xl border bg-white shadow-sm p-8 min-h-[280px] flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
+                  className="cursor-pointer select-none rounded-3xl border bg-surface shadow-sm p-8 min-h-[280px] flex flex-col items-center justify-center text-center transition-all hover:shadow-md">
                   {!cardFlipped ? (
                     <>
                       <p className="text-[10px] font-bold tracking-widest text-stone-400 uppercase mb-4">{cardDir === 'es-en' ? 'Español' : 'English'}</p>
@@ -20982,7 +21015,7 @@ function GlosarioInner({ dark, mode }) {
 
                 {!cardFlipped && (
                   <button onClick={() => setCardFlipped(true)}
-                    className="w-full mt-5 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl text-sm font-bold transition-colors">
+                    className="w-full mt-5 k-btn-tonal py-3 rounded-xl text-sm font-bold transition-colors">
                     Mostrar respuesta
                   </button>
                 )}
@@ -21136,8 +21169,8 @@ function GlobalSearch({ open, onClose, onJump }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-20" style={{background:'rgba(0,0,0,0.5)'}} onClick={onClose}>
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-20" style={{background:'var(--scrim)'}} onClick={onClose}>
+      <div className="w-full max-w-xl bg-surface rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-2 px-5 py-4 border-b border-stone-100">
           <span className="text-stone-400">🔍</span>
           <input
@@ -23096,7 +23129,7 @@ function TransferSettingsCard({ dark }) {
                 <div>
                   <p className={`text-xs font-semibold mb-2 ${dark ? 'text-stone-300' : 'text-stone-700'}`}>En este dispositivo → Generar código</p>
                   <button onClick={handleExport}
-                    className={`w-full rounded-xl py-3 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'bg-[#C4202E] hover:bg-red-700 text-white'}`}>
+                    className={`w-full rounded-xl py-3 text-sm font-semibold transition-colors ${copied ? 'bg-emerald-500 text-white' : 'k-btn-tonal'}`}>
                     {copied ? '✓ Copiado al portapapeles' : 'Generar código de ajustes'}
                   </button>
                   {exportCode ? (
@@ -23107,7 +23140,7 @@ function TransferSettingsCard({ dark }) {
                       <textarea readOnly value={exportCode} rows={3}
                         onClick={e => e.target.select()}
                         onFocus={e => e.target.select()}
-                        className={`w-full rounded-xl px-3 py-2.5 text-xs border font-mono break-all resize-none ${dark ? 'bg-white/[0.06] border-white/10 text-stone-300' : 'bg-stone-50 border-stone-200 text-stone-700'} focus:outline-none focus:border-[#C4202E]`} />
+                        className={`w-full rounded-xl px-3 py-2.5 text-xs border font-mono break-all resize-none ${dark ? 'bg-white/[0.06] border-white/10 text-stone-300' : 'bg-stone-50 border-stone-200 text-stone-700'} focus:outline-none focus:border-brand`} />
                     </div>
                   ) : null}
                 </div>
@@ -23117,9 +23150,9 @@ function TransferSettingsCard({ dark }) {
                   <div className="flex gap-2">
                     <input value={importVal} onChange={e => setImportVal(e.target.value)}
                       placeholder="Pega el código aquí..."
-                      className={`flex-1 rounded-xl px-3 py-2.5 text-sm border font-mono ${dark ? 'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500' : 'bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-[#C4202E]`} />
+                      className={`flex-1 rounded-xl px-3 py-2.5 text-sm border font-mono ${dark ? 'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500' : 'bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400'} focus:outline-none focus:border-brand`} />
                     <button onClick={handleImport} disabled={!importVal.trim()}
-                      className="rounded-xl px-4 py-2.5 bg-[#C4202E] hover:bg-red-700 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
+                      className="rounded-xl px-4 py-2.5 bg-brand hover:bg-brand-600 disabled:opacity-40 text-white font-semibold text-sm transition-colors">
                       Importar
                     </button>
                   </div>
@@ -24237,7 +24270,7 @@ function Dictado({ onBack, dark, jump }) {
         <Card dark={dark} className="p-5">
           <p className="text-[10px] font-bold tracking-widest uppercase text-stone-500 mb-4">Escucha la frase</p>
           <button onClick={handlePlay}
-            className="w-full rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 flex items-center justify-center gap-2 text-sm transition-colors">
+            className="w-full rounded-xl k-btn-tonal font-semibold py-3 flex items-center justify-center gap-2 text-sm transition-colors">
             <span>▶</span>
             <span>Reproducir{replayCount>0?` (×${replayCount+1})`:''}</span>
           </button>
@@ -24255,7 +24288,7 @@ function Dictado({ onBack, dark, jump }) {
           <textarea ref={inputRef} value={input} onChange={e=>setInput(e.target.value)} disabled={submitted}
             onKeyDown={e=>{ if(e.key==='Enter'&&!e.shiftKey&&!submitted){e.preventDefault();handleCheck();} }}
             placeholder="Escribe lo que escuchas..." rows={3}
-            className={`w-full rounded-xl px-4 py-3 text-sm border-2 resize-none outline-none transition-colors font-medium ${submitted?'opacity-60 cursor-not-allowed':''} ${dark?'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500 focus:border-orange-400':'bg-white border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-orange-400'}`}
+            className={`w-full rounded-xl px-4 py-3 text-sm border-2 resize-none outline-none transition-colors font-medium ${submitted?'opacity-60 cursor-not-allowed':''} ${dark?'bg-white/[0.06] border-white/10 text-white placeholder:text-stone-500 focus:border-orange-400':'bg-surface border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-orange-400'}`}
           />
           <div className="flex flex-wrap gap-1.5 mt-2">
             {['á','é','í','ó','ú','ñ','ü'].map(ch => (
@@ -24993,6 +25026,7 @@ function App() {
   useEffect(() => {
     if (window.location.hash !== '#' + rs) history.replaceState(null, '', '#' + rs);
     setStorage('aprende.route', rs);
+    document.documentElement.setAttribute('data-area', route.area);
     if (route.area !== 'hoy' && route.area !== 'ajustes') {
       setStorage('aprende.lastPlace', rs);
       setStorage('aprende.area.' + route.area, route.tab);
@@ -25141,11 +25175,11 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'sans-serif',padding:'2rem',background:'#FAF6EE'}}>
+        <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'sans-serif',padding:'2rem',background:'var(--paper)'}}>
           <div style={{maxWidth:'400px',width:'100%',textAlign:'center'}}>
             <p style={{fontSize:'2rem',marginBottom:'0.5rem'}}>⚠️</p>
-            <p style={{fontWeight:'bold',fontSize:'1.125rem',color:'#1A1410',marginBottom:'1.5rem'}}>Algo fue mal</p>
-            <button onClick={() => window.location.reload()} style={{padding:'0.625rem 1.5rem',borderRadius:'9999px',background:'#C4202E',color:'#fff',fontWeight:'600',fontSize:'0.875rem',border:'none',cursor:'pointer'}}>
+            <p style={{fontWeight:'bold',fontSize:'1.125rem',color:'var(--ink)',marginBottom:'1.5rem'}}>Algo fue mal</p>
+            <button onClick={() => window.location.reload()} style={{padding:'0.625rem 1.5rem',borderRadius:'9999px',background:'var(--accent)',color:'#fff',fontWeight:'600',fontSize:'0.875rem',border:'none',cursor:'pointer'}}>
               Recargar Aprende
             </button>
           </div>
