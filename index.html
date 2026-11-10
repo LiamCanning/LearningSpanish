@@ -34,13 +34,14 @@
     ctx.fillStyle = '#2563EB'; ctx.fillRect(0, 0, sz, sz);
 
     // ── Subtle gold stripe (Spanish flag midband, 25% opacity) ──
-    ctx.fillStyle = '#FF532D'; ctx.fillRect(58, 132, 64, 8);
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 13; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(56, 50); ctx.bezierCurveTo(66, 26, 80, 30, 90, 40); ctx.bezierCurveTo(100, 50, 114, 54, 124, 30); ctx.stroke();
 
     // ── "A" in white ────────────────────────────────────────────
     ctx.fillStyle = 'rgba(255,255,255,0.97)';
-    ctx.font = 'bold 118px Georgia,serif';
+    ctx.font = 'bold 132px Georgia,serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('A', sz/2, sz/2 + 4);
+    ctx.fillText('n', sz/2, sz/2 + 22);
 
     var url = c.toDataURL('image/png');
 
@@ -24948,9 +24949,11 @@ function TopBar({ route, goArea, goTo, onSearch, badgeFor, badgeTitle }) {
     <header className="k-top lg:sticky lg:top-0 z-40 no-print">
       <div className="max-w-[92rem] mx-auto px-4 lg:px-10 xl:px-14 h-14 lg:h-16 flex items-center gap-3 lg:gap-6">
         <a href="#hoy" onClick={e => { e.preventDefault(); goArea('hoy'); }} className="flex items-center gap-2.5 flex-shrink-0 no-underline">
-          <span className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center">
-            <span className="font-serif text-white text-[15px] leading-none" style={{fontWeight:600}}>Ñ</span>
-          </span>
+          {/* Mark: an ink "n" with the tilde in the accent colour; no tile */}
+          <svg className="text-brand flex-shrink-0" width="32" height="34" viewBox="1 0 32 34" aria-hidden>
+            <text x="17" y="31" textAnchor="middle" fontFamily="Fraunces, Georgia, serif" fontWeight="600" fontSize="34" fill="var(--ink)">n</text>
+            <path d="M9 7.500c1.800-4.200 4.800-4.200 8-1.800s6.200 2.400 8-1.800" fill="none" stroke="currentColor" strokeWidth="3.200" strokeLinecap="round"/>
+          </svg>
           <span className="font-serif text-[17px] text-ink leading-none tracking-[-0.01em]" style={{fontWeight:600}}>La Vida Español</span>
         </a>
         <nav className="hidden lg:flex items-stretch self-stretch flex-1 min-w-0 -mb-px" aria-label="Secciones">
