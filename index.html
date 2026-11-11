@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>Aprende</title>
+<title>La Vida Español</title>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Aprende" />
@@ -23947,7 +23947,7 @@ function Ajustes({ dark, onBack }) {
                     const resp = await fetch('https://slack.com/api/chat.postMessage', {
                       method: 'POST',
                       headers: { 'Authorization': 'Bearer ' + slackBotToken.trim(), 'Content-Type': 'application/json; charset=utf-8' },
-                      body: JSON.stringify({ channel: getStorage('aprende.slack.channelId', 'C0B2KM1RGTZ'), text: `*Aprende – prueba de alerta* ✓\nHas realizado ${translationCount} traducciones (~$${(translationCount * AI_COST_PER_CALL).toFixed(2)} estimado).` }),
+                      body: JSON.stringify({ channel: getStorage('aprende.slack.channelId', 'C0B2KM1RGTZ'), text: `*La Vida Español - prueba de alerta* ✓\nHas realizado ${translationCount} traducciones (~$${(translationCount * AI_COST_PER_CALL).toFixed(2)} estimado).` }),
                     });
                     const json = await resp.json();
                     if (json.ok) { setAiTestStatus('ok'); setAiTestMsg('✓ Mensaje de prueba enviado a #updates-spanish.'); }
